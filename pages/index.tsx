@@ -6,7 +6,7 @@ import { Box } from '@chakra-ui/react';
 const Home: NextPage = () => {
     return (
         <Layout>
-            <Box>Lorem ipsum</Box>
+            <Box>asd asd</Box>
         </Layout>
     );
 };
