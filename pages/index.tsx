@@ -6,16 +6,11 @@ import { signIn, signOut, useSession } from 'next-auth/client';
 
 const Home: NextPage = () => {
     const [session, loading] = useSession();
-    console.log(window.location.origin);
     console.log(session, loading);
     return (
         <Layout>
             <Box>Please sign in by pressing the button below</Box>
-            <Button
-                colorScheme="purple"
-                variant="solid"
-                onClick={() => signIn('cognito', { callbackUrl: `${window.location.origin}` })}
-            >
+            <Button colorScheme="purple" variant="solid" onClick={() => signIn('cognito')}>
                 Sign-in with Cognito
             </Button>
         </Layout>
