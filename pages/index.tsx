@@ -7,14 +7,17 @@ import { signIn, signOut, useSession } from 'next-auth/client';
 const Home: NextPage = () => {
     const [session, loading] = useSession();
     console.log(session, loading);
-    console.log(`Cognito domain: ${process.env.COGNITO_DOMAIN}`);
-    console.log(`Cognito client id: ${process.env.COGNITO_CLIENT_ID}`);
-    console.log(`Cognito secret: ${process.env.COGNITO_CLIENT_SECRET}`);
-    console.log(`Nextauth url: ${process.env.NEXTAUTH_URL}`);
+    console.log(`Cognito domain: ${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}`);
+    console.log(`Cognito client id: ${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}`);
+    console.log(`Cognito secret: ${process.env.NEXT_PUBLIC_COGNITO_CLIENT_SECRET}`);
     return (
         <Layout>
             <Box>Please sign in by pressing the button below</Box>
-            <Button onClick={() => signIn('cognito', { callbackUrl: `${window.location.origin}` })}>
+            <Button
+                colorScheme="purple"
+                variant="solid"
+                onClick={() => signIn('cognito', { callbackUrl: `${window.location.origin}` })}
+            >
                 Sign-in with Cognito
             </Button>
         </Layout>
