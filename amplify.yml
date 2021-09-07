@@ -7,10 +7,6 @@ frontend:
         build:
             commands:
                 - yarn run build
-                - echo "NEXT_PUBLIC_COGNITO_CLIENT_ID=$NEXT_PUBLIC_COGNITO_CLIENT_ID" >> .env
-                - echo "NEXT_PUBLIC_COGNITO_CLIENT_SECRET=$NEXT_PUBLIC_COGNITO_CLIENT_SECRET" >> .env
-                - echo "NEXT_PUBLIC_COGNITO_DOMAIN=$NEXT_PUBLIC_COGNITO_DOMAIN" >> .env
-                - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
     artifacts:
         baseDirectory: .next
         files:
