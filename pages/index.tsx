@@ -1,12 +1,18 @@
 import React from 'react';
 import type { NextPage } from 'next';
 import Layout from '@/components/Layout';
-import { Box } from '@chakra-ui/react';
+import { Box, Button } from '@chakra-ui/react';
+import { signIn, signOut, useSession } from 'next-auth/client';
 
 const Home: NextPage = () => {
+    const [session, loading] = useSession();
+    console.log(session, loading);
     return (
         <Layout>
-            <Box>asd asd</Box>
+            <Box>Please sign in by pressing the button below</Box>
+            <Button onClick={() => signIn('cognito', { callbackUrl: `${window.location.origin}` })}>
+                Sign-in with Cognito
+            </Button>
         </Layout>
     );
 };
