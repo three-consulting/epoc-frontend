@@ -6,10 +6,8 @@ import { signIn, signOut, useSession } from 'next-auth/client';
 
 const Home: NextPage = () => {
     const [session, loading] = useSession();
+    console.log(window.location.origin);
     console.log(session, loading);
-    console.log(`Cognito domain: ${process.env.NEXT_PUBLIC_COGNITO_DOMAIN}`);
-    console.log(`Cognito client id: ${process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID}`);
-    console.log(`Cognito secret: ${process.env.NEXT_PUBLIC_COGNITO_CLIENT_SECRET}`);
     return (
         <Layout>
             <Box>Please sign in by pressing the button below</Box>
