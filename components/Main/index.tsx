@@ -7,7 +7,15 @@ interface MainProps {
 
 function Main({ children }: MainProps): JSX.Element {
     return (
-        <Box display="block" marginLeft="auto" marginRight="auto" width={['95vw', '75vw', '62.5vw', '50vw']}>
+        <Box
+            display="block"
+            flex="1 0 auto"
+            marginLeft="auto"
+            marginRight="auto"
+            paddingTop="1rem"
+            paddingBottom="1rem"
+            width={['95vw', '75vw', '62.5vw', '50vw']}
+        >
             {children}
         </Box>
     );

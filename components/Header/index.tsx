@@ -5,9 +5,8 @@ function Header(): JSX.Element {
     return (
         <Flex
             paddingTop="0.5"
-            borderTop="6px solid"
-            borderTopColor="purple.500"
-            backgroundColor="purple.500"
+            borderBottom="1px"
+            borderColor="gray.400"
             paddingBottom="0.5rem"
             textAlign="center"
             justifyContent="center"
