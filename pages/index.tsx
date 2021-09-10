@@ -10,7 +10,7 @@ const Home: NextPage = () => {
     return (
         <Layout>
             <Box>Please sign in by pressing the button below</Box>
-            <Button colorScheme="purple" variant="solid" onClick={() => signIn('cognito')}>
+            <Button colorScheme="black" backgroundColor="white" variant="outline" onClick={() => signIn('cognito')}>
                 Sign-in with Cognito
             </Button>
         </Layout>
