@@ -9,4 +9,9 @@ export default NextAuth({
             domain: process.env.NEXT_PUBLIC_COGNITO_DOMAIN,
         }),
     ],
+    session: { jwt: true },
+    jwt: {
+        secret: process.env.SECRET,
+        signingKey: process.env.JWT_SIGNING_PRIVATE_KEY,
+    },
 });
