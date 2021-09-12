@@ -6,13 +6,10 @@ import { signIn, useSession } from 'next-auth/client';
 
 const Home: NextPage = () => {
     const [session, loading] = useSession();
-    console.log(session, loading);
+    console.log(session);
     return (
         <Layout>
-            <Box>Please sign in by pressing the button below</Box>
-            <Button colorScheme="black" backgroundColor="white" variant="outline" onClick={() => signIn('cognito')}>
-                Sign-in with Cognito
-            </Button>
+            <Box>Nothing to see here</Box>
         </Layout>
     );
 };
