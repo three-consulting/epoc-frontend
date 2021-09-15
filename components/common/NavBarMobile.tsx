@@ -1,6 +1,5 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Box, Text, VStack } from '@chakra-ui/react';
-import { SettingsIcon, StarIcon } from '@chakra-ui/icons';
 import { signIn, signOut, useSession } from 'next-auth/client';
 
 function NavBarMobile(): JSX.Element {

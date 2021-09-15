@@ -1,6 +1,5 @@
 import React from 'react';
-import { Breadcrumb, BreadcrumbItem, Box, Text, VStack, Flex } from '@chakra-ui/react';
-import { SettingsIcon, StarIcon } from '@chakra-ui/icons';
+import { Breadcrumb, BreadcrumbItem, Text, Flex } from '@chakra-ui/react';
 import { signIn, signOut, useSession } from 'next-auth/client';
 
 function LeftNav(): JSX.Element {
