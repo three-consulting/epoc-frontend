@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
 import { useMediaQuery } from 'react-responsive';
-import LeftNav from '../LeftNav';
+import LeftNav from './LeftNav';
 
 interface MainProps {
     children?: ReactNode;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@chakra-ui/react';
-import NavBarMobile from '../NavBarMobile';
+import NavBarMobile from './NavBarMobile';
 import { useMediaQuery } from 'react-responsive';
 
 function Footer(): JSX.Element {

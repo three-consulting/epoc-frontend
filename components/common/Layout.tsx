@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
-import Header from '@/components/Header/index';
-import Footer from '@/components/Footer/index';
-import Main from '@/components/Main/index';
+import Header from './Header';
+import Footer from './Footer';
+import Main from './Main';
 import { Flex } from '@chakra-ui/react';
 
 interface LayoutProps {

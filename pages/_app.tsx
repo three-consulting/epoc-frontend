@@ -3,7 +3,7 @@ import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 import { Provider } from 'next-auth/client';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps): JSX.Element {
     return (
         <Provider options={{ clientMaxAge: 0, keepAlive: 0 }} session={pageProps.session}>
             <ChakraProvider>
