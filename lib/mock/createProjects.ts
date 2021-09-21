@@ -1,6 +1,8 @@
 import faker from 'faker';
 import { Project } from '../types/common';
 
+faker.seed(4);
+
 const createProject = (): Project => {
     const project: Project = {
         id: faker.datatype.number(),

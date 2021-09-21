@@ -9,7 +9,8 @@ interface ProjectResponse {
 }
 
 function useProjects(): ProjectResponse {
-    const { data: projects, error } = useSWR<Project[]>('/api/projects', fetcher);
+    const endpoint = process.env.NEXT_PUBLIC_API_URL + '/project';
+    const { data: projects, error } = useSWR<Project[]>(endpoint, fetcher);
 
     return { projects, isLoading: !projects && !error, isError: error };
 }
