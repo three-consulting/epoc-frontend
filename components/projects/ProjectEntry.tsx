@@ -1,4 +1,4 @@
-import { Box, Text, Heading, Flex } from '@chakra-ui/layout';
+import { Box, Text, Heading } from '@chakra-ui/layout';
 import { Project } from 'lib/types/common';
 import React from 'react';
 

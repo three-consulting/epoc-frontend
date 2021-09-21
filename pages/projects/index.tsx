@@ -7,7 +7,7 @@ import useProjects from '@/lib/hooks/useProjects';
 import ProjectTable from '@/components/projects/ProjectTable';
 
 const Projects: NextPage = () => {
-    const { projects, isLoading, isError } = useProjects();
+    const { projects } = useProjects();
 
     return (
         <Layout>

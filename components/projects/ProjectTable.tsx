@@ -1,10 +1,10 @@
 import React from 'react';
-import { List, ListItem, Box, Heading } from '@chakra-ui/layout';
+import { Box, Heading } from '@chakra-ui/layout';
 import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from '@chakra-ui/react';
-import { Project } from '@/lib/types/common';
+import { components } from '@/lib/types/api';
 
 type ProjectListProps = {
-    projects: Project[];
+    projects: components['schemas']['Project'][];
 };
 
 function ProjectTable({ projects }: ProjectListProps): JSX.Element {
@@ -24,7 +24,7 @@ function ProjectTable({ projects }: ProjectListProps): JSX.Element {
                             return (
                                 <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
                                     <Td>{el.name}</Td>
-                                    <Td>{el.client_id}</Td>
+                                    <Td>{el.customer?.name}</Td>
                                 </Tr>
                             );
                         })}

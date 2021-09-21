@@ -8,7 +8,8 @@
         "start": "next start",
         "lint": "next lint",
         "type-check": "tsc",
-        "postinstall": "husky install"
+        "postinstall": "husky install",
+        "types": "yarn openapi-typescript http://localhost:8080/docs --output lib/types/api.ts"
     },
     "dependencies": {
         "@chakra-ui/icons": "^1.0.15",
@@ -40,6 +41,7 @@
         "eslint-plugin-react-hooks": "^4.2.0",
         "faker": "^5.5.3",
         "husky": "^7.0.2",
+        "openapi-typescript": "^4.0.2",
         "prettier": "^2.3.2",
         "typescript": "4.3.5"
     }
