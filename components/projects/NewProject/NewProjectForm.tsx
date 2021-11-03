@@ -10,9 +10,11 @@ type NewProjectFormProps = {
 };
 function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initialState, init);
+    /*
     const handleCustomerChange = (e: React.SyntheticEvent) => {
         e.preventDefault();
     };
+    */
     return (
         <Flex
             flexDirection="column"
