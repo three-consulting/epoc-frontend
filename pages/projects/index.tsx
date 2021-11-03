@@ -5,9 +5,12 @@ import { Button } from '@chakra-ui/react';
 import Layout from '@/components/common/Layout';
 import useProjects from '@/lib/hooks/useProjects';
 import ProjectTable from '@/components/projects/ProjectTable';
+import NewProject from '@/components/projects/NewProject/NewCustomer';
+import { useRouter } from 'next/dist/client/router';
 
 const Projects: NextPage = () => {
     const { projects } = useProjects();
+    const router = useRouter();
 
     return (
         <Layout>
@@ -31,7 +34,9 @@ const Projects: NextPage = () => {
                 </Flex>
             )}
             <Box margin="1rem 0rem">
-                <Button colorScheme="blue">Add project</Button>
+                <Button colorScheme="blue" onClick={() => router.push('/projects/new')}>
+                    Add project
+                </Button>
             </Box>
         </Layout>
     );

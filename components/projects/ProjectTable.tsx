@@ -4,7 +4,7 @@ import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from '@chakra-ui/react'
 import { components } from '@/lib/types/api';
 
 type ProjectListProps = {
-    projects: components['schemas']['Project'][];
+    projects: components['schemas']['ProjectDTO'][];
 };
 
 function ProjectTable({ projects }: ProjectListProps): JSX.Element {

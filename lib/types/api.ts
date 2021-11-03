@@ -4,275 +4,342 @@
  */
 
 export interface paths {
-    '/project': {
-        get: operations['getAllProject'];
-        put: operations['updateProjectForId'];
-        post: operations['createProject'];
-    };
-    '/employee': {
-        put: operations['updateEmployeeForId'];
-        post: operations['createEmployee'];
-    };
-    '/customer': {
-        put: operations['updateCustomerForId'];
-        post: operations['createCustomer'];
-    };
-    '/project/{projectId}': {
-        get: operations['getCustomerForId'];
-        delete: operations['deleteCustomerForId'];
-    };
-    '/employee/{employeeId}': {
-        get: operations['getCustomerForId_1'];
-        delete: operations['deleteCustomerForId_1'];
-    };
-    '/customer/{customerId}': {
-        get: operations['getCustomerForId_2'];
-        delete: operations['DeleteCustomerForId'];
-    };
+  "/timesheet": {
+    put: operations["updateTimesheetForId"];
+    post: operations["createTimesheet"];
+  };
+  "/project": {
+    get: operations["getAllProjects"];
+    put: operations["updateProjectForId"];
+    post: operations["createProject"];
+  };
+  "/employee": {
+    get: operations["getAllEmployees"];
+    put: operations["updateEmployeeForId"];
+    post: operations["createEmployee"];
+  };
+  "/customer": {
+    get: operations["getAllCustomers"];
+    put: operations["updateCustomerForId"];
+    post: operations["createCustomer"];
+  };
+  "/timesheet/{timesheetId}": {
+    get: operations["getTimesheetForId"];
+    delete: operations["deleteTimesheetForId"];
+  };
+  "/project/{projectId}": {
+    get: operations["getProjectForId"];
+    delete: operations["deleteProjectForId"];
+  };
+  "/employee/{employeeId}": {
+    get: operations["getEmployeeForId"];
+    delete: operations["deleteEmployeeForId"];
+  };
+  "/customer/{customerId}": {
+    get: operations["getCustomerForId"];
+    delete: operations["deleteCustomerForId"];
+  };
 }
 
 export interface components {
-    schemas: {
-        CustomerDTO: {
-            id?: number;
-            name: string;
-            description?: string;
-            created?: string;
-            updated?: string;
-            enabled?: boolean;
-        };
-        EmployeeDTO: {
-            id?: number;
-            first_name?: string;
-            last_name?: string;
-            email?: string;
-            start_date?: string;
-            created?: string;
-            updated?: string;
-        };
-        ProjectDTO: {
-            id?: number;
-            name: string;
-            description?: string;
-            startDate?: string;
-            endDate?: string;
-            customer?: components['schemas']['CustomerDTO'];
-            managingEmployee?: components['schemas']['EmployeeDTO'];
-            status?: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
-            created?: string;
-            updated?: string;
-        };
-        Customer: {
-            name?: string;
-            description?: string;
-            created?: string;
-            updated?: string;
-            enabled?: boolean;
-            id?: number;
-        };
-        Employee: {
-            first_name?: string;
-            last_name?: string;
-            email?: string;
-            start_date?: string;
-            created?: string;
-            updated?: string;
-            id?: number;
-        };
-        Project: {
-            customer?: components['schemas']['Customer'];
-            managingEmployee?: components['schemas']['Employee'];
-            name?: string;
-            description?: string;
-            startDate?: string;
-            endDate?: string;
-            created?: string;
-            updated?: string;
-            status?: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
-            id?: number;
-        };
+  schemas: {
+    CustomerDTO: {
+      id?: number;
+      name: string;
+      description?: string;
+      created?: string;
+      updated?: string;
+      enabled?: boolean;
     };
+    EmployeeDTO: {
+      id?: number;
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+      start_date?: string;
+      created?: string;
+      updated?: string;
+    };
+    ProjectDTO: {
+      id?: number;
+      name: string;
+      description?: string;
+      startDate?: string;
+      endDate?: string;
+      customer?: components["schemas"]["CustomerDTO"];
+      managingEmployee?: components["schemas"]["EmployeeDTO"];
+      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      created?: string;
+      updated?: string;
+    };
+    TimesheetDTO: {
+      id?: number;
+      name: string;
+      description?: string;
+      allocation?: number;
+      project?: components["schemas"]["ProjectDTO"];
+      employee?: components["schemas"]["EmployeeDTO"];
+      created?: string;
+      updated?: string;
+    };
+  };
 }
 
 export interface operations {
-    getAllProject: {
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['Project'][];
-                };
-            };
+  updateTimesheetForId: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["TimesheetDTO"];
         };
+      };
     };
-    updateProjectForId: {
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['ProjectDTO'];
-                };
-            };
-        };
-        requestBody: {
-            content: {
-                'application/json': components['schemas']['ProjectDTO'];
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TimesheetDTO"];
+      };
     };
-    createProject: {
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['ProjectDTO'];
-                };
-            };
+  };
+  createTimesheet: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["TimesheetDTO"];
         };
-        requestBody: {
-            content: {
-                'application/json': components['schemas']['ProjectDTO'];
-            };
-        };
+      };
     };
-    updateEmployeeForId: {
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['EmployeeDTO'];
-                };
-            };
-        };
-        requestBody: {
-            content: {
-                'application/json': components['schemas']['EmployeeDTO'];
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TimesheetDTO"];
+      };
     };
-    createEmployee: {
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['EmployeeDTO'];
-                };
-            };
+  };
+  getAllProjects: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ProjectDTO"][];
         };
-        requestBody: {
-            content: {
-                'application/json': components['schemas']['EmployeeDTO'];
-            };
-        };
+      };
     };
-    updateCustomerForId: {
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['CustomerDTO'];
-                };
-            };
+  };
+  updateProjectForId: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ProjectDTO"];
         };
-        requestBody: {
-            content: {
-                'application/json': components['schemas']['CustomerDTO'];
-            };
-        };
+      };
     };
-    createCustomer: {
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['CustomerDTO'];
-                };
-            };
-        };
-        requestBody: {
-            content: {
-                'application/json': components['schemas']['CustomerDTO'];
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProjectDTO"];
+      };
     };
-    getCustomerForId: {
-        parameters: {
-            path: {
-                projectId: number;
-            };
+  };
+  createProject: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ProjectDTO"];
         };
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['ProjectDTO'];
-                };
-            };
-        };
+      };
     };
-    deleteCustomerForId: {
-        parameters: {
-            path: {
-                projectId: number;
-            };
-        };
-        responses: {
-            /** OK */
-            200: unknown;
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProjectDTO"];
+      };
     };
-    getCustomerForId_1: {
-        parameters: {
-            path: {
-                employeeId: number;
-            };
+  };
+  getAllEmployees: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["EmployeeDTO"][];
         };
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['EmployeeDTO'];
-                };
-            };
-        };
+      };
     };
-    deleteCustomerForId_1: {
-        parameters: {
-            path: {
-                employeeId: number;
-            };
+  };
+  updateEmployeeForId: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["EmployeeDTO"];
         };
-        responses: {
-            /** OK */
-            200: unknown;
-        };
+      };
     };
-    getCustomerForId_2: {
-        parameters: {
-            path: {
-                customerId: number;
-            };
-        };
-        responses: {
-            /** OK */
-            200: {
-                content: {
-                    '*/*': components['schemas']['CustomerDTO'];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmployeeDTO"];
+      };
     };
-    DeleteCustomerForId: {
-        parameters: {
-            path: {
-                customerId: number;
-            };
+  };
+  createEmployee: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["EmployeeDTO"];
         };
-        responses: {
-            /** OK */
-            200: unknown;
-        };
+      };
     };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmployeeDTO"];
+      };
+    };
+  };
+  getAllCustomers: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["CustomerDTO"][];
+        };
+      };
+    };
+  };
+  updateCustomerForId: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["CustomerDTO"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CustomerDTO"];
+      };
+    };
+  };
+  createCustomer: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["CustomerDTO"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CustomerDTO"];
+      };
+    };
+  };
+  getTimesheetForId: {
+    parameters: {
+      path: {
+        timesheetId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["TimesheetDTO"];
+        };
+      };
+    };
+  };
+  deleteTimesheetForId: {
+    parameters: {
+      path: {
+        timesheetId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: unknown;
+    };
+  };
+  getProjectForId: {
+    parameters: {
+      path: {
+        projectId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ProjectDTO"];
+        };
+      };
+    };
+  };
+  deleteProjectForId: {
+    parameters: {
+      path: {
+        projectId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: unknown;
+    };
+  };
+  getEmployeeForId: {
+    parameters: {
+      path: {
+        employeeId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["EmployeeDTO"];
+        };
+      };
+    };
+  };
+  deleteEmployeeForId: {
+    parameters: {
+      path: {
+        employeeId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: unknown;
+    };
+  };
+  getCustomerForId: {
+    parameters: {
+      path: {
+        customerId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["CustomerDTO"];
+        };
+      };
+    };
+  };
+  deleteCustomerForId: {
+    parameters: {
+      path: {
+        customerId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: unknown;
+    };
+  };
 }
 
 export interface external {}
