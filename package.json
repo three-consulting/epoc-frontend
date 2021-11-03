@@ -8,7 +8,8 @@
         "start": "next start",
         "lint": "next lint",
         "type-check": "tsc",
-        "postinstall": "husky install"
+        "postinstall": "husky install",
+        "types": "yarn openapi-typescript http://localhost:8080/docs --output lib/types/api.ts"
     },
     "dependencies": {
         "@chakra-ui/icons": "^1.0.15",
@@ -26,6 +27,7 @@
     "devDependencies": {
         "@commitlint/cli": "^13.1.0",
         "@commitlint/config-conventional": "^13.1.0",
+        "@types/faker": "^5.5.8",
         "@types/react": "17.0.19",
         "@typescript-eslint/eslint-plugin": "^4.30.0",
         "@typescript-eslint/parser": "^4.30.0",
@@ -37,7 +39,9 @@
         "eslint-plugin-prettier": "^4.0.0",
         "eslint-plugin-react": "^7.25.1",
         "eslint-plugin-react-hooks": "^4.2.0",
+        "faker": "^5.5.3",
         "husky": "^7.0.2",
+        "openapi-typescript": "^4.0.2",
         "prettier": "^2.3.2",
         "typescript": "4.3.5"
     }

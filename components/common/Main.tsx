@@ -33,11 +33,11 @@ function Main({ children }: MainProps): JSX.Element {
             marginRight="auto"
             paddingTop="1rem"
             paddingBottom="1rem"
-            width={['95vw', '75vw', '62.5vw', '50vw']}
+            width={['95vw', '75vw', '62.5vw', '70vw']}
         >
-            <Flex flexDirection="row" justifyContent="space-around">
+            <Flex flexDirection="row" alignContent="center" justifyContent="center">
                 <LeftNav></LeftNav>
-                <Box>{children}</Box>
+                <Box minWidth="40vw">{children}</Box>
             </Flex>
         </Box>
     );
