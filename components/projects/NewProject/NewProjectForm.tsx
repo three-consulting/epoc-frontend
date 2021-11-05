@@ -10,11 +10,30 @@ type NewProjectFormProps = {
 };
 function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initialState, init);
-    /*
-    const handleCustomerChange = (e: React.SyntheticEvent) => {
+
+    const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
+        const id = e.currentTarget.value;
+        if (id) {
+            const customer = customers?.find((el) => el.id === Number(id));
+            dispatch({ type: ActionType.SET_CUSTOMER, payload: { customer: customer } });
+        }
     };
-    */
+
+    const handleEmployeeChange = (e: React.FormEvent<HTMLSelectElement>) => {
+        e.preventDefault();
+        const id = e.currentTarget.value;
+        if (id) {
+            const employee = employees?.find((el) => el.id === Number(id));
+            dispatch({ type: ActionType.SET_MANAGING_EMPLOYEE, payload: { managingEmployee: employee } });
+        }
+    };
+
+    const handleSumbit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log(state);
+    };
+
     return (
         <Flex
             flexDirection="column"
@@ -24,8 +43,13 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
             borderRadius="0.2rem"
             padding="1rem 1rem"
         >
-            <form>
-                <FormControl>
+            <form
+                onSubmit={(e) => {
+                    dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.LOADING } });
+                    handleSumbit(e);
+                }}
+            >
+                <FormControl isRequired={true}>
                     <FormLabel>Project name</FormLabel>
                     <Input
                         value={state.name ? state.name : ''}
@@ -65,13 +89,25 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                         }
                     ></Input>
                 </FormControl>
-                <FormControl>
+                <FormControl isRequired={true}>
                     <FormLabel>Customer</FormLabel>
-                    <Select placeholder="Select customer">
+                    <Select onChange={handleCustomerChange} placeholder="Select customer">
                         {customers?.map((el, idx) => {
                             return (
                                 <option key={idx} value={el.id}>
                                     {el.name}
+                                </option>
+                            );
+                        })}
+                    </Select>
+                </FormControl>
+                <FormControl isRequired={true}>
+                    <FormLabel>Managing employee</FormLabel>
+                    <Select onChange={handleEmployeeChange} placeholder="Select employee">
+                        {employees?.map((el, idx) => {
+                            return (
+                                <option key={idx} value={el.id}>
+                                    {`${el.first_name} ${el.last_name}`}
                                 </option>
                             );
                         })}
