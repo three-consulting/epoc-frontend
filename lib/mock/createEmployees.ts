@@ -15,7 +15,7 @@ const createEmployee = (): components['schemas']['EmployeeDTO'] => {
         email: `${first_name}.${last_name}@acme.com`,
         start_date: start_date,
         created: start_date,
-        updated: undefined,
+        updated: start_date,
     };
 
     return employee;
