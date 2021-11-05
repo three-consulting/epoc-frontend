@@ -9,7 +9,10 @@ interface EmployeeResponse {
 }
 
 function useEmployees(): EmployeeResponse {
-    const endpoint = process.env.NEXT_PUBLIC_API_URL + '/employee';
+    // actual endpoint
+    // const endpoint = process.env.NEXT_PUBLIC_API_URL + '/employee';
+    // mock endpoint
+    const endpoint = 'http://localhost:3000/api/employees';
     const { data: employees, error } = useSWR<components['schemas']['EmployeeDTO'][], Error>(endpoint, fetcher);
 
     return { employees, isLoading: !employees && !error, isError: error };

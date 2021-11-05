@@ -7,19 +7,6 @@ export enum FormStatus {
     SUCCESS = 'SUCCESS',
 }
 
-/*
-interface FormState {
-    name: components['schemas']['ProjectDTO']['name'];
-    description: components['schemas']['Project']['description'];
-    startDate: components['schemas']['Project']['startDate'];
-    endDate: components['schemas']['Project']['endDate'];
-    managingEmployee: components['schemas']['Project']['managingEmployee'];
-    customer: components['schemas']['Project']['customer'];
-    status: components['schemas']['Project']['status'];
-    formStatus: FormStatus;
-}
-*/
-
 type FormState = components['schemas']['ProjectDTO'] & { formStatus: FormStatus };
 
 export enum ActionType {
