@@ -1,0 +1,5 @@
+name: housekeeping
+on: [push]
+jobs:
+    tsc-and-format:
+        runs-on: ubuntu-latest
