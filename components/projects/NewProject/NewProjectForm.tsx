@@ -3,6 +3,7 @@ import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
 import { Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
 import { components } from '@/lib/types/api';
+import { State } from 'swr/dist/types';
 
 type NewProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
@@ -29,10 +30,23 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
         }
     };
 
-    const handleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(state);
-        const data = { foo: 'bar' };
+        // console.log(state);
+        const data = {
+            id: state.id,
+            name: state.name,
+            description: state.description,
+            startDate: state.startDate,
+            endData: state.endDate,
+            customer: { id: state.customer?.id, name: state.customer?.name },
+            managingEmployee: {
+                id: state.managingEmployee?.id,
+                first_name: state.managingEmployee?.first_name,
+                last_name: state.managingEmployee?.last_name,
+                email: state.managingEmployee?.email,
+            },
+        };
         const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
         const res = await fetch(url, {
             method: 'POST',
@@ -56,7 +70,7 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
             <form
                 onSubmit={(e) => {
                     dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.LOADING } });
-                    handleSumbit(e);
+                    handleSubmit(e);
                 }}
             >
                 <FormControl isRequired={true}>

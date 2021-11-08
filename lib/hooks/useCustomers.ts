@@ -10,9 +10,9 @@ interface CustomerResponse {
 
 function useCustomers(): CustomerResponse {
     // mock endpoint
-    const endpoint = 'http://localhost:3000/api/customers';
+    // const endpoint = 'http://localhost:3000/api/customers';
     // actual endpoint
-    // const endpoint = process.env.NEXT_PUBLIC_API_URL + '/customer';
+    const endpoint = process.env.NEXT_PUBLIC_API_URL + '/customer';
     const { data: customers, error } = useSWR<components['schemas']['CustomerDTO'][], Error>(endpoint, fetcher);
 
     return { customers, isLoading: !customers && !error, isError: error };
