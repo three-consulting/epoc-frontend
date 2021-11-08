@@ -54,8 +54,8 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
             body: JSON.stringify(data),
         });
         const placehodler = await res.json();
-        console.log(res.status);
-        console.log(placehodler);
+        // console.log(res.status);
+        // console.log(placehodler);
     };
 
     return (
