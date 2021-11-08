@@ -29,9 +29,19 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
         }
     };
 
-    const handleSumbit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log(state);
+        const data = { foo: 'bar' };
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        const placehodler = await res.json();
+        console.log(res.status);
+        console.log(placehodler);
     };
 
     return (

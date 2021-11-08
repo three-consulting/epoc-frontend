@@ -12,6 +12,7 @@ const New: NextPage = () => {
     const router = useRouter();
     const { customers, isLoading: customerLoading, isError: customerError } = useCustomers();
     const { employees, isLoading: employeeLoading, isError: employeeError } = useEmployees();
+    console.log(employees);
 
     return (
         <Layout>
