@@ -3,7 +3,6 @@ import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
 import { Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
 import { components } from '@/lib/types/api';
-import { State } from 'swr/dist/types';
 
 type NewProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
