@@ -1,8 +1,9 @@
 import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
 import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
-import { Flex } from '@chakra-ui/layout';
+import { Box, Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
 import { components } from '@/lib/types/api';
+import { useRouter } from 'next/router';
 
 type NewProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
@@ -10,6 +11,7 @@ type NewProjectFormProps = {
 };
 function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initialState, init);
+    const router = useRouter();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
 
@@ -33,13 +35,17 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const data = {
+
+        const createProjectRequest: components['schemas']['ProjectDTO'] = {
             id: state.id,
             name: state.name,
             description: state.description,
             startDate: state.startDate,
-            endData: state.endDate,
-            customer: { id: state.customer?.id, name: state.customer?.name },
+            endDate: state.endDate,
+            customer: {
+                id: state.customer?.id,
+                name: state.customer?.name as string,
+            },
             managingEmployee: {
                 id: state.managingEmployee?.id,
                 first_name: state.managingEmployee?.first_name,
@@ -51,9 +57,15 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
         const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
+            body: JSON.stringify(createProjectRequest),
         });
-        const placehodler = await res.json();
+        const placeholder = await res.json();
+        if (placeholder.status == 'ACTIVE' && (res.status == 200 || res.status == 201)) {
+            dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
+            router.push('/projects');
+        } else {
+            dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.ERROR } });
+        }
     };
 
     return (
@@ -139,6 +151,7 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                 <Button colorScheme="blue" type="submit">
                     Submit
                 </Button>
+                {state.formStatus == 'ERROR' ? <Box>Something went wrong!</Box> : <Box></Box>}
             </form>
         </Flex>
     );
