@@ -11,6 +11,8 @@ type NewProjectFormProps = {
 function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initialState, init);
 
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
+
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = e.currentTarget.value;
@@ -45,7 +47,7 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                 email: state.managingEmployee?.email,
             },
         };
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
+
         const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
