@@ -32,7 +32,6 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // console.log(state);
         const data = {
             id: state.id,
             name: state.name,
@@ -54,8 +53,6 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
             body: JSON.stringify(data),
         });
         const placehodler = await res.json();
-        // console.log(res.status);
-        // console.log(placehodler);
     };
 
     return (
