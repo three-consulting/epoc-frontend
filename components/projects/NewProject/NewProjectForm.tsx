@@ -1,8 +1,9 @@
-import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, Select, Text } from '@chakra-ui/react';
 import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
-import { Flex } from '@chakra-ui/layout';
+import { Box, Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
 import { components } from '@/lib/types/api';
+import { useRouter } from 'next/router';
 
 type NewProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
@@ -10,6 +11,9 @@ type NewProjectFormProps = {
 };
 function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initialState, init);
+    const router = useRouter();
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
 
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
@@ -29,9 +33,39 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
         }
     };
 
-    const handleSumbit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(state);
+
+        const createProjectRequest: components['schemas']['ProjectDTO'] = {
+            id: state.id,
+            name: state.name,
+            description: state.description,
+            startDate: state.startDate,
+            endDate: state.endDate,
+            customer: {
+                id: state.customer?.id,
+                name: state.customer?.name as string,
+            },
+            managingEmployee: {
+                id: state.managingEmployee?.id,
+                first_name: state.managingEmployee?.first_name,
+                last_name: state.managingEmployee?.last_name,
+                email: state.managingEmployee?.email,
+            },
+        };
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(createProjectRequest),
+        });
+        const placeholder = await res.json();
+        if (placeholder.status == 'ACTIVE' && (res.status == 200 || res.status == 201)) {
+            dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
+            router.push('/projects');
+        } else {
+            dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.ERROR } });
+        }
     };
 
     return (
@@ -45,8 +79,7 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
         >
             <form
                 onSubmit={(e) => {
-                    dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.LOADING } });
-                    handleSumbit(e);
+                    handleSubmit(e);
                 }}
             >
                 <FormControl isRequired={true}>
@@ -67,7 +100,7 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                         }
                     ></Input>
                 </FormControl>
-                <FormControl>
+                <FormControl isRequired={true}>
                     <FormLabel>Start date</FormLabel>
                     <Input
                         type="date"
@@ -114,9 +147,19 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                     </Select>
                 </FormControl>
                 <br />
-                <Button colorScheme="blue" type="submit">
+                <Button
+                    colorScheme="blue"
+                    type="submit"
+                    onClick={() =>
+                        dispatch({
+                            type: ActionType.SET_FORM_STATUS,
+                            payload: { formStatus: FormStatus.LOADING },
+                        })
+                    }
+                >
                     Submit
                 </Button>
+                {state.formStatus == 'ERROR' ? <Text color="red.500">Something went wrong!</Text> : <Box></Box>}
             </form>
         </Flex>
     );
