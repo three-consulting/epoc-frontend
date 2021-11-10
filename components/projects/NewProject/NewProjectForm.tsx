@@ -1,4 +1,4 @@
-import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, Select, Text } from '@chakra-ui/react';
 import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
 import { Box, Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
@@ -79,7 +79,6 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
         >
             <form
                 onSubmit={(e) => {
-                    dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.LOADING } });
                     handleSubmit(e);
                 }}
             >
@@ -101,7 +100,7 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                         }
                     ></Input>
                 </FormControl>
-                <FormControl>
+                <FormControl isRequired={true}>
                     <FormLabel>Start date</FormLabel>
                     <Input
                         type="date"
@@ -148,10 +147,19 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                     </Select>
                 </FormControl>
                 <br />
-                <Button colorScheme="blue" type="submit">
+                <Button
+                    colorScheme="blue"
+                    type="submit"
+                    onClick={() =>
+                        dispatch({
+                            type: ActionType.SET_FORM_STATUS,
+                            payload: { formStatus: FormStatus.LOADING },
+                        })
+                    }
+                >
                     Submit
                 </Button>
-                {state.formStatus == 'ERROR' ? <Box>Something went wrong!</Box> : <Box></Box>}
+                {state.formStatus == 'ERROR' ? <Text color="red.500">Something went wrong!</Text> : <Box></Box>}
             </form>
         </Flex>
     );
