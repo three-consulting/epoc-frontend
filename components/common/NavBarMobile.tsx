@@ -3,7 +3,7 @@ import { Breadcrumb, BreadcrumbItem, Box, Text, VStack } from '@chakra-ui/react'
 import { signIn, signOut, useSession } from 'next-auth/client';
 
 function NavBarMobile(): JSX.Element {
-    const [session, loading] = useSession();
+    const [session] = useSession();
     return (
         <nav>
             <Breadcrumb padding="0.5rem" separator="">

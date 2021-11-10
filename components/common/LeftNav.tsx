@@ -4,7 +4,7 @@ import { signIn, signOut, useSession } from 'next-auth/client';
 import Link from 'next/link';
 
 function LeftNav(): JSX.Element {
-    const [session, loading] = useSession();
+    const [session] = useSession();
     return (
         <Breadcrumb padding="0.5rem" separator="" minWidth="15rem">
             <Flex flexDirection="column" justifyContent="space-between">
