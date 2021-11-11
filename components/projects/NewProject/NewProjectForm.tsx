@@ -4,6 +4,7 @@ import { Box, Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
 import { components } from '@/lib/types/api';
 import { useRouter } from 'next/router';
+import * as fetch from '@/lib/utils/fetch';
 
 type NewProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
@@ -54,17 +55,13 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
             },
         };
 
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(createProjectRequest),
-        });
-        const placeholder = await res.json();
-        if (placeholder.status == 'ACTIVE' && (res.status == 200 || res.status == 201)) {
+        try {
+            await fetch.post(url, createProjectRequest);
             dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
             router.push('/projects');
-        } else {
+        } catch (error) {
             dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.ERROR } });
+            console.error(error);
         }
     };
 

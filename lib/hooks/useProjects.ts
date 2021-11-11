@@ -11,6 +11,7 @@ interface ProjectResponse {
 function useProjects(): ProjectResponse {
     const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/project`;
     const { data: projects, error } = useSWR<components['schemas']['ProjectDTO'][], Error>(endpoint, fetch.get);
+    console.log(projects);
 
     return { projects, isLoading: !projects && !error, isError: error };
 }
