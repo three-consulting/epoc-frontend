@@ -16,7 +16,7 @@ export default NextAuth({
         signingKey: process.env.JWT_SIGNING_PRIVATE_KEY,
     },
     callbacks: {
-        async jwt(token, user, account, profile, isNewUser) {
+        async jwt(token) {
             return token;
         },
         async session(session, token) {

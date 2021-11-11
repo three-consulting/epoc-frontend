@@ -5,7 +5,6 @@ import { Button } from '@chakra-ui/react';
 import Layout from '@/components/common/Layout';
 import useProjects from '@/lib/hooks/useProjects';
 import ProjectTable from '@/components/projects/ProjectTable';
-import NewProject from '@/components/projects/NewProject/NewCustomer';
 import { useRouter } from 'next/dist/client/router';
 
 const Projects: NextPage = () => {

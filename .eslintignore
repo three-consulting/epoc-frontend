@@ -1,2 +1,3 @@
 lib/types/api.ts
+lib/utils/fetcher.ts
 README.md
