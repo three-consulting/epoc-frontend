@@ -6,16 +6,18 @@ import NewProjectForm from '@/components/projects/NewProject/NewProjectForm';
 import useCustomers from '@/lib/hooks/useCustomers';
 import useEmployees from '@/lib/hooks/useEmployees';
 import ErrorAlert from '@/components/common/ErrorAlert';
+import Loading from '@/components/common/Loading';
 
 const New: NextPage = () => {
-    const { customers, isError: customerError } = useCustomers();
-    const { employees, isError: employeeError } = useEmployees();
+    const { customers, isError: customerError, isLoading: customersLoading } = useCustomers();
+    const { employees, isError: employeeError, isLoading: employeesLoading } = useEmployees();
 
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">
                 New project
             </Heading>
+            {(customersLoading || employeesLoading) && <Loading></Loading>}
             {(customerError || employeeError) && (
                 <ErrorAlert
                     title="Error loading data"
