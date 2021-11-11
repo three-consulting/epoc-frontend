@@ -6,9 +6,10 @@ import Layout from '@/components/common/Layout';
 import useProjects from '@/lib/hooks/useProjects';
 import ProjectTable from '@/components/projects/ProjectTable';
 import { useRouter } from 'next/dist/client/router';
+import ErrorAlert from '@/components/common/ErrorAlert';
 
 const Projects: NextPage = () => {
-    const { projects } = useProjects();
+    const { projects, isError } = useProjects();
     const router = useRouter();
 
     return (
@@ -16,6 +17,7 @@ const Projects: NextPage = () => {
             <Heading fontWeight="black" margin="1rem 0rem">
                 Projects
             </Heading>
+            {isError && <ErrorAlert title={isError.name} message={isError.name}></ErrorAlert>}
             {projects && projects?.length > 0 ? (
                 <ProjectTable projects={projects}></ProjectTable>
             ) : (
