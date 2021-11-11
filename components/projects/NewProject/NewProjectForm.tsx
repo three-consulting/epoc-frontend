@@ -1,10 +1,11 @@
-import { Button, FormControl, FormLabel, Input, Select, Text } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
 import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
 import { Box, Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
 import { components } from '@/lib/types/api';
 import { useRouter } from 'next/router';
 import * as fetch from '@/lib/utils/fetch';
+import ErrorAlert from '@/components/common/ErrorAlert';
 
 type NewProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
@@ -74,6 +75,7 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
             borderRadius="0.2rem"
             padding="1rem 1rem"
         >
+            {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
             <form
                 onSubmit={(e) => {
                     handleSubmit(e);
@@ -156,7 +158,6 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                 >
                     Submit
                 </Button>
-                {state.formStatus == 'ERROR' ? <Text color="red.500">Something went wrong!</Text> : <Box></Box>}
             </form>
         </Flex>
     );
