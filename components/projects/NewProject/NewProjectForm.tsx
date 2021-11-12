@@ -1,4 +1,18 @@
-import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import {
+    Button,
+    FormControl,
+    FormLabel,
+    Input,
+    Select,
+    useDisclosure,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+} from '@chakra-ui/react';
 import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
 import { Box, Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
@@ -14,6 +28,7 @@ type NewProjectFormProps = {
 function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initialState, init);
     const router = useRouter();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
 
@@ -121,18 +136,38 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                         }
                     ></Input>
                 </FormControl>
-                <FormControl isRequired={true}>
-                    <FormLabel>Customer</FormLabel>
-                    <Select onChange={handleCustomerChange} placeholder="Select customer">
-                        {customers?.map((el, idx) => {
-                            return (
-                                <option key={idx} value={el.id}>
-                                    {el.name}
-                                </option>
-                            );
-                        })}
-                    </Select>
-                </FormControl>
+                <Flex flexDirection="row" justifyContent="center">
+                    <FormControl isRequired={true}>
+                        <FormLabel>Customer</FormLabel>
+                        <Select onChange={handleCustomerChange} placeholder="Select customer">
+                            {customers?.map((el, idx) => {
+                                return (
+                                    <option key={idx} value={el.id}>
+                                        {el.name}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </FormControl>
+                    <>
+                        <Button onClick={onOpen}>Add Customer</Button>
+                        <Modal isOpen={isOpen} onClose={onClose}>
+                            <ModalOverlay />
+                            <ModalContent>
+                                <ModalHeader>Modal Title</ModalHeader>
+                                <ModalCloseButton />
+                                <ModalBody>Add new project here</ModalBody>
+
+                                <ModalFooter>
+                                    <Button colorScheme="blue" mr={3} onClick={onClose}>
+                                        Close
+                                    </Button>
+                                    <Button variant="ghost">Secondary Action</Button>
+                                </ModalFooter>
+                            </ModalContent>
+                        </Modal>
+                    </>
+                </Flex>
                 <FormControl isRequired={true}>
                     <FormLabel>Managing employee</FormLabel>
                     <Select onChange={handleEmployeeChange} placeholder="Select employee">
