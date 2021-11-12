@@ -1,7 +1,7 @@
 version: '3'
 services:
     back:
-        image: ghcr.io/three-consulting/epoc:latest
+        image: ghcr.io/three-consulting/epoc-backend:latest
         ports:
             - '8080:8080'
         environment:
