@@ -1,18 +1,4 @@
-import {
-    Button,
-    FormControl,
-    FormLabel,
-    Input,
-    Select,
-    useDisclosure,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-} from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
 import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
 import { Box, Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
@@ -20,6 +6,7 @@ import { components } from '@/lib/types/api';
 import { useRouter } from 'next/router';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
+import NewCustomer from '@/components/projects/NewProject/NewCustomer';
 
 type NewProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
@@ -28,7 +15,6 @@ type NewProjectFormProps = {
 function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initialState, init);
     const router = useRouter();
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
 
@@ -77,7 +63,6 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
             router.push('/projects');
         } catch (error) {
             dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.ERROR } });
-            console.error(error);
         }
     };
 
@@ -139,34 +124,19 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                 <Flex flexDirection="row" justifyContent="center">
                     <FormControl isRequired={true}>
                         <FormLabel>Customer</FormLabel>
-                        <Select onChange={handleCustomerChange} placeholder="Select customer">
-                            {customers?.map((el, idx) => {
-                                return (
-                                    <option key={idx} value={el.id}>
-                                        {el.name}
-                                    </option>
-                                );
-                            })}
-                        </Select>
+                        <Flex flexDirection="row" justifyContent="space-between">
+                            <Select onChange={handleCustomerChange} placeholder="Select customer" marginRight="0.3rem">
+                                {customers?.map((el, idx) => {
+                                    return (
+                                        <option key={idx} value={el.id}>
+                                            {el.name}
+                                        </option>
+                                    );
+                                })}
+                            </Select>
+                            <NewCustomer />
+                        </Flex>
                     </FormControl>
-                    <>
-                        <Button onClick={onOpen}>Add Customer</Button>
-                        <Modal isOpen={isOpen} onClose={onClose}>
-                            <ModalOverlay />
-                            <ModalContent>
-                                <ModalHeader>Modal Title</ModalHeader>
-                                <ModalCloseButton />
-                                <ModalBody>Add new project here</ModalBody>
-
-                                <ModalFooter>
-                                    <Button colorScheme="blue" mr={3} onClick={onClose}>
-                                        Close
-                                    </Button>
-                                    <Button variant="ghost">Secondary Action</Button>
-                                </ModalFooter>
-                            </ModalContent>
-                        </Modal>
-                    </>
                 </Flex>
                 <FormControl isRequired={true}>
                     <FormLabel>Managing employee</FormLabel>
