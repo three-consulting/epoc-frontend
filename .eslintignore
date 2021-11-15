@@ -1,5 +1,3 @@
 lib/types/api.ts
 lib/utils/fetcher.ts
-pages/_document.tsx
-components/common/ClientOnlyPortal.ts
 README.md

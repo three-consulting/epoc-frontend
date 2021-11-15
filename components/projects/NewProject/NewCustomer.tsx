@@ -24,11 +24,17 @@ type StateType = {
     name: string;
     description: string;
     formStatus: FormStatus;
+    errorMessage: string;
 };
 
 function NewCustomer(): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [state, setState] = useState<StateType>({ name: '', description: '', formStatus: FormStatus.IDLE });
+    const [state, setState] = useState<StateType>({
+        name: '',
+        description: '',
+        formStatus: FormStatus.IDLE,
+        errorMessage: '',
+    });
     const url = `${process.env.NEXT_PUBLIC_API_URL}/customer`;
     const { mutate } = useSWRConfig();
 
@@ -39,14 +45,29 @@ function NewCustomer(): JSX.Element {
             name: state.name,
             description: state.description,
         };
-        setState({ name: state.name, description: state.description, formStatus: FormStatus.LOADING });
+        setState({
+            name: state.name,
+            description: state.description,
+            formStatus: FormStatus.LOADING,
+            errorMessage: '',
+        });
         try {
             await fetch.post(url, createCustomerRequest);
             mutate(url);
-            setState({ name: state.name, description: state.description, formStatus: FormStatus.SUCCESS });
+            setState({
+                name: state.name,
+                description: state.description,
+                formStatus: FormStatus.SUCCESS,
+                errorMessage: '',
+            });
             onClose();
         } catch (error) {
-            setState({ name: state.name, description: state.description, formStatus: FormStatus.ERROR });
+            setState({
+                name: state.name,
+                description: state.description,
+                formStatus: FormStatus.ERROR,
+                errorMessage: `${error}`,
+            });
         }
     };
 
@@ -68,10 +89,10 @@ function NewCustomer(): JSX.Element {
                                         name: e.target.value,
                                         description: state.description,
                                         formStatus: FormStatus.IDLE,
+                                        errorMessage: '',
                                     })
                                 }
                             />
-                            {console.log(state)}
                         </FormControl>
 
                         <FormControl mt={4}>
@@ -83,12 +104,13 @@ function NewCustomer(): JSX.Element {
                                         name: state.name,
                                         description: e.target.value,
                                         formStatus: FormStatus.IDLE,
+                                        errorMessage: '',
                                     })
                                 }
                             />
-                            {console.log(state)}
                         </FormControl>
                         {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
+                        {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
                     </ModalBody>
 
                     <ModalFooter>

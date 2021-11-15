@@ -126,10 +126,10 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                         <FormLabel>Customer</FormLabel>
                         <Flex flexDirection="row" justifyContent="space-between">
                             <Select onChange={handleCustomerChange} placeholder="Select customer" marginRight="0.3rem">
-                                {customers?.map((el, idx) => {
+                                {customers?.map((customer, idx) => {
                                     return (
-                                        <option key={idx} value={el.id}>
-                                            {el.name}
+                                        <option key={idx} value={customer.id}>
+                                            {customer.name}
                                         </option>
                                     );
                                 })}
