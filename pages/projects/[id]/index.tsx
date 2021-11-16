@@ -4,7 +4,6 @@ import type { NextPage } from 'next';
 import useProjects from '@/lib/hooks/useProjects';
 import { useRouter } from 'next/dist/client/router';
 import ProjectDetail from '@/components/projects/ProjectDetail';
-import { Project } from 'lib/types/common';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 
