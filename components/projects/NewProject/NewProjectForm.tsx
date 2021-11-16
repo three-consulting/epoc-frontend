@@ -6,6 +6,7 @@ import { components } from '@/lib/types/api';
 import { useRouter } from 'next/router';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
+import NewCustomer from '@/components/projects/NewProject/NewCustomer';
 
 type NewProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
@@ -62,7 +63,6 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
             router.push('/projects');
         } catch (error) {
             dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.ERROR } });
-            console.error(error);
         }
     };
 
@@ -121,18 +121,23 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                         }
                     ></Input>
                 </FormControl>
-                <FormControl isRequired={true}>
-                    <FormLabel>Customer</FormLabel>
-                    <Select onChange={handleCustomerChange} placeholder="Select customer">
-                        {customers?.map((el, idx) => {
-                            return (
-                                <option key={idx} value={el.id}>
-                                    {el.name}
-                                </option>
-                            );
-                        })}
-                    </Select>
-                </FormControl>
+                <Flex flexDirection="row" justifyContent="center">
+                    <FormControl isRequired={true}>
+                        <FormLabel>Customer</FormLabel>
+                        <Flex flexDirection="row" justifyContent="space-between">
+                            <Select onChange={handleCustomerChange} placeholder="Select customer" marginRight="0.3rem">
+                                {customers?.map((customer, idx) => {
+                                    return (
+                                        <option key={idx} value={customer.id}>
+                                            {customer.name}
+                                        </option>
+                                    );
+                                })}
+                            </Select>
+                            <NewCustomer />
+                        </Flex>
+                    </FormControl>
+                </Flex>
                 <FormControl isRequired={true}>
                     <FormLabel>Managing employee</FormLabel>
                     <Select onChange={handleEmployeeChange} placeholder="Select employee">
