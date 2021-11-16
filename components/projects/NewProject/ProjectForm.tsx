@@ -8,11 +8,12 @@ import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import NewCustomer from '@/components/projects/NewProject/NewCustomer';
 
-type NewProjectFormProps = {
+type ProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
     customers?: components['schemas']['CustomerDTO'][];
+    method?: string;
 };
-function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Element {
+function ProjectForm({ employees, customers, method }: ProjectFormProps): JSX.Element {
     const [state, dispatch] = useReducer(reducer, initialState, init);
     const router = useRouter();
 
@@ -58,9 +59,17 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
         };
 
         try {
-            await fetch.post(url, createProjectRequest);
-            dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
-            router.push('/projects');
+            if (method === 'POST') {
+                await fetch.post(url, createProjectRequest);
+                dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
+                router.push('/projects');
+            } else if (method === 'PUT') {
+                const { id } = router.query;
+                createProjectRequest.id = parseInt(`${id}`);
+                await fetch.put(url, createProjectRequest);
+                dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
+                router.push(`/projects/${id}`);
+            }
         } catch (error) {
             dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.ERROR } });
         }
@@ -168,4 +177,4 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
     );
 }
 
-export default NewProjectForm;
+export default ProjectForm;
