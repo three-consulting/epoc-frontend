@@ -46,26 +46,20 @@ function NewCustomer(): JSX.Element {
             description: state.description,
         };
         setState({
-            name: state.name,
-            description: state.description,
+            ...state,
             formStatus: FormStatus.LOADING,
-            errorMessage: '',
         });
         try {
             await fetch.post(url, createCustomerRequest);
             mutate(url);
             setState({
-                name: state.name,
-                description: state.description,
+                ...state,
                 formStatus: FormStatus.SUCCESS,
-                errorMessage: '',
             });
             onClose();
         } catch (error) {
             setState({
-                name: state.name,
-                description: state.description,
-                formStatus: FormStatus.ERROR,
+                ...state,
                 errorMessage: `${error}`,
             });
         }
@@ -86,10 +80,8 @@ function NewCustomer(): JSX.Element {
                                 placeholder="Customer Name"
                                 onChange={(e) =>
                                     setState({
+                                        ...state,
                                         name: e.target.value,
-                                        description: state.description,
-                                        formStatus: FormStatus.IDLE,
-                                        errorMessage: '',
                                     })
                                 }
                             />
@@ -101,10 +93,8 @@ function NewCustomer(): JSX.Element {
                                 placeholder="Description"
                                 onChange={(e) =>
                                     setState({
-                                        name: state.name,
+                                        ...state,
                                         description: e.target.value,
-                                        formStatus: FormStatus.IDLE,
-                                        errorMessage: '',
                                     })
                                 }
                             />
