@@ -1,4 +1,3 @@
-import { useFocusOnPointerDown } from '@chakra-ui/hooks';
 import useSWR from 'swr';
 import * as fetch from '../utils/fetch';
 
