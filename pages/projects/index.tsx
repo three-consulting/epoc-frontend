@@ -8,9 +8,10 @@ import ProjectTable from '@/components/projects/ProjectTable';
 import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
+import { components } from '@/lib/types/api';
 
 const Projects: NextPage = () => {
-    const { projects, isError, isLoading } = useProjects();
+    const { projects, isError, isLoading } = useProjects<components['schemas']['ProjectDTO'][]>();
     const router = useRouter();
 
     return (
