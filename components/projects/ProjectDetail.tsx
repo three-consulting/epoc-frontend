@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/layout';
+import { Box, Flex, Heading } from '@chakra-ui/layout';
 import React from 'react';
 import { components } from '@/lib/types/api';
 
@@ -8,19 +8,25 @@ type ProjectProps = {
 
 function ProjectDetail({ project }: ProjectProps): JSX.Element {
     return (
-        <Flex flexDirection="column">
-            <Box>Project id: {project.id}</Box>
-            <Box>Project name: {project.name}</Box>
-            <Box>Created: {project.created}</Box>
-            <Box>Customer: {project.customer?.id}</Box>
-            <Box>Customer Name: {project.customer?.name}</Box>
-            <Box>Description: {project.description}</Box>
-            <Box>End date: {project.endDate}</Box>
-            <Box>Managing employee: {project.managingEmployee?.id}</Box>
-            <Box>Managing employee Name: {project.managingEmployee?.first_name}</Box>
-            <Box>Start date: {project.startDate}</Box>
-            <Box>Project status: {project.status}</Box>
-            <Box>Updated: {project.updated}</Box>
+        <Flex
+            flexDirection="column"
+            backgroundColor="white"
+            border="1px solid"
+            borderColor="gray.400"
+            borderRadius="0.2rem"
+            padding="1rem 1rem"
+        >
+            <Heading>
+                <Box>{project.name}</Box>
+            </Heading>
+            <Flex>Description: {project.description}</Flex>
+            <Flex>Customer: {project.customer?.name}</Flex>
+            <Flex>Start date: {project.startDate}</Flex>
+            <Flex>End date: {project.endDate}</Flex>
+            <Flex>
+                Managing employee: {project.managingEmployee?.first_name} {project.managingEmployee?.last_name}
+            </Flex>
+            <Flex>Project status: {project.status}</Flex>
         </Flex>
     );
 }
