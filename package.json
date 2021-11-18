@@ -21,7 +21,6 @@
         "aws-amplify": "^4.3.7",
         "framer-motion": "^4.1.17",
         "next": "^12.0.2",
-        "next-auth": "^3.29.0",
         "react": "17.0.2",
         "react-dom": "17.0.2",
         "react-responsive": "^9.0.0-beta.4",
