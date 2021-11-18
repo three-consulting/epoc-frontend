@@ -4,12 +4,14 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
+        "dev-local": "concurrently yarn:start-server yarn:dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
         "type-check": "tsc",
         "postinstall": "husky install",
-        "types": "yarn openapi-typescript http://localhost:8080/docs --output lib/types/api.ts"
+        "types": "yarn openapi-typescript http://localhost:8080/docs --output lib/types/api.ts",
+        "start-server": "docker-compose -f epoc-compose.yaml up"
     },
     "dependencies": {
         "@chakra-ui/icons": "^1.0.15",
@@ -32,6 +34,7 @@
         "@types/react-dom": "^17.0.11",
         "@typescript-eslint/eslint-plugin": "^4.30.0",
         "@typescript-eslint/parser": "^4.30.0",
+        "concurrently": "^6.4.0",
         "eslint": "7.32.0",
         "eslint-config-next": "11.1.0",
         "eslint-config-prettier": "^8.3.0",
