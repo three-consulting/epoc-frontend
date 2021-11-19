@@ -12,9 +12,14 @@ type ProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
     customers?: components['schemas']['CustomerDTO'][];
     method?: string;
+    project?: components['schemas']['ProjectDTO'];
 };
-function ProjectForm({ employees, customers, method }: ProjectFormProps): JSX.Element {
-    const [state, dispatch] = useReducer(reducer, initialState, init);
+function ProjectForm({ employees, customers, method, project }: ProjectFormProps): JSX.Element {
+    const [state, dispatch] = useReducer(
+        reducer,
+        project ? { ...project, formStatus: FormStatus.IDLE } : initialState,
+        init,
+    );
     const router = useRouter();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
@@ -134,7 +139,12 @@ function ProjectForm({ employees, customers, method }: ProjectFormProps): JSX.El
                     <FormControl isRequired={true}>
                         <FormLabel>Customer</FormLabel>
                         <Flex flexDirection="row" justifyContent="space-between">
-                            <Select onChange={handleCustomerChange} placeholder="Select customer" marginRight="0.3rem">
+                            <Select
+                                onChange={handleCustomerChange}
+                                placeholder="Select customer"
+                                marginRight="0.3rem"
+                                value={state.customer?.id}
+                            >
                                 {customers?.map((customer, idx) => {
                                     return (
                                         <option key={idx} value={customer.id}>
@@ -149,7 +159,11 @@ function ProjectForm({ employees, customers, method }: ProjectFormProps): JSX.El
                 </Flex>
                 <FormControl isRequired={true}>
                     <FormLabel>Managing employee</FormLabel>
-                    <Select onChange={handleEmployeeChange} placeholder="Select employee">
+                    <Select
+                        onChange={handleEmployeeChange}
+                        placeholder="Select employee"
+                        value={state.managingEmployee?.id}
+                    >
                         {employees?.map((el, idx) => {
                             return (
                                 <option key={idx} value={el.id}>
