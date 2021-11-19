@@ -186,6 +186,9 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
                 >
                     Submit
                 </Button>
+                <Button colorScheme="gray" type="button" marginLeft="0.5rem" onClick={() => router.push('/projects')}>
+                    Cancel
+                </Button>
             </form>
         </Flex>
     );
