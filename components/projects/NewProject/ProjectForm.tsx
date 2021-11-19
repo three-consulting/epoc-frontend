@@ -8,12 +8,18 @@ import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import NewCustomer from '@/components/projects/NewProject/NewCustomer';
 
-type NewProjectFormProps = {
+type ProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
     customers?: components['schemas']['CustomerDTO'][];
+    method?: string;
+    project?: components['schemas']['ProjectDTO'];
 };
-function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Element {
-    const [state, dispatch] = useReducer(reducer, initialState, init);
+function ProjectForm({ employees, customers, method, project }: ProjectFormProps): JSX.Element {
+    const [state, dispatch] = useReducer(
+        reducer,
+        project ? { ...project, formStatus: FormStatus.IDLE } : initialState,
+        init,
+    );
     const router = useRouter();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
@@ -58,9 +64,17 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
         };
 
         try {
-            await fetch.post(url, createProjectRequest);
-            dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
-            router.push('/projects');
+            if (method === 'POST') {
+                await fetch.post(url, createProjectRequest);
+                dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
+                router.push('/projects');
+            } else if (method === 'PUT') {
+                const { id } = router.query;
+                createProjectRequest.id = parseInt(`${id}`);
+                await fetch.put(url, createProjectRequest);
+                dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
+                router.push(`/projects/${id}`);
+            }
         } catch (error) {
             dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.ERROR } });
         }
@@ -125,7 +139,12 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                     <FormControl isRequired={true}>
                         <FormLabel>Customer</FormLabel>
                         <Flex flexDirection="row" justifyContent="space-between">
-                            <Select onChange={handleCustomerChange} placeholder="Select customer" marginRight="0.3rem">
+                            <Select
+                                onChange={handleCustomerChange}
+                                placeholder="Select customer"
+                                marginRight="0.3rem"
+                                value={state.customer?.id}
+                            >
                                 {customers?.map((customer, idx) => {
                                     return (
                                         <option key={idx} value={customer.id}>
@@ -140,7 +159,11 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                 </Flex>
                 <FormControl isRequired={true}>
                     <FormLabel>Managing employee</FormLabel>
-                    <Select onChange={handleEmployeeChange} placeholder="Select employee">
+                    <Select
+                        onChange={handleEmployeeChange}
+                        placeholder="Select employee"
+                        value={state.managingEmployee?.id}
+                    >
                         {employees?.map((el, idx) => {
                             return (
                                 <option key={idx} value={el.id}>
@@ -163,9 +186,12 @@ function NewProjectForm({ employees, customers }: NewProjectFormProps): JSX.Elem
                 >
                     Submit
                 </Button>
+                <Button colorScheme="gray" type="button" marginLeft="0.5rem" onClick={() => router.push('/projects')}>
+                    Cancel
+                </Button>
             </form>
         </Flex>
     );
 }
 
-export default NewProjectForm;
+export default ProjectForm;

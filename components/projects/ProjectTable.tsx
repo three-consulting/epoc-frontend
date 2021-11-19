@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Heading } from '@chakra-ui/layout';
 import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from '@chakra-ui/react';
 import { components } from '@/lib/types/api';
+import Link from 'next/link';
 
 type ProjectListProps = {
     projects: components['schemas']['ProjectDTO'][];
@@ -22,10 +23,12 @@ function ProjectTable({ projects }: ProjectListProps): JSX.Element {
                     <Tbody>
                         {projects.map((el, idx) => {
                             return (
-                                <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
-                                    <Td>{el.name}</Td>
-                                    <Td>{el.customer?.name}</Td>
-                                </Tr>
+                                <Link href={`projects/${el.id}`} key={idx}>
+                                    <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
+                                        <Td>{el.name}</Td>
+                                        <Td>{el.customer?.name}</Td>
+                                    </Tr>
+                                </Link>
                             );
                         })}
                     </Tbody>
