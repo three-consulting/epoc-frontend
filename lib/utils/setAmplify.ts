@@ -1,3 +1,5 @@
+// eslint-disable-next-line
+// @ts-nocheck
 import config from '../../aws-exports';
 import { UpdatedAwsConfig } from '@/lib/types/auth';
 
