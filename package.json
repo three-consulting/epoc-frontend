@@ -14,6 +14,7 @@
         "start-server": "docker-compose -f epoc-compose.yaml up"
     },
     "dependencies": {
+        "@aws-amplify/ui-components": "^1.9.6",
         "@chakra-ui/icons": "^1.0.15",
         "@chakra-ui/react": "^1.6.7",
         "@emotion/react": "^11.4.1",
