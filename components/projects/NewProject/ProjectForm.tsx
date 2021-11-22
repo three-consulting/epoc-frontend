@@ -1,4 +1,4 @@
-import { Button, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from '@chakra-ui/react';
 import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
 import { Box, Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
@@ -124,7 +124,9 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
                         }
                     ></Input>
                 </FormControl>
-                <FormControl>
+                <FormControl
+                    isInvalid={state.startDate ? (state.endDate ? state.endDate <= state.startDate : false) : false}
+                >
                     <FormLabel>End date</FormLabel>
                     <Input
                         type="date"
@@ -134,6 +136,7 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
                             dispatch({ type: ActionType.SET_END_DATE, payload: { endDate: e.target.value } })
                         }
                     ></Input>
+                    <FormErrorMessage>End date precedes start date</FormErrorMessage>
                 </FormControl>
                 <Flex flexDirection="row" justifyContent="center">
                     <FormControl isRequired={true}>
