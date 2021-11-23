@@ -1,18 +1,19 @@
 import React from 'react';
-import { Breadcrumb, BreadcrumbItem, Box, Text, VStack } from '@chakra-ui/react';
-import { signIn, signOut, useSession } from 'next-auth/client';
+import { Breadcrumb, BreadcrumbItem, Box, Text, VStack, Icon } from '@chakra-ui/react';
+import { BsBriefcase, BsHouse, BsDoorOpen, BsDoorClosed } from 'react-icons/bs';
+import { useSignIn, useSignout, useUser } from '@/lib/hooks/useAuth';
 
 function NavBarMobile(): JSX.Element {
-    const [session] = useSession();
+    const user = useUser();
+    const signIn = useSignIn();
+    const signOut = useSignout();
     return (
         <nav>
             <Breadcrumb padding="0.5rem" separator="">
                 <Box display="flex" justifyContent="space-between">
                     <BreadcrumbItem _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
                         <VStack>
-                            <Text fontSize="lg" margin="0 !important" padding="0 !important">
-                                ⚙️
-                            </Text>
+                            <Icon as={BsHouse}></Icon>
                             <Text fontSize="xs" margin="0 !important" padding="0 !important">
                                 Settings
                             </Text>
@@ -20,29 +21,23 @@ function NavBarMobile(): JSX.Element {
                     </BreadcrumbItem>
                     <BreadcrumbItem _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
                         <VStack>
-                            <Text fontSize="lg" margin="0 !important" padding="0 !important">
-                                💼
-                            </Text>
+                            <Icon as={BsBriefcase}></Icon>
                             <Text fontSize="xs" margin="0 !important" padding="0 !important">
                                 Projects
                             </Text>
                         </VStack>
                     </BreadcrumbItem>
                     <BreadcrumbItem _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
-                        {session?.user?.email ? (
-                            <VStack onClick={() => signOut()}>
-                                <Text fontSize="lg" margin="0 !important" padding="0 !important">
-                                    👋
-                                </Text>
+                        {user ? (
+                            <VStack onClick={signOut}>
+                                <Icon as={BsDoorClosed}></Icon>
                                 <Text fontSize="xs" margin="0 !important" padding="0 !important">
                                     Sign-out
                                 </Text>
                             </VStack>
                         ) : (
-                            <VStack onClick={() => signIn('cognito')}>
-                                <Text fontSize="lg" margin="0 !important" padding="0 !important">
-                                    🚪
-                                </Text>
+                            <VStack onClick={signIn}>
+                                <Icon as={BsDoorOpen}></Icon>
                                 <Text fontSize="xs" margin="0 !important" padding="0 !important">
                                     Sign-in
                                 </Text>
