@@ -3,15 +3,15 @@ import type { NextPage } from 'next';
 import { Box, Heading, Text, Flex } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/react';
 import Layout from '@/components/common/Layout';
-import useProjects from '@/lib/hooks/useProjects';
 import ProjectTable from '@/components/projects/ProjectTable';
 import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import { components } from '@/lib/types/api';
+import useData from '@/lib/hooks/useData';
 
 const Projects: NextPage = () => {
-    const { projects, isError, isLoading } = useProjects<components['schemas']['ProjectDTO'][]>();
+    const { data: projects, isError, isLoading } = useData<components['schemas']['ProjectDTO'][]>('project');
     const router = useRouter();
 
     return (

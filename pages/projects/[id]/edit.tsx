@@ -3,20 +3,26 @@ import type { NextPage } from 'next';
 import { Heading } from '@chakra-ui/layout';
 import Layout from '@/components/common/Layout';
 import ProjectForm from '@/components/projects/NewProject/ProjectForm';
-import useCustomers from '@/lib/hooks/useCustomers';
-import useEmployees from '@/lib/hooks/useEmployees';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import { useRouter } from 'next/dist/client/router';
 import { components } from '@/lib/types/api';
-import useProjects from '@/lib/hooks/useProjects';
+import useData from '@/lib/hooks/useData';
 
 const Edit: NextPage = () => {
-    const { customers, isError: customerError, isLoading: customersLoading } = useCustomers();
-    const { employees, isError: employeeError, isLoading: employeesLoading } = useEmployees();
+    const {
+        data: customers,
+        isError: customerError,
+        isLoading: customersLoading,
+    } = useData<components['schemas']['CustomerDTO'][]>('customer');
+    const {
+        data: employees,
+        isError: employeeError,
+        isLoading: employeesLoading,
+    } = useData<components['schemas']['EmployeeDTO'][]>('employee');
     const router = useRouter();
     const { id } = router.query;
-    const { projects, isError, isLoading } = useProjects<components['schemas']['ProjectDTO']>(id);
+    const { data: projects, isError, isLoading } = useData<components['schemas']['ProjectDTO']>(`project/${id}`);
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">
