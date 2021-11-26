@@ -14,13 +14,13 @@ import useData from '@/lib/hooks/useData';
 const Id: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const { data: projects, isError, isLoading } = useData<components['schemas']['ProjectDTO']>(`project/${id}`);
+    const { data: project, isError, isLoading } = useData<components['schemas']['ProjectDTO']>(`project/${id}`);
     return (
         <Layout>
             <Flex flexDirection="column">
                 {isLoading && <Loading></Loading>}
                 {isError && <ErrorAlert title={isError.name} message={isError.name}></ErrorAlert>}
-                {projects ? <ProjectDetail project={projects} /> : <Box>Not found</Box>}
+                {project ? <ProjectDetail project={project} /> : <Box>Not found</Box>}
             </Flex>
             <Link key={`${id}`} href={`${id}/edit`}>
                 <Button colorScheme="blue" marginTop="1rem">
