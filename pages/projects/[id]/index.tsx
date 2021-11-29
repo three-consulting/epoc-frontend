@@ -17,7 +17,6 @@ import * as fetch from '@/lib/utils/fetch';
 type StateType = {
     formStatus: FormStatus;
     errorMessage: string;
-    modalMessage: string;
 };
 
 const Id: NextPage = () => {
@@ -28,20 +27,23 @@ const Id: NextPage = () => {
     const [state, setState] = useState<StateType>({
         formStatus: FormStatus.IDLE,
         errorMessage: '',
-        modalMessage: '',
     });
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
     const { mutate } = useSWRConfig();
 
+    function archiveButton() {
+        if (project?.status !== 'ARCHIVED') {
+            return (
+                <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={handleArchive}>
+                    Archive Project
+                </Button>
+            );
+        }
+    }
+
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
-        if (project?.status === 'ARCHIVED') {
-            setState({
-                ...state,
-                modalMessage: `Project ${id} has already been archived.`,
-            });
-            onOpen();
-        } else if (project) {
+        if (project) {
             const createProjectRequest: components['schemas']['ProjectDTO'] = {
                 ...project,
                 status: 'ARCHIVED',
@@ -56,14 +58,12 @@ const Id: NextPage = () => {
                 setState({
                     ...state,
                     formStatus: FormStatus.SUCCESS,
-                    modalMessage: `Project ${id} has been archived.`,
                 });
                 onOpen();
             } catch (error) {
                 setState({
                     formStatus: FormStatus.ERROR,
                     errorMessage: `${error}`,
-                    modalMessage: 'Failed to archive project!',
                 });
             }
         } else {
@@ -87,15 +87,13 @@ const Id: NextPage = () => {
                     Edit Project
                 </Button>
             </Link>
-            <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={handleArchive}>
-                Archive Project
-            </Button>
+            {archiveButton()}
             {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
             {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalBody marginTop="1rem">{state.modalMessage}</ModalBody>
+                    <ModalBody marginTop="1rem">{project?.name} has been archived.</ModalBody>
 
                     <ModalFooter>
                         <Button colorScheme="blue" onClick={onClose}>
