@@ -31,13 +31,15 @@ const Id: NextPage = () => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
     const { mutate } = useSWRConfig();
 
-    function archiveButton() {
+    function archiveButton(): JSX.Element {
         if (project?.status !== 'ARCHIVED') {
             return (
                 <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={handleArchive}>
                     Archive Project
                 </Button>
             );
+        } else {
+            return <Box></Box>;
         }
     }
 
