@@ -17,6 +17,7 @@ import * as fetch from '@/lib/utils/fetch';
 type StateType = {
     formStatus: FormStatus;
     errorMessage: string;
+    modalMessage: string;
 };
 
 const Id: NextPage = () => {
@@ -27,13 +28,20 @@ const Id: NextPage = () => {
     const [state, setState] = useState<StateType>({
         formStatus: FormStatus.IDLE,
         errorMessage: '',
+        modalMessage: '',
     });
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
     const { mutate } = useSWRConfig();
 
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
-        if (project) {
+        if (project?.status === 'ARCHIVED') {
+            setState({
+                ...state,
+                modalMessage: `Project ${id} has already been archived.`,
+            });
+            onOpen();
+        } else if (project) {
             const createProjectRequest: components['schemas']['ProjectDTO'] = {
                 ...project,
                 status: 'ARCHIVED',
@@ -48,16 +56,19 @@ const Id: NextPage = () => {
                 setState({
                     ...state,
                     formStatus: FormStatus.SUCCESS,
+                    modalMessage: `Project ${id} has been archived.`,
                 });
                 onOpen();
             } catch (error) {
                 setState({
                     formStatus: FormStatus.ERROR,
                     errorMessage: `${error}`,
+                    modalMessage: 'Failed to archive project!',
                 });
             }
         } else {
             setState({
+                ...state,
                 formStatus: FormStatus.ERROR,
                 errorMessage: 'Project failed to load.',
             });
@@ -84,7 +95,7 @@ const Id: NextPage = () => {
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalBody marginTop="1rem">Project {id} has been archived.</ModalBody>
+                    <ModalBody marginTop="1rem">{state.modalMessage}</ModalBody>
 
                     <ModalFooter>
                         <Button colorScheme="blue" onClick={onClose}>
