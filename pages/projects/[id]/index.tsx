@@ -31,18 +31,6 @@ const Id: NextPage = () => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
     const { mutate } = useSWRConfig();
 
-    function archiveButton(): JSX.Element {
-        if (project?.status !== 'ARCHIVED') {
-            return (
-                <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={handleArchive}>
-                    Archive Project
-                </Button>
-            );
-        } else {
-            return <Box></Box>;
-        }
-    }
-
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (project) {
@@ -89,7 +77,11 @@ const Id: NextPage = () => {
                     Edit Project
                 </Button>
             </Link>
-            {archiveButton()}
+            {project?.status !== 'ARCHIVED' && (
+                <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={handleArchive}>
+                    Archive Project
+                </Button>
+            )}
             {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
             {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
             <Modal isOpen={isOpen} onClose={onClose}>
