@@ -13,6 +13,7 @@ import useData from '@/lib/hooks/useData';
 import { FormStatus } from '@/components/projects/NewProject/reducer';
 import { useSWRConfig } from 'swr';
 import * as fetch from '@/lib/utils/fetch';
+import TimesheetTable from '@/components/timesheets/TimesheetTable';
 
 type StateType = {
     formStatus: FormStatus;
@@ -30,6 +31,12 @@ const Id: NextPage = () => {
     });
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
     const { mutate } = useSWRConfig();
+
+    const {
+        data: timesheets,
+        isError: timesheetError,
+        isLoading: timesheetLoading,
+    } = useData<components['schemas']['TimesheetDTO'][]>('timesheet', { projectId: `${id}` });
 
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -96,6 +103,9 @@ const Id: NextPage = () => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+            {timesheetLoading && <Loading></Loading>}
+            {timesheetError && <ErrorAlert title={timesheetError.name} message={timesheetError.name}></ErrorAlert>}
+            <TimesheetTable timesheets={timesheets} />
         </Layout>
     );
 };
