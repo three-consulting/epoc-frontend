@@ -3,6 +3,7 @@ import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import {
     FormControl,
+    FormErrorMessage,
     FormLabel,
     Input,
     Modal,
@@ -199,7 +200,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             }
                         />
                     </FormControl>
-                    <FormControl>
+                    <FormControl isInvalid={!(state.allocation > 0 && state.allocation <= 100)}>
                         <FormLabel>Allocation</FormLabel>
                         <Input
                             placeholder="0"
@@ -210,6 +211,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                                 })
                             }
                         />
+                        <FormErrorMessage>Allocation needs to be between 1 and 100 %.</FormErrorMessage>
                     </FormControl>
                     <ModalFooter>
                         <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
