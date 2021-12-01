@@ -105,7 +105,7 @@ const Id: NextPage = () => {
             </Modal>
             {timesheetLoading && <Loading></Loading>}
             {timesheetError && <ErrorAlert title={timesheetError.name} message={timesheetError.name}></ErrorAlert>}
-            <TimesheetTable timesheets={timesheets} />
+            <TimesheetTable timesheets={timesheets} project={project} />
         </Layout>
     );
 };
