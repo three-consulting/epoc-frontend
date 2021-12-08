@@ -161,7 +161,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
             </Flex>
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent px="0.5rem">
                     <ModalHeader>Add user to project</ModalHeader>
                     <ModalCloseButton />
                     <FormControl>
