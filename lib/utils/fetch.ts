@@ -1,6 +1,9 @@
 // https://eckertalex.dev/blog/typescript-fetch-wrapper
-async function http<T>(path: string, config?: RequestInit): Promise<T> {
-    const request = new Request(path, { headers: { 'Content-Type': 'application/json' }, ...config });
+async function http<T>(path: string, config?: RequestInit, auth?: string): Promise<T> {
+    const request = new Request(path, {
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${auth}` },
+        ...config,
+    });
     const response = await fetch(request);
 
     if (!response.ok) {
@@ -11,31 +14,31 @@ async function http<T>(path: string, config?: RequestInit): Promise<T> {
     return response.json().catch(() => ({}));
 }
 
-export async function get<T>(path: string, config?: RequestInit): Promise<T> {
+export async function get<T>(path: string, config?: RequestInit, auth?: string): Promise<T> {
     const init = { method: 'get', ...config };
-    return await http<T>(path, init);
+    return await http<T>(path, init, auth);
 }
 
-export async function post<T, U>(path: string, body: T, config?: RequestInit): Promise<U> {
+export async function post<T, U>(path: string, body: T, config?: RequestInit, auth?: string): Promise<U> {
     const init = {
         method: 'post',
         body: JSON.stringify(body),
         ...config,
     };
-    return await http<U>(path, init);
+    return await http<U>(path, init, auth);
 }
 
-export async function put<T, U>(path: string, body: T, config?: RequestInit): Promise<U> {
+export async function put<T, U>(path: string, body: T, config?: RequestInit, auth?: string): Promise<U> {
     const init = {
         method: 'put',
         body: JSON.stringify(body),
         ...config,
     };
-    return await http<U>(path, init);
+    return await http<U>(path, init, auth);
 }
 
 // delete is a reserved keyword
-export async function del<T>(path: string, config?: RequestInit): Promise<T> {
+export async function del<T>(path: string, config?: RequestInit, auth?: string): Promise<T> {
     const init = { method: 'delete', ...config };
-    return await http<T>(path, init);
+    return await http<T>(path, init, auth);
 }

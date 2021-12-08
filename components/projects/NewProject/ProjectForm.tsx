@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import NewCustomer from '@/components/projects/NewProject/NewCustomer';
+import { useUser } from '@/lib/hooks/useAuth';
 
 type ProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
@@ -23,6 +24,7 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
     const router = useRouter();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
+    const idJwt = useUser()?.getSignInUserSession()?.getIdToken().getJwtToken();
 
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
@@ -65,13 +67,13 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
 
         try {
             if (method === 'POST') {
-                await fetch.post(url, createProjectRequest);
+                await fetch.post(url, createProjectRequest, undefined, idJwt);
                 dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
                 router.push('/projects');
             } else if (method === 'PUT') {
                 const { id } = router.query;
                 createProjectRequest.id = parseInt(`${id}`);
-                await fetch.put(url, createProjectRequest);
+                await fetch.put(url, createProjectRequest, undefined, idJwt);
                 dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
                 router.push(`/projects/${id}`);
             }

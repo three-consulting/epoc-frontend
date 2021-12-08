@@ -14,6 +14,7 @@ import { FormStatus } from '@/components/projects/NewProject/reducer';
 import { useSWRConfig } from 'swr';
 import * as fetch from '@/lib/utils/fetch';
 import TimesheetTable from '@/components/timesheets/TimesheetTable';
+import { useUser } from '@/lib/hooks/useAuth';
 
 type StateType = {
     formStatus: FormStatus;
@@ -31,6 +32,7 @@ const Id: NextPage = () => {
     });
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
     const { mutate } = useSWRConfig();
+    const idJwt = useUser()?.getSignInUserSession()?.getIdToken().getJwtToken();
 
     const {
         data: timesheets,
@@ -50,7 +52,7 @@ const Id: NextPage = () => {
                 formStatus: FormStatus.LOADING,
             });
             try {
-                await fetch.put(url, createProjectRequest);
+                await fetch.put(url, createProjectRequest, undefined, idJwt);
                 mutate(`${url}/${id}`);
                 setState({
                     ...state,

@@ -23,6 +23,7 @@ import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
+import { useUser } from '@/lib/hooks/useAuth';
 
 type TimesheetTableProps = {
     timesheets?: components['schemas']['TimesheetDTO'][];
@@ -56,6 +57,8 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/timesheet`;
     const { mutate } = useSWRConfig();
+    const idJwt = useUser()?.getSignInUserSession()?.getIdToken().getJwtToken();
+
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
@@ -71,7 +74,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
             formStatus: FormStatus.LOADING,
         });
         try {
-            await fetch.post(url, createTimesheetRequest);
+            await fetch.post(url, createTimesheetRequest, undefined, idJwt);
             mutate(`${url}?projectId=${project?.id}`);
             setState({
                 ...state,
