@@ -5,6 +5,7 @@
 
 export interface paths {
   "/timesheet": {
+    get: operations["getTimesheets"];
     put: operations["updateTimesheetForId"];
     post: operations["createTimesheet"];
   };
@@ -129,18 +130,18 @@ export interface components {
       quantity: {
         seconds?: number;
         nano?: number;
-        zero?: boolean;
         negative?: boolean;
+        zero?: boolean;
         units?: {
+          dateBased?: boolean;
           timeBased?: boolean;
-          durationEstimated?: boolean;
           duration?: {
             seconds?: number;
             nano?: number;
-            zero?: boolean;
             negative?: boolean;
+            zero?: boolean;
           };
-          dateBased?: boolean;
+          durationEstimated?: boolean;
         }[];
       };
       date: string;
@@ -155,6 +156,21 @@ export interface components {
 }
 
 export interface operations {
+  getTimesheets: {
+    parameters: {
+      query: {
+        projectId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TimesheetDTO"][];
+        };
+      };
+    };
+  };
   updateTimesheetForId: {
     responses: {
       /** OK */
