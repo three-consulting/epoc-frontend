@@ -56,6 +56,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/timesheet`;
     const { mutate } = useSWRConfig();
+
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 

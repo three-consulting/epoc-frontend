@@ -1,6 +1,13 @@
+import { Auth } from 'aws-amplify';
+
 // https://eckertalex.dev/blog/typescript-fetch-wrapper
 async function http<T>(path: string, config?: RequestInit): Promise<T> {
-    const request = new Request(path, { headers: { 'Content-Type': 'application/json' }, ...config });
+    const authSession = await Auth.currentSession();
+    const jwt = authSession.getIdToken()?.getJwtToken();
+    const request = new Request(path, {
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
+        ...config,
+    });
     const response = await fetch(request);
 
     if (!response.ok) {
