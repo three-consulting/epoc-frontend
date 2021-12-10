@@ -52,7 +52,7 @@ function NewCustomer(): JSX.Element {
             formStatus: FormStatus.LOADING,
         });
         try {
-            await fetch.post(url, createCustomerRequest, undefined, idJwt);
+            await fetch.post(url, createCustomerRequest);
             mutate(url);
             setState({
                 ...state,
