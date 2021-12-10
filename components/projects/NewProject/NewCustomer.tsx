@@ -19,7 +19,6 @@ import * as fetch from '@/lib/utils/fetch';
 import { FormStatus } from './reducer';
 import { useSWRConfig } from 'swr';
 import ErrorAlert from '@/components/common/ErrorAlert';
-import { useUser } from '@/lib/hooks/useAuth';
 
 type StateType = {
     name: string;
@@ -38,7 +37,6 @@ function NewCustomer(): JSX.Element {
     });
     const url = `${process.env.NEXT_PUBLIC_API_URL}/customer`;
     const { mutate } = useSWRConfig();
-    const idJwt = useUser()?.getSignInUserSession()?.getIdToken().getJwtToken();
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
