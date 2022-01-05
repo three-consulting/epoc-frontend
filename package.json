@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "dev-local": "concurrently yarn:start-server yarn:dev",
+        "dev-local": "JWT_ISSUER=$(gopass show --password 3/epoc/aws/cognito-jwt-issuer-uri) concurrently yarn:start-server yarn:dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
