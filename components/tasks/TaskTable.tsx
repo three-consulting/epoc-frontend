@@ -54,6 +54,15 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/task`;
     const { mutate } = useSWRConfig();
+
+    const checkDates = (): boolean => {
+        if (state.startDate) {
+            if (state.endDate && state.endDate <= state.startDate) {
+                return true;
+            }
+        }
+        return false;
+    };
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
@@ -157,7 +166,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                                 })
                             }
                         />
-                        <FormErrorMessage>Task name cannot be zero characters long.</FormErrorMessage>
+                        <FormErrorMessage>Task name cannot be empty.</FormErrorMessage>
                     </FormControl>
                     <FormControl>
                         <FormLabel>Description</FormLabel>
@@ -186,9 +195,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                         ></Input>
                         <FormErrorMessage>Task start date must not be empty.</FormErrorMessage>
                     </FormControl>
-                    <FormControl
-                        isInvalid={state.startDate ? (state.endDate ? state.endDate <= state.startDate : false) : false}
-                    >
+                    <FormControl isInvalid={checkDates()}>
                         <FormLabel>End Date</FormLabel>
                         <Input
                             type="date"
