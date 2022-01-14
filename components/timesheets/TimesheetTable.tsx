@@ -88,6 +88,29 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
         }
     };
 
+    const archiveTimesheet = async (timesheet: components['schemas']['TimesheetDTO'], e: React.MouseEvent) => {
+        e.preventDefault();
+        const createTimesheetRequest: components['schemas']['TimesheetDTO'] = {
+            ...timesheet,
+            status: 'ARCHIVED',
+        };
+        try {
+            await fetch.put(url, createTimesheetRequest);
+            mutate(`${url}?projectId=${project?.id}`);
+            setState({
+                ...state,
+                errorMessage: '',
+                formStatus: FormStatus.IDLE,
+            });
+        } catch (error) {
+            setState({
+                ...state,
+                errorMessage: `${error}`,
+                formStatus: FormStatus.ERROR,
+            });
+        }
+    };
+
     const handleEmployeeChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = e.currentTarget.value;
@@ -139,18 +162,22 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                         </Thead>
                         <Tbody>
                             {timesheets.map((el, idx) => {
-                                return (
-                                    <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
-                                        <Td>
-                                            {el.employee?.first_name} {el.employee?.last_name}
-                                        </Td>
-                                        <Td>{el.allocation} %</Td>
-                                        <Td>
-                                            <Button>x</Button>
-                                        </Td>
-                                    </Tr>
-                                );
+                                if (el.status === 'ACTIVE') {
+                                    return (
+                                        <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
+                                            <Td>
+                                                {el.employee?.first_name} {el.employee?.last_name}
+                                            </Td>
+                                            <Td>{el.allocation} %</Td>
+                                            <Td>
+                                                <Button onClick={(e) => archiveTimesheet(el, e)}>x</Button>
+                                            </Td>
+                                        </Tr>
+                                    );
+                                }
                             })}
+                            {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
+                            {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
                         </Tbody>
                     </Table>
                 </Box>

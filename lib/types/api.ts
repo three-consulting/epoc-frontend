@@ -19,6 +19,7 @@ export interface paths {
     post: operations["createTimeCategory"];
   };
   "/task": {
+    get: operations["getTimesheets_1"];
     put: operations["updateTaskForId"];
     post: operations["createTask"];
   };
@@ -107,6 +108,7 @@ export interface components {
       employee?: components["schemas"]["EmployeeDTO"];
       created?: string;
       updated?: string;
+      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TaskDTO: {
       id?: number;
@@ -130,19 +132,19 @@ export interface components {
       quantity: {
         seconds?: number;
         nano?: number;
-        negative?: boolean;
-        zero?: boolean;
         units?: {
           dateBased?: boolean;
           timeBased?: boolean;
           duration?: {
             seconds?: number;
             nano?: number;
-            negative?: boolean;
             zero?: boolean;
+            negative?: boolean;
           };
           durationEstimated?: boolean;
         }[];
+        zero?: boolean;
+        negative?: boolean;
       };
       date: string;
       description?: string;
@@ -268,6 +270,21 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["TimeCategoryDTO"];
+      };
+    };
+  };
+  getTimesheets_1: {
+    parameters: {
+      query: {
+        projectId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TaskDTO"][];
+        };
       };
     };
   };
