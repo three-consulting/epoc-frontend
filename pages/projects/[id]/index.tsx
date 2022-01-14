@@ -14,6 +14,7 @@ import { FormStatus } from '@/components/projects/NewProject/reducer';
 import { useSWRConfig } from 'swr';
 import * as fetch from '@/lib/utils/fetch';
 import TimesheetTable from '@/components/timesheets/TimesheetTable';
+import TaskTable from '@/components/tasks/TaskTable';
 
 type StateType = {
     formStatus: FormStatus;
@@ -106,6 +107,7 @@ const Id: NextPage = () => {
             {timesheetLoading && <Loading></Loading>}
             {timesheetError && <ErrorAlert title={timesheetError.name} message={timesheetError.name}></ErrorAlert>}
             <TimesheetTable timesheets={timesheets} project={project} />
+            <TaskTable project={project} />
         </Layout>
     );
 };

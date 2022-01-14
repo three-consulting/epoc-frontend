@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import NewCustomer from '@/components/projects/NewProject/NewCustomer';
+import checkDateOrder from '@/lib/utils/checkDateOrder';
 
 type ProjectFormProps = {
     employees?: components['schemas']['EmployeeDTO'][];
@@ -124,9 +125,7 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
                         }
                     ></Input>
                 </FormControl>
-                <FormControl
-                    isInvalid={state.startDate ? (state.endDate ? state.endDate <= state.startDate : false) : false}
-                >
+                <FormControl isInvalid={checkDateOrder(state.startDate, state.endDate)}>
                     <FormLabel>End date</FormLabel>
                     <Input
                         type="date"
