@@ -22,6 +22,7 @@ import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
+import checkDateOrder from '@/lib/utils/checkDateOrder';
 
 type TaskTableProps = {
     project?: components['schemas']['ProjectDTO'];
@@ -55,14 +56,6 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/task`;
     const { mutate } = useSWRConfig();
 
-    const checkDates = (): boolean => {
-        if (state.startDate) {
-            if (state.endDate && state.endDate <= state.startDate) {
-                return true;
-            }
-        }
-        return false;
-    };
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
@@ -195,7 +188,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                         ></Input>
                         <FormErrorMessage>Task start date must not be empty.</FormErrorMessage>
                     </FormControl>
-                    <FormControl isInvalid={checkDates()}>
+                    <FormControl isInvalid={checkDateOrder(state.startDate, state.endDate)}>
                         <FormLabel>End Date</FormLabel>
                         <Input
                             type="date"
