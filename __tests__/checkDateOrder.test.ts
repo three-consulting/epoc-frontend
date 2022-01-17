@@ -1,11 +1,20 @@
 import { expect, test } from '@jest/globals';
 import checkDateOrder from '../lib/utils/checkDateOrder';
 
-test('checkDateOrder returns true if second date precedes first date', () => {
-    const date1 = '2022-01-14';
-    const date2 = '2022-01-13';
-    expect(checkDateOrder(date1, date2)).toBe(true);
-    const date3 = '2022-01-14';
-    const date4 = '2022-01-15';
-    expect(checkDateOrder(date3, date4)).toBe(false);
+describe('checkDateOrder returns true if start date precedes end date', () => {
+    test('start date preceding end date should return true', () => {
+        const startDate = '2022-01-14';
+        const endDate = '2022-01-13';
+        expect(checkDateOrder(startDate, endDate)).toBeTruthy();
+    });
+    test('end date preceding start date should return false', () => {
+        const startDate = '2022-01-14';
+        const endDate = '2022-01-15';
+        expect(checkDateOrder(startDate, endDate)).toBeFalsy();
+    });
+    test('undefined end date should return false', () => {
+        const startDate = '2022-01-14';
+        const endDate = undefined;
+        expect(checkDateOrder(startDate, endDate)).toBeFalsy();
+    });
 });
