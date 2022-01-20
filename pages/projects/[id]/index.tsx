@@ -24,7 +24,6 @@ type StateType = {
 const Id: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const { data: project, isError, isLoading } = useData<components['schemas']['ProjectDTO']>(`project/${id}`);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [state, setState] = useState<StateType>({
         formStatus: FormStatus.IDLE,
@@ -34,10 +33,19 @@ const Id: NextPage = () => {
     const { mutate } = useSWRConfig();
 
     const {
+        data: project,
+        isError,
+        isLoading,
+    } = id
+        ? useData<components['schemas']['ProjectDTO']>(`project/${id}`)
+        : useData<components['schemas']['ProjectDTO']>();
+    const {
         data: timesheets,
         isError: timesheetError,
         isLoading: timesheetLoading,
-    } = useData<components['schemas']['TimesheetDTO'][]>('timesheet', { projectId: `${id}` });
+    } = id
+        ? useData<components['schemas']['TimesheetDTO'][]>('timesheet', { projectId: `${id}` })
+        : useData<components['schemas']['TimesheetDTO'][]>();
 
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -106,8 +114,8 @@ const Id: NextPage = () => {
             </Modal>
             {timesheetLoading && <Loading></Loading>}
             {timesheetError && <ErrorAlert title={timesheetError.name} message={timesheetError.name}></ErrorAlert>}
-            <TimesheetTable timesheets={timesheets} project={project} />
-            <TaskTable project={project} />
+            {project && timesheets && <TimesheetTable timesheets={timesheets} project={project} />}
+            {project && <TaskTable project={project} />}
         </Layout>
     );
 };

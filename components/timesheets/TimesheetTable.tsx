@@ -26,7 +26,7 @@ import Loading from '../common/Loading';
 
 type TimesheetTableProps = {
     timesheets?: components['schemas']['TimesheetDTO'][];
-    project?: components['schemas']['ProjectDTO'];
+    project: components['schemas']['ProjectDTO'];
 };
 
 type StateType = {
@@ -73,7 +73,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
         });
         try {
             await fetch.post(url, createTimesheetRequest);
-            mutate(`${url}?projectId=${project?.id}`);
+            mutate(`${url}?projectId=${project.id}`);
             setState({
                 ...state,
                 formStatus: FormStatus.SUCCESS,
