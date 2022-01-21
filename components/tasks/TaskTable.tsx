@@ -2,6 +2,7 @@ import { components } from '@/lib/types/api';
 import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import {
+    Checkbox,
     FormControl,
     FormErrorMessage,
     FormLabel,
@@ -22,7 +23,6 @@ import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
-import checkDateOrder from '@/lib/utils/checkDateOrder';
 
 type TaskTableProps = {
     project?: components['schemas']['ProjectDTO'];
@@ -31,8 +31,7 @@ type TaskTableProps = {
 type StateType = {
     name: string;
     description: string;
-    startDate: string;
-    endDate?: string;
+    billable: boolean;
     formStatus: FormStatus;
     errorMessage: string;
 };
@@ -42,7 +41,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
     const [state, setState] = useState<StateType>({
         name: '',
         description: '',
-        startDate: new Date().toISOString().split('T')[0],
+        billable: true,
         formStatus: FormStatus.IDLE,
         errorMessage: '',
     });
@@ -62,8 +61,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
         const createTaskRequest: components['schemas']['TaskDTO'] = {
             name: state.name,
             description: state.description,
-            startDate: state.startDate,
-            endDate: state.endDate,
+            billable: state.billable,
             project: project,
         };
         setState({
@@ -145,10 +143,10 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
             </Flex>
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent px="0.5rem">
+                <ModalContent px="1rem">
                     <ModalHeader>Add task to project</ModalHeader>
                     <ModalCloseButton />
-                    <FormControl isInvalid={state.name.length === 0} isRequired>
+                    <FormControl isInvalid={state.name.length === 0} isRequired py="0.5rem">
                         <FormLabel>Task Name</FormLabel>
                         <Input
                             placeholder="Task Name"
@@ -161,7 +159,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                         />
                         <FormErrorMessage>Task name cannot be empty.</FormErrorMessage>
                     </FormControl>
-                    <FormControl>
+                    <FormControl py="0.5rem">
                         <FormLabel>Description</FormLabel>
                         <Input
                             placeholder="Description"
@@ -173,35 +171,14 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                             }
                         />
                     </FormControl>
-                    <FormControl isInvalid={state.startDate.length === 0} isRequired>
-                        <FormLabel>Start Date</FormLabel>
-                        <Input
-                            type="date"
-                            value={state.startDate}
-                            placeholder="Project start date"
-                            onChange={(e) =>
-                                setState({
-                                    ...state,
-                                    startDate: e.target.value,
-                                })
-                            }
-                        ></Input>
-                        <FormErrorMessage>Task start date must not be empty.</FormErrorMessage>
-                    </FormControl>
-                    <FormControl isInvalid={checkDateOrder(state.startDate, state.endDate)}>
-                        <FormLabel>End Date</FormLabel>
-                        <Input
-                            type="date"
-                            value={state.endDate ? state.endDate : ''}
-                            placeholder="Project end date"
-                            onChange={(e) =>
-                                setState({
-                                    ...state,
-                                    endDate: e.target.value,
-                                })
-                            }
-                        ></Input>
-                        <FormErrorMessage>End date must not precede start date.</FormErrorMessage>
+                    <FormControl py="0.5rem">
+                        <Flex flexDirection={'row'} alignItems={'baseline'}>
+                            <FormLabel>Billable</FormLabel>
+                            <Checkbox
+                                defaultChecked={true}
+                                onChange={(e) => setState({ ...state, billable: e.target.checked })}
+                            />
+                        </Flex>
                     </FormControl>
                     <ModalFooter>
                         <Button colorScheme="blue" mr={3} onClick={handleSubmit}>

@@ -189,10 +189,10 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
             </Flex>
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent px="0.5rem">
+                <ModalContent px="1rem">
                     <ModalHeader>Add user to project</ModalHeader>
                     <ModalCloseButton />
-                    <FormControl>
+                    <FormControl py="0.5rem">
                         <FormLabel>User</FormLabel>
                         <Select onChange={handleEmployeeChange} placeholder="Select employee">
                             {employees?.map((el, idx) => {
@@ -204,7 +204,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             })}
                         </Select>
                     </FormControl>
-                    <FormControl>
+                    <FormControl py="0.5rem">
                         <FormLabel>Timesheet Name</FormLabel>
                         <Input
                             placeholder="Timesheet Name"
@@ -216,7 +216,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             }
                         />
                     </FormControl>
-                    <FormControl>
+                    <FormControl py="0.5rem">
                         <FormLabel>Description</FormLabel>
                         <Input
                             placeholder="Description"
@@ -228,7 +228,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             }
                         />
                     </FormControl>
-                    <FormControl isInvalid={!(state.allocation > 0 && state.allocation <= 100)}>
+                    <FormControl isInvalid={!(state.allocation > 0 && state.allocation <= 100)} py="0.5rem">
                         <FormLabel>Allocation</FormLabel>
                         <Input
                             placeholder="0"

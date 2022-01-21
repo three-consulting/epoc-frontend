@@ -114,11 +114,11 @@ export interface components {
       id?: number;
       name: string;
       description?: string;
-      startDate?: string;
-      endDate?: string;
       project?: components["schemas"]["ProjectDTO"];
       created?: string;
       updated?: string;
+      billable?: boolean;
+      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TimeCategoryDTO: {
       id?: number;
