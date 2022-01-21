@@ -9,9 +9,8 @@ import Layout from '@/components/common/Layout';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 import Link from 'next/link';
 import { components } from '@/lib/types/api';
-import useData from '@/lib/hooks/useData';
 import { FormStatus } from '@/components/projects/NewProject/reducer';
-import { useSWRConfig } from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import * as fetch from '@/lib/utils/fetch';
 import TimesheetTable from '@/components/timesheets/TimesheetTable';
 import TaskTable from '@/components/tasks/TaskTable';
@@ -24,20 +23,31 @@ type StateType = {
 const Id: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const { data: project, isError, isLoading } = useData<components['schemas']['ProjectDTO']>(`project/${id}`);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [state, setState] = useState<StateType>({
         formStatus: FormStatus.IDLE,
         errorMessage: '',
     });
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}`;
     const { mutate } = useSWRConfig();
 
-    const {
-        data: timesheets,
-        isError: timesheetError,
-        isLoading: timesheetLoading,
-    } = useData<components['schemas']['TimesheetDTO'][]>('timesheet', { projectId: `${id}` });
+    const projectUrl = id ? new URL(`${url}/project/${id}`, process.env.NEXT_PUBLIC_API_URL) : undefined;
+
+    const { data: project, error: projectError } = useSWR<components['schemas']['ProjectDTO'], Error>(
+        projectUrl ? projectUrl.href : null,
+        fetch.get,
+    );
+    const projectLoading = !project && !projectError;
+
+    const timesheetUrl = id ? new URL(`${url}/timesheet`, process.env.NEXT_PUBLIC_API_URL) : undefined;
+    if (timesheetUrl !== undefined) {
+        timesheetUrl.search = new URLSearchParams({ projectId: `${id}` }).toString();
+    }
+    const { data: timesheets, error: timesheetError } = useSWR<components['schemas']['TimesheetDTO'][], Error>(
+        timesheetUrl ? timesheetUrl.href : null,
+        fetch.get,
+    );
+    const timesheetLoading = !timesheets && !timesheetError;
 
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -51,8 +61,8 @@ const Id: NextPage = () => {
                 formStatus: FormStatus.LOADING,
             });
             try {
-                await fetch.put(url, createProjectRequest);
-                mutate(`${url}/${id}`);
+                await fetch.put(`${url}/project`, createProjectRequest);
+                mutate(`${url}/project/${id}`);
                 setState({
                     ...state,
                     formStatus: FormStatus.SUCCESS,
@@ -76,8 +86,8 @@ const Id: NextPage = () => {
     return (
         <Layout>
             <Flex flexDirection="column">
-                {isLoading && <Loading></Loading>}
-                {isError && <ErrorAlert title={isError.name} message={isError.name}></ErrorAlert>}
+                {projectLoading && <Loading></Loading>}
+                {projectError && <ErrorAlert title={projectError.name} message={projectError.name}></ErrorAlert>}
                 {project ? <ProjectDetail project={project} /> : <Box>Not found</Box>}
             </Flex>
             <Link key={`${id}`} href={`${id}/edit`}>
@@ -106,8 +116,8 @@ const Id: NextPage = () => {
             </Modal>
             {timesheetLoading && <Loading></Loading>}
             {timesheetError && <ErrorAlert title={timesheetError.name} message={timesheetError.name}></ErrorAlert>}
-            <TimesheetTable timesheets={timesheets} project={project} />
-            <TaskTable project={project} />
+            {timesheets && project && <TimesheetTable timesheets={timesheets} project={project} />}
+            {project && <TaskTable project={project} />}
         </Layout>
     );
 };
