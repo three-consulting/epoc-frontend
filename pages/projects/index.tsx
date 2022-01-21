@@ -7,11 +7,11 @@ import ProjectTable from '@/components/projects/ProjectTable';
 import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
-import { components } from '@/lib/types/api';
+import { ProjectDTO } from '@/lib/types/api';
 import useData from '@/lib/hooks/useData';
 
 const Projects: NextPage = () => {
-    const { data: projects, isError, isLoading } = useData<components['schemas']['ProjectDTO'][]>('project');
+    const { data: projects, isError, isLoading } = useData<ProjectDTO[]>('project');
     const router = useRouter();
 
     return (

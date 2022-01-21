@@ -1,4 +1,3 @@
-import { components } from '@/lib/types/api';
 import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import {
@@ -23,9 +22,10 @@ import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
 import checkDateOrder from '@/lib/utils/checkDateOrder';
+import { ProjectDTO, TaskDTO } from '@/lib/types/api';
 
 type TaskTableProps = {
-    project?: components['schemas']['ProjectDTO'];
+    project?: ProjectDTO;
 };
 
 type StateType = {
@@ -51,7 +51,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
         data: tasks,
         isError: taskError,
         isLoading: tasksLoading,
-    } = useData<components['schemas']['TaskDTO'][]>('task', { projectId: `${project?.id}` });
+    } = useData<TaskDTO[]>('task', { projectId: `${project?.id}` });
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/task`;
     const { mutate } = useSWRConfig();
@@ -59,7 +59,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
-        const createTaskRequest: components['schemas']['TaskDTO'] = {
+        const createTaskRequest: TaskDTO = {
             name: state.name,
             description: state.description,
             startDate: state.startDate,

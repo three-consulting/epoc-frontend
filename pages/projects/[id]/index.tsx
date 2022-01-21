@@ -8,13 +8,13 @@ import Loading from '@/components/common/Loading';
 import Layout from '@/components/common/Layout';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 import Link from 'next/link';
-import { components } from '@/lib/types/api';
 import useData from '@/lib/hooks/useData';
 import { FormStatus } from '@/components/projects/NewProject/reducer';
 import { useSWRConfig } from 'swr';
 import * as fetch from '@/lib/utils/fetch';
 import TimesheetTable from '@/components/timesheets/TimesheetTable';
 import TaskTable from '@/components/tasks/TaskTable';
+import { ProjectDTO, TimesheetDTO } from '@/lib/types/api';
 
 type StateType = {
     formStatus: FormStatus;
@@ -24,7 +24,7 @@ type StateType = {
 const Id: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const { data: project, isError, isLoading } = useData<components['schemas']['ProjectDTO']>(`project/${id}`);
+    const { data: project, isError, isLoading } = useData<ProjectDTO>(`project/${id}`);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [state, setState] = useState<StateType>({
         formStatus: FormStatus.IDLE,
@@ -37,12 +37,12 @@ const Id: NextPage = () => {
         data: timesheets,
         isError: timesheetError,
         isLoading: timesheetLoading,
-    } = useData<components['schemas']['TimesheetDTO'][]>('timesheet', { projectId: `${id}` });
+    } = useData<TimesheetDTO[]>('timesheet', { projectId: `${id}` });
 
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (project) {
-            const createProjectRequest: components['schemas']['ProjectDTO'] = {
+            const createProjectRequest: ProjectDTO = {
                 ...project,
                 status: 'ARCHIVED',
             };

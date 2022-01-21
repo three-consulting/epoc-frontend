@@ -6,23 +6,15 @@ import ProjectForm from '@/components/projects/NewProject/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import { useRouter } from 'next/dist/client/router';
-import { components } from '@/lib/types/api';
+import { CustomerDTO, EmployeeDTO, ProjectDTO } from '@/lib/types/api';
 import useData from '@/lib/hooks/useData';
 
 const Edit: NextPage = () => {
-    const {
-        data: customers,
-        isError: customerError,
-        isLoading: customersLoading,
-    } = useData<components['schemas']['CustomerDTO'][]>('customer');
-    const {
-        data: employees,
-        isError: employeeError,
-        isLoading: employeesLoading,
-    } = useData<components['schemas']['EmployeeDTO'][]>('employee');
+    const { data: customers, isError: customerError, isLoading: customersLoading } = useData<CustomerDTO[]>('customer');
+    const { data: employees, isError: employeeError, isLoading: employeesLoading } = useData<EmployeeDTO[]>('employee');
     const router = useRouter();
     const { id } = router.query;
-    const { data: projects, isError, isLoading } = useData<components['schemas']['ProjectDTO']>(`project/${id}`);
+    const { data: projects, isError, isLoading } = useData<ProjectDTO>(`project/${id}`);
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">

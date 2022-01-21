@@ -14,11 +14,11 @@ import {
     Box,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { components } from '@/lib/types/api';
 import * as fetch from '@/lib/utils/fetch';
 import { FormStatus } from './reducer';
 import { useSWRConfig } from 'swr';
 import ErrorAlert from '@/components/common/ErrorAlert';
+import { CustomerDTO } from '@/lib/types/api';
 
 type StateType = {
     name: string;
@@ -41,7 +41,7 @@ function NewCustomer(): JSX.Element {
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
-        const createCustomerRequest: components['schemas']['CustomerDTO'] = {
+        const createCustomerRequest: CustomerDTO = {
             name: state.name,
             description: state.description,
         };

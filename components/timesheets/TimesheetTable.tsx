@@ -1,4 +1,4 @@
-import { components } from '@/lib/types/api';
+import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/api';
 import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import {
@@ -25,12 +25,12 @@ import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
 
 type TimesheetTableProps = {
-    timesheets?: components['schemas']['TimesheetDTO'][];
-    project?: components['schemas']['ProjectDTO'];
+    timesheets?: TimesheetDTO[];
+    project?: ProjectDTO;
 };
 
 type StateType = {
-    user: components['schemas']['EmployeeDTO'];
+    user: EmployeeDTO;
     timesheetName: string;
     description: string;
     allocation: number;
@@ -48,11 +48,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
         formStatus: FormStatus.IDLE,
         errorMessage: '',
     });
-    const {
-        data: employees,
-        isError: employeeError,
-        isLoading: employeesLoading,
-    } = useData<components['schemas']['EmployeeDTO'][]>('employee');
+    const { data: employees, isError: employeeError, isLoading: employeesLoading } = useData<EmployeeDTO[]>('employee');
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/timesheet`;
     const { mutate } = useSWRConfig();
@@ -60,7 +56,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
-        const createTimesheetRequest: components['schemas']['TimesheetDTO'] = {
+        const createTimesheetRequest: TimesheetDTO = {
             name: state.timesheetName,
             description: state.description,
             allocation: state.allocation,
@@ -88,9 +84,9 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
         }
     };
 
-    const archiveTimesheet = async (timesheet: components['schemas']['TimesheetDTO'], e: React.MouseEvent) => {
+    const archiveTimesheet = async (timesheet: TimesheetDTO, e: React.MouseEvent) => {
         e.preventDefault();
-        const createTimesheetRequest: components['schemas']['TimesheetDTO'] = {
+        const createTimesheetRequest: TimesheetDTO = {
             ...timesheet,
             status: 'ARCHIVED',
         };

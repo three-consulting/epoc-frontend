@@ -2,7 +2,7 @@ import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from 
 import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
 import { Box, Flex } from '@chakra-ui/layout';
 import React, { useReducer } from 'react';
-import { components } from '@/lib/types/api';
+import { CustomerDTO, EmployeeDTO, ProjectDTO } from '@/lib/types/api';
 import { useRouter } from 'next/router';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
@@ -10,10 +10,10 @@ import NewCustomer from '@/components/projects/NewProject/NewCustomer';
 import checkDateOrder from '@/lib/utils/checkDateOrder';
 
 type ProjectFormProps = {
-    employees?: components['schemas']['EmployeeDTO'][];
-    customers?: components['schemas']['CustomerDTO'][];
+    employees?: EmployeeDTO[];
+    customers?: CustomerDTO[];
     method?: string;
-    project?: components['schemas']['ProjectDTO'];
+    project?: ProjectDTO;
 };
 function ProjectForm({ employees, customers, method, project }: ProjectFormProps): JSX.Element {
     const [state, dispatch] = useReducer(
@@ -21,6 +21,7 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
         project ? { ...project, formStatus: FormStatus.IDLE } : initialState,
         init,
     );
+
     const router = useRouter();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
@@ -46,7 +47,7 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const createProjectRequest: components['schemas']['ProjectDTO'] = {
+        const createProjectRequest: ProjectDTO = {
             id: state.id,
             name: state.name,
             description: state.description,

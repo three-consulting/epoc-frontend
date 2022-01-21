@@ -1,4 +1,4 @@
-import { components } from '@/lib/types/api';
+import { ProjectDTO } from '@/lib/types/api';
 
 export enum FormStatus {
     IDLE = 'IDLE',
@@ -7,7 +7,7 @@ export enum FormStatus {
     SUCCESS = 'SUCCESS',
 }
 
-type FormState = components['schemas']['ProjectDTO'] & { formStatus: FormStatus };
+type FormState = ProjectDTO & { formStatus: FormStatus };
 
 export enum ActionType {
     SET_NAME = 'SET_NAME',
@@ -24,20 +24,20 @@ export enum ActionType {
 export type Action =
     | {
           type: ActionType.SET_NAME;
-          payload: { name: components['schemas']['ProjectDTO']['name'] };
+          payload: { name: ProjectDTO['name'] };
       }
-    | { type: ActionType.SET_DESCRIPTION; payload: { description: components['schemas']['ProjectDTO']['description'] } }
-    | { type: ActionType.SET_END_DATE; payload: { endDate: components['schemas']['ProjectDTO']['endDate'] } }
-    | { type: ActionType.SET_START_DATE; payload: { startDate: components['schemas']['ProjectDTO']['startDate'] } }
+    | { type: ActionType.SET_DESCRIPTION; payload: { description: ProjectDTO['description'] } }
+    | { type: ActionType.SET_END_DATE; payload: { endDate: ProjectDTO['endDate'] } }
+    | { type: ActionType.SET_START_DATE; payload: { startDate: ProjectDTO['startDate'] } }
     | {
           type: ActionType.SET_MANAGING_EMPLOYEE;
-          payload: { managingEmployee: components['schemas']['ProjectDTO']['managingEmployee'] };
+          payload: { managingEmployee: ProjectDTO['managingEmployee'] };
       }
     | {
           type: ActionType.SET_CUSTOMER;
-          payload: { customer: components['schemas']['ProjectDTO']['customer'] };
+          payload: { customer: ProjectDTO['customer'] };
       }
-    | { type: ActionType.SET_STATUS; payload: { status: components['schemas']['ProjectDTO']['status'] } }
+    | { type: ActionType.SET_STATUS; payload: { status: ProjectDTO['status'] } }
     | { type: ActionType.SET_FORM_STATUS; payload: { formStatus: FormStatus } }
     | { type: ActionType.RESET; payload: FormState };
 

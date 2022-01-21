@@ -3,6 +3,8 @@
  * Do not make direct changes to the file.
  */
 
+import { SourceHTMLAttributes } from "react"
+
 export interface paths {
   "/timesheet": {
     get: operations["getTimesheets"];
@@ -68,7 +70,7 @@ export interface paths {
   };
 }
 
-export interface components {
+interface components {
   schemas: {
     CustomerDTO: {
       id?: number;
@@ -156,6 +158,12 @@ export interface components {
     };
   };
 }
+
+export type ProjectDTO = components['schemas']['ProjectDTO']
+export type EmployeeDTO = components['schemas']['EmployeeDTO']
+export type CustomerDTO = components['schemas']['CustomerDTO']
+export type TaskDTO = components['schemas']['TaskDTO']
+export type TimesheetDTO = components['schemas']['TimesheetDTO']
 
 export interface operations {
   getTimesheets: {

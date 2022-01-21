@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Heading } from '@chakra-ui/layout';
 import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from '@chakra-ui/react';
-import { components } from '@/lib/types/api';
 import Link from 'next/link';
+import { ProjectDTO } from '@/lib/types/api';
 
 type ProjectListProps = {
-    projects: components['schemas']['ProjectDTO'][];
+    projects: ProjectDTO[];
 };
 
 function ProjectTable({ projects }: ProjectListProps): JSX.Element {

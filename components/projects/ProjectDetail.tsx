@@ -1,9 +1,9 @@
+import { ProjectDTO } from '@/lib/types/api';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import React from 'react';
-import { components } from '@/lib/types/api';
 
 type ProjectProps = {
-    project: components['schemas']['ProjectDTO'];
+    project: ProjectDTO;
 };
 
 function ProjectDetail({ project }: ProjectProps): JSX.Element {
