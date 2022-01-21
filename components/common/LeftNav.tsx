@@ -46,8 +46,8 @@ function LeftNav(): JSX.Element {
             <Text color="black" fontWeight="black" fontSize="xl">
                 Navigation
             </Text>
-            {LinkItems.map((link, idx) => (
-                <NavItem key={idx} name={link.name} icon={link.icon} href={link.href}></NavItem>
+            {LinkItems.map((item, idx) => (
+                <NavItem key={idx} name={item.name} icon={item.icon} href={item.href}></NavItem>
             ))}
 
             <Flex
