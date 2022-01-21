@@ -30,94 +30,53 @@ type TimesheetTableProps = {
     project?: ProjectDTO;
 };
 
-type StateType = {
-    user: EmployeeDTO;
-    timesheetName: string;
-    description: string;
-    allocation: number;
-    formStatus: FormStatus;
-    errorMessage: string;
-};
+const emptyTimesheet: TimesheetDTO = {
+        name: '',
+        description: '',
+        allocation: 0,
+}
 
 function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [state, setState] = useState<StateType>({
-        user: { id: 0 },
-        timesheetName: '',
-        description: '',
-        allocation: 0,
-        formStatus: FormStatus.IDLE,
-        errorMessage: '',
-    });
+    const [timesheet, setTimesheet] = useState<TimesheetDTO>(emptyTimesheet);
+    const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.LOADING);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const employeesRequest = useData<EmployeeDTO[]>(employeeEndpointURL);
-
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/timesheet`;
     const { mutate } = useSWRConfig();
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
-        const createTimesheetRequest: TimesheetDTO = {
-            name: state.timesheetName,
-            description: state.description,
-            allocation: state.allocation,
-            project: project,
-            employee: state.user,
-        };
-        setState({
-            ...state,
-            formStatus: FormStatus.LOADING,
-        });
+        setFormStatus(FormStatus.LOADING)
         try {
-            await fetch.post(timeSheetURL.toString(), createTimesheetRequest);
-            mutate(`${url}?projectId=${project?.id}`);
-            setState({
-                ...state,
-                formStatus: FormStatus.SUCCESS,
-            });
+            await fetch.post(timeSheetURL.toString(), timesheet);
+            mutate(`${timeSheetURL}?projectId=${project?.id}`);
+            setFormStatus(FormStatus.SUCCESS)
             onClose();
         } catch (error) {
-            setState({
-                ...state,
-                errorMessage: `${error}`,
-                formStatus: FormStatus.ERROR,
-            });
+            setFormStatus(FormStatus.ERROR)
         }
     };
 
     const archiveTimesheet = async (timesheet: TimesheetDTO, e: React.MouseEvent) => {
         e.preventDefault();
-        const createTimesheetRequest: TimesheetDTO = {
-            ...timesheet,
-            status: 'ARCHIVED',
-        };
         try {
-            await fetch.put(url, createTimesheetRequest);
-            mutate(`${url}?projectId=${project?.id}`);
-            setState({
-                ...state,
-                errorMessage: '',
-                formStatus: FormStatus.IDLE,
-            });
+            await fetch.put(timeSheetURL.toString(), {...timesheet, staus: 'ARCHIVED'});
+            mutate(`${timeSheetURL}?projectId=${project?.id}`);
+            setFormStatus(FormStatus.SUCCESS);
         } catch (error) {
-            setState({
-                ...state,
-                errorMessage: `${error}`,
-                formStatus: FormStatus.ERROR,
-            });
+            setFormStatus(FormStatus.ERROR);
+            setErrorMessage(`${error}`);
         }
     };
 
     const handleEmployeeChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
-        const id = e.currentTarget.value;
+        const id = parseInt(e.currentTarget.value);
         if (id) {
-            const employee = employeesRequest.data?.find((el) => el.id === Number(id));
-            setState({
-                ...state,
-                user: { ...employee },
-            });
+            const employee = employeesRequest.data?.find((employee) => employee.id === id);
+            setTimesheet({...timesheet, employee: {id: employee?.id}})
         }
     };
 
@@ -174,10 +133,10 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                                     );
                                 }
                             })}
-                            {state.formStatus == 'ERROR' ? (
+                            {formStatus == 'ERROR' ? (
                                 <>
                                     <ErrorAlert></ErrorAlert>
-                                    <Box>{state.errorMessage}</Box>
+                                    <Box>{errorMessage}</Box>
                                 </>
                             ) : null}
                         </Tbody>
@@ -211,9 +170,9 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                         <Input
                             placeholder="Timesheet Name"
                             onChange={(e) =>
-                                setState({
-                                    ...state,
-                                    timesheetName: e.target.value,
+                                setTimesheet({
+                                    ...timesheet,
+                                    name: e.target.value,
                                 })
                             }
                         />
@@ -223,20 +182,20 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                         <Input
                             placeholder="Description"
                             onChange={(e) =>
-                                setState({
-                                    ...state,
+                                setTimesheet({
+                                    ...timesheet,
                                     description: e.target.value,
                                 })
                             }
                         />
                     </FormControl>
-                    <FormControl isInvalid={!(state.allocation > 0 && state.allocation <= 100)}>
+                    <FormControl isInvalid={!((timesheet.allocation || 0) > 0 && (timesheet.allocation || 101) <= 100)}>
                         <FormLabel>Allocation</FormLabel>
                         <Input
                             placeholder="0"
                             onChange={(e) =>
-                                setState({
-                                    ...state,
+                                setTimesheet({
+                                    ...timesheet,
                                     allocation: parseInt(e.target.value),
                                 })
                             }
@@ -251,8 +210,12 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             Cancel
                         </Button>
                     </ModalFooter>
-                    {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
-                    {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
+                            {formStatus == 'ERROR' ? (
+                                <>
+                                    <ErrorAlert></ErrorAlert>
+                                    <Box>{errorMessage}</Box>
+                                </>
+                            ) : null}
                 </ModalContent>
             </Modal>
         </Flex>
