@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Flex } from '@chakra-ui/layout';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/dist/client/router';
-import ProjectDetail from '@/components/projects/ProjectDetail';
+import ProjectDetail from '@/components/detail/ProjectDetail';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import Layout from '@/components/common/Layout';
@@ -11,9 +11,9 @@ import Link from 'next/link';
 import useData from '@/lib/hooks/useData';
 import { useSWRConfig } from 'swr';
 import * as fetch from '@/lib/utils/fetch';
-import TimesheetTable from '@/components/timesheets/TimesheetTable';
-import TaskTable from '@/components/tasks/TaskTable';
-import { FormStatus } from '@/components/projects/NewProject/ProjectForm';
+import TimesheetTable from '@/components/table/TimesheetTable';
+import TaskTable from '@/components/table/TaskTable';
+import { FormStatus } from '@/components/form/ProjectForm';
 import { ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 import { projectEndpointURL, taskEndpointURL } from '@/lib/const';
 
@@ -31,9 +31,7 @@ const Id: NextPage = () => {
         formStatus: FormStatus.IDLE,
         errorMessage: '',
     });
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
     const { mutate } = useSWRConfig();
-
     const {
         data: timesheets,
         isError: timesheetError,
@@ -43,17 +41,13 @@ const Id: NextPage = () => {
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (project) {
-            const createProjectRequest: ProjectDTO = {
-                ...project,
-                status: 'ARCHIVED',
-            };
             setState({
                 ...state,
                 formStatus: FormStatus.LOADING,
             });
             try {
-                await fetch.put(url, createProjectRequest);
-                mutate(`${url}/${id}`);
+                await fetch.put(projectEndpointURL.toString(), { ...project, status: 'ARCHIVED' });
+                mutate(`${projectEndpointURL}/${id}`);
                 setState({
                     ...state,
                     formStatus: FormStatus.SUCCESS,
@@ -77,8 +71,8 @@ const Id: NextPage = () => {
     return (
         <Layout>
             <Flex flexDirection="column">
-                {isLoading && <Loading></Loading>}
-                {isError && <ErrorAlert title={isError.name} message={isError.name}></ErrorAlert>}
+                {isLoading && <Loading />}
+                {isError && <ErrorAlert title={isError.name} message={isError.name} />}
                 {project ? <ProjectDetail project={project} /> : <Box>Not found</Box>}
             </Flex>
             <Link key={`${id}`} href={`${id}/edit`}>
@@ -91,8 +85,12 @@ const Id: NextPage = () => {
                     Archive Project
                 </Button>
             )}
-            {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
-            {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
+            {state.formStatus == 'ERROR' ? (
+                <>
+                    <ErrorAlert />
+                    <Box>{state.errorMessage}</Box>
+                </>
+            ) : null}
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
@@ -105,10 +103,10 @@ const Id: NextPage = () => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-            {timesheetLoading && <Loading></Loading>}
-            {timesheetError && <ErrorAlert title={timesheetError.name} message={timesheetError.name}></ErrorAlert>}
+            {timesheetLoading && <Loading />}
+            {timesheetError && <ErrorAlert title={timesheetError.name} message={timesheetError.name} />}
             <TimesheetTable timesheets={timesheets} project={project} />
-            <TaskTable project={project} />
+            {project && <TaskTable project={project} />}
         </Layout>
     );
 };

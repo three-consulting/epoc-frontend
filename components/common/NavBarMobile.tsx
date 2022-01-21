@@ -13,7 +13,7 @@ function NavBarMobile(): JSX.Element {
                 <Box display="flex" justifyContent="space-between">
                     <BreadcrumbItem _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
                         <VStack>
-                            <Icon as={BsHouse}></Icon>
+                            <Icon as={BsHouse} />
                             <Text fontSize="xs" margin="0 !important" padding="0 !important">
                                 Settings
                             </Text>
@@ -21,7 +21,7 @@ function NavBarMobile(): JSX.Element {
                     </BreadcrumbItem>
                     <BreadcrumbItem _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
                         <VStack>
-                            <Icon as={BsBriefcase}></Icon>
+                            <Icon as={BsBriefcase} />
                             <Text fontSize="xs" margin="0 !important" padding="0 !important">
                                 Projects
                             </Text>
@@ -30,14 +30,14 @@ function NavBarMobile(): JSX.Element {
                     <BreadcrumbItem _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
                         {user ? (
                             <VStack onClick={signOut}>
-                                <Icon as={BsDoorClosed}></Icon>
+                                <Icon as={BsDoorClosed} />
                                 <Text fontSize="xs" margin="0 !important" padding="0 !important">
                                     Sign-out
                                 </Text>
                             </VStack>
                         ) : (
                             <VStack onClick={signIn}>
-                                <Icon as={BsDoorOpen}></Icon>
+                                <Icon as={BsDoorOpen} />
                                 <Text fontSize="xs" margin="0 !important" padding="0 !important">
                                     Sign-in
                                 </Text>

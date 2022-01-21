@@ -28,7 +28,7 @@ const NavItem = ({ name, icon, href }: LinkItemProps) => {
             <Link href={href}>
                 <a>
                     <HStack>
-                        <Icon as={icon}></Icon>
+                        <Icon as={icon} />
                         <Text>{name}</Text>
                     </HStack>
                 </a>
@@ -47,7 +47,7 @@ function LeftNav(): JSX.Element {
                 Navigation
             </Text>
             {LinkItems.map((item, idx) => (
-                <NavItem key={idx} name={item.name} icon={item.icon} href={item.href}></NavItem>
+                <NavItem key={idx} name={item.name} icon={item.icon} href={item.href} />
             ))}
 
             <Flex
@@ -58,12 +58,12 @@ function LeftNav(): JSX.Element {
             >
                 {user ? (
                     <HStack onClick={signOut}>
-                        <Icon as={BsDoorClosed}></Icon>
+                        <Icon as={BsDoorClosed} />
                         <Text>Sign-out</Text>
                     </HStack>
                 ) : (
                     <HStack onClick={signIn}>
-                        <Icon as={BsDoorOpen}></Icon>
+                        <Icon as={BsDoorOpen} />
                         <Text>Sign-in</Text>
                     </HStack>
                 )}

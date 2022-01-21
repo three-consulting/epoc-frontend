@@ -8,10 +8,10 @@ function Footer(): JSX.Element {
     if (isMobile)
         return (
             <Box borderTop="1px" borderColor="gray.400">
-                <NavBarMobile></NavBarMobile>
+                <NavBarMobile />
             </Box>
         );
-    return <Box borderTop="1px" borderColor="gray.400"></Box>;
+    return <Box borderTop="1px" borderColor="gray.400" />;
 }
 
 export default Footer;

@@ -20,12 +20,12 @@ import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
-import { FormStatus } from '../projects/NewProject/ProjectForm';
+import { FormStatus } from '../form/ProjectForm';
 import { taskEndpointURL } from '@/lib/const';
 import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
 
 interface TaskTableProps {
-    project?: ProjectDTO;
+    project: ProjectDTO;
 }
 
 function TaskTable({ project }: TaskTableProps): JSX.Element {
@@ -37,7 +37,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
     });
     const [formState, setFormState] = useState<FormStatus>(FormStatus.IDLE);
     const [errorMessage, setErrorMessage] = useState<string | undefined>();
-    const taskRequest = useData<TaskDTO[]>(taskEndpointURL, { projectId: `${project?.id}` });
+    const taskRequest = useData<TaskDTO[]>(taskEndpointURL, { projectId: `${project.id}` });
     const { mutate } = useSWRConfig();
 
     const handleSubmit = async (e: React.MouseEvent) => {
@@ -45,7 +45,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
         setFormState(FormStatus.LOADING);
         try {
             await fetch.post(taskEndpointURL.toString(), state);
-            mutate(`${taskEndpointURL}?projectId=${project?.id}`);
+            mutate(`${taskEndpointURL}?projectId=${project.id}`);
             setFormState(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
@@ -64,12 +64,9 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
             padding="1rem 1rem"
             marginTop="1.5rem"
         >
-            {taskRequest.isLoading && <Loading></Loading>}
+            {taskRequest.isLoading && <Loading />}
             {taskRequest.isError && (
-                <ErrorAlert
-                    title="Error loading data"
-                    message="Could not load the required data from the server"
-                ></ErrorAlert>
+                <ErrorAlert title="Error loading data" message="Could not load the required data from the server" />
             )}
             <Heading as="h2" size="md">
                 Tasks
@@ -87,7 +84,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                         <Thead>
                             <Tr>
                                 <Th>Name</Th>
-                                <Th></Th>
+                                <Th />
                             </Tr>
                         </Thead>
                         <Tbody>
@@ -148,7 +145,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                     </ModalFooter>
                     {formState == 'ERROR' ? (
                         <>
-                            <ErrorAlert></ErrorAlert>
+                            <ErrorAlert />
                             <Box>{errorMessage}</Box>
                         </>
                     ) : null}

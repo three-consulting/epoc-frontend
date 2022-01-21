@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
-import NewCustomer from '@/components/projects/NewProject/NewCustomer';
 import { projectEndpointURL } from '@/lib/const';
 import { ProjectDTO, EmployeeDTO, CustomerDTO } from '@/lib/types/dto';
+import CustomerForm from './CustomerForm';
 
 export enum FormStatus {
     IDLE = 'IDLE',
@@ -26,9 +26,9 @@ const emptyProject: ProjectDTO = {
 };
 
 type ProjectFormProps = {
-    employees?: EmployeeDTO[];
-    customers?: CustomerDTO[];
-    method?: string;
+    employees: EmployeeDTO[];
+    customers: CustomerDTO[];
+    method: string;
     project?: ProjectDTO;
 };
 
@@ -41,7 +41,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
         e.preventDefault();
         const id = e.currentTarget.value;
         if (id) {
-            const customer = customers?.find((el) => el.id === Number(id));
+            const customer = customers.find((el) => el.id === Number(id));
             setProject({ ...project, customer: customer });
         }
     };
@@ -50,7 +50,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
         e.preventDefault();
         const id = e.currentTarget.value;
         if (id) {
-            const employee = employees?.find((el) => el.id === Number(id));
+            const employee = employees.find((el) => el.id === Number(id));
             setProject({ ...project, managingEmployee: employee });
         }
     };
@@ -92,7 +92,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
             borderRadius="0.2rem"
             padding="1rem 1rem"
         >
-            {formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
+            {formStatus == 'ERROR' ? <ErrorAlert /> : <Box />}
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
@@ -113,7 +113,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
                         value={project.description || ''}
                         placeholder="Project description"
                         onChange={(e) => setProject({ ...project, description: e.target.value })}
-                    ></Input>
+                    />
                 </FormControl>
                 <FormControl isRequired={true}>
                     <FormLabel>Start date</FormLabel>
@@ -131,7 +131,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
                         value={project.endDate || ''}
                         placeholder="Project end date"
                         onChange={(e) => setProject({ ...project, endDate: e.target.value })}
-                    ></Input>
+                    />
                     <FormErrorMessage>End date precedes start date</FormErrorMessage>
                 </FormControl>
                 <Flex flexDirection="row" justifyContent="center">
@@ -144,7 +144,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
                                 marginRight="0.3rem"
                                 value={project.customer?.id}
                             >
-                                {customers?.map((customer, idx) => {
+                                {customers.map((customer, idx) => {
                                     return (
                                         <option key={idx} value={customer.id}>
                                             {customer.name}
@@ -152,7 +152,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
                                     );
                                 })}
                             </Select>
-                            <NewCustomer />
+                            <CustomerForm />
                         </Flex>
                     </FormControl>
                 </Flex>
@@ -163,7 +163,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
                         placeholder="Select employee"
                         value={project.managingEmployee?.id}
                     >
-                        {employees?.map((el, idx) => {
+                        {employees.map((el, idx) => {
                             return (
                                 <option key={idx} value={el.id}>
                                     {`${el.first_name} ${el.last_name}`}

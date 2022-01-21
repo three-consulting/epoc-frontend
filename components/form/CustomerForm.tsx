@@ -26,7 +26,7 @@ const emptyCustomer: CustomerDTO = {
     description: '',
 };
 
-function NewCustomer(): JSX.Element {
+function CustomerForm(): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [customer, setCustomer] = useState<CustomerDTO>(emptyCustomer);
     const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.IDLE);
@@ -83,7 +83,7 @@ function NewCustomer(): JSX.Element {
                         </FormControl>
                         {formStatus == 'ERROR' ? (
                             <>
-                                <ErrorAlert></ErrorAlert>
+                                <ErrorAlert />
                                 <Box>{errorMessage}</Box>
                             </>
                         ) : null}
@@ -103,4 +103,4 @@ function NewCustomer(): JSX.Element {
     );
 }
 
-export default NewCustomer;
+export default CustomerForm;

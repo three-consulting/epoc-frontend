@@ -21,7 +21,7 @@ import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
-import { FormStatus } from '../projects/NewProject/ProjectForm';
+import { FormStatus } from '../form/ProjectForm';
 import { employeeEndpointURL, timeSheetURL } from '@/lib/const';
 import { TimesheetDTO, ProjectDTO, EmployeeDTO } from '@/lib/types/dto';
 
@@ -31,16 +31,16 @@ type TimesheetTableProps = {
 };
 
 const emptyTimesheet: TimesheetDTO = {
-        name: '',
-        description: '',
-        allocation: 0,
-}
+    name: '',
+    description: '',
+    allocation: 0,
+};
 
 function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [timesheet, setTimesheet] = useState<TimesheetDTO>(emptyTimesheet);
     const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.LOADING);
-    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const employeesRequest = useData<EmployeeDTO[]>(employeeEndpointURL);
     const { mutate } = useSWRConfig();
@@ -48,21 +48,21 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
-        setFormStatus(FormStatus.LOADING)
+        setFormStatus(FormStatus.LOADING);
         try {
             await fetch.post(timeSheetURL.toString(), timesheet);
             mutate(`${timeSheetURL}?projectId=${project?.id}`);
-            setFormStatus(FormStatus.SUCCESS)
+            setFormStatus(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
-            setFormStatus(FormStatus.ERROR)
+            setFormStatus(FormStatus.ERROR);
         }
     };
 
     const archiveTimesheet = async (timesheet: TimesheetDTO, e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await fetch.put(timeSheetURL.toString(), {...timesheet, staus: 'ARCHIVED'});
+            await fetch.put(timeSheetURL.toString(), { ...timesheet, staus: 'ARCHIVED' });
             mutate(`${timeSheetURL}?projectId=${project?.id}`);
             setFormStatus(FormStatus.SUCCESS);
         } catch (error) {
@@ -76,7 +76,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
         const id = parseInt(e.currentTarget.value);
         if (id) {
             const employee = employeesRequest.data?.find((employee) => employee.id === id);
-            setTimesheet({...timesheet, employee: {id: employee?.id}})
+            setTimesheet({ ...timesheet, employee: { id: employee?.id } });
         }
     };
 
@@ -90,12 +90,9 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
             padding="1rem 1rem"
             marginTop="1.5rem"
         >
-            {employeesRequest.isLoading && <Loading></Loading>}
+            {employeesRequest.isLoading && <Loading />}
             {employeesRequest.isError && (
-                <ErrorAlert
-                    title="Error loading data"
-                    message="Could not load the required data from the server"
-                ></ErrorAlert>
+                <ErrorAlert title="Error loading data" message="Could not load the required data from the server" />
             )}
             <Heading as="h2" size="md">
                 Users
@@ -114,7 +111,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             <Tr>
                                 <Th>Name</Th>
                                 <Th>Allocation</Th>
-                                <Th></Th>
+                                <Th />
                             </Tr>
                         </Thead>
                         <Tbody>
@@ -135,7 +132,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             })}
                             {formStatus == 'ERROR' ? (
                                 <>
-                                    <ErrorAlert></ErrorAlert>
+                                    <ErrorAlert />
                                     <Box>{errorMessage}</Box>
                                 </>
                             ) : null}
@@ -210,12 +207,12 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             Cancel
                         </Button>
                     </ModalFooter>
-                            {formStatus == 'ERROR' ? (
-                                <>
-                                    <ErrorAlert></ErrorAlert>
-                                    <Box>{errorMessage}</Box>
-                                </>
-                            ) : null}
+                    {formStatus == 'ERROR' ? (
+                        <>
+                            <ErrorAlert />
+                            <Box>{errorMessage}</Box>
+                        </>
+                    ) : null}
                 </ModalContent>
             </Modal>
         </Flex>

@@ -36,7 +36,7 @@ function Main({ children }: MainProps): JSX.Element {
             width={['95vw', '75vw', '62.5vw', '70vw']}
         >
             <Flex flexDirection="row" alignContent="center" justifyContent="center">
-                <LeftNav></LeftNav>
+                <LeftNav />
                 <Box minWidth="40vw">{children}</Box>
             </Flex>
         </Box>

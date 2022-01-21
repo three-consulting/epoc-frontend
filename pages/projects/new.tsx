@@ -2,7 +2,7 @@ import React from 'react';
 import type { NextPage } from 'next';
 import { Heading } from '@chakra-ui/layout';
 import Layout from '@/components/common/Layout';
-import ProjectForm from '@/components/projects/NewProject/ProjectForm';
+import ProjectForm from '@/components/form/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import useData from '@/lib/hooks/useData';
@@ -10,29 +10,20 @@ import { CustomerDTO, EmployeeDTO } from '@/lib/types/dto';
 import { customerEndpointURL, employeeEndpointURL } from '@/lib/const';
 
 const New: NextPage = () => {
-    const {
-        data: customers,
-        isError: customerError,
-        isLoading: customersLoading,
-    } = useData<CustomerDTO[]>(customerEndpointURL);
-    const {
-        data: employees,
-        isError: employeeError,
-        isLoading: employeesLoading,
-    } = useData<EmployeeDTO[]>(employeeEndpointURL);
+    const customerRequest = useData<CustomerDTO[]>(customerEndpointURL);
+    const employeesRequest = useData<EmployeeDTO[]>(employeeEndpointURL);
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">
                 New project
             </Heading>
-            {(customersLoading || employeesLoading) && <Loading></Loading>}
-            {(customerError || employeeError) && (
-                <ErrorAlert
-                    title="Error loading data"
-                    message="Could not load the required data from the server"
-                ></ErrorAlert>
+            {(customerRequest.isLoading || employeesRequest.isLoading) && <Loading />}
+            {(customerRequest.isError || employeesRequest.isError) && (
+                <ErrorAlert title="Error loading data" message="Could not load the required data from the server" />
             )}
-            <ProjectForm customers={customers} employees={employees} method="POST"></ProjectForm>
+            {customerRequest.data && employeesRequest.data && (
+                <ProjectForm customers={customerRequest.data} employees={employeesRequest.data} method="POST" />
+            )}
         </Layout>
     );
 };

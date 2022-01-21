@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import { Box, Heading, Text, Flex } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/react';
 import Layout from '@/components/common/Layout';
-import ProjectTable from '@/components/projects/ProjectTable';
+import ProjectTable from '@/components/table/ProjectTable';
 import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
@@ -20,12 +20,12 @@ const Projects: NextPage = () => {
             <Heading fontWeight="black" margin="1rem 0rem">
                 Projects
             </Heading>
-            {projectRequest.isLoading && <Loading></Loading>}
+            {projectRequest.isLoading && <Loading />}
             {projectRequest.isError && (
-                <ErrorAlert title={projectRequest.isError.name} message={projectRequest.isError.name}></ErrorAlert>
+                <ErrorAlert title={projectRequest.isError.name} message={projectRequest.isError.name} />
             )}
             {projectRequest.data && projectRequest.data.length > 0 ? (
-                <ProjectTable projects={projectRequest.data}></ProjectTable>
+                <ProjectTable projects={projectRequest.data} />
             ) : (
                 <Flex
                     backgroundColor="white"
