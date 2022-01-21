@@ -6,8 +6,8 @@ import ProjectForm from '@/components/projects/NewProject/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import { useRouter } from 'next/dist/client/router';
-import { CustomerDTO, EmployeeDTO, ProjectDTO } from '@/lib/types/api';
 import useData from '@/lib/hooks/useData';
+import { CustomerDTO, EmployeeDTO, ProjectDTO } from '@/lib/types/dto';
 
 const Edit: NextPage = () => {
     const { data: customers, isError: customerError, isLoading: customersLoading } = useData<CustomerDTO[]>('customer');

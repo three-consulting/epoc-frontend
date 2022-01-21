@@ -20,73 +20,39 @@ import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
-import { ProjectDTO, TaskDTO } from '@/lib/types/api';
 import { FormStatus } from '../projects/NewProject/ProjectForm';
+import { taskEndpointURL } from '@/lib/const';
+import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
 
-type TaskTableProps = {
+interface TaskTableProps {
     project?: ProjectDTO;
-};
-
-type StateType = {
-    name: string;
-    description: string;
-    startDate: string;
-    endDate?: string;
-    formStatus: FormStatus;
-    errorMessage: string;
-};
+}
 
 function TaskTable({ project }: TaskTableProps): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [state, setState] = useState<StateType>({
+    const [state, setState] = useState<TaskDTO>({
         name: '',
         description: '',
-        startDate: new Date().toISOString().split('T')[0],
-        formStatus: FormStatus.IDLE,
-        errorMessage: '',
+        project: project,
     });
-
-    const {
-        data: tasks,
-        isError: taskError,
-        isLoading: tasksLoading,
-    } = useData<TaskDTO[]>('task', { projectId: `${project?.id}` });
-
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/task`;
+    const [formState, setFormState] = useState<FormStatus>(FormStatus.IDLE);
+    const [errorMessage, setErrorMessage] = useState<string | undefined>();
+    const taskRequest = useData<TaskDTO[]>(taskEndpointURL, { projectId: `${project?.id}` });
     const { mutate } = useSWRConfig();
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
-
-        const createTaskRequest: TaskDTO = {
-            name: state.name,
-            description: state.description,
-            startDate: state.startDate,
-            endDate: state.endDate,
-            project: project,
-        };
-        setState({
-            ...state,
-            formStatus: FormStatus.LOADING,
-        });
+        setFormState(FormStatus.LOADING);
         try {
-            await fetch.post(url, createTaskRequest);
-            mutate(`${url}?projectId=${project?.id}`);
-            setState({
-                ...state,
-                formStatus: FormStatus.SUCCESS,
-            });
+            await fetch.post(taskEndpointURL, state);
+            mutate(`${taskEndpointURL}?projectId=${project?.id}`);
+            setFormState(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
-            setState({
-                ...state,
-                errorMessage: `${error}`,
-                formStatus: FormStatus.ERROR,
-            });
+            setFormState(FormStatus.ERROR);
+            setErrorMessage(`${error}`);
         }
     };
-
-    const invalidEndDate = (state.startDate && state.endDate && state.startDate > state.endDate) || false;
 
     return (
         <Flex
@@ -98,8 +64,8 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
             padding="1rem 1rem"
             marginTop="1.5rem"
         >
-            {tasksLoading && <Loading></Loading>}
-            {taskError && (
+            {taskRequest.isLoading && <Loading></Loading>}
+            {taskRequest.isError && (
                 <ErrorAlert
                     title="Error loading data"
                     message="Could not load the required data from the server"
@@ -108,14 +74,14 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
             <Heading as="h2" size="md">
                 Tasks
             </Heading>
-            {tasks && tasks?.length == 0 && (
+            {taskRequest.data && taskRequest.data.length == 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     No tasks in this project.
                     <br />
                     To add a task click the button below.
                 </Box>
             )}
-            {tasks && tasks?.length !== 0 && (
+            {taskRequest.data && taskRequest.data.length > 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
@@ -125,7 +91,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {tasks.map((el, idx) => {
+                            {taskRequest.data.map((el, idx) => {
                                 return (
                                     <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
                                         <Td>{el.name}</Td>
@@ -149,7 +115,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                 <ModalContent px="0.5rem">
                     <ModalHeader>Add task to project</ModalHeader>
                     <ModalCloseButton />
-                    <FormControl isInvalid={state.name.length === 0} isRequired>
+                    <FormControl isInvalid={!state.name} isRequired>
                         <FormLabel>Task Name</FormLabel>
                         <Input
                             placeholder="Task Name"
@@ -174,36 +140,6 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                             }
                         />
                     </FormControl>
-                    <FormControl isInvalid={state.startDate.length === 0} isRequired>
-                        <FormLabel>Start Date</FormLabel>
-                        <Input
-                            type="date"
-                            value={state.startDate}
-                            placeholder="Project start date"
-                            onChange={(e) =>
-                                setState({
-                                    ...state,
-                                    startDate: e.target.value,
-                                })
-                            }
-                        ></Input>
-                        <FormErrorMessage>Task start date must not be empty.</FormErrorMessage>
-                    </FormControl>
-                    <FormControl isInvalid={invalidEndDate}>
-                        <FormLabel>End Date</FormLabel>
-                        <Input
-                            type="date"
-                            value={state.endDate ? state.endDate : ''}
-                            placeholder="Project end date"
-                            onChange={(e) =>
-                                setState({
-                                    ...state,
-                                    endDate: e.target.value,
-                                })
-                            }
-                        ></Input>
-                        <FormErrorMessage>End date must not precede start date.</FormErrorMessage>
-                    </FormControl>
                     <ModalFooter>
                         <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
                             Submit
@@ -212,8 +148,12 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                             Cancel
                         </Button>
                     </ModalFooter>
-                    {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
-                    {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
+                    {formState == 'ERROR' ? (
+                        <>
+                            <ErrorAlert></ErrorAlert>
+                            <Box>{errorMessage}</Box>
+                        </>
+                    ) : null}
                 </ModalContent>
             </Modal>
         </Flex>

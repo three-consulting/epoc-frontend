@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Heading } from '@chakra-ui/layout';
 import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from '@chakra-ui/react';
 import Link from 'next/link';
-import { ProjectDTO } from '@/lib/types/api';
+import { ProjectDTO } from '@/lib/types/dto';
 
 type ProjectListProps = {
     projects: ProjectDTO[];

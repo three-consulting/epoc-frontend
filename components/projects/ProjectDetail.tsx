@@ -1,4 +1,4 @@
-import { ProjectDTO } from '@/lib/types/api';
+import { ProjectDTO } from '@/lib/types/dto';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import React from 'react';
 

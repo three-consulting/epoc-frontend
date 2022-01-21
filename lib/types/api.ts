@@ -3,8 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-import { SourceHTMLAttributes } from "react"
-
 export interface paths {
   "/timesheet": {
     get: operations["getTimesheets"];
@@ -70,7 +68,7 @@ export interface paths {
   };
 }
 
-interface components {
+export interface components {
   schemas: {
     CustomerDTO: {
       id?: number;
@@ -116,11 +114,10 @@ interface components {
       id?: number;
       name: string;
       description?: string;
-      startDate?: string;
-      endDate?: string;
       project?: components["schemas"]["ProjectDTO"];
       created?: string;
       updated?: string;
+      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TimeCategoryDTO: {
       id?: number;
@@ -134,19 +131,19 @@ interface components {
       quantity: {
         seconds?: number;
         nano?: number;
+        negative?: boolean;
+        zero?: boolean;
         units?: {
           dateBased?: boolean;
           timeBased?: boolean;
           duration?: {
             seconds?: number;
             nano?: number;
-            zero?: boolean;
             negative?: boolean;
+            zero?: boolean;
           };
           durationEstimated?: boolean;
         }[];
-        zero?: boolean;
-        negative?: boolean;
       };
       date: string;
       description?: string;
@@ -158,12 +155,6 @@ interface components {
     };
   };
 }
-
-export type ProjectDTO = components['schemas']['ProjectDTO']
-export type EmployeeDTO = components['schemas']['EmployeeDTO']
-export type CustomerDTO = components['schemas']['CustomerDTO']
-export type TaskDTO = components['schemas']['TaskDTO']
-export type TimesheetDTO = components['schemas']['TimesheetDTO']
 
 export interface operations {
   getTimesheets: {

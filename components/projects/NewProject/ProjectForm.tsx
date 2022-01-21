@@ -1,12 +1,12 @@
 import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from '@chakra-ui/react';
 import { Box, Flex } from '@chakra-ui/layout';
 import React, { useState } from 'react';
-import { CustomerDTO, EmployeeDTO, ProjectDTO } from '@/lib/types/api';
 import { useRouter } from 'next/router';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import NewCustomer from '@/components/projects/NewProject/NewCustomer';
-import { projectURL } from '@/lib/const';
+import { projectEndpointURL } from '@/lib/const';
+import { ProjectDTO, EmployeeDTO, CustomerDTO } from '@/lib/types/dto';
 
 export enum FormStatus {
     IDLE = 'IDLE',
@@ -56,7 +56,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
     };
 
     const createProject = async (project: ProjectDTO) => {
-        await fetch.post(projectURL, project);
+        await fetch.post(projectEndpointURL, project);
         setFormStatus(FormStatus.SUCCESS);
         router.push('/projects');
     };
@@ -64,7 +64,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
     const updateProject = async (project: ProjectDTO) => {
         const { id } = router.query;
         project.id = parseInt(`${id}`);
-        await fetch.put(projectURL, project);
+        await fetch.put(projectEndpointURL, project);
         setFormStatus(FormStatus.SUCCESS);
         router.push(`/projects/${id}`);
     };

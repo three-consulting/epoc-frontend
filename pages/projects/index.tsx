@@ -7,8 +7,8 @@ import ProjectTable from '@/components/projects/ProjectTable';
 import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
-import { ProjectDTO } from '@/lib/types/api';
 import useData from '@/lib/hooks/useData';
+import { ProjectDTO } from '@/lib/types/dto';
 
 const Projects: NextPage = () => {
     const { data: projects, isError, isLoading } = useData<ProjectDTO[]>('project');

@@ -6,7 +6,7 @@ import ProjectForm from '@/components/projects/NewProject/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import useData from '@/lib/hooks/useData';
-import { CustomerDTO, EmployeeDTO } from '@/lib/types/api';
+import { CustomerDTO, EmployeeDTO } from '@/lib/types/dto';
 
 const New: NextPage = () => {
     const { data: customers, isError: customerError, isLoading: customersLoading } = useData<CustomerDTO[]>('customer');

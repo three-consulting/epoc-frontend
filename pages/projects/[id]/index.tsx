@@ -13,8 +13,8 @@ import { useSWRConfig } from 'swr';
 import * as fetch from '@/lib/utils/fetch';
 import TimesheetTable from '@/components/timesheets/TimesheetTable';
 import TaskTable from '@/components/tasks/TaskTable';
-import { ProjectDTO, TimesheetDTO } from '@/lib/types/api';
 import { FormStatus } from '@/components/projects/NewProject/ProjectForm';
+import { ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 
 type StateType = {
     formStatus: FormStatus;

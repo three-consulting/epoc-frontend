@@ -1,4 +1,3 @@
-import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/api';
 import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import {
@@ -23,6 +22,8 @@ import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
 import { FormStatus } from '../projects/NewProject/ProjectForm';
+import { employeeEndpointURL } from '@/lib/const';
+import { TimesheetDTO, ProjectDTO, EmployeeDTO } from '@/lib/types/dto';
 
 type TimesheetTableProps = {
     timesheets?: TimesheetDTO[];
@@ -48,7 +49,11 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
         formStatus: FormStatus.IDLE,
         errorMessage: '',
     });
-    const { data: employees, isError: employeeError, isLoading: employeesLoading } = useData<EmployeeDTO[]>('employee');
+    const {
+        data: employees,
+        isError: employeeError,
+        isLoading: employeesLoading,
+    } = useData<EmployeeDTO[]>(employeeEndpointURL);
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/timesheet`;
     const { mutate } = useSWRConfig();

@@ -17,9 +17,9 @@ import React, { useState } from 'react';
 import * as fetch from '@/lib/utils/fetch';
 import { useSWRConfig } from 'swr';
 import ErrorAlert from '@/components/common/ErrorAlert';
-import { CustomerDTO } from '@/lib/types/api';
 import { FormStatus } from './ProjectForm';
-import { customerURL } from '@/lib/const';
+import { CustomerDTO } from '@/lib/types/dto';
+import { customerEndpointURL } from '@/lib/const';
 
 const emptyCustomer: CustomerDTO = {
     name: '',
@@ -37,8 +37,8 @@ function NewCustomer(): JSX.Element {
         e.preventDefault();
         setFormStatus(FormStatus.LOADING);
         try {
-            await fetch.post(customerURL, customer);
-            mutate(customerURL);
+            await fetch.post(customerEndpointURL, customer);
+            mutate(customerEndpointURL);
             setFormStatus(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
