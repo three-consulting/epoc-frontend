@@ -19,49 +19,31 @@ import { useSWRConfig } from 'swr';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import { CustomerDTO } from '@/lib/types/api';
 import { FormStatus } from './ProjectForm';
+import { customerURL } from '@/lib/const';
 
-type StateType = {
-    name: string;
-    description: string;
-    formStatus: FormStatus;
-    errorMessage: string;
+const emptyCustomer: CustomerDTO = {
+    name: '',
+    description: '',
 };
 
 function NewCustomer(): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [state, setState] = useState<StateType>({
-        name: '',
-        description: '',
-        formStatus: FormStatus.IDLE,
-        errorMessage: '',
-    });
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/customer`;
+    const [customer, setCustomer] = useState<CustomerDTO>(emptyCustomer);
+    const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.IDLE);
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
     const { mutate } = useSWRConfig();
 
-    const handleSubmit = async (e: React.MouseEvent) => {
+    const submitForm = async (e: React.MouseEvent) => {
         e.preventDefault();
-
-        const createCustomerRequest: CustomerDTO = {
-            name: state.name,
-            description: state.description,
-        };
-        setState({
-            ...state,
-            formStatus: FormStatus.LOADING,
-        });
+        setFormStatus(FormStatus.LOADING);
         try {
-            await fetch.post(url, createCustomerRequest);
-            mutate(url);
-            setState({
-                ...state,
-                formStatus: FormStatus.SUCCESS,
-            });
+            await fetch.post(customerURL, customer);
+            mutate(customerURL);
+            setFormStatus(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
-            setState({
-                ...state,
-                errorMessage: `${error}`,
-            });
+            setFormStatus(FormStatus.ERROR);
+            setErrorMessage(`${error}`);
         }
     };
 
@@ -79,8 +61,8 @@ function NewCustomer(): JSX.Element {
                             <Input
                                 placeholder="Customer Name"
                                 onChange={(e) =>
-                                    setState({
-                                        ...state,
+                                    setCustomer({
+                                        ...customer,
                                         name: e.target.value,
                                     })
                                 }
@@ -92,19 +74,23 @@ function NewCustomer(): JSX.Element {
                             <Input
                                 placeholder="Description"
                                 onChange={(e) =>
-                                    setState({
-                                        ...state,
+                                    setCustomer({
+                                        ...customer,
                                         description: e.target.value,
                                     })
                                 }
                             />
                         </FormControl>
-                        {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
-                        {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
+                        {formStatus == 'ERROR' ? (
+                            <>
+                                <ErrorAlert></ErrorAlert>
+                                <Box>{errorMessage}</Box>
+                            </>
+                        ) : null}
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+                        <Button colorScheme="blue" mr={3} onClick={submitForm}>
                             Save
                         </Button>
                         <Button colorScheme="grey" variant="outline" onClick={onClose}>
