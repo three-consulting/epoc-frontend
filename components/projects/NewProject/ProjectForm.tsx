@@ -1,13 +1,29 @@
 import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from '@chakra-ui/react';
-import reducer, { init, initialState, ActionType, FormStatus } from './reducer';
 import { Box, Flex } from '@chakra-ui/layout';
-import React, { useReducer } from 'react';
+import React, { useState } from 'react';
 import { CustomerDTO, EmployeeDTO, ProjectDTO } from '@/lib/types/api';
 import { useRouter } from 'next/router';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import NewCustomer from '@/components/projects/NewProject/NewCustomer';
-import checkDateOrder from '@/lib/utils/checkDateOrder';
+import { projectURL } from '@/lib/const';
+
+export enum FormStatus {
+    IDLE = 'IDLE',
+    LOADING = 'LOADING',
+    ERROR = 'ERROR',
+    SUCCESS = 'SUCCESS',
+}
+
+const emptyProject: ProjectDTO = {
+    name: '',
+    description: undefined,
+    startDate: undefined,
+    endDate: undefined,
+    managingEmployee: undefined,
+    customer: undefined,
+    status: undefined,
+};
 
 type ProjectFormProps = {
     employees?: EmployeeDTO[];
@@ -15,23 +31,18 @@ type ProjectFormProps = {
     method?: string;
     project?: ProjectDTO;
 };
-function ProjectForm({ employees, customers, method, project }: ProjectFormProps): JSX.Element {
-    const [state, dispatch] = useReducer(
-        reducer,
-        project ? { ...project, formStatus: FormStatus.IDLE } : initialState,
-        init,
-    );
 
+function ProjectForm({ employees, customers, method, project: p }: ProjectFormProps): JSX.Element {
+    const [project, setProject] = useState<ProjectDTO>(p || emptyProject);
+    const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.IDLE);
     const router = useRouter();
-
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
 
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = e.currentTarget.value;
         if (id) {
             const customer = customers?.find((el) => el.id === Number(id));
-            dispatch({ type: ActionType.SET_CUSTOMER, payload: { customer: customer } });
+            setProject({ ...project, customer: customer });
         }
     };
 
@@ -40,47 +51,37 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
         const id = e.currentTarget.value;
         if (id) {
             const employee = employees?.find((el) => el.id === Number(id));
-            dispatch({ type: ActionType.SET_MANAGING_EMPLOYEE, payload: { managingEmployee: employee } });
+            setProject({ ...project, managingEmployee: employee });
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const createProject = async (project: ProjectDTO) => {
+        await fetch.post(projectURL, project);
+        setFormStatus(FormStatus.SUCCESS);
+        router.push('/projects');
+    };
 
-        const createProjectRequest: ProjectDTO = {
-            id: state.id,
-            name: state.name,
-            description: state.description,
-            startDate: state.startDate,
-            endDate: state.endDate,
-            customer: {
-                id: state.customer?.id,
-                name: state.customer?.name as string,
-            },
-            managingEmployee: {
-                id: state.managingEmployee?.id,
-                first_name: state.managingEmployee?.first_name,
-                last_name: state.managingEmployee?.last_name,
-                email: state.managingEmployee?.email,
-            },
-        };
+    const updateProject = async (project: ProjectDTO) => {
+        const { id } = router.query;
+        project.id = parseInt(`${id}`);
+        await fetch.put(projectURL, project);
+        setFormStatus(FormStatus.SUCCESS);
+        router.push(`/projects/${id}`);
+    };
 
+    const submitForm = async () => {
         try {
             if (method === 'POST') {
-                await fetch.post(url, createProjectRequest);
-                dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
-                router.push('/projects');
+                createProject(project);
             } else if (method === 'PUT') {
-                const { id } = router.query;
-                createProjectRequest.id = parseInt(`${id}`);
-                await fetch.put(url, createProjectRequest);
-                dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.SUCCESS } });
-                router.push(`/projects/${id}`);
+                updateProject(project);
             }
-        } catch (error) {
-            dispatch({ type: ActionType.SET_FORM_STATUS, payload: { formStatus: FormStatus.ERROR } });
+        } catch {
+            setFormStatus(FormStatus.ERROR);
         }
     };
+
+    const invalidEndDate = (project.startDate && project.endDate && project.startDate > project.endDate) || false;
 
     return (
         <Flex
@@ -91,50 +92,45 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
             borderRadius="0.2rem"
             padding="1rem 1rem"
         >
-            {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
+            {formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
             <form
                 onSubmit={(e) => {
-                    handleSubmit(e);
+                    e.preventDefault();
+                    submitForm();
                 }}
             >
                 <FormControl isRequired={true}>
                     <FormLabel>Project name</FormLabel>
                     <Input
-                        value={state.name ? state.name : ''}
+                        value={project.name || ''}
                         placeholder="Project name"
-                        onChange={(e) => dispatch({ type: ActionType.SET_NAME, payload: { name: e.target.value } })}
-                    ></Input>
+                        onChange={(e) => setProject({ ...project, name: e.target.value })}
+                    />
                 </FormControl>
                 <FormControl>
                     <FormLabel>Project description</FormLabel>
                     <Input
-                        value={state.description ? state.description : ''}
+                        value={project.description || ''}
                         placeholder="Project description"
-                        onChange={(e) =>
-                            dispatch({ type: ActionType.SET_DESCRIPTION, payload: { description: e.target.value } })
-                        }
+                        onChange={(e) => setProject({ ...project, description: e.target.value })}
                     ></Input>
                 </FormControl>
                 <FormControl isRequired={true}>
                     <FormLabel>Start date</FormLabel>
                     <Input
                         type="date"
-                        value={state.startDate ? state.startDate : ''}
+                        value={project.startDate || ''}
                         placeholder="Project start date"
-                        onChange={(e) =>
-                            dispatch({ type: ActionType.SET_START_DATE, payload: { startDate: e.target.value } })
-                        }
-                    ></Input>
+                        onChange={(e) => setProject({ ...project, startDate: e.target.value })}
+                    />
                 </FormControl>
-                <FormControl isInvalid={checkDateOrder(state.startDate, state.endDate)}>
+                <FormControl isInvalid={invalidEndDate}>
                     <FormLabel>End date</FormLabel>
                     <Input
                         type="date"
-                        value={state.endDate ? state.endDate : ''}
+                        value={project.endDate || ''}
                         placeholder="Project end date"
-                        onChange={(e) =>
-                            dispatch({ type: ActionType.SET_END_DATE, payload: { endDate: e.target.value } })
-                        }
+                        onChange={(e) => setProject({ ...project, endDate: e.target.value })}
                     ></Input>
                     <FormErrorMessage>End date precedes start date</FormErrorMessage>
                 </FormControl>
@@ -146,7 +142,7 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
                                 onChange={handleCustomerChange}
                                 placeholder="Select customer"
                                 marginRight="0.3rem"
-                                value={state.customer?.id}
+                                value={project.customer?.id}
                             >
                                 {customers?.map((customer, idx) => {
                                     return (
@@ -165,7 +161,7 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
                     <Select
                         onChange={handleEmployeeChange}
                         placeholder="Select employee"
-                        value={state.managingEmployee?.id}
+                        value={project.managingEmployee?.id}
                     >
                         {employees?.map((el, idx) => {
                             return (
@@ -177,16 +173,7 @@ function ProjectForm({ employees, customers, method, project }: ProjectFormProps
                     </Select>
                 </FormControl>
                 <br />
-                <Button
-                    colorScheme="blue"
-                    type="submit"
-                    onClick={() =>
-                        dispatch({
-                            type: ActionType.SET_FORM_STATUS,
-                            payload: { formStatus: FormStatus.LOADING },
-                        })
-                    }
-                >
+                <Button colorScheme="blue" type="submit" onClick={() => setFormStatus(FormStatus.LOADING)}>
                     Submit
                 </Button>
                 <Button colorScheme="gray" type="button" marginLeft="0.5rem" onClick={() => router.push('/projects')}>

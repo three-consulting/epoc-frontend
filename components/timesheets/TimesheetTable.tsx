@@ -18,11 +18,11 @@ import {
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
 import { useSWRConfig } from 'swr';
-import { FormStatus } from '../projects/NewProject/reducer';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
+import { FormStatus } from '../projects/NewProject/ProjectForm';
 
 type TimesheetTableProps = {
     timesheets?: TimesheetDTO[];

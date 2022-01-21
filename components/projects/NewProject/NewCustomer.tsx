@@ -15,10 +15,10 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import * as fetch from '@/lib/utils/fetch';
-import { FormStatus } from './reducer';
 import { useSWRConfig } from 'swr';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import { CustomerDTO } from '@/lib/types/api';
+import { FormStatus } from './ProjectForm';
 
 type StateType = {
     name: string;

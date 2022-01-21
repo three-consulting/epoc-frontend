@@ -9,12 +9,12 @@ import Layout from '@/components/common/Layout';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 import Link from 'next/link';
 import useData from '@/lib/hooks/useData';
-import { FormStatus } from '@/components/projects/NewProject/reducer';
 import { useSWRConfig } from 'swr';
 import * as fetch from '@/lib/utils/fetch';
 import TimesheetTable from '@/components/timesheets/TimesheetTable';
 import TaskTable from '@/components/tasks/TaskTable';
 import { ProjectDTO, TimesheetDTO } from '@/lib/types/api';
+import { FormStatus } from '@/components/projects/NewProject/ProjectForm';
 
 type StateType = {
     formStatus: FormStatus;

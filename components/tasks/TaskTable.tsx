@@ -16,13 +16,12 @@ import {
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
 import { useSWRConfig } from 'swr';
-import { FormStatus } from '../projects/NewProject/reducer';
 import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
-import checkDateOrder from '@/lib/utils/checkDateOrder';
 import { ProjectDTO, TaskDTO } from '@/lib/types/api';
+import { FormStatus } from '../projects/NewProject/ProjectForm';
 
 type TaskTableProps = {
     project?: ProjectDTO;
@@ -86,6 +85,8 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
             });
         }
     };
+
+    const invalidEndDate = (state.startDate && state.endDate && state.startDate > state.endDate) || false;
 
     return (
         <Flex
@@ -188,7 +189,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                         ></Input>
                         <FormErrorMessage>Task start date must not be empty.</FormErrorMessage>
                     </FormControl>
-                    <FormControl isInvalid={checkDateOrder(state.startDate, state.endDate)}>
+                    <FormControl isInvalid={invalidEndDate}>
                         <FormLabel>End Date</FormLabel>
                         <Input
                             type="date"
