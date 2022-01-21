@@ -114,11 +114,10 @@ export interface components {
       id?: number;
       name: string;
       description?: string;
-      startDate?: string;
-      endDate?: string;
       project?: components["schemas"]["ProjectDTO"];
       created?: string;
       updated?: string;
+      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TimeCategoryDTO: {
       id?: number;
@@ -132,19 +131,19 @@ export interface components {
       quantity: {
         seconds?: number;
         nano?: number;
+        negative?: boolean;
+        zero?: boolean;
         units?: {
           dateBased?: boolean;
           timeBased?: boolean;
           duration?: {
             seconds?: number;
             nano?: number;
-            zero?: boolean;
             negative?: boolean;
+            zero?: boolean;
           };
           durationEstimated?: boolean;
         }[];
-        zero?: boolean;
-        negative?: boolean;
       };
       date: string;
       description?: string;

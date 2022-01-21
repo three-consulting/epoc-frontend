@@ -62,8 +62,6 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
         const createTaskRequest: components['schemas']['TaskDTO'] = {
             name: state.name,
             description: state.description,
-            startDate: state.startDate,
-            endDate: state.endDate,
             project: project,
         };
         setState({
@@ -78,6 +76,29 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                 formStatus: FormStatus.SUCCESS,
             });
             onClose();
+        } catch (error) {
+            setState({
+                ...state,
+                errorMessage: `${error}`,
+                formStatus: FormStatus.ERROR,
+            });
+        }
+    };
+
+    const archiveTask = async (task: components['schemas']['TaskDTO'], e: React.MouseEvent) => {
+        e.preventDefault();
+        const createTaskRequest: components['schemas']['TaskDTO'] = {
+            ...task,
+            status: 'ARCHIVED',
+        };
+        try {
+            await fetch.put(url, createTaskRequest);
+            mutate(`${url}?projectId=${project?.id}`);
+            setState({
+                ...state,
+                errorMessage: '',
+                formStatus: FormStatus.IDLE,
+            });
         } catch (error) {
             setState({
                 ...state,
@@ -107,14 +128,14 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
             <Heading as="h2" size="md">
                 Tasks
             </Heading>
-            {tasks && tasks?.length == 0 && (
+            {tasks && tasks?.filter((task) => task.status == 'ACTIVE').length == 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     No tasks in this project.
                     <br />
                     To add a task click the button below.
                 </Box>
             )}
-            {tasks && tasks?.length !== 0 && (
+            {tasks && tasks?.filter((task) => task.status == 'ACTIVE').length !== 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
@@ -125,14 +146,16 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                         </Thead>
                         <Tbody>
                             {tasks.map((el, idx) => {
-                                return (
-                                    <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
-                                        <Td>{el.name}</Td>
-                                        <Td>
-                                            <Button>x</Button>
-                                        </Td>
-                                    </Tr>
-                                );
+                                if (el.status == 'ACTIVE') {
+                                    return (
+                                        <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
+                                            <Td>{el.name}</Td>
+                                            <Td>
+                                                <Button onClick={(e) => archiveTask(el, e)}>x</Button>
+                                            </Td>
+                                        </Tr>
+                                    );
+                                }
                             })}
                         </Tbody>
                     </Table>
