@@ -143,14 +143,14 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
             <Heading as="h2" size="md">
                 Users
             </Heading>
-            {timesheets && timesheets?.length == 0 && (
+            {timesheets && timesheets?.filter((timesheet) => timesheet.status == 'ACTIVE').length == 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     No users in this project.
                     <br />
                     To add a user click the button below.
                 </Box>
             )}
-            {timesheets && timesheets?.length !== 0 && (
+            {timesheets && timesheets?.filter((timesheet) => timesheet.status == 'ACTIVE').length !== 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
