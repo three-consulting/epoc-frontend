@@ -22,7 +22,7 @@ import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
 import { FormStatus } from '../projects/NewProject/ProjectForm';
-import { employeeEndpointURL } from '@/lib/const';
+import { employeeEndpointURL, timeSheetURL } from '@/lib/const';
 import { TimesheetDTO, ProjectDTO, EmployeeDTO } from '@/lib/types/dto';
 
 type TimesheetTableProps = {
@@ -49,11 +49,8 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
         formStatus: FormStatus.IDLE,
         errorMessage: '',
     });
-    const {
-        data: employees,
-        isError: employeeError,
-        isLoading: employeesLoading,
-    } = useData<EmployeeDTO[]>(employeeEndpointURL);
+
+    const employeesRequest = useData<EmployeeDTO[]>(employeeEndpointURL);
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/timesheet`;
     const { mutate } = useSWRConfig();
@@ -73,7 +70,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
             formStatus: FormStatus.LOADING,
         });
         try {
-            await fetch.post(url, createTimesheetRequest);
+            await fetch.post(timeSheetURL.toString(), createTimesheetRequest);
             mutate(`${url}?projectId=${project?.id}`);
             setState({
                 ...state,
@@ -116,7 +113,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
         e.preventDefault();
         const id = e.currentTarget.value;
         if (id) {
-            const employee = employees?.find((el) => el.id === Number(id));
+            const employee = employeesRequest.data?.find((el) => el.id === Number(id));
             setState({
                 ...state,
                 user: { ...employee },
@@ -134,8 +131,8 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
             padding="1rem 1rem"
             marginTop="1.5rem"
         >
-            {employeesLoading && <Loading></Loading>}
-            {employeeError && (
+            {employeesRequest.isLoading && <Loading></Loading>}
+            {employeesRequest.isError && (
                 <ErrorAlert
                     title="Error loading data"
                     message="Could not load the required data from the server"
@@ -162,23 +159,27 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {timesheets.map((el, idx) => {
-                                if (el.status === 'ACTIVE') {
+                            {timesheets.map((timesheet, idx) => {
+                                if (timesheet.status === 'ACTIVE') {
                                     return (
                                         <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
                                             <Td>
-                                                {el.employee?.first_name} {el.employee?.last_name}
+                                                {timesheet.employee?.first_name} {timesheet.employee?.last_name}
                                             </Td>
-                                            <Td>{el.allocation} %</Td>
+                                            <Td>{timesheet.allocation} %</Td>
                                             <Td>
-                                                <Button onClick={(e) => archiveTimesheet(el, e)}>x</Button>
+                                                <Button onClick={(e) => archiveTimesheet(timesheet, e)}>x</Button>
                                             </Td>
                                         </Tr>
                                     );
                                 }
                             })}
-                            {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
-                            {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
+                            {state.formStatus == 'ERROR' ? (
+                                <>
+                                    <ErrorAlert></ErrorAlert>
+                                    <Box>{state.errorMessage}</Box>
+                                </>
+                            ) : null}
                         </Tbody>
                     </Table>
                 </Box>
@@ -196,10 +197,10 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                     <FormControl>
                         <FormLabel>User</FormLabel>
                         <Select onChange={handleEmployeeChange} placeholder="Select employee">
-                            {employees?.map((el, idx) => {
+                            {employeesRequest.data?.map((employee, idx) => {
                                 return (
-                                    <option key={idx} value={el.id}>
-                                        {`${el.first_name} ${el.last_name}`}
+                                    <option key={idx} value={employee.id}>
+                                        {`${employee.first_name} ${employee.last_name}`}
                                     </option>
                                 );
                             })}

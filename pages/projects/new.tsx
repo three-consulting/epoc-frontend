@@ -7,10 +7,19 @@ import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import useData from '@/lib/hooks/useData';
 import { CustomerDTO, EmployeeDTO } from '@/lib/types/dto';
+import { customerEndpointURL, employeeEndpointURL } from '@/lib/const';
 
 const New: NextPage = () => {
-    const { data: customers, isError: customerError, isLoading: customersLoading } = useData<CustomerDTO[]>('customer');
-    const { data: employees, isError: employeeError, isLoading: employeesLoading } = useData<EmployeeDTO[]>('employee');
+    const {
+        data: customers,
+        isError: customerError,
+        isLoading: customersLoading,
+    } = useData<CustomerDTO[]>(customerEndpointURL);
+    const {
+        data: employees,
+        isError: employeeError,
+        isLoading: employeesLoading,
+    } = useData<EmployeeDTO[]>(employeeEndpointURL);
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">

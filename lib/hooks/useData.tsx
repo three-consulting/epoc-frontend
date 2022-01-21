@@ -7,10 +7,9 @@ type DataResponse<T> = {
     isError?: Error;
 };
 
-function useData<T>(endpoint: string, queryParams?: Record<string, string>): DataResponse<T> {
-    const url = new URL(endpoint);
-    url.search = new URLSearchParams(queryParams).toString();
-    const { data, error } = useSWR<T, Error>(url.href, fetch.get);
+function useData<T>(endpoint: URL, queryParams?: Record<string, string>): DataResponse<T> {
+    endpoint.search = new URLSearchParams(queryParams).toString();
+    const { data, error } = useSWR<T, Error>(endpoint.href, fetch.get);
     return { data, isLoading: !data && !error, isError: error };
 }
 

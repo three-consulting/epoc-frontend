@@ -7,6 +7,7 @@ type ProjectProps = {
 };
 
 function ProjectDetail({ project }: ProjectProps): JSX.Element {
+    const { name, description, customer, startDate, endDate, status, managingEmployee } = project;
     return (
         <Flex
             flexDirection="column"
@@ -17,16 +18,16 @@ function ProjectDetail({ project }: ProjectProps): JSX.Element {
             padding="1rem 1rem"
         >
             <Heading>
-                <Box>{project.name}</Box>
+                <Box>{name}</Box>
             </Heading>
-            <Flex>Description: {project.description}</Flex>
-            <Flex>Customer: {project.customer?.name}</Flex>
-            <Flex>Start date: {project.startDate}</Flex>
-            <Flex>End date: {project.endDate}</Flex>
+            <Flex>Description: {description}</Flex>
+            <Flex>Customer: {customer?.name}</Flex>
+            <Flex>Start date: {startDate}</Flex>
+            <Flex>End date: {endDate}</Flex>
             <Flex>
-                Managing employee: {project.managingEmployee?.first_name} {project.managingEmployee?.last_name}
+                Managing employee: {managingEmployee?.first_name} {managingEmployee?.last_name}
             </Flex>
-            <Flex>Project status: {project.status}</Flex>
+            <Flex>Project status: {status}</Flex>
         </Flex>
     );
 }

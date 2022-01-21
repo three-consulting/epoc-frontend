@@ -15,6 +15,7 @@ import TimesheetTable from '@/components/timesheets/TimesheetTable';
 import TaskTable from '@/components/tasks/TaskTable';
 import { FormStatus } from '@/components/projects/NewProject/ProjectForm';
 import { ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
+import { projectEndpointURL, taskEndpointURL } from '@/lib/const';
 
 type StateType = {
     formStatus: FormStatus;
@@ -24,7 +25,7 @@ type StateType = {
 const Id: NextPage = () => {
     const router = useRouter();
     const { id } = router.query;
-    const { data: project, isError, isLoading } = useData<ProjectDTO>(`project/${id}`);
+    const { data: project, isError, isLoading } = useData<ProjectDTO>(new URL(`${id}`, projectEndpointURL));
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [state, setState] = useState<StateType>({
         formStatus: FormStatus.IDLE,
@@ -37,7 +38,7 @@ const Id: NextPage = () => {
         data: timesheets,
         isError: timesheetError,
         isLoading: timesheetLoading,
-    } = useData<TimesheetDTO[]>('timesheet', { projectId: `${id}` });
+    } = useData<TimesheetDTO[]>(new URL(`${id}`, taskEndpointURL));
 
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();

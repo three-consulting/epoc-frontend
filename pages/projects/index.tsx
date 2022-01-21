@@ -9,9 +9,10 @@ import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import useData from '@/lib/hooks/useData';
 import { ProjectDTO } from '@/lib/types/dto';
+import { projectEndpointURL } from '@/lib/const';
 
 const Projects: NextPage = () => {
-    const { data: projects, isError, isLoading } = useData<ProjectDTO[]>('project');
+    const projectRequest = useData<ProjectDTO[]>(projectEndpointURL);
     const router = useRouter();
 
     return (
@@ -19,10 +20,12 @@ const Projects: NextPage = () => {
             <Heading fontWeight="black" margin="1rem 0rem">
                 Projects
             </Heading>
-            {isLoading && <Loading></Loading>}
-            {isError && <ErrorAlert title={isError.name} message={isError.name}></ErrorAlert>}
-            {projects && projects?.length > 0 ? (
-                <ProjectTable projects={projects}></ProjectTable>
+            {projectRequest.isLoading && <Loading></Loading>}
+            {projectRequest.isError && (
+                <ErrorAlert title={projectRequest.isError.name} message={projectRequest.isError.name}></ErrorAlert>
+            )}
+            {projectRequest.data && projectRequest.data.length > 0 ? (
+                <ProjectTable projects={projectRequest.data}></ProjectTable>
             ) : (
                 <Flex
                     backgroundColor="white"

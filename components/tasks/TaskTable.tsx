@@ -44,7 +44,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
         e.preventDefault();
         setFormState(FormStatus.LOADING);
         try {
-            await fetch.post(taskEndpointURL, state);
+            await fetch.post(taskEndpointURL.toString(), state);
             mutate(`${taskEndpointURL}?projectId=${project?.id}`);
             setFormState(FormStatus.SUCCESS);
             onClose();
@@ -91,16 +91,14 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {taskRequest.data.map((el, idx) => {
-                                return (
-                                    <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
-                                        <Td>{el.name}</Td>
-                                        <Td>
-                                            <Button>x</Button>
-                                        </Td>
-                                    </Tr>
-                                );
-                            })}
+                            {taskRequest.data?.map((task, idx) => (
+                                <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
+                                    <Td>{task.name}</Td>
+                                    <Td>
+                                        <Button>x</Button>
+                                    </Td>
+                                </Tr>
+                            ))}
                         </Tbody>
                     </Table>
                 </Box>

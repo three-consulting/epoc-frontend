@@ -37,8 +37,8 @@ function NewCustomer(): JSX.Element {
         e.preventDefault();
         setFormStatus(FormStatus.LOADING);
         try {
-            await fetch.post(customerEndpointURL, customer);
-            mutate(customerEndpointURL);
+            await fetch.post(customerEndpointURL.toString(), customer);
+            mutate(customerEndpointURL.toString());
             setFormStatus(FormStatus.SUCCESS);
             onClose();
         } catch (error) {

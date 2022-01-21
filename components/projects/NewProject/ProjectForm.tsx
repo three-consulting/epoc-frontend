@@ -56,7 +56,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
     };
 
     const createProject = async (project: ProjectDTO) => {
-        await fetch.post(projectEndpointURL, project);
+        await fetch.post(projectEndpointURL.toString(), project);
         setFormStatus(FormStatus.SUCCESS);
         router.push('/projects');
     };
@@ -64,7 +64,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
     const updateProject = async (project: ProjectDTO) => {
         const { id } = router.query;
         project.id = parseInt(`${id}`);
-        await fetch.put(projectEndpointURL, project);
+        await fetch.put(projectEndpointURL.toString(), project);
         setFormStatus(FormStatus.SUCCESS);
         router.push(`/projects/${id}`);
     };
