@@ -14,22 +14,17 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
-import useData from '@/lib/hooks/useData';
-import Loading from '../common/Loading';
-import { listTasks, postTask } from '@/lib/utils/apiRequests';
 import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
+import { postTask } from '@/lib/utils/apiRequests';
 
 interface TaskTableProps {
     project: ProjectDTO;
-    projectId: number;
+    tasks: TaskDTO[];
 }
 
-function TaskTable({ project, projectId }: TaskTableProps): JSX.Element {
-    const taskRequest = useMemo(() => listTasks(projectId), []);
-    const taskResponse = useData(taskRequest);
-
+function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [state, setState] = useState<TaskDTO>({
         name: '',
@@ -58,21 +53,10 @@ function TaskTable({ project, projectId }: TaskTableProps): JSX.Element {
             padding="1rem 1rem"
             marginTop="1.5rem"
         >
-            {taskResponse.isLoading && <Loading />}
-            {taskResponse.isError && (
-                <ErrorAlert title="Error loading data" message="Could not load the required data from the server" />
-            )}
             <Heading as="h2" size="md">
                 Tasks
             </Heading>
-            {taskResponse.isSuccess && taskResponse.data.length == 0 && (
-                <Box borderWidth="1px" padding="1rem" margin="1rem">
-                    No tasks in this project.
-                    <br />
-                    To add a task click the button below.
-                </Box>
-            )}
-            {taskResponse.isSuccess && taskResponse.data.length > 0 && (
+            {tasks ? (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
@@ -82,7 +66,7 @@ function TaskTable({ project, projectId }: TaskTableProps): JSX.Element {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {taskResponse.data.map((task, idx) => (
+                            {tasks.map((task, idx) => (
                                 <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
                                     <Td>{task.name}</Td>
                                     <Td>
@@ -92,6 +76,12 @@ function TaskTable({ project, projectId }: TaskTableProps): JSX.Element {
                             ))}
                         </Tbody>
                     </Table>
+                </Box>
+            ) : (
+                <Box borderWidth="1px" padding="1rem" margin="1rem">
+                    No tasks in this project.
+                    <br />
+                    To add a task click the button below.
                 </Box>
             )}
             <Flex flexDirection="row-reverse">

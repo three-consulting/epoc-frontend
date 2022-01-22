@@ -24,7 +24,7 @@ export async function get<T>(
     params?: Record<string, string | number>,
     config?: RequestInit,
 ): Promise<ResponseWithStatus<T>> {
-    const url = new URL(path, process.env.NEXT_PUBLIC_API_URL);
+    const url = new URL(path);
     url.search = new URLSearchParams(params as Record<string, string>).toString();
     const init = { method: 'get', ...config };
     return await http<T>(url.href, init);
@@ -41,7 +41,7 @@ export async function post<T, U>(
         body: JSON.stringify(body),
         ...config,
     };
-    const url = new URL(path, process.env.NEXT_PUBLIC_API_URL);
+    const url = new URL(path);
     url.search = new URLSearchParams(params as Record<string, string>).toString();
     return await http<U>(path, init);
 }

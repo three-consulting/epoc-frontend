@@ -10,7 +10,7 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useD
 import Link from 'next/link';
 import useData from '@/lib/hooks/useData';
 import TimesheetTable from '@/components/table/TimesheetTable';
-import { getProject, listEmployees, listTimesheets, putProject } from '@/lib/utils/apiRequests';
+import { getProject, listEmployees, listTasks, listTimesheets, putProject } from '@/lib/utils/apiRequests';
 import TaskTable from '@/components/table/TaskTable';
 
 type Props = {
@@ -19,12 +19,14 @@ type Props = {
 
 function InspectProjectForm({ projectId }: Props): JSX.Element {
     const projectRequest = useMemo(() => getProject(projectId), []);
+    const taskRequest = useMemo(() => listTasks(projectId), []);
     const timesheetRequest = useMemo(() => listTimesheets(projectId), []);
     const employeesRequest = useMemo(() => listEmployees(), []);
 
     const projectResponse = useData(projectRequest);
     const timesheetResponse = useData(timesheetRequest);
     const employeesResponse = useData(employeesRequest);
+    const taskResponse = useData(taskRequest);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -93,8 +95,8 @@ function InspectProjectForm({ projectId }: Props): JSX.Element {
                     employees={employeesResponse.data}
                 />
             )}
-            {projectResponse.isSuccess && projectResponse.data.id && (
-                <TaskTable project={projectResponse.data} projectId={projectResponse.data.id} />
+            {projectResponse.isSuccess && taskResponse.isSuccess && (
+                <TaskTable project={projectResponse.data} tasks={taskResponse.data} />
             )}
         </Layout>
     );
