@@ -1,5 +1,5 @@
-import { CustomerDTO, EmployeeDTO, ProjectDTO, TaskDTO, TimesheetDTO } from './types/dto';
-import { get, post, put, ResponseWithStatus } from './utils/fetch';
+import { CustomerDTO, EmployeeDTO, ProjectDTO, TaskDTO, TimesheetDTO } from '../types/dto';
+import { get, post, put, ResponseWithStatus } from './fetch';
 
 const projectEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/project`;
 const customerEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/customer`;

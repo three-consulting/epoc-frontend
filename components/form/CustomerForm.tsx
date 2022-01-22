@@ -16,7 +16,7 @@ import {
 import React, { useState } from 'react';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import { CustomerDTO } from '@/lib/types/dto';
-import { postCustomer } from '@/lib/const';
+import { postCustomer } from '@/lib/utils/apiRequests';
 
 const emptyCustomer: CustomerDTO = {
     name: '',

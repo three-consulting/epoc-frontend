@@ -8,7 +8,7 @@ import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import useData from '@/lib/hooks/useData';
-import { listProjects } from '@/lib/const';
+import { listProjects } from '@/lib/utils/apiRequests';
 
 const Projects: NextPage = () => {
     const router = useRouter();

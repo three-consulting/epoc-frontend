@@ -18,7 +18,7 @@ import React, { useMemo, useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
-import { listTasks, postTask } from '@/lib/const';
+import { listTasks, postTask } from '@/lib/utils/apiRequests';
 import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
 
 interface TaskTableProps {

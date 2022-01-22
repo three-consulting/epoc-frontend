@@ -17,7 +17,7 @@ import {
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
-import { postTimesheet, putTimesheet } from '@/lib/const';
+import { postTimesheet, putTimesheet } from '@/lib/utils/apiRequests';
 import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 
 type TimesheetTableProps = {

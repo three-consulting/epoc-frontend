@@ -7,7 +7,7 @@ import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import useData from '@/lib/hooks/useData';
 import { CustomerDTO, EmployeeDTO } from '@/lib/types/dto';
-import { listCustomers, listEmployees } from '@/lib/const';
+import { listCustomers, listEmployees } from '@/lib/utils/apiRequests';
 
 const New: NextPage = () => {
     const customerRequest = useData<CustomerDTO[]>(listCustomers());

@@ -7,7 +7,7 @@ import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import { useRouter } from 'next/dist/client/router';
 import useData from '@/lib/hooks/useData';
-import { getProject, listCustomers, listEmployees } from '@/lib/const';
+import { getProject, listCustomers, listEmployees } from '@/lib/utils/apiRequests';
 
 type Props = {
     id: number;

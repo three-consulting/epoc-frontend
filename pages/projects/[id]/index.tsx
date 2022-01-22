@@ -10,7 +10,7 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useD
 import Link from 'next/link';
 import useData from '@/lib/hooks/useData';
 import TimesheetTable from '@/components/table/TimesheetTable';
-import { getProject, listEmployees, listTimesheets, putProject } from '@/lib/const';
+import { getProject, listEmployees, listTimesheets, putProject } from '@/lib/utils/apiRequests';
 import TaskTable from '@/components/table/TaskTable';
 
 type Props = {

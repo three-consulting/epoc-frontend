@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import { ProjectDTO, EmployeeDTO, CustomerDTO } from '@/lib/types/dto';
 import CustomerForm from './CustomerForm';
-import { postProject, putProject } from '@/lib/const';
+import { postProject, putProject } from '@/lib/utils/apiRequests';
 
 const emptyProject: ProjectDTO = {
     name: '',
