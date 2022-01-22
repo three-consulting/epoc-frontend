@@ -10,14 +10,8 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useD
 import Link from 'next/link';
 import useData from '@/lib/hooks/useData';
 import TimesheetTable from '@/components/table/TimesheetTable';
-import { FormStatus } from '@/components/form/ProjectForm';
 import { getProject, listTimesheets, putProject } from '@/lib/const';
 import TaskTable from '@/components/table/TaskTable';
-
-type StateType = {
-    formStatus: FormStatus;
-    errorMessage: string;
-};
 
 type Props = {
     projectId: number;
@@ -26,42 +20,24 @@ type Props = {
 function InspectProjectForm({ projectId }: Props): JSX.Element {
     const projectRequest = useMemo(() => getProject(projectId), []);
     const timesheetRequest = useMemo(() => listTimesheets(projectId), []);
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const projectResponse = useData(projectRequest);
     const timesheetResponse = useData(timesheetRequest);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [state, setState] = useState<StateType>({
-        formStatus: FormStatus.IDLE,
-        errorMessage: '',
-    });
 
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (projectResponse.isSuccess) {
-            setState({
-                ...state,
-                formStatus: FormStatus.LOADING,
-            });
             try {
                 await putProject({ ...projectResponse.data, status: 'ARCHIVED' });
-                setState({
-                    ...state,
-                    formStatus: FormStatus.SUCCESS,
-                });
                 onOpen();
             } catch (error) {
-                setState({
-                    formStatus: FormStatus.ERROR,
-                    errorMessage: `${error}`,
-                });
+                setErrorMessage(error.toString());
             }
         } else {
-            setState({
-                ...state,
-                formStatus: FormStatus.ERROR,
-                errorMessage: 'Project failed to load.',
-            });
+            setErrorMessage('Project failed to load.');
         }
     };
 
@@ -84,10 +60,10 @@ function InspectProjectForm({ projectId }: Props): JSX.Element {
                     Archive Project
                 </Button>
             )}
-            {state.formStatus == 'ERROR' ? (
+            {errorMessage ? (
                 <>
                     <ErrorAlert />
-                    <Box>{state.errorMessage}</Box>
+                    <Box>{errorMessage}</Box>
                 </>
             ) : null}
             {projectResponse.isSuccess && (

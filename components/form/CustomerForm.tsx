@@ -15,7 +15,6 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import ErrorAlert from '@/components/common/ErrorAlert';
-import { FormStatus } from './ProjectForm';
 import { CustomerDTO } from '@/lib/types/dto';
 import { postCustomer } from '@/lib/const';
 
@@ -27,19 +26,15 @@ const emptyCustomer: CustomerDTO = {
 function CustomerForm(): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [customer, setCustomer] = useState<CustomerDTO>(emptyCustomer);
-    const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.IDLE);
-    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const submitForm = async (e: React.MouseEvent) => {
         e.preventDefault();
-        setFormStatus(FormStatus.LOADING);
         try {
             await postCustomer(customer);
-            setFormStatus(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
-            setFormStatus(FormStatus.ERROR);
-            setErrorMessage(`${error}`);
+            setErrorMessage(error.toString());
         }
     };
 
@@ -77,7 +72,7 @@ function CustomerForm(): JSX.Element {
                                 }
                             />
                         </FormControl>
-                        {formStatus == 'ERROR' ? (
+                        {errorMessage ? (
                             <>
                                 <ErrorAlert />
                                 <Box>{errorMessage}</Box>

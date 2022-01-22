@@ -1,18 +1,11 @@
 import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from '@chakra-ui/react';
-import { Box, Flex } from '@chakra-ui/layout';
+import { Flex } from '@chakra-ui/layout';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import { ProjectDTO, EmployeeDTO, CustomerDTO } from '@/lib/types/dto';
 import CustomerForm from './CustomerForm';
 import { postProject, putProject } from '@/lib/const';
-
-export enum FormStatus {
-    IDLE = 'IDLE',
-    LOADING = 'LOADING',
-    ERROR = 'ERROR',
-    SUCCESS = 'SUCCESS',
-}
 
 const emptyProject: ProjectDTO = {
     name: '',
@@ -33,7 +26,7 @@ type ProjectFormProps = {
 
 function ProjectForm({ employees, customers, method, project: p }: ProjectFormProps): JSX.Element {
     const [project, setProject] = useState<ProjectDTO>(p || emptyProject);
-    const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.IDLE);
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const router = useRouter();
 
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
@@ -56,7 +49,6 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
 
     const createProject = async (project: ProjectDTO) => {
         await postProject(project);
-        setFormStatus(FormStatus.SUCCESS);
         router.push('/projects');
     };
 
@@ -64,7 +56,6 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
         const { id } = router.query;
         project.id = parseInt(`${id}`);
         putProject(project);
-        setFormStatus(FormStatus.SUCCESS);
         router.push(`/projects/${id}`);
     };
 
@@ -75,8 +66,8 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
             } else if (method === 'PUT') {
                 updateProject(project);
             }
-        } catch {
-            setFormStatus(FormStatus.ERROR);
+        } catch (error) {
+            setErrorMessage(error.toString());
         }
     };
 
@@ -91,7 +82,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
             borderRadius="0.2rem"
             padding="1rem 1rem"
         >
-            {formStatus == 'ERROR' ? <ErrorAlert /> : <Box />}
+            {errorMessage ? <ErrorAlert message={errorMessage} /> : null}
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
@@ -172,7 +163,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
                     </Select>
                 </FormControl>
                 <br />
-                <Button colorScheme="blue" type="submit" onClick={() => setFormStatus(FormStatus.LOADING)}>
+                <Button colorScheme="blue" type="submit">
                     Submit
                 </Button>
                 <Button colorScheme="gray" type="button" marginLeft="0.5rem" onClick={() => router.push('/projects')}>

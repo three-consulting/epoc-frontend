@@ -18,7 +18,6 @@ import React, { useMemo, useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
-import { FormStatus } from '../form/ProjectForm';
 import { listTasks, postTask } from '@/lib/const';
 import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
 
@@ -37,19 +36,15 @@ function TaskTable({ project, projectId }: TaskTableProps): JSX.Element {
         description: '',
         project: project,
     });
-    const [formState, setFormState] = useState<FormStatus>(FormStatus.IDLE);
-    const [errorMessage, setErrorMessage] = useState<string | undefined>();
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
-        setFormState(FormStatus.LOADING);
         try {
             await postTask(state);
-            setFormState(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
-            setFormState(FormStatus.ERROR);
-            setErrorMessage(`${error}`);
+            setErrorMessage(error.toString);
         }
     };
 
@@ -142,7 +137,7 @@ function TaskTable({ project, projectId }: TaskTableProps): JSX.Element {
                             Cancel
                         </Button>
                     </ModalFooter>
-                    {formState == 'ERROR' ? (
+                    {errorMessage ? (
                         <>
                             <ErrorAlert />
                             <Box>{errorMessage}</Box>

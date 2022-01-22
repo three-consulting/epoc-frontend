@@ -19,7 +19,6 @@ import React, { useMemo, useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
-import { FormStatus } from '../form/ProjectForm';
 import { listEmployees, postTimesheet, putTimesheet } from '@/lib/const';
 import { TimesheetDTO } from '@/lib/types/dto';
 
@@ -39,19 +38,15 @@ function TimesheetTable({ timesheets: previousTimesheets }: TimesheetTableProps)
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [timesheet, setTimesheet] = useState<TimesheetDTO>(emptyTimesheet);
-    const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.LOADING);
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
-
-        setFormStatus(FormStatus.LOADING);
         try {
             await postTimesheet(timesheet);
-            setFormStatus(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
-            setFormStatus(FormStatus.ERROR);
+            setErrorMessage(error.toString);
         }
     };
 
@@ -59,10 +54,8 @@ function TimesheetTable({ timesheets: previousTimesheets }: TimesheetTableProps)
         e.preventDefault();
         try {
             await putTimesheet({ ...timesheet, status: 'ARCHIVED' });
-            setFormStatus(FormStatus.SUCCESS);
         } catch (error) {
-            setFormStatus(FormStatus.ERROR);
-            setErrorMessage(`${error}`);
+            setErrorMessage(error.toString);
         }
     };
 
@@ -125,7 +118,7 @@ function TimesheetTable({ timesheets: previousTimesheets }: TimesheetTableProps)
                                     );
                                 }
                             })}
-                            {formStatus == 'ERROR' ? (
+                            {errorMessage ? (
                                 <>
                                     <ErrorAlert />
                                     <Box>{errorMessage}</Box>
@@ -203,7 +196,7 @@ function TimesheetTable({ timesheets: previousTimesheets }: TimesheetTableProps)
                             Cancel
                         </Button>
                     </ModalFooter>
-                    {formStatus == 'ERROR' ? (
+                    {errorMessage ? (
                         <>
                             <ErrorAlert />
                             <Box>{errorMessage}</Box>
