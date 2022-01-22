@@ -10,7 +10,7 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useD
 import Link from 'next/link';
 import useData from '@/lib/hooks/useData';
 import TimesheetTable from '@/components/table/TimesheetTable';
-import { getProject, listTimesheets, putProject } from '@/lib/const';
+import { getProject, listEmployees, listTimesheets, putProject } from '@/lib/const';
 import TaskTable from '@/components/table/TaskTable';
 
 type Props = {
@@ -20,12 +20,14 @@ type Props = {
 function InspectProjectForm({ projectId }: Props): JSX.Element {
     const projectRequest = useMemo(() => getProject(projectId), []);
     const timesheetRequest = useMemo(() => listTimesheets(projectId), []);
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    const employeesRequest = useMemo(() => listEmployees(), []);
 
     const projectResponse = useData(projectRequest);
     const timesheetResponse = useData(timesheetRequest);
+    const employeesResponse = useData(employeesRequest);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const handleArchive = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -84,8 +86,12 @@ function InspectProjectForm({ projectId }: Props): JSX.Element {
             {timesheetResponse.isError && (
                 <ErrorAlert title={timesheetResponse.errorMessage} message={timesheetResponse.errorMessage} />
             )}
-            {projectResponse.isSuccess && timesheetResponse.isSuccess && (
-                <TimesheetTable timesheets={timesheetResponse.data} />
+            {projectResponse.isSuccess && timesheetResponse.isSuccess && employeesResponse.isSuccess && (
+                <TimesheetTable
+                    project={projectResponse.data}
+                    timesheets={timesheetResponse.data}
+                    employees={employeesResponse.data}
+                />
             )}
             {projectResponse.isSuccess && projectResponse.data.id && (
                 <TaskTable project={projectResponse.data} projectId={projectResponse.data.id} />

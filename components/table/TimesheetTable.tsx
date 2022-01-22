@@ -15,15 +15,15 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
-import useData from '@/lib/hooks/useData';
-import Loading from '../common/Loading';
-import { listEmployees, postTimesheet, putTimesheet } from '@/lib/const';
-import { TimesheetDTO } from '@/lib/types/dto';
+import { postTimesheet, putTimesheet } from '@/lib/const';
+import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 
 type TimesheetTableProps = {
+    project: ProjectDTO;
     timesheets: TimesheetDTO[];
+    employees: EmployeeDTO[];
 };
 
 const emptyTimesheet: TimesheetDTO = {
@@ -32,10 +32,7 @@ const emptyTimesheet: TimesheetDTO = {
     allocation: 0,
 };
 
-function TimesheetTable({ timesheets: previousTimesheets }: TimesheetTableProps): JSX.Element {
-    const employeesRequest = useMemo(() => listEmployees(), []);
-    const employeesResponse = useData(employeesRequest);
-
+function TimesheetTable({ project, timesheets: previousTimesheets, employees }: TimesheetTableProps): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [timesheet, setTimesheet] = useState<TimesheetDTO>(emptyTimesheet);
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -62,9 +59,9 @@ function TimesheetTable({ timesheets: previousTimesheets }: TimesheetTableProps)
     const handleEmployeeChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = parseInt(e.currentTarget.value);
-        if (id && employeesResponse.isSuccess) {
-            const employee = employeesResponse.data.find((employee) => employee.id === id);
-            setTimesheet({ ...timesheet, employee: { id: employee?.id } });
+        if (id && employees) {
+            const employee = employees.find((employee) => employee.id === id);
+            setTimesheet({ ...timesheet, employee: { ...employee }, project: { ...project } });
         }
     };
 
@@ -78,10 +75,6 @@ function TimesheetTable({ timesheets: previousTimesheets }: TimesheetTableProps)
             padding="1rem 1rem"
             marginTop="1.5rem"
         >
-            {employeesResponse.isLoading && <Loading />}
-            {employeesResponse.isError && (
-                <ErrorAlert title="Error loading data" message="Could not load the required data from the server" />
-            )}
             <Heading as="h2" size="md">
                 Users
             </Heading>
@@ -141,14 +134,13 @@ function TimesheetTable({ timesheets: previousTimesheets }: TimesheetTableProps)
                     <FormControl>
                         <FormLabel>User</FormLabel>
                         <Select onChange={handleEmployeeChange} placeholder="Select employee">
-                            {employeesResponse.isSuccess &&
-                                employeesResponse.data.map((employee, idx) => {
-                                    return (
-                                        <option key={idx} value={employee.id}>
-                                            {`${employee.first_name} ${employee.last_name}`}
-                                        </option>
-                                    );
-                                })}
+                            {employees.map((employee, idx) => {
+                                return (
+                                    <option key={idx} value={employee.id}>
+                                        {`${employee.first_name} ${employee.last_name}`}
+                                    </option>
+                                );
+                            })}
                         </Select>
                     </FormControl>
                     <FormControl>
