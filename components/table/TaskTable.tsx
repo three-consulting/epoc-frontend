@@ -14,21 +14,23 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
-import React, { useState } from 'react';
-import { useSWRConfig } from 'swr';
-import * as fetch from '@/lib/utils/fetch';
+import React, { useMemo, useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
 import { FormStatus } from '../form/ProjectForm';
-import { taskEndpointURL } from '@/lib/const';
+import { listTasks, postTask } from '@/lib/const';
 import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
 
 interface TaskTableProps {
     project: ProjectDTO;
+    projectId: number;
 }
 
-function TaskTable({ project }: TaskTableProps): JSX.Element {
+function TaskTable({ project, projectId }: TaskTableProps): JSX.Element {
+    const taskRequest = useMemo(() => listTasks(projectId), []);
+    const taskResponse = useData(taskRequest);
+
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [state, setState] = useState<TaskDTO>({
         name: '',
@@ -37,15 +39,12 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
     });
     const [formState, setFormState] = useState<FormStatus>(FormStatus.IDLE);
     const [errorMessage, setErrorMessage] = useState<string | undefined>();
-    const taskRequest = useData<TaskDTO[]>(taskEndpointURL, { projectId: `${project.id}` });
-    const { mutate } = useSWRConfig();
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
         setFormState(FormStatus.LOADING);
         try {
-            await fetch.post(taskEndpointURL.toString(), state);
-            mutate(`${taskEndpointURL}?projectId=${project.id}`);
+            await postTask(state);
             setFormState(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
@@ -64,21 +63,21 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
             padding="1rem 1rem"
             marginTop="1.5rem"
         >
-            {taskRequest.isLoading && <Loading />}
-            {taskRequest.isError && (
+            {taskResponse.isLoading && <Loading />}
+            {taskResponse.isError && (
                 <ErrorAlert title="Error loading data" message="Could not load the required data from the server" />
             )}
             <Heading as="h2" size="md">
                 Tasks
             </Heading>
-            {taskRequest.data && taskRequest.data.length == 0 && (
+            {taskResponse.isSuccess && taskResponse.data.length == 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     No tasks in this project.
                     <br />
                     To add a task click the button below.
                 </Box>
             )}
-            {taskRequest.data && taskRequest.data.length > 0 && (
+            {taskResponse.isSuccess && taskResponse.data.length > 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
@@ -88,7 +87,7 @@ function TaskTable({ project }: TaskTableProps): JSX.Element {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {taskRequest.data?.map((task, idx) => (
+                            {taskResponse.data.map((task, idx) => (
                                 <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
                                     <Td>{task.name}</Td>
                                     <Td>

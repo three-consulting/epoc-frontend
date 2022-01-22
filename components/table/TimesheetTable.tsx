@@ -15,19 +15,16 @@ import {
     useDisclosure,
 } from '@chakra-ui/react';
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
-import React, { useState } from 'react';
-import { useSWRConfig } from 'swr';
-import * as fetch from '@/lib/utils/fetch';
+import React, { useMemo, useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
 import { FormStatus } from '../form/ProjectForm';
-import { employeeEndpointURL, timesheetEndpointURL } from '@/lib/const';
-import { TimesheetDTO, ProjectDTO, EmployeeDTO } from '@/lib/types/dto';
+import { listEmployees, postTimesheet, putTimesheet } from '@/lib/const';
+import { TimesheetDTO } from '@/lib/types/dto';
 
 type TimesheetTableProps = {
     timesheets: TimesheetDTO[];
-    project: ProjectDTO;
 };
 
 const emptyTimesheet: TimesheetDTO = {
@@ -36,22 +33,21 @@ const emptyTimesheet: TimesheetDTO = {
     allocation: 0,
 };
 
-function TimesheetTable({ timesheets: previousTimesheets, project }: TimesheetTableProps): JSX.Element {
+function TimesheetTable({ timesheets: previousTimesheets }: TimesheetTableProps): JSX.Element {
+    const employeesRequest = useMemo(() => listEmployees(), []);
+    const employeesResponse = useData(employeesRequest);
+
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [timesheet, setTimesheet] = useState<TimesheetDTO>(emptyTimesheet);
     const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.LOADING);
     const [errorMessage, setErrorMessage] = useState<string>('');
-
-    const employeesRequest = useData<EmployeeDTO[]>(employeeEndpointURL);
-    const { mutate } = useSWRConfig();
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
         setFormStatus(FormStatus.LOADING);
         try {
-            await fetch.post(timesheetEndpointURL.toString(), timesheet);
-            mutate(`${timesheetEndpointURL}?projectId=${project.id}`);
+            await postTimesheet(timesheet);
             setFormStatus(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
@@ -62,8 +58,7 @@ function TimesheetTable({ timesheets: previousTimesheets, project }: TimesheetTa
     const archiveTimesheet = async (timesheet: TimesheetDTO, e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await fetch.put(timesheetEndpointURL.toString(), { ...timesheet, staus: 'ARCHIVED' });
-            mutate(`${timesheetEndpointURL}?projectId=${project?.id}`);
+            await putTimesheet({ ...timesheet, status: 'ARCHIVED' });
             setFormStatus(FormStatus.SUCCESS);
         } catch (error) {
             setFormStatus(FormStatus.ERROR);
@@ -74,8 +69,8 @@ function TimesheetTable({ timesheets: previousTimesheets, project }: TimesheetTa
     const handleEmployeeChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = parseInt(e.currentTarget.value);
-        if (id) {
-            const employee = employeesRequest.data?.find((employee) => employee.id === id);
+        if (id && employeesResponse.isSuccess) {
+            const employee = employeesResponse.data.find((employee) => employee.id === id);
             setTimesheet({ ...timesheet, employee: { id: employee?.id } });
         }
     };
@@ -90,8 +85,8 @@ function TimesheetTable({ timesheets: previousTimesheets, project }: TimesheetTa
             padding="1rem 1rem"
             marginTop="1.5rem"
         >
-            {employeesRequest.isLoading && <Loading />}
-            {employeesRequest.isError && (
+            {employeesResponse.isLoading && <Loading />}
+            {employeesResponse.isError && (
                 <ErrorAlert title="Error loading data" message="Could not load the required data from the server" />
             )}
             <Heading as="h2" size="md">
@@ -153,13 +148,14 @@ function TimesheetTable({ timesheets: previousTimesheets, project }: TimesheetTa
                     <FormControl>
                         <FormLabel>User</FormLabel>
                         <Select onChange={handleEmployeeChange} placeholder="Select employee">
-                            {employeesRequest.data?.map((employee, idx) => {
-                                return (
-                                    <option key={idx} value={employee.id}>
-                                        {`${employee.first_name} ${employee.last_name}`}
-                                    </option>
-                                );
-                            })}
+                            {employeesResponse.isSuccess &&
+                                employeesResponse.data.map((employee, idx) => {
+                                    return (
+                                        <option key={idx} value={employee.id}>
+                                            {`${employee.first_name} ${employee.last_name}`}
+                                        </option>
+                                    );
+                                })}
                         </Select>
                     </FormControl>
                     <FormControl>

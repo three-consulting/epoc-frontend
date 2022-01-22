@@ -2,11 +2,10 @@ import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from 
 import { Box, Flex } from '@chakra-ui/layout';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import * as fetch from '@/lib/utils/fetch';
 import ErrorAlert from '@/components/common/ErrorAlert';
-import { projectEndpointURL } from '@/lib/const';
 import { ProjectDTO, EmployeeDTO, CustomerDTO } from '@/lib/types/dto';
 import CustomerForm from './CustomerForm';
+import { postProject, putProject } from '@/lib/const';
 
 export enum FormStatus {
     IDLE = 'IDLE',
@@ -56,7 +55,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
     };
 
     const createProject = async (project: ProjectDTO) => {
-        await fetch.post(projectEndpointURL.toString(), project);
+        await postProject(project);
         setFormStatus(FormStatus.SUCCESS);
         router.push('/projects');
     };
@@ -64,7 +63,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
     const updateProject = async (project: ProjectDTO) => {
         const { id } = router.query;
         project.id = parseInt(`${id}`);
-        await fetch.put(projectEndpointURL.toString(), project);
+        putProject(project);
         setFormStatus(FormStatus.SUCCESS);
         router.push(`/projects/${id}`);
     };
@@ -163,10 +162,10 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
                         placeholder="Select employee"
                         value={project.managingEmployee?.id}
                     >
-                        {employees.map((el, idx) => {
+                        {employees.map((employee, idx) => {
                             return (
-                                <option key={idx} value={el.id}>
-                                    {`${el.first_name} ${el.last_name}`}
+                                <option key={idx} value={employee.id}>
+                                    {`${employee.first_name} ${employee.last_name}`}
                                 </option>
                             );
                         })}

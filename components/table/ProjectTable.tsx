@@ -21,12 +21,12 @@ function ProjectTable({ projects }: ProjectListProps): JSX.Element {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {projects.map((el, idx) => {
+                        {projects.map((project, idx) => {
                             return (
-                                <Link href={`projects/${el.id}`} key={idx}>
+                                <Link href={`projects/${project.id}`} key={idx}>
                                     <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
-                                        <Td>{el.name}</Td>
-                                        <Td>{el.customer?.name}</Td>
+                                        <Td>{project.name}</Td>
+                                        <Td>{project.customer?.name}</Td>
                                     </Tr>
                                 </Link>
                             );

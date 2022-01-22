@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { NextPage } from 'next';
 import { Box, Heading, Text, Flex } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/react';
@@ -8,24 +8,24 @@ import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import useData from '@/lib/hooks/useData';
-import { ProjectDTO } from '@/lib/types/dto';
-import { projectEndpointURL } from '@/lib/const';
+import { listProjects } from '@/lib/const';
 
 const Projects: NextPage = () => {
-    const projectRequest = useData<ProjectDTO[]>(projectEndpointURL);
     const router = useRouter();
+    const projectRequest = useMemo(() => listProjects(), []);
+    const projectResponse = useData(projectRequest);
 
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">
                 Projects
             </Heading>
-            {projectRequest.isLoading && <Loading />}
-            {projectRequest.isError && (
-                <ErrorAlert title={projectRequest.isError.name} message={projectRequest.isError.name} />
+            {projectResponse.isLoading && <Loading />}
+            {projectResponse.isError && (
+                <ErrorAlert title={projectResponse.errorMessage} message={projectResponse.errorMessage} />
             )}
-            {projectRequest.data && projectRequest.data.length > 0 ? (
-                <ProjectTable projects={projectRequest.data} />
+            {projectResponse.isSuccess && projectResponse.data.length > 0 ? (
+                <ProjectTable projects={projectResponse.data} />
             ) : (
                 <Flex
                     backgroundColor="white"
