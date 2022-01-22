@@ -8,15 +8,16 @@ import Loading from '@/components/common/Loading';
 import { useRouter } from 'next/dist/client/router';
 import useData from '@/lib/hooks/useData';
 import { CustomerDTO, EmployeeDTO, ProjectDTO } from '@/lib/types/dto';
-import { customerEndpointURL, employeeEndpointURL, projectEndpointURL } from '@/lib/const';
+import { customerEndpointURL, employeeEndpointURL, projectIdEndpointURL } from '@/lib/const';
 
-const Edit: NextPage = () => {
-    const router = useRouter();
-    const { id } = router.query;
+type Props = {
+    id: string;
+};
 
+function EditProjectForm({ id }: Props): JSX.Element {
     const customerRequest = useData<CustomerDTO[]>(customerEndpointURL);
     const employeesRequest = useData<EmployeeDTO[]>(employeeEndpointURL);
-    const projectRequest = id ? useData<ProjectDTO>(new URL(`${id}`, projectEndpointURL)) : undefined;
+    const projectRequest = useData<ProjectDTO>(projectIdEndpointURL(id));
 
     return (
         <Layout>
@@ -41,6 +42,12 @@ const Edit: NextPage = () => {
             )}
         </Layout>
     );
+}
+
+const Edit: NextPage = () => {
+    const router = useRouter();
+    const { id } = router.query;
+    return id ? <EditProjectForm id={id[0]} /> : null;
 };
 
 export default Edit;

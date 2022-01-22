@@ -22,12 +22,12 @@ import ErrorAlert from '../common/ErrorAlert';
 import useData from '@/lib/hooks/useData';
 import Loading from '../common/Loading';
 import { FormStatus } from '../form/ProjectForm';
-import { employeeEndpointURL, timeSheetURL } from '@/lib/const';
+import { employeeEndpointURL, timesheetEndpointURL } from '@/lib/const';
 import { TimesheetDTO, ProjectDTO, EmployeeDTO } from '@/lib/types/dto';
 
 type TimesheetTableProps = {
-    timesheets?: TimesheetDTO[];
-    project?: ProjectDTO;
+    timesheets: TimesheetDTO[];
+    project: ProjectDTO;
 };
 
 const emptyTimesheet: TimesheetDTO = {
@@ -36,7 +36,7 @@ const emptyTimesheet: TimesheetDTO = {
     allocation: 0,
 };
 
-function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Element {
+function TimesheetTable({ timesheets: previousTimesheets, project }: TimesheetTableProps): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [timesheet, setTimesheet] = useState<TimesheetDTO>(emptyTimesheet);
     const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.LOADING);
@@ -50,8 +50,8 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
 
         setFormStatus(FormStatus.LOADING);
         try {
-            await fetch.post(timeSheetURL.toString(), timesheet);
-            mutate(`${timeSheetURL}?projectId=${project?.id}`);
+            await fetch.post(timesheetEndpointURL.toString(), timesheet);
+            mutate(`${timesheetEndpointURL}?projectId=${project.id}`);
             setFormStatus(FormStatus.SUCCESS);
             onClose();
         } catch (error) {
@@ -62,8 +62,8 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
     const archiveTimesheet = async (timesheet: TimesheetDTO, e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await fetch.put(timeSheetURL.toString(), { ...timesheet, staus: 'ARCHIVED' });
-            mutate(`${timeSheetURL}?projectId=${project?.id}`);
+            await fetch.put(timesheetEndpointURL.toString(), { ...timesheet, staus: 'ARCHIVED' });
+            mutate(`${timesheetEndpointURL}?projectId=${project?.id}`);
             setFormStatus(FormStatus.SUCCESS);
         } catch (error) {
             setFormStatus(FormStatus.ERROR);
@@ -97,14 +97,14 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
             <Heading as="h2" size="md">
                 Users
             </Heading>
-            {timesheets && timesheets?.length == 0 && (
+            {previousTimesheets.length == 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     No users in this project.
                     <br />
                     To add a user click the button below.
                 </Box>
             )}
-            {timesheets && timesheets?.length !== 0 && (
+            {previousTimesheets.length > 0 && (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
@@ -115,7 +115,7 @@ function TimesheetTable({ timesheets, project }: TimesheetTableProps): JSX.Eleme
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {timesheets.map((timesheet, idx) => {
+                            {previousTimesheets.map((timesheet, idx) => {
                                 if (timesheet.status === 'ACTIVE') {
                                     return (
                                         <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>

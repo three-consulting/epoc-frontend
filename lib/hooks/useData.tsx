@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import * as fetch from '../utils/fetch';
 
-type DataResponse<T> = {
+export type DataResponse<T> = {
     data?: T;
     isLoading: boolean;
     isError?: Error;
