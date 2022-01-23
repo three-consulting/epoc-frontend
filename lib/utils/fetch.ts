@@ -1,6 +1,13 @@
 import { Auth } from 'aws-amplify';
 
 export type ResponseWithStatus<T> = { data: T; isSuccess: true } | { isSuccess: false; errorMessage: string };
+/* 
+    Would like to set
+
+    export type ApiRequest<T> = Promise<ResponseWithStatus<T>>;
+
+    Not possible due to a typescript bug: https://github.com/microsoft/TypeScript/issues/27987
+*/
 
 async function http<T>(path: string, config?: RequestInit): Promise<ResponseWithStatus<T>> {
     const authSession = await Auth.currentSession();
