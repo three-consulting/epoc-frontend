@@ -38,7 +38,7 @@ function InspectProjectForm({ projectId }: Props): JSX.Element {
                 await putProject({ ...projectResponse.data, status: 'ARCHIVED' });
                 onOpen();
             } catch (error) {
-                setErrorMessage(error.toString());
+                setErrorMessage(`${error}`);
             }
         } else {
             setErrorMessage('Project failed to load.');

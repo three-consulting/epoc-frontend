@@ -3,39 +3,55 @@ import { Flex } from '@chakra-ui/layout';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
-import { ProjectDTO, EmployeeDTO, CustomerDTO } from '@/lib/types/dto';
+import { ProjectDTO, EmployeeDTO, CustomerDTO, ProjectStatus } from '@/lib/types/dto';
 import CustomerForm from './CustomerForm';
 import { postProject, putProject } from '@/lib/utils/apiRequests';
 
-const emptyProject: ProjectDTO = {
-    name: '',
-    description: undefined,
-    startDate: undefined,
-    endDate: undefined,
-    managingEmployee: undefined,
-    customer: undefined,
-    status: undefined,
+type ProjectFields = Partial<ProjectDTO> & { status: ProjectStatus };
+
+const validateProjectFields = (form: ProjectFields): ProjectDTO => {
+    const { name, startDate, customer, managingEmployee, status } = form;
+    if (name && startDate && customer && managingEmployee && status) {
+        return {
+            ...form,
+            name,
+            startDate,
+            customer,
+            managingEmployee,
+            status,
+        };
+    } else {
+        throw 'Invalid project form: missing required fields';
+    }
 };
 
-type ProjectFormProps = {
+type ProjectFormPropsBase = {
     employees: EmployeeDTO[];
     customers: CustomerDTO[];
     refreshCustomers: () => void;
-    method: string;
-    project?: ProjectDTO;
 };
 
-function ProjectForm({ employees, customers, refreshCustomers, method, project: p }: ProjectFormProps): JSX.Element {
-    const [project, setProject] = useState<ProjectDTO>(p || emptyProject);
-    const [errorMessage, setErrorMessage] = useState<string>('');
+type ProjectFormProps =
+    | (ProjectFormPropsBase & { method: 'POST'; project: undefined })
+    | (ProjectFormPropsBase & { method: 'PUT'; project: ProjectDTO });
+
+function ProjectForm({
+    employees,
+    customers,
+    refreshCustomers,
+    method,
+    project: projectOrNull,
+}: ProjectFormProps): JSX.Element {
     const router = useRouter();
+    const [projectFields, setProjectFields] = useState<ProjectFields>(projectOrNull || { status: 'ACTIVE' });
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = e.currentTarget.value;
         if (id) {
             const customer = customers.find((el) => el.id === Number(id));
-            setProject({ ...project, customer: customer });
+            setProjectFields({ ...projectFields, customer: customer });
         }
     };
 
@@ -44,12 +60,12 @@ function ProjectForm({ employees, customers, refreshCustomers, method, project: 
         const id = e.currentTarget.value;
         if (id) {
             const employee = employees.find((el) => el.id === Number(id));
-            setProject({ ...project, managingEmployee: employee });
+            setProjectFields({ ...projectFields, managingEmployee: employee });
         }
     };
 
     const createProject = async (project: ProjectDTO) => {
-        await postProject(project);
+        await postProject(validateProjectFields(project));
         router.push('/projects');
     };
 
@@ -63,16 +79,17 @@ function ProjectForm({ employees, customers, refreshCustomers, method, project: 
     const submitForm = async () => {
         try {
             if (method === 'POST') {
-                createProject(project);
+                createProject(validateProjectFields(projectFields));
             } else if (method === 'PUT') {
-                updateProject(project);
+                updateProject(validateProjectFields(projectFields));
             }
         } catch (error) {
-            setErrorMessage(error.toString());
+            setErrorMessage(`${error}`);
         }
     };
 
-    const invalidEndDate = (project.startDate && project.endDate && project.startDate > project.endDate) || false;
+    const invalidEndDate =
+        (projectFields.startDate && projectFields.endDate && projectFields.startDate > projectFields.endDate) || false;
 
     return (
         <Flex
@@ -93,35 +110,35 @@ function ProjectForm({ employees, customers, refreshCustomers, method, project: 
                 <FormControl isRequired={true}>
                     <FormLabel>Project name</FormLabel>
                     <Input
-                        value={project.name || ''}
+                        value={projectFields.name || ''}
                         placeholder="Project name"
-                        onChange={(e) => setProject({ ...project, name: e.target.value })}
+                        onChange={(e) => setProjectFields({ ...projectFields, name: e.target.value })}
                     />
                 </FormControl>
                 <FormControl>
                     <FormLabel>Project description</FormLabel>
                     <Input
-                        value={project.description || ''}
+                        value={projectFields.description || ''}
                         placeholder="Project description"
-                        onChange={(e) => setProject({ ...project, description: e.target.value })}
+                        onChange={(e) => setProjectFields({ ...projectFields, description: e.target.value })}
                     />
                 </FormControl>
                 <FormControl isRequired={true}>
                     <FormLabel>Start date</FormLabel>
                     <Input
                         type="date"
-                        value={project.startDate || ''}
+                        value={projectFields.startDate || ''}
                         placeholder="Project start date"
-                        onChange={(e) => setProject({ ...project, startDate: e.target.value })}
+                        onChange={(e) => setProjectFields({ ...projectFields, startDate: e.target.value })}
                     />
                 </FormControl>
                 <FormControl isInvalid={invalidEndDate}>
                     <FormLabel>End date</FormLabel>
                     <Input
                         type="date"
-                        value={project.endDate || ''}
+                        value={projectFields.endDate || ''}
                         placeholder="Project end date"
-                        onChange={(e) => setProject({ ...project, endDate: e.target.value })}
+                        onChange={(e) => setProjectFields({ ...projectFields, endDate: e.target.value })}
                     />
                     <FormErrorMessage>End date precedes start date</FormErrorMessage>
                 </FormControl>
@@ -133,7 +150,7 @@ function ProjectForm({ employees, customers, refreshCustomers, method, project: 
                                 onChange={handleCustomerChange}
                                 placeholder="Select customer"
                                 marginRight="0.3rem"
-                                value={project.customer?.id}
+                                value={projectFields.customer?.id}
                             >
                                 {customers.map((customer, idx) => {
                                     return (
@@ -152,7 +169,7 @@ function ProjectForm({ employees, customers, refreshCustomers, method, project: 
                     <Select
                         onChange={handleEmployeeChange}
                         placeholder="Select employee"
-                        value={project.managingEmployee?.id}
+                        value={projectFields.managingEmployee?.id}
                     >
                         {employees.map((employee, idx) => {
                             return (

@@ -4,11 +4,11 @@ import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from '@chakra-ui/react'
 import Link from 'next/link';
 import { ProjectDTO } from '@/lib/types/dto';
 
-type ProjectListProps = {
+type ProjectTableProps = {
     projects: ProjectDTO[];
 };
 
-function ProjectTable({ projects }: ProjectListProps): JSX.Element {
+function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
     if (projects && projects?.length > 0) {
         return (
             <Box backgroundColor="white" border="solid 0.5px" borderColor="gray.400" borderRadius="0.2rem">

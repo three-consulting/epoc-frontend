@@ -80,9 +80,9 @@ export interface components {
     };
     EmployeeDTO: {
       id?: number;
-      first_name?: string;
-      last_name?: string;
-      email?: string;
+      first_name: string;
+      last_name: string;
+      email: string;
       start_date?: string;
       created?: string;
       updated?: string;
@@ -91,11 +91,11 @@ export interface components {
       id?: number;
       name: string;
       description?: string;
-      startDate?: string;
+      startDate: string;
       endDate?: string;
-      customer?: components["schemas"]["CustomerDTO"];
-      managingEmployee?: components["schemas"]["EmployeeDTO"];
-      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      customer: components["schemas"]["CustomerDTO"];
+      managingEmployee: components["schemas"]["EmployeeDTO"];
+      status: "ACTIVE" | "INACTIVE" | "ARCHIVED";
       created?: string;
       updated?: string;
     };
@@ -104,20 +104,20 @@ export interface components {
       name: string;
       description?: string;
       allocation?: number;
-      project?: components["schemas"]["ProjectDTO"];
-      employee?: components["schemas"]["EmployeeDTO"];
+      project: components["schemas"]["ProjectDTO"];
+      employee: components["schemas"]["EmployeeDTO"];
       created?: string;
       updated?: string;
-      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      status: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TaskDTO: {
       id?: number;
       name: string;
       description?: string;
-      project?: components["schemas"]["ProjectDTO"];
+      project: components["schemas"]["ProjectDTO"];
       created?: string;
       updated?: string;
-      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      status: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TimeCategoryDTO: {
       id?: number;
@@ -147,9 +147,9 @@ export interface components {
       };
       date: string;
       description?: string;
-      timesheet?: components["schemas"]["TimesheetDTO"];
-      timeCategory?: components["schemas"]["TimeCategoryDTO"];
-      task?: components["schemas"]["TaskDTO"];
+      timesheet: components["schemas"]["TimesheetDTO"];
+      timeCategory: components["schemas"]["TimeCategoryDTO"];
+      task: components["schemas"]["TaskDTO"];
       created?: string;
       updated?: string;
     };

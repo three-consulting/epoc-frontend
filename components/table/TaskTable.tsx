@@ -19,27 +19,42 @@ import ErrorAlert from '../common/ErrorAlert';
 import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
 import { postTask } from '@/lib/utils/apiRequests';
 
+type TaskFields = Partial<TaskDTO> & { project: ProjectDTO; status: 'ACTIVE' };
+
+const fieldsToTask = (fields: TaskFields): TaskDTO => {
+    const { name, status } = fields;
+    if (name && status) {
+        const t: TaskDTO = {
+            ...fields,
+            name,
+            status,
+        };
+        return t;
+    } else {
+        throw 'Invalid task form: missing required fields';
+    }
+};
+
 interface TaskTableProps {
     project: ProjectDTO;
     tasks: TaskDTO[];
 }
 
 function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const [state, setState] = useState<TaskDTO>({
-        name: '',
-        description: '',
+    const [taskFields, setTaskFields] = useState<TaskFields>({
         project: project,
+        status: 'ACTIVE',
     });
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await postTask(state);
+            await postTask(fieldsToTask(taskFields));
             onClose();
         } catch (error) {
-            setErrorMessage(error.toString);
+            setErrorMessage(`${error}`);
         }
     };
 
@@ -94,13 +109,13 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                 <ModalContent px="0.5rem">
                     <ModalHeader>Add task to project</ModalHeader>
                     <ModalCloseButton />
-                    <FormControl isInvalid={!state.name} isRequired>
+                    <FormControl isInvalid={!taskFields.name} isRequired>
                         <FormLabel>Task Name</FormLabel>
                         <Input
                             placeholder="Task Name"
                             onChange={(e) =>
-                                setState({
-                                    ...state,
+                                setTaskFields({
+                                    ...taskFields,
                                     name: e.target.value,
                                 })
                             }
@@ -112,8 +127,8 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                         <Input
                             placeholder="Description"
                             onChange={(e) =>
-                                setState({
-                                    ...state,
+                                setTaskFields({
+                                    ...taskFields,
                                     description: e.target.value,
                                 })
                             }

@@ -20,17 +20,31 @@ import ErrorAlert from '../common/ErrorAlert';
 import { postTimesheet, putTimesheet } from '@/lib/utils/apiRequests';
 import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 
+type TimesheetFields = Partial<TimesheetDTO> & {
+    project: ProjectDTO;
+    status: 'ACTIVE';
+};
+
+const validateTimesheetFields = (fields: TimesheetFields): TimesheetDTO => {
+    const { name, project, employee, status } = fields;
+    if (name && project && employee && status) {
+        return {
+            ...fields,
+            name,
+            project,
+            employee,
+            status,
+        };
+    } else {
+        throw 'Invalid timesheet form: Missing required fields';
+    }
+};
+
 type TimesheetTableProps = {
     project: ProjectDTO;
     timesheets: TimesheetDTO[];
     refreshTimesheets: () => void;
     employees: EmployeeDTO[];
-};
-
-const emptyTimesheet: TimesheetDTO = {
-    name: '',
-    description: '',
-    allocation: 0,
 };
 
 function TimesheetTable({
@@ -39,18 +53,18 @@ function TimesheetTable({
     timesheets: previousTimesheets,
     employees,
 }: TimesheetTableProps): JSX.Element {
+    const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>({ project, status: 'ACTIVE' });
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [timesheet, setTimesheet] = useState<TimesheetDTO>(emptyTimesheet);
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     const submitTimesheet = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await postTimesheet(timesheet);
+            await postTimesheet(validateTimesheetFields(timesheetFields));
             await refreshTimesheets();
             onClose();
         } catch (error) {
-            setErrorMessage(error.toString);
+            setErrorMessage(`${error}`);
         }
     };
 
@@ -60,7 +74,7 @@ function TimesheetTable({
             await putTimesheet({ ...timesheet, status: 'ARCHIVED' });
             await refreshTimesheets();
         } catch (error) {
-            setErrorMessage(error.toString);
+            setErrorMessage(`${error}`);
         }
     };
 
@@ -69,12 +83,16 @@ function TimesheetTable({
         const id = parseInt(e.currentTarget.value);
         if (id && employees) {
             const employee = employees.find((employee) => employee.id === id);
-            setTimesheet({ ...timesheet, employee: { ...employee }, project: { ...project } });
+            if (employee) {
+                setTimesheetFields({ ...timesheetFields, employee: { ...employee }, project: { ...project } });
+            } else {
+                throw `Error timesheet form could not find employee with id ${id}.`;
+            }
         }
     };
 
     const invalidAllocation =
-        (timesheet.allocation && (timesheet.allocation < 0 || timesheet.allocation > 100)) || false;
+        (timesheetFields.allocation && (timesheetFields.allocation < 0 || timesheetFields.allocation > 100)) || false;
 
     return (
         <Flex
@@ -159,8 +177,8 @@ function TimesheetTable({
                         <Input
                             placeholder="Timesheet Name"
                             onChange={(e) =>
-                                setTimesheet({
-                                    ...timesheet,
+                                setTimesheetFields({
+                                    ...timesheetFields,
                                     name: e.target.value,
                                 })
                             }
@@ -171,8 +189,8 @@ function TimesheetTable({
                         <Input
                             placeholder="Description"
                             onChange={(e) =>
-                                setTimesheet({
-                                    ...timesheet,
+                                setTimesheetFields({
+                                    ...timesheetFields,
                                     description: e.target.value,
                                 })
                             }
@@ -183,8 +201,8 @@ function TimesheetTable({
                         <Input
                             placeholder="0"
                             onChange={(e) =>
-                                setTimesheet({
-                                    ...timesheet,
+                                setTimesheetFields({
+                                    ...timesheetFields,
                                     allocation: parseInt(e.target.value),
                                 })
                             }

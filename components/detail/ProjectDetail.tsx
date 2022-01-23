@@ -2,11 +2,11 @@ import { ProjectDTO } from '@/lib/types/dto';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import React from 'react';
 
-type ProjectProps = {
+type ProjectDetailProps = {
     project: ProjectDTO;
 };
 
-function ProjectDetail({ project }: ProjectProps): JSX.Element {
+function ProjectDetail({ project }: ProjectDetailProps): JSX.Element {
     const { name, description, customer, startDate, endDate, status, managingEmployee } = project;
     return (
         <Flex

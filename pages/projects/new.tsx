@@ -28,6 +28,7 @@ const New: NextPage = () => {
                     refreshCustomers={refreshCustomers}
                     employees={employeesResponse.data}
                     method="POST"
+                    project={undefined}
                 />
             )}
         </Layout>

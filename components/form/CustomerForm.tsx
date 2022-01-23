@@ -18,9 +18,14 @@ import ErrorAlert from '@/components/common/ErrorAlert';
 import { CustomerDTO } from '@/lib/types/dto';
 import { postCustomer } from '@/lib/utils/apiRequests';
 
-const emptyCustomer: CustomerDTO = {
-    name: '',
-    description: '',
+type CustomerFields = Partial<CustomerDTO>;
+const validateCustomerFields = (fields: CustomerFields): CustomerDTO => {
+    const { name } = fields;
+    if (name) {
+        return { ...fields, name };
+    } else {
+        throw 'Invalid customer form: missing required fields';
+    }
 };
 
 interface CustomerFormProps {
@@ -28,18 +33,18 @@ interface CustomerFormProps {
 }
 
 function CustomerForm({ refreshCustomers }: CustomerFormProps): JSX.Element {
+    const [customerFields, setCustomerFields] = useState<CustomerFields>({});
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [customer, setCustomer] = useState<CustomerDTO>(emptyCustomer);
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     const submitForm = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await postCustomer(customer);
+            await postCustomer(validateCustomerFields(customerFields));
             await refreshCustomers();
             onClose();
         } catch (error) {
-            setErrorMessage(error.toString());
+            setErrorMessage(`${error}`);
         }
     };
 
@@ -57,8 +62,8 @@ function CustomerForm({ refreshCustomers }: CustomerFormProps): JSX.Element {
                             <Input
                                 placeholder="Customer Name"
                                 onChange={(e) =>
-                                    setCustomer({
-                                        ...customer,
+                                    setCustomerFields({
+                                        ...customerFields,
                                         name: e.target.value,
                                     })
                                 }
@@ -70,8 +75,8 @@ function CustomerForm({ refreshCustomers }: CustomerFormProps): JSX.Element {
                             <Input
                                 placeholder="Description"
                                 onChange={(e) =>
-                                    setCustomer({
-                                        ...customer,
+                                    setCustomerFields({
+                                        ...customerFields,
                                         description: e.target.value,
                                     })
                                 }
