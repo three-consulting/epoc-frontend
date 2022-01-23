@@ -8,22 +8,12 @@ import { putTimesheet } from '@/lib/utils/apiRequests';
 import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 import { TimesheetForm } from '../form/TimesheetForm';
 
-interface TimesheetTableProps {
-    project: ProjectDTO;
+interface TimesheetListProps {
     timesheets: TimesheetDTO[];
     refreshTimesheets: () => void;
-    employees: EmployeeDTO[];
 }
-
-function TimesheetTable({
-    project,
-    refreshTimesheets,
-    timesheets: previousTimesheets,
-    employees,
-}: TimesheetTableProps): JSX.Element {
-    const [displayNewTimesheetForm, setDisplayNewTimesheetForm] = useState(false);
+function TimesheetList({ timesheets, refreshTimesheets }: TimesheetListProps): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string>('');
-
     const archiveTimesheet = async (timesheet: TimesheetDTO, e: React.MouseEvent) => {
         e.preventDefault();
         try {
@@ -33,6 +23,54 @@ function TimesheetTable({
             setErrorMessage(`${error}`);
         }
     };
+
+    return (
+        <Box borderWidth="1px" padding="1rem" margin="1rem">
+            <Table variant="simple">
+                <Thead>
+                    <Tr>
+                        <Th>Name</Th>
+                        <Th>Allocation</Th>
+                        <Th />
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    {timesheets.map((timesheet, idx) => {
+                        if (timesheet.status === 'ACTIVE') {
+                            return (
+                                <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
+                                    <Td>
+                                        {timesheet.employee?.first_name} {timesheet.employee?.last_name}
+                                    </Td>
+                                    <Td>{timesheet.allocation} %</Td>
+                                    <Td>
+                                        <Button onClick={(e) => archiveTimesheet(timesheet, e)}>x</Button>
+                                    </Td>
+                                </Tr>
+                            );
+                        }
+                    })}
+                    {errorMessage ? (
+                        <>
+                            <ErrorAlert />
+                            <Box>{errorMessage}</Box>
+                        </>
+                    ) : null}
+                </Tbody>
+            </Table>
+        </Box>
+    );
+}
+
+interface TimesheetTableProps {
+    project: ProjectDTO;
+    timesheets: TimesheetDTO[];
+    refreshTimesheets: () => void;
+    employees: EmployeeDTO[];
+}
+
+function TimesheetTable({ project, refreshTimesheets, timesheets, employees }: TimesheetTableProps): JSX.Element {
+    const [displayNewTimesheetForm, setDisplayNewTimesheetForm] = useState(false);
 
     return (
         <Flex
@@ -47,47 +85,13 @@ function TimesheetTable({
             <Heading as="h2" size="md">
                 Users
             </Heading>
-            {previousTimesheets.length == 0 && (
+            {timesheets ? (
+                <TimesheetList timesheets={timesheets} refreshTimesheets={refreshTimesheets} />
+            ) : (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     No users in this project.
                     <br />
                     To add a user click the button below.
-                </Box>
-            )}
-            {previousTimesheets.length > 0 && (
-                <Box borderWidth="1px" padding="1rem" margin="1rem">
-                    <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <Th>Name</Th>
-                                <Th>Allocation</Th>
-                                <Th />
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {previousTimesheets.map((timesheet, idx) => {
-                                if (timesheet.status === 'ACTIVE') {
-                                    return (
-                                        <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
-                                            <Td>
-                                                {timesheet.employee?.first_name} {timesheet.employee?.last_name}
-                                            </Td>
-                                            <Td>{timesheet.allocation} %</Td>
-                                            <Td>
-                                                <Button onClick={(e) => archiveTimesheet(timesheet, e)}>x</Button>
-                                            </Td>
-                                        </Tr>
-                                    );
-                                }
-                            })}
-                            {errorMessage ? (
-                                <>
-                                    <ErrorAlert />
-                                    <Box>{errorMessage}</Box>
-                                </>
-                            ) : null}
-                        </Tbody>
-                    </Table>
                 </Box>
             )}
             <Flex flexDirection="row-reverse">

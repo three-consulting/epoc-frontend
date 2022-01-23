@@ -6,6 +6,35 @@ import { Table, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
 import { TaskForm } from '../form/TaskForm';
 
+interface TaskListProps {
+    tasks: TaskDTO[];
+}
+
+function TaskList({ tasks }: TaskListProps): JSX.Element {
+    return (
+        <Box borderWidth="1px" padding="1rem" margin="1rem">
+            <Table variant="simple">
+                <Thead>
+                    <Tr>
+                        <Th>Name</Th>
+                        <Th />
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    {tasks.map((task, idx) => (
+                        <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
+                            <Td>{task.name}</Td>
+                            <Td>
+                                <Button>x</Button>
+                            </Td>
+                        </Tr>
+                    ))}
+                </Tbody>
+            </Table>
+        </Box>
+    );
+}
+
 interface TaskTableProps {
     project: ProjectDTO;
     tasks: TaskDTO[];
@@ -28,26 +57,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                 Tasks
             </Heading>
             {tasks ? (
-                <Box borderWidth="1px" padding="1rem" margin="1rem">
-                    <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <Th>Name</Th>
-                                <Th />
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {tasks.map((task, idx) => (
-                                <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
-                                    <Td>{task.name}</Td>
-                                    <Td>
-                                        <Button>x</Button>
-                                    </Td>
-                                </Tr>
-                            ))}
-                        </Tbody>
-                    </Table>
-                </Box>
+                <TaskList tasks={tasks} />
             ) : (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     No tasks in this project.
