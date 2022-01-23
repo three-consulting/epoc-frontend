@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ResponseWithStatus } from '../utils/fetch';
 
-type ReturnType<T> =
+type UseDataType<T> =
     | {
           isSuccess: true;
           isLoading: false;
@@ -20,7 +20,7 @@ type ReturnType<T> =
           isError: false;
       };
 
-function useDataInternalState<T>(request: Promise<ResponseWithStatus<T>>): ReturnType<T> {
+function useDataInternalState<T>(request: Promise<ResponseWithStatus<T>>): UseDataType<T> {
     const [response, setResponse] = useState<ResponseWithStatus<T>>();
     request.then(setResponse);
 
@@ -35,7 +35,7 @@ function useDataInternalState<T>(request: Promise<ResponseWithStatus<T>>): Retur
     }
 }
 
-function useData<T>(callback: () => Promise<ResponseWithStatus<T>>): [ReturnType<T>, () => void] {
+function useData<T>(callback: () => Promise<ResponseWithStatus<T>>): [UseDataType<T>, () => void] {
     const [callCount, setCallCount] = useState(0);
     const internalResponse = useMemo(callback, [callCount]);
     const response = useDataInternalState(internalResponse);

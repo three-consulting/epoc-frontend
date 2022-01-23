@@ -43,7 +43,7 @@ function TimesheetTable({
     const [timesheet, setTimesheet] = useState<TimesheetDTO>(emptyTimesheet);
     const [errorMessage, setErrorMessage] = useState<string>('');
 
-    const handleSubmit = async (e: React.MouseEvent) => {
+    const submitTimesheet = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
             await postTimesheet(timesheet);
@@ -64,7 +64,7 @@ function TimesheetTable({
         }
     };
 
-    const handleEmployeeChange = (e: React.FormEvent<HTMLSelectElement>) => {
+    const setEmployee = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = parseInt(e.currentTarget.value);
         if (id && employees) {
@@ -72,6 +72,9 @@ function TimesheetTable({
             setTimesheet({ ...timesheet, employee: { ...employee }, project: { ...project } });
         }
     };
+
+    const invalidAllocation =
+        (timesheet.allocation && (timesheet.allocation < 0 || timesheet.allocation > 100)) || false;
 
     return (
         <Flex
@@ -141,7 +144,7 @@ function TimesheetTable({
                     <ModalCloseButton />
                     <FormControl>
                         <FormLabel>User</FormLabel>
-                        <Select onChange={handleEmployeeChange} placeholder="Select employee">
+                        <Select onChange={setEmployee} placeholder="Select employee">
                             {employees.map((employee, idx) => {
                                 return (
                                     <option key={idx} value={employee.id}>
@@ -175,7 +178,7 @@ function TimesheetTable({
                             }
                         />
                     </FormControl>
-                    <FormControl isInvalid={!((timesheet.allocation || 0) > 0 && (timesheet.allocation || 101) <= 100)}>
+                    <FormControl isInvalid={invalidAllocation}>
                         <FormLabel>Allocation</FormLabel>
                         <Input
                             placeholder="0"
@@ -189,7 +192,7 @@ function TimesheetTable({
                         <FormErrorMessage>Allocation needs to be between 1 and 100 %.</FormErrorMessage>
                     </FormControl>
                     <ModalFooter>
-                        <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+                        <Button colorScheme="blue" mr={3} onClick={submitTimesheet}>
                             Submit
                         </Button>
                         <Button colorScheme="gray" onClick={onClose}>
