@@ -19,6 +19,7 @@ import { CustomerDTO } from '@/lib/types/dto';
 import { postCustomer } from '@/lib/utils/apiRequests';
 
 type CustomerFields = Partial<CustomerDTO>;
+
 const validateCustomerFields = (fields: CustomerFields): CustomerDTO => {
     const { name } = fields;
     if (name) {

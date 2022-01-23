@@ -1,37 +1,10 @@
+import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
 import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
-import {
-    FormControl,
-    FormErrorMessage,
-    FormLabel,
-    Input,
-    Modal,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    useDisclosure,
-} from '@chakra-ui/react';
-import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
+import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Tbody } from '@chakra-ui/react';
+import { Table, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
-import ErrorAlert from '../common/ErrorAlert';
-import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
-import { postTask } from '@/lib/utils/apiRequests';
-
-type TaskFields = Partial<TaskDTO> & { project: ProjectDTO };
-
-const fieldsToTask = (fields: TaskFields): TaskDTO => {
-    const { name } = fields;
-    if (name) {
-        return {
-            ...fields,
-            name,
-        };
-    } else {
-        throw 'Invalid task form: missing required fields';
-    }
-};
+import { TaskForm } from '../form/TaskForm';
 
 interface TaskTableProps {
     project: ProjectDTO;
@@ -39,21 +12,7 @@ interface TaskTableProps {
 }
 
 function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
-    const [taskFields, setTaskFields] = useState<TaskFields>({
-        project: project,
-    });
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const [errorMessage, setErrorMessage] = useState<string>('');
-
-    const handleSubmit = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        try {
-            await postTask(fieldsToTask(taskFields));
-            onClose();
-        } catch (error) {
-            setErrorMessage(`${error}`);
-        }
-    };
+    const [displayNewTaskForm, setDisplayNewTaskForm] = useState(false);
 
     return (
         <Flex
@@ -97,54 +56,16 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                 </Box>
             )}
             <Flex flexDirection="row-reverse">
-                <Button colorScheme="blue" onClick={onOpen}>
+                <Button colorScheme="blue" onClick={() => setDisplayNewTaskForm(true)}>
                     Add Task
                 </Button>
             </Flex>
-            <Modal isOpen={isOpen} onClose={onClose}>
+            <Modal isOpen={displayNewTaskForm} onClose={() => setDisplayNewTaskForm(false)}>
                 <ModalOverlay />
                 <ModalContent px="0.5rem">
                     <ModalHeader>Add task to project</ModalHeader>
                     <ModalCloseButton />
-                    <FormControl isInvalid={!taskFields.name} isRequired>
-                        <FormLabel>Task Name</FormLabel>
-                        <Input
-                            placeholder="Task Name"
-                            onChange={(e) =>
-                                setTaskFields({
-                                    ...taskFields,
-                                    name: e.target.value,
-                                })
-                            }
-                        />
-                        <FormErrorMessage>Task name cannot be empty.</FormErrorMessage>
-                    </FormControl>
-                    <FormControl>
-                        <FormLabel>Description</FormLabel>
-                        <Input
-                            placeholder="Description"
-                            onChange={(e) =>
-                                setTaskFields({
-                                    ...taskFields,
-                                    description: e.target.value,
-                                })
-                            }
-                        />
-                    </FormControl>
-                    <ModalFooter>
-                        <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
-                            Submit
-                        </Button>
-                        <Button colorScheme="gray" onClick={onClose}>
-                            Cancel
-                        </Button>
-                    </ModalFooter>
-                    {errorMessage ? (
-                        <>
-                            <ErrorAlert />
-                            <Box>{errorMessage}</Box>
-                        </>
-                    ) : null}
+                    <TaskForm project={project} onClose={() => setDisplayNewTaskForm(false)} />
                 </ModalContent>
             </Modal>
         </Flex>

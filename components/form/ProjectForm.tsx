@@ -64,7 +64,7 @@ function ProjectForm({
     };
 
     const createProject = async (project: ProjectDTO) => {
-        await postProject(validateProjectFields(project));
+        await postProject(project);
         router.push('/projects');
     };
 
