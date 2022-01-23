@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Box, Flex } from '@chakra-ui/layout';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/dist/client/router';
@@ -18,15 +18,15 @@ type Props = {
 };
 
 function InspectProjectForm({ projectId }: Props): JSX.Element {
-    const projectRequest = useMemo(() => getProject(projectId), []);
-    const taskRequest = useMemo(() => listTasks(projectId), []);
-    const timesheetRequest = useMemo(() => listTimesheets(projectId), []);
-    const employeesRequest = useMemo(() => listEmployees(), []);
+    const projectRequest = useCallback(() => getProject(projectId), []);
+    const taskRequest = useCallback(() => listTasks(projectId), []);
+    const timesheetRequest = useCallback(() => listTimesheets(projectId), []);
+    const employeesRequest = useCallback(() => listEmployees(), []);
 
-    const projectResponse = useData(projectRequest);
-    const timesheetResponse = useData(timesheetRequest);
-    const employeesResponse = useData(employeesRequest);
-    const taskResponse = useData(taskRequest);
+    const [projectResponse] = useData(projectRequest);
+    const [timesheetResponse, refreshTimesheets] = useData(timesheetRequest);
+    const [employeesResponse] = useData(employeesRequest);
+    const [taskResponse] = useData(taskRequest);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -92,6 +92,7 @@ function InspectProjectForm({ projectId }: Props): JSX.Element {
                 <TimesheetTable
                     project={projectResponse.data}
                     timesheets={timesheetResponse.data}
+                    refreshTimesheets={refreshTimesheets}
                     employees={employeesResponse.data}
                 />
             )}

@@ -23,7 +23,11 @@ const emptyCustomer: CustomerDTO = {
     description: '',
 };
 
-function CustomerForm(): JSX.Element {
+interface CustomerFormProps {
+    refreshCustomers: () => void;
+}
+
+function CustomerForm({ refreshCustomers }: CustomerFormProps): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [customer, setCustomer] = useState<CustomerDTO>(emptyCustomer);
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -32,6 +36,7 @@ function CustomerForm(): JSX.Element {
         e.preventDefault();
         try {
             await postCustomer(customer);
+            await refreshCustomers();
             onClose();
         } catch (error) {
             setErrorMessage(error.toString());

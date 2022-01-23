@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 import type { NextPage } from 'next';
 import { Heading } from '@chakra-ui/layout';
 import Layout from '@/components/common/Layout';
@@ -14,13 +14,13 @@ type Props = {
 };
 
 function EditProjectForm({ id }: Props): JSX.Element {
-    const customerRequest = useMemo(() => listCustomers(), []);
-    const employeesRequest = useMemo(() => listEmployees(), []);
-    const projectRequest = useMemo(() => getProject(id), []);
+    const customerRequest = useCallback(() => listCustomers(), []);
+    const employeesRequest = useCallback(() => listEmployees(), []);
+    const projectRequest = useCallback(() => getProject(id), []);
 
-    const customerResponse = useData(customerRequest);
-    const employeesResponse = useData(employeesRequest);
-    const projectResponse = useData(projectRequest);
+    const [customerResponse, refreshCustomers] = useData(customerRequest);
+    const [employeesResponse] = useData(employeesRequest);
+    const [projectResponse] = useData(projectRequest);
 
     return (
         <Layout>
@@ -34,6 +34,7 @@ function EditProjectForm({ id }: Props): JSX.Element {
             {customerResponse.isSuccess && employeesResponse.isSuccess && projectResponse.isSuccess && (
                 <ProjectForm
                     customers={customerResponse.data}
+                    refreshCustomers={refreshCustomers}
                     employees={employeesResponse.data}
                     method="PUT"
                     project={projectResponse.data}

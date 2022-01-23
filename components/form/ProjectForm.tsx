@@ -20,11 +20,12 @@ const emptyProject: ProjectDTO = {
 type ProjectFormProps = {
     employees: EmployeeDTO[];
     customers: CustomerDTO[];
+    refreshCustomers: () => void;
     method: string;
     project?: ProjectDTO;
 };
 
-function ProjectForm({ employees, customers, method, project: p }: ProjectFormProps): JSX.Element {
+function ProjectForm({ employees, customers, refreshCustomers, method, project: p }: ProjectFormProps): JSX.Element {
     const [project, setProject] = useState<ProjectDTO>(p || emptyProject);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const router = useRouter();
@@ -142,7 +143,7 @@ function ProjectForm({ employees, customers, method, project: p }: ProjectFormPr
                                     );
                                 })}
                             </Select>
-                            <CustomerForm />
+                            <CustomerForm refreshCustomers={refreshCustomers} />
                         </Flex>
                     </FormControl>
                 </Flex>

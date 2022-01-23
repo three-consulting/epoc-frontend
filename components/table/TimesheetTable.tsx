@@ -23,6 +23,7 @@ import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 type TimesheetTableProps = {
     project: ProjectDTO;
     timesheets: TimesheetDTO[];
+    refreshTimesheets: () => void;
     employees: EmployeeDTO[];
 };
 
@@ -32,7 +33,12 @@ const emptyTimesheet: TimesheetDTO = {
     allocation: 0,
 };
 
-function TimesheetTable({ project, timesheets: previousTimesheets, employees }: TimesheetTableProps): JSX.Element {
+function TimesheetTable({
+    project,
+    refreshTimesheets,
+    timesheets: previousTimesheets,
+    employees,
+}: TimesheetTableProps): JSX.Element {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [timesheet, setTimesheet] = useState<TimesheetDTO>(emptyTimesheet);
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -41,6 +47,7 @@ function TimesheetTable({ project, timesheets: previousTimesheets, employees }: 
         e.preventDefault();
         try {
             await postTimesheet(timesheet);
+            await refreshTimesheets();
             onClose();
         } catch (error) {
             setErrorMessage(error.toString);
@@ -51,6 +58,7 @@ function TimesheetTable({ project, timesheets: previousTimesheets, employees }: 
         e.preventDefault();
         try {
             await putTimesheet({ ...timesheet, status: 'ARCHIVED' });
+            await refreshTimesheets();
         } catch (error) {
             setErrorMessage(error.toString);
         }

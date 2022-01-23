@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 import type { NextPage } from 'next';
 import { Box, Heading, Text, Flex } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/react';
@@ -12,8 +12,8 @@ import { listProjects } from '@/lib/utils/apiRequests';
 
 const Projects: NextPage = () => {
     const router = useRouter();
-    const projectRequest = useMemo(() => listProjects(), []);
-    const projectResponse = useData(projectRequest);
+    const projectRequest = useCallback(() => listProjects(), []);
+    const [projectResponse] = useData(projectRequest);
 
     return (
         <Layout>
