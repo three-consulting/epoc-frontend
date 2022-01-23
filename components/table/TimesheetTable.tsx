@@ -22,18 +22,16 @@ import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 
 type TimesheetFields = Partial<TimesheetDTO> & {
     project: ProjectDTO;
-    status: 'ACTIVE';
 };
 
 const validateTimesheetFields = (fields: TimesheetFields): TimesheetDTO => {
-    const { name, project, employee, status } = fields;
-    if (name && project && employee && status) {
+    const { name, project, employee } = fields;
+    if (name && project && employee) {
         return {
             ...fields,
             name,
             project,
             employee,
-            status,
         };
     } else {
         throw 'Invalid timesheet form: Missing required fields';
@@ -53,7 +51,7 @@ function TimesheetTable({
     timesheets: previousTimesheets,
     employees,
 }: TimesheetTableProps): JSX.Element {
-    const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>({ project, status: 'ACTIVE' });
+    const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>({ project });
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
 

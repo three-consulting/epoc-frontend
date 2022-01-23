@@ -3,22 +3,21 @@ import { Flex } from '@chakra-ui/layout';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
-import { ProjectDTO, EmployeeDTO, CustomerDTO, ProjectStatus } from '@/lib/types/dto';
+import { ProjectDTO, EmployeeDTO, CustomerDTO } from '@/lib/types/dto';
 import CustomerForm from './CustomerForm';
 import { postProject, putProject } from '@/lib/utils/apiRequests';
 
-type ProjectFields = Partial<ProjectDTO> & { status: ProjectStatus };
+type ProjectFields = Partial<ProjectDTO>;
 
 const validateProjectFields = (form: ProjectFields): ProjectDTO => {
-    const { name, startDate, customer, managingEmployee, status } = form;
-    if (name && startDate && customer && managingEmployee && status) {
+    const { name, startDate, customer, managingEmployee } = form;
+    if (name && startDate && customer && managingEmployee) {
         return {
             ...form,
             name,
             startDate,
             customer,
             managingEmployee,
-            status,
         };
     } else {
         throw 'Invalid project form: missing required fields';
@@ -43,7 +42,7 @@ function ProjectForm({
     project: projectOrNull,
 }: ProjectFormProps): JSX.Element {
     const router = useRouter();
-    const [projectFields, setProjectFields] = useState<ProjectFields>(projectOrNull || { status: 'ACTIVE' });
+    const [projectFields, setProjectFields] = useState<ProjectFields>(projectOrNull || {});
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {

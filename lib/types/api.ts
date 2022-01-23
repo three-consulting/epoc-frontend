@@ -95,7 +95,7 @@ export interface components {
       endDate?: string;
       customer: components["schemas"]["CustomerDTO"];
       managingEmployee: components["schemas"]["EmployeeDTO"];
-      status: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
       created?: string;
       updated?: string;
     };
@@ -108,7 +108,7 @@ export interface components {
       employee: components["schemas"]["EmployeeDTO"];
       created?: string;
       updated?: string;
-      status: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TaskDTO: {
       id?: number;
@@ -117,7 +117,7 @@ export interface components {
       project: components["schemas"]["ProjectDTO"];
       created?: string;
       updated?: string;
-      status: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TimeCategoryDTO: {
       id?: number;

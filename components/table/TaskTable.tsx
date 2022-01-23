@@ -19,17 +19,15 @@ import ErrorAlert from '../common/ErrorAlert';
 import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
 import { postTask } from '@/lib/utils/apiRequests';
 
-type TaskFields = Partial<TaskDTO> & { project: ProjectDTO; status: 'ACTIVE' };
+type TaskFields = Partial<TaskDTO> & { project: ProjectDTO };
 
 const fieldsToTask = (fields: TaskFields): TaskDTO => {
-    const { name, status } = fields;
-    if (name && status) {
-        const t: TaskDTO = {
+    const { name } = fields;
+    if (name) {
+        return {
             ...fields,
             name,
-            status,
         };
-        return t;
     } else {
         throw 'Invalid task form: missing required fields';
     }
@@ -43,7 +41,6 @@ interface TaskTableProps {
 function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>({
         project: project,
-        status: 'ACTIVE',
     });
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
