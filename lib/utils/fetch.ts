@@ -17,12 +17,7 @@ async function http<T>(path: string, config?: RequestInit): Promise<T> {
     return response.json().catch(() => ({}));
 }
 
-
-export async function get<T>(
-    path: string,
-    params?: Record<string, string | number>,
-    config?: RequestInit,
-): Promise<T> {
+export async function get<T>(path: string, params?: Record<string, string | number>, config?: RequestInit): Promise<T> {
     const url = new URL(path);
     url.search = new URLSearchParams(params as Record<string, string>).toString();
     const init = { method: 'get', ...config };

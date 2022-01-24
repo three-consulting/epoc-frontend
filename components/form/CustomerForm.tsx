@@ -29,12 +29,11 @@ const validateCustomerFields = (fields: CustomerFields): CustomerDTO => {
     }
 };
 
-
 function CustomerForm(): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({});
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const {postCustomer} = useCustomers();
+    const { postCustomer } = useCustomers();
 
     const submitForm = async (e: React.MouseEvent) => {
         e.preventDefault();
