@@ -4,19 +4,19 @@ import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
-import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
+import { Employee, Project, Timesheet } from '@/lib/types/apiTypes';
 import { TimesheetForm } from '../form/TimesheetForm';
 import useTimesheets from '@/lib/hooks/useTimesheets';
 
 interface TimesheetRowProps {
-    timesheet: TimesheetDTO;
+    timesheet: Timesheet;
     projectId: number;
 }
 function TimesheetRow({ timesheet, projectId }: TimesheetRowProps): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string>('');
     const { putTimesheet } = useTimesheets(projectId);
 
-    const archiveTimesheet = async (timesheet: TimesheetDTO, e: React.MouseEvent) => {
+    const archiveTimesheet = async (timesheet: Timesheet, e: React.MouseEvent) => {
         e.preventDefault();
         try {
             await putTimesheet({ ...timesheet, status: 'ARCHIVED' });
@@ -49,9 +49,9 @@ function TimesheetRow({ timesheet, projectId }: TimesheetRowProps): JSX.Element 
 }
 
 interface TimesheetTableProps {
-    project: ProjectDTO;
-    timesheets: TimesheetDTO[];
-    employees: EmployeeDTO[];
+    project: Project;
+    timesheets: Timesheet[];
+    employees: Employee[];
 }
 
 function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps): JSX.Element {

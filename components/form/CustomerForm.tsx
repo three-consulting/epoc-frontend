@@ -15,12 +15,12 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import ErrorAlert from '@/components/common/ErrorAlert';
-import { CustomerDTO } from '@/lib/types/dto';
+import { Customer } from '@/lib/types/apiTypes';
 import useCustomers from '@/lib/hooks/useCustomers';
 
-type CustomerFields = Partial<CustomerDTO>;
+type CustomerFields = Partial<Customer>;
 
-const validateCustomerFields = (fields: CustomerFields): CustomerDTO => {
+const validateCustomerFields = (fields: CustomerFields): Customer => {
     const { name } = fields;
     if (name) {
         return { ...fields, name };

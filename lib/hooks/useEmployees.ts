@@ -1,16 +1,16 @@
 import useSWR from 'swr';
-import { EmployeeDTO } from '../types/dto';
+import { Employee } from '../types/apiTypes';
 import { get } from '../utils/fetch';
 import { ApiResponseType, swrToData } from '../types/swrUtil';
 
 const employeeEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/employee`;
 
 type ReturnType = {
-    employeesResponse: ApiResponseType<EmployeeDTO[]>;
+    employeesResponse: ApiResponseType<Employee[]>;
 };
 
 function useEmployees(): ReturnType {
-    const employeesResponse = swrToData(useSWR<EmployeeDTO[], Error>(employeeEndpointURL, get));
+    const employeesResponse = swrToData(useSWR<Employee[], Error>(employeeEndpointURL, get));
     return { employeesResponse };
 }
 

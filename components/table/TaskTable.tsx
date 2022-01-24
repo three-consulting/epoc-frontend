@@ -1,4 +1,4 @@
-import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
+import { Project, Task } from '@/lib/types/apiTypes';
 import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
 import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Tbody } from '@chakra-ui/react';
@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { TaskForm } from '../form/TaskForm';
 
 interface TaskRowProps {
-    task: TaskDTO;
+    task: Task;
 }
 
 function TaskRow({ task }: TaskRowProps): JSX.Element {
@@ -22,8 +22,8 @@ function TaskRow({ task }: TaskRowProps): JSX.Element {
 }
 
 interface TaskTableProps {
-    project: ProjectDTO;
-    tasks: TaskDTO[];
+    project: Project;
+    tasks: Task[];
 }
 
 function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {

@@ -1,15 +1,15 @@
 import useProjectDetail from '@/lib/hooks/useProjectDetail';
 import useProjects from '@/lib/hooks/useProjects';
-import { CustomerDTO, EmployeeDTO, ProjectDTO } from '@/lib/types/dto';
+import { Customer, Employee, Project } from '@/lib/types/apiTypes';
 import { Flex } from '@chakra-ui/layout';
 import { Button, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import CustomerForm from './CustomerForm';
 
-type ProjectFields = Partial<ProjectDTO>;
+type ProjectFields = Partial<Project>;
 
-const validateProjectFields = (form: ProjectFields): ProjectDTO => {
+const validateProjectFields = (form: ProjectFields): Project => {
     const { name, startDate, customer, managingEmployee } = form;
     if (name && startDate && customer && managingEmployee) {
         return {
@@ -149,19 +149,19 @@ function ProjectFormBody({ project: projectOrNull, customers, employees, onSubmi
 }
 
 type ProjectFormPropsBase = {
-    employees: EmployeeDTO[];
-    customers: CustomerDTO[];
+    employees: Employee[];
+    customers: Customer[];
 };
 
 type CreateProjectFormProps = ProjectFormPropsBase & { project: undefined; projectId: undefined };
-type EditProjectFormProps = ProjectFormPropsBase & { project: ProjectDTO; projectId: number };
+type EditProjectFormProps = ProjectFormPropsBase & { project: Project; projectId: number };
 type ProjectFormProps = CreateProjectFormProps | EditProjectFormProps;
-type ProjectFormBodyProps = ProjectFormProps & { onSubmit: (project: ProjectDTO) => void };
+type ProjectFormBodyProps = ProjectFormProps & { onSubmit: (project: Project) => void };
 
 function CreateProjectForm(props: ProjectFormProps) {
     const router = useRouter();
     const { postProject } = useProjects();
-    const onSubmit = async (project: ProjectDTO) => {
+    const onSubmit = async (project: Project) => {
         await postProject(project);
         router.push('/projects');
     };
@@ -171,7 +171,7 @@ function CreateProjectForm(props: ProjectFormProps) {
 function EditProjectForm(props: EditProjectFormProps) {
     const router = useRouter();
     const { putProject } = useProjectDetail(props.projectId);
-    const onSubmit = async (project: ProjectDTO) => {
+    const onSubmit = async (project: Project) => {
         await putProject(project);
         router.push(`/projects/${props.projectId}`);
     };

@@ -1,12 +1,12 @@
 import useTasks from '@/lib/hooks/useTasks';
-import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
+import { Project, Task } from '@/lib/types/apiTypes';
 import { FormControl, FormLabel, Input, FormErrorMessage, ModalFooter, Button, Box } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 
-type TaskFields = Partial<TaskDTO> & { project: ProjectDTO };
+type TaskFields = Partial<Task> & { project: Project };
 
-const validateTaskFields = (fields: TaskFields): TaskDTO => {
+const validateTaskFields = (fields: TaskFields): Task => {
     const { name } = fields;
     if (name) {
         return {
@@ -19,7 +19,7 @@ const validateTaskFields = (fields: TaskFields): TaskDTO => {
 };
 
 interface TaskFormProps {
-    project: ProjectDTO;
+    project: Project;
     projectId: number;
     onClose: () => void;
 }

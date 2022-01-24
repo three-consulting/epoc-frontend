@@ -2,10 +2,10 @@ import React from 'react';
 import { Box, Heading } from '@chakra-ui/layout';
 import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from '@chakra-ui/react';
 import Link from 'next/link';
-import { ProjectDTO } from '@/lib/types/dto';
+import { Project } from '@/lib/types/apiTypes';
 
 interface ProjectRowProps {
-    project: ProjectDTO;
+    project: Project;
 }
 
 function ProjectRow({ project }: ProjectRowProps) {
@@ -20,7 +20,7 @@ function ProjectRow({ project }: ProjectRowProps) {
 }
 
 interface ProjectTableProps {
-    projects: ProjectDTO[];
+    projects: Project[];
 }
 
 function ProjectTable({ projects }: ProjectTableProps): JSX.Element {

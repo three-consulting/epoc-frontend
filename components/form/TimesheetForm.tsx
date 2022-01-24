@@ -1,14 +1,14 @@
 import useTimesheets from '@/lib/hooks/useTimesheets';
-import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
+import { Employee, Project, Timesheet } from '@/lib/types/apiTypes';
 import { Box, Button, FormControl, FormErrorMessage, FormLabel, Input, ModalFooter, Select } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 
-type TimesheetFields = Partial<TimesheetDTO> & {
-    project: ProjectDTO;
+type TimesheetFields = Partial<Timesheet> & {
+    project: Project;
 };
 
-const validateTimesheetFields = (fields: TimesheetFields): TimesheetDTO => {
+const validateTimesheetFields = (fields: TimesheetFields): Timesheet => {
     const { name, project, employee } = fields;
     if (name && project && employee) {
         return {
@@ -23,9 +23,9 @@ const validateTimesheetFields = (fields: TimesheetFields): TimesheetDTO => {
 };
 
 interface TimesheetFormProps {
-    project: ProjectDTO;
+    project: Project;
     projectId: number;
-    employees: EmployeeDTO[];
+    employees: Employee[];
     onClose: () => void;
 }
 
