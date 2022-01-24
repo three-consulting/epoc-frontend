@@ -1,42 +1,28 @@
 import React from 'react';
 import type { NextPage } from 'next';
-import { Box, Heading, Text, Flex } from '@chakra-ui/layout';
+import { Box, Heading } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/react';
 import Layout from '@/components/common/Layout';
-import ProjectTable from '@/components/projects/ProjectTable';
+import ProjectTable from '@/components/table/ProjectTable';
 import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
-import { components } from '@/lib/types/api';
-import useData from '@/lib/hooks/useData';
+import useProjects from '@/lib/hooks/useProjects';
 
 const Projects: NextPage = () => {
-    const { data: projects, isError, isLoading } = useData<components['schemas']['ProjectDTO'][]>('project');
     const router = useRouter();
+    const { projectsResponse } = useProjects();
 
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">
                 Projects
             </Heading>
-            {isLoading && <Loading></Loading>}
-            {isError && <ErrorAlert title={isError.name} message={isError.name}></ErrorAlert>}
-            {projects && projects?.length > 0 ? (
-                <ProjectTable projects={projects}></ProjectTable>
-            ) : (
-                <Flex
-                    backgroundColor="white"
-                    border="solid 0.5px"
-                    borderColor="gray.400"
-                    borderRadius="0.2rem"
-                    padding="0.5rem 1rem"
-                    boxShadow="sm"
-                    flexDirection="column"
-                >
-                    <Heading size="lg">No projects</Heading>
-                    <Text marginBottom="0.2rem">Add a new project by clicking the button below</Text>
-                </Flex>
+            {projectsResponse.isLoading && <Loading />}
+            {projectsResponse.isError && (
+                <ErrorAlert title={projectsResponse.errorMessage} message={projectsResponse.errorMessage} />
             )}
+            {projectsResponse.isSuccess && <ProjectTable projects={projectsResponse.data} />}
             <Box margin="1rem 0rem">
                 <Button colorScheme="blue" onClick={() => router.push('/projects/new')}>
                     Add project

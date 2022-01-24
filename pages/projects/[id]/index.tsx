@@ -2,114 +2,111 @@ import React, { useState } from 'react';
 import { Box, Flex } from '@chakra-ui/layout';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/dist/client/router';
-import ProjectDetail from '@/components/projects/ProjectDetail';
+import ProjectDetail from '@/components/detail/ProjectDetail';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import Layout from '@/components/common/Layout';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 import Link from 'next/link';
-import { components } from '@/lib/types/api';
-import useData from '@/lib/hooks/useData';
-import { FormStatus } from '@/components/projects/NewProject/reducer';
-import { useSWRConfig } from 'swr';
-import * as fetch from '@/lib/utils/fetch';
-import TimesheetTable from '@/components/timesheets/TimesheetTable';
-import TaskTable from '@/components/tasks/TaskTable';
+import TimesheetTable from '@/components/table/TimesheetTable';
+import TaskTable from '@/components/table/TaskTable';
+import useProjectDetail from '@/lib/hooks/useProjectDetail';
+import useTimesheets from '@/lib/hooks/useTimesheets';
+import useEmployees from '@/lib/hooks/useEmployees';
+import useTasks from '@/lib/hooks/useTasks';
 
-type StateType = {
-    formStatus: FormStatus;
-    errorMessage: string;
+type Props = {
+    projectId: number;
 };
 
-const Id: NextPage = () => {
-    const router = useRouter();
-    const { id } = router.query;
-    const { data: project, isError, isLoading } = useData<components['schemas']['ProjectDTO']>(`project/${id}`);
+function InspectProjectPage({ projectId }: Props): JSX.Element {
+    const { projectDetailResponse, putProject } = useProjectDetail(projectId);
+    const { timesheetsResponse } = useTimesheets(projectId);
+    const { employeesResponse } = useEmployees();
+    const { tasksResponse } = useTasks(projectId);
+
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [state, setState] = useState<StateType>({
-        formStatus: FormStatus.IDLE,
-        errorMessage: '',
-    });
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/project`;
-    const { mutate } = useSWRConfig();
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
-    const {
-        data: timesheets,
-        isError: timesheetError,
-        isLoading: timesheetLoading,
-    } = useData<components['schemas']['TimesheetDTO'][]>('timesheet', { projectId: `${id}` });
-
-    const handleArchive = async (e: React.MouseEvent) => {
+    const archiveProject = async (e: React.MouseEvent) => {
         e.preventDefault();
-        if (project) {
-            const createProjectRequest: components['schemas']['ProjectDTO'] = {
-                ...project,
-                status: 'ARCHIVED',
-            };
-            setState({
-                ...state,
-                formStatus: FormStatus.LOADING,
-            });
+        if (projectDetailResponse.isSuccess) {
             try {
-                await fetch.put(url, createProjectRequest);
-                mutate(`${url}/${id}`);
-                setState({
-                    ...state,
-                    formStatus: FormStatus.SUCCESS,
-                });
+                await putProject({ ...projectDetailResponse.data, status: 'ARCHIVED' });
                 onOpen();
             } catch (error) {
-                setState({
-                    formStatus: FormStatus.ERROR,
-                    errorMessage: `${error}`,
-                });
+                setErrorMessage(`${error}`);
             }
         } else {
-            setState({
-                ...state,
-                formStatus: FormStatus.ERROR,
-                errorMessage: 'Project failed to load.',
-            });
+            setErrorMessage('Project failed to load.');
         }
     };
 
     return (
         <Layout>
-            <Flex flexDirection="column">
-                {isLoading && <Loading></Loading>}
-                {isError && <ErrorAlert title={isError.name} message={isError.name}></ErrorAlert>}
-                {project ? <ProjectDetail project={project} /> : <Box>Not found</Box>}
-            </Flex>
-            <Link key={`${id}`} href={`${id}/edit`}>
-                <Button colorScheme="blue" marginTop="1rem">
-                    Edit Project
-                </Button>
-            </Link>
-            {project?.status !== 'ARCHIVED' && (
-                <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={handleArchive}>
-                    Archive Project
-                </Button>
+            {errorMessage ? (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            ) : null}
+            {projectDetailResponse.isLoading && <Loading />}
+            {projectDetailResponse.isError && (
+                <ErrorAlert title={projectDetailResponse.errorMessage} message={projectDetailResponse.errorMessage} />
             )}
-            {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
-            {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalBody marginTop="1rem">{project?.name} has been archived.</ModalBody>
-
-                    <ModalFooter>
-                        <Button colorScheme="blue" onClick={onClose}>
-                            Close
+            {projectDetailResponse.isSuccess ? (
+                <>
+                    <Flex flexDirection="column">
+                        <ProjectDetail project={projectDetailResponse.data} />
+                    </Flex>
+                    <Link key={`${projectId}`} href={`${projectId}/edit`}>
+                        <Button colorScheme="blue" marginTop="1rem">
+                            Edit Project
                         </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-            {timesheetLoading && <Loading></Loading>}
-            {timesheetError && <ErrorAlert title={timesheetError.name} message={timesheetError.name}></ErrorAlert>}
-            <TimesheetTable timesheets={timesheets} project={project} />
-            <TaskTable project={project} />
+                    </Link>
+                    {projectDetailResponse.data.status !== 'ARCHIVED' && (
+                        <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={archiveProject}>
+                            Archive Project
+                        </Button>
+                    )}
+                    <Modal isOpen={isOpen} onClose={onClose}>
+                        <ModalOverlay />
+                        <ModalContent>
+                            <ModalBody marginTop="1rem">{projectDetailResponse.data.name} has been archived.</ModalBody>
+
+                            <ModalFooter>
+                                <Button colorScheme="blue" onClick={onClose}>
+                                    Close
+                                </Button>
+                            </ModalFooter>
+                        </ModalContent>
+                    </Modal>
+                    {timesheetsResponse.isLoading && <Loading />}
+                    {timesheetsResponse.isError && (
+                        <ErrorAlert title={timesheetsResponse.errorMessage} message={timesheetsResponse.errorMessage} />
+                    )}
+                    {timesheetsResponse.isSuccess && employeesResponse.isSuccess && (
+                        <TimesheetTable
+                            project={projectDetailResponse.data}
+                            timesheets={timesheetsResponse.data}
+                            employees={employeesResponse.data}
+                        />
+                    )}
+                    {tasksResponse.isSuccess && (
+                        <TaskTable project={projectDetailResponse.data} tasks={tasksResponse.data} />
+                    )}
+                </>
+            ) : (
+                <Box>Not found</Box>
+            )}
         </Layout>
     );
+}
+
+const Id: NextPage = () => {
+    const router = useRouter();
+    const id = router.query.id as string | undefined;
+    return id ? <InspectProjectPage projectId={parseInt(id)} /> : null;
 };
 
 export default Id;

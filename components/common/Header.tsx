@@ -12,7 +12,7 @@ function Header(): JSX.Element {
             justifyContent="center"
             paddingRight="1rem"
             backgroundColor="white"
-        ></Flex>
+        />
     );
 }
 

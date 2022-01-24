@@ -14,54 +14,34 @@ import {
     Box,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { components } from '@/lib/types/api';
-import * as fetch from '@/lib/utils/fetch';
-import { FormStatus } from './reducer';
-import { useSWRConfig } from 'swr';
 import ErrorAlert from '@/components/common/ErrorAlert';
+import { Customer } from '@/lib/types/apiTypes';
+import useCustomers from '@/lib/hooks/useCustomers';
 
-type StateType = {
-    name: string;
-    description: string;
-    formStatus: FormStatus;
-    errorMessage: string;
+type CustomerFields = Partial<Customer>;
+
+const validateCustomerFields = (fields: CustomerFields): Customer => {
+    const { name } = fields;
+    if (name) {
+        return { ...fields, name };
+    } else {
+        throw 'Invalid customer form: missing required fields';
+    }
 };
 
-function NewCustomer(): JSX.Element {
+function CustomerForm(): JSX.Element {
+    const [customerFields, setCustomerFields] = useState<CustomerFields>({});
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [state, setState] = useState<StateType>({
-        name: '',
-        description: '',
-        formStatus: FormStatus.IDLE,
-        errorMessage: '',
-    });
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/customer`;
-    const { mutate } = useSWRConfig();
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const { postCustomer } = useCustomers();
 
-    const handleSubmit = async (e: React.MouseEvent) => {
+    const submitForm = async (e: React.MouseEvent) => {
         e.preventDefault();
-
-        const createCustomerRequest: components['schemas']['CustomerDTO'] = {
-            name: state.name,
-            description: state.description,
-        };
-        setState({
-            ...state,
-            formStatus: FormStatus.LOADING,
-        });
         try {
-            await fetch.post(url, createCustomerRequest);
-            mutate(url);
-            setState({
-                ...state,
-                formStatus: FormStatus.SUCCESS,
-            });
+            await postCustomer(validateCustomerFields(customerFields));
             onClose();
         } catch (error) {
-            setState({
-                ...state,
-                errorMessage: `${error}`,
-            });
+            setErrorMessage(`${error}`);
         }
     };
 
@@ -79,8 +59,8 @@ function NewCustomer(): JSX.Element {
                             <Input
                                 placeholder="Customer Name"
                                 onChange={(e) =>
-                                    setState({
-                                        ...state,
+                                    setCustomerFields({
+                                        ...customerFields,
                                         name: e.target.value,
                                     })
                                 }
@@ -92,19 +72,23 @@ function NewCustomer(): JSX.Element {
                             <Input
                                 placeholder="Description"
                                 onChange={(e) =>
-                                    setState({
-                                        ...state,
+                                    setCustomerFields({
+                                        ...customerFields,
                                         description: e.target.value,
                                     })
                                 }
                             />
                         </FormControl>
-                        {state.formStatus == 'ERROR' ? <ErrorAlert></ErrorAlert> : <Box></Box>}
-                        {state.formStatus == 'ERROR' ? <Box>{state.errorMessage}</Box> : <Box></Box>}
+                        {errorMessage ? (
+                            <>
+                                <ErrorAlert />
+                                <Box>{errorMessage}</Box>
+                            </>
+                        ) : null}
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+                        <Button colorScheme="blue" mr={3} onClick={submitForm}>
                             Save
                         </Button>
                         <Button colorScheme="grey" variant="outline" onClick={onClose}>
@@ -117,4 +101,4 @@ function NewCustomer(): JSX.Element {
     );
 }
 
-export default NewCustomer;
+export default CustomerForm;

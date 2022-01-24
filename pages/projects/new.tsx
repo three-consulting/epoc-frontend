@@ -2,36 +2,38 @@ import React from 'react';
 import type { NextPage } from 'next';
 import { Heading } from '@chakra-ui/layout';
 import Layout from '@/components/common/Layout';
-import ProjectForm from '@/components/projects/NewProject/ProjectForm';
+import ProjectForm from '@/components/form/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
-import useData from '@/lib/hooks/useData';
-import { components } from '@/lib/types/api';
+import useCustomers from '@/lib/hooks/useCustomers';
+import useEmployees from '@/lib/hooks/useEmployees';
 
 const New: NextPage = () => {
-    const {
-        data: customers,
-        isError: customerError,
-        isLoading: customersLoading,
-    } = useData<components['schemas']['CustomerDTO'][]>('customer');
-    const {
-        data: employees,
-        isError: employeeError,
-        isLoading: employeesLoading,
-    } = useData<components['schemas']['EmployeeDTO'][]>('employee');
+    const { customersResponse } = useCustomers();
+    const { employeesResponse } = useEmployees();
+
+    const errorMessage =
+        (customersResponse.isError && customersResponse.errorMessage) ||
+        (employeesResponse.isError && employeesResponse.errorMessage) ||
+        '';
+
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">
                 New project
             </Heading>
-            {(customersLoading || employeesLoading) && <Loading></Loading>}
-            {(customerError || employeeError) && (
-                <ErrorAlert
-                    title="Error loading data"
-                    message="Could not load the required data from the server"
-                ></ErrorAlert>
+            {(customersResponse.isLoading || employeesResponse.isLoading) && <Loading />}
+            {(customersResponse.isError || employeesResponse.isError) && (
+                <ErrorAlert title={errorMessage} message={errorMessage} />
             )}
-            <ProjectForm customers={customers} employees={employees} method="POST"></ProjectForm>
+            {customersResponse.isSuccess && employeesResponse.isSuccess && (
+                <ProjectForm
+                    customers={customersResponse.data}
+                    employees={employeesResponse.data}
+                    project={undefined}
+                    projectId={undefined}
+                />
+            )}
         </Layout>
     );
 };
