@@ -65,19 +65,27 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                     To add a task click the button below.
                 </Box>
             )}
-            <Flex flexDirection="row-reverse">
-                <Button colorScheme="blue" onClick={() => setDisplayNewTaskForm(true)}>
-                    Add Task
-                </Button>
-            </Flex>
-            <Modal isOpen={displayNewTaskForm} onClose={() => setDisplayNewTaskForm(false)}>
-                <ModalOverlay />
-                <ModalContent px="0.5rem">
-                    <ModalHeader>Add task to project</ModalHeader>
-                    <ModalCloseButton />
-                    <TaskForm project={project} onClose={() => setDisplayNewTaskForm(false)} />
-                </ModalContent>
-            </Modal>
+            {project.id ? (
+                <>
+                    <Flex flexDirection="row-reverse">
+                        <Button colorScheme="blue" onClick={() => setDisplayNewTaskForm(true)}>
+                            Add Task
+                        </Button>
+                    </Flex>
+                    <Modal isOpen={displayNewTaskForm} onClose={() => setDisplayNewTaskForm(false)}>
+                        <ModalOverlay />
+                        <ModalContent px="0.5rem">
+                            <ModalHeader>Add task to project</ModalHeader>
+                            <ModalCloseButton />
+                            <TaskForm
+                                project={project}
+                                projectId={project.id}
+                                onClose={() => setDisplayNewTaskForm(false)}
+                            />
+                        </ModalContent>
+                    </Modal>
+                </>
+            ) : null}
         </Flex>
     );
 }

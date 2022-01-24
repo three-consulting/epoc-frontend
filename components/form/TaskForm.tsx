@@ -1,5 +1,5 @@
+import useTasks from '@/lib/hooks/useTasks';
 import { ProjectDTO, TaskDTO } from '@/lib/types/dto';
-import { postTask } from '@/lib/utils/apiRequests';
 import { FormControl, FormLabel, Input, FormErrorMessage, ModalFooter, Button, Box } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
@@ -20,14 +20,17 @@ const validateTaskFields = (fields: TaskFields): TaskDTO => {
 
 interface TaskFormProps {
     project: ProjectDTO;
+    projectId: number;
     onClose: () => void;
 }
 
-export function TaskForm({ project, onClose }: TaskFormProps): JSX.Element {
+export function TaskForm({ project, projectId, onClose }: TaskFormProps): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>({
         project: project,
     });
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const { postTask } = useTasks(projectId);
+
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
@@ -37,6 +40,7 @@ export function TaskForm({ project, onClose }: TaskFormProps): JSX.Element {
             setErrorMessage(`${error}`);
         }
     };
+
     return (
         <>
             <FormControl isInvalid={!taskFields.name} isRequired>

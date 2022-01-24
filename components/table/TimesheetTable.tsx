@@ -4,22 +4,22 @@ import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from
 import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
-import { putTimesheet } from '@/lib/utils/apiRequests';
 import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 import { TimesheetForm } from '../form/TimesheetForm';
+import useTimesheets from '@/lib/hooks/useTimesheets';
 
 interface TimesheetRowProps {
     timesheet: TimesheetDTO;
-    refreshTimesheets: () => void;
+    projectId: number;
 }
-function TimesheetRow({ timesheet, refreshTimesheets }: TimesheetRowProps): JSX.Element {
+function TimesheetRow({ timesheet, projectId }: TimesheetRowProps): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const { putTimesheet } = useTimesheets(projectId);
 
     const archiveTimesheet = async (timesheet: TimesheetDTO, e: React.MouseEvent) => {
         e.preventDefault();
         try {
             await putTimesheet({ ...timesheet, status: 'ARCHIVED' });
-            await refreshTimesheets();
         } catch (error) {
             setErrorMessage(`${error}`);
         }
@@ -51,11 +51,10 @@ function TimesheetRow({ timesheet, refreshTimesheets }: TimesheetRowProps): JSX.
 interface TimesheetTableProps {
     project: ProjectDTO;
     timesheets: TimesheetDTO[];
-    refreshTimesheets: () => void;
     employees: EmployeeDTO[];
 }
 
-function TimesheetTable({ project, refreshTimesheets, timesheets, employees }: TimesheetTableProps): JSX.Element {
+function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps): JSX.Element {
     const [displayNewTimesheetForm, setDisplayNewTimesheetForm] = useState(false);
 
     return (
@@ -82,9 +81,11 @@ function TimesheetTable({ project, refreshTimesheets, timesheets, employees }: T
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {timesheets.map((timesheet, idx) => (
-                                <TimesheetRow timesheet={timesheet} refreshTimesheets={refreshTimesheets} key={idx} />
-                            ))}
+                            {timesheets.map((timesheet, idx) =>
+                                project.id ? (
+                                    <TimesheetRow timesheet={timesheet} projectId={project.id} key={idx} />
+                                ) : null,
+                            )}
                         </Tbody>
                     </Table>
                 </Box>
@@ -95,24 +96,29 @@ function TimesheetTable({ project, refreshTimesheets, timesheets, employees }: T
                     To add a user click the button below.
                 </Box>
             )}
-            <Flex flexDirection="row-reverse">
-                <Button colorScheme="blue" onClick={() => setDisplayNewTimesheetForm(true)}>
-                    Add User
-                </Button>
-            </Flex>
-            <Modal isOpen={displayNewTimesheetForm} onClose={() => setDisplayNewTimesheetForm(false)}>
-                <ModalOverlay />
-                <ModalContent px="0.5rem">
-                    <ModalHeader>Add user to project</ModalHeader>
-                    <TimesheetForm
-                        project={project}
-                        employees={employees}
-                        refreshTimesheets={refreshTimesheets}
-                        onClose={() => setDisplayNewTimesheetForm(false)}
-                    />
-                    <ModalCloseButton />
-                </ModalContent>
-            </Modal>
+            {project.id ? (
+                <>
+                    <Flex flexDirection="row-reverse">
+                        <Button colorScheme="blue" onClick={() => setDisplayNewTimesheetForm(true)}>
+                            Add User
+                        </Button>
+                    </Flex>
+
+                    <Modal isOpen={displayNewTimesheetForm} onClose={() => setDisplayNewTimesheetForm(false)}>
+                        <ModalOverlay />
+                        <ModalContent px="0.5rem">
+                            <ModalHeader>Add user to project</ModalHeader>
+                            <TimesheetForm
+                                project={project}
+                                projectId={project.id}
+                                employees={employees}
+                                onClose={() => setDisplayNewTimesheetForm(false)}
+                            />
+                            <ModalCloseButton />
+                        </ModalContent>
+                    </Modal>
+                </>
+            ) : null}
         </Flex>
     );
 }

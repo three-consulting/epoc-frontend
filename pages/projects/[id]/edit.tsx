@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import type { NextPage } from 'next';
 import { Heading } from '@chakra-ui/layout';
 import Layout from '@/components/common/Layout';
@@ -6,26 +6,23 @@ import ProjectForm from '@/components/form/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import { useRouter } from 'next/dist/client/router';
-import useData from '@/lib/hooks/useData';
-import { getProject, listCustomers, listEmployees } from '@/lib/utils/apiRequests';
+import useCustomers from '@/lib/hooks/useCustomers';
+import useEmployees from '@/lib/hooks/useEmployees';
+import useProjectDetail from '@/lib/hooks/useProjectDetail';
 
 type Props = {
     id: number;
 };
 
 function EditProjectPage({ id }: Props): JSX.Element {
-    const customerRequest = useCallback(() => listCustomers(), []);
-    const employeesRequest = useCallback(() => listEmployees(), []);
-    const projectRequest = useCallback(() => getProject(id), []);
-
-    const [customerResponse, refreshCustomers] = useData(customerRequest);
-    const [employeesResponse] = useData(employeesRequest);
-    const [projectResponse] = useData(projectRequest);
+    const { customersResponse } = useCustomers();
+    const { employeesResponse } = useEmployees();
+    const { projectDetailResponse } = useProjectDetail(id);
 
     const errorMessage =
-        (customerResponse.isError && customerResponse.errorMessage) ||
+        (customersResponse.isError && customersResponse.errorMessage) ||
         (employeesResponse.isError && employeesResponse.errorMessage) ||
-        (projectResponse.isError && projectResponse.errorMessage) ||
+        (projectDetailResponse.isError && projectDetailResponse.errorMessage) ||
         '';
 
     return (
@@ -33,19 +30,23 @@ function EditProjectPage({ id }: Props): JSX.Element {
             <Heading fontWeight="black" margin="1rem 0rem">
                 Edit project
             </Heading>
-            {(customerResponse.isLoading || employeesResponse.isLoading || projectResponse.isLoading) && <Loading />}
-            {(customerResponse.isError || employeesResponse.isError || projectResponse.isError) && (
+            {(customersResponse.isLoading || employeesResponse.isLoading || projectDetailResponse.isLoading) && (
+                <Loading />
+            )}
+            {(customersResponse.isError || employeesResponse.isError || projectDetailResponse.isError) && (
                 <ErrorAlert title={errorMessage} message={errorMessage} />
             )}
-            {customerResponse.isSuccess && employeesResponse.isSuccess && projectResponse.isSuccess && (
-                <ProjectForm
-                    customers={customerResponse.data}
-                    refreshCustomers={refreshCustomers}
-                    employees={employeesResponse.data}
-                    method="PUT"
-                    project={projectResponse.data}
-                />
-            )}
+            {customersResponse.isSuccess &&
+                employeesResponse.isSuccess &&
+                projectDetailResponse.isSuccess &&
+                projectDetailResponse.data.id && (
+                    <ProjectForm
+                        customers={customersResponse.data}
+                        employees={employeesResponse.data}
+                        project={projectDetailResponse.data}
+                        projectId={projectDetailResponse.data.id}
+                    />
+                )}
         </Layout>
     );
 }

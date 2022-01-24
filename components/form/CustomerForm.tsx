@@ -16,7 +16,7 @@ import {
 import React, { useState } from 'react';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import { CustomerDTO } from '@/lib/types/dto';
-import { postCustomer } from '@/lib/utils/apiRequests';
+import useCustomers from '@/lib/hooks/useCustomers';
 
 type CustomerFields = Partial<CustomerDTO>;
 
@@ -29,20 +29,17 @@ const validateCustomerFields = (fields: CustomerFields): CustomerDTO => {
     }
 };
 
-interface CustomerFormProps {
-    refreshCustomers: () => void;
-}
 
-function CustomerForm({ refreshCustomers }: CustomerFormProps): JSX.Element {
+function CustomerForm(): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({});
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const {postCustomer} = useCustomers();
 
     const submitForm = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
             await postCustomer(validateCustomerFields(customerFields));
-            await refreshCustomers();
             onClose();
         } catch (error) {
             setErrorMessage(`${error}`);

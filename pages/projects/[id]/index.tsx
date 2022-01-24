@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Flex } from '@chakra-ui/layout';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/dist/client/router';
@@ -8,34 +8,31 @@ import Loading from '@/components/common/Loading';
 import Layout from '@/components/common/Layout';
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 import Link from 'next/link';
-import useData from '@/lib/hooks/useData';
 import TimesheetTable from '@/components/table/TimesheetTable';
-import { getProject, listEmployees, listTasks, listTimesheets, putProject } from '@/lib/utils/apiRequests';
 import TaskTable from '@/components/table/TaskTable';
+import useProjectDetail from '@/lib/hooks/useProjectDetail';
+import useTimesheets from '@/lib/hooks/useTimesheets';
+import useEmployees from '@/lib/hooks/useEmployees';
+import useTasks from '@/lib/hooks/useTasks';
 
 type Props = {
     projectId: number;
 };
 
 function InspectProjectPage({ projectId }: Props): JSX.Element {
-    const projectRequest = useCallback(() => getProject(projectId), []);
-    const taskRequest = useCallback(() => listTasks(projectId), []);
-    const timesheetRequest = useCallback(() => listTimesheets(projectId), []);
-    const employeesRequest = useCallback(() => listEmployees(), []);
-
-    const [projectResponse] = useData(projectRequest);
-    const [timesheetResponse, refreshTimesheets] = useData(timesheetRequest);
-    const [employeesResponse] = useData(employeesRequest);
-    const [taskResponse] = useData(taskRequest);
+    const { projectDetailResponse, putProject } = useProjectDetail(projectId);
+    const { timesheetsResponse } = useTimesheets(projectId);
+    const { employeesResponse } = useEmployees();
+    const { tasksResponse } = useTasks(projectId);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     const archiveProject = async (e: React.MouseEvent) => {
         e.preventDefault();
-        if (projectResponse.isSuccess) {
+        if (projectDetailResponse.isSuccess) {
             try {
-                await putProject({ ...projectResponse.data, status: 'ARCHIVED' });
+                await putProject({ ...projectDetailResponse.data, status: 'ARCHIVED' });
                 onOpen();
             } catch (error) {
                 setErrorMessage(`${error}`);
@@ -53,21 +50,21 @@ function InspectProjectPage({ projectId }: Props): JSX.Element {
                     <Box>{errorMessage}</Box>
                 </>
             ) : null}
-            {projectResponse.isLoading && <Loading />}
-            {projectResponse.isError && (
-                <ErrorAlert title={projectResponse.errorMessage} message={projectResponse.errorMessage} />
+            {projectDetailResponse.isLoading && <Loading />}
+            {projectDetailResponse.isError && (
+                <ErrorAlert title={projectDetailResponse.errorMessage} message={projectDetailResponse.errorMessage} />
             )}
-            {projectResponse.isSuccess ? (
+            {projectDetailResponse.isSuccess ? (
                 <>
                     <Flex flexDirection="column">
-                        <ProjectDetail project={projectResponse.data} />
+                        <ProjectDetail project={projectDetailResponse.data} />
                     </Flex>
                     <Link key={`${projectId}`} href={`${projectId}/edit`}>
                         <Button colorScheme="blue" marginTop="1rem">
                             Edit Project
                         </Button>
                     </Link>
-                    {projectResponse.data.status !== 'ARCHIVED' && (
+                    {projectDetailResponse.data.status !== 'ARCHIVED' && (
                         <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={archiveProject}>
                             Archive Project
                         </Button>
@@ -75,7 +72,7 @@ function InspectProjectPage({ projectId }: Props): JSX.Element {
                     <Modal isOpen={isOpen} onClose={onClose}>
                         <ModalOverlay />
                         <ModalContent>
-                            <ModalBody marginTop="1rem">{projectResponse.data.name} has been archived.</ModalBody>
+                            <ModalBody marginTop="1rem">{projectDetailResponse.data.name} has been archived.</ModalBody>
 
                             <ModalFooter>
                                 <Button colorScheme="blue" onClick={onClose}>
@@ -84,19 +81,20 @@ function InspectProjectPage({ projectId }: Props): JSX.Element {
                             </ModalFooter>
                         </ModalContent>
                     </Modal>
-                    {timesheetResponse.isLoading && <Loading />}
-                    {timesheetResponse.isError && (
-                        <ErrorAlert title={timesheetResponse.errorMessage} message={timesheetResponse.errorMessage} />
+                    {timesheetsResponse.isLoading && <Loading />}
+                    {timesheetsResponse.isError && (
+                        <ErrorAlert title={timesheetsResponse.errorMessage} message={timesheetsResponse.errorMessage} />
                     )}
-                    {timesheetResponse.isSuccess && employeesResponse.isSuccess && (
+                    {timesheetsResponse.isSuccess && employeesResponse.isSuccess && (
                         <TimesheetTable
-                            project={projectResponse.data}
-                            timesheets={timesheetResponse.data}
-                            refreshTimesheets={refreshTimesheets}
+                            project={projectDetailResponse.data}
+                            timesheets={timesheetsResponse.data}
                             employees={employeesResponse.data}
                         />
                     )}
-                    {taskResponse.isSuccess && <TaskTable project={projectResponse.data} tasks={taskResponse.data} />}
+                    {tasksResponse.isSuccess && (
+                        <TaskTable project={projectDetailResponse.data} tasks={tasksResponse.data} />
+                    )}
                 </>
             ) : (
                 <Box>Not found</Box>

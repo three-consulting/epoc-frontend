@@ -1,11 +1,11 @@
-import { Button, FormControl, FormLabel, Input, Select, FormErrorMessage } from '@chakra-ui/react';
+import useProjectDetail from '@/lib/hooks/useProjectDetail';
+import useProjects from '@/lib/hooks/useProjects';
+import { CustomerDTO, EmployeeDTO, ProjectDTO } from '@/lib/types/dto';
 import { Flex } from '@chakra-ui/layout';
-import React, { useState } from 'react';
+import { Button, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import ErrorAlert from '@/components/common/ErrorAlert';
-import { ProjectDTO, EmployeeDTO, CustomerDTO } from '@/lib/types/dto';
+import React, { useState } from 'react';
 import CustomerForm from './CustomerForm';
-import { postProject, putProject } from '@/lib/utils/apiRequests';
 
 type ProjectFields = Partial<ProjectDTO>;
 
@@ -24,27 +24,9 @@ const validateProjectFields = (form: ProjectFields): ProjectDTO => {
     }
 };
 
-type ProjectFormPropsBase = {
-    employees: EmployeeDTO[];
-    customers: CustomerDTO[];
-    refreshCustomers: () => void;
-};
-
-type ProjectFormProps =
-    | (ProjectFormPropsBase & { method: 'POST'; project: undefined })
-    | (ProjectFormPropsBase & { method: 'PUT'; project: ProjectDTO });
-
-function ProjectForm({
-    employees,
-    customers,
-    refreshCustomers,
-    method,
-    project: projectOrNull,
-}: ProjectFormProps): JSX.Element {
+function ProjectFormBody({ project: projectOrNull, customers, employees, onSubmit }: ProjectFormBodyProps) {
     const router = useRouter();
     const [projectFields, setProjectFields] = useState<ProjectFields>(projectOrNull || {});
-    const [errorMessage, setErrorMessage] = useState<string>('');
-
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = e.currentTarget.value;
@@ -63,30 +45,6 @@ function ProjectForm({
         }
     };
 
-    const createProject = async (project: ProjectDTO) => {
-        await postProject(project);
-        router.push('/projects');
-    };
-
-    const updateProject = async (project: ProjectDTO) => {
-        const { id } = router.query;
-        project.id = parseInt(`${id}`);
-        putProject(project);
-        router.push(`/projects/${id}`);
-    };
-
-    const submitForm = async () => {
-        try {
-            if (method === 'POST') {
-                createProject(validateProjectFields(projectFields));
-            } else if (method === 'PUT') {
-                updateProject(validateProjectFields(projectFields));
-            }
-        } catch (error) {
-            setErrorMessage(`${error}`);
-        }
-    };
-
     const invalidEndDate =
         (projectFields.startDate && projectFields.endDate && projectFields.startDate > projectFields.endDate) || false;
 
@@ -99,11 +57,10 @@ function ProjectForm({
             borderRadius="0.2rem"
             padding="1rem 1rem"
         >
-            {errorMessage ? <ErrorAlert message={errorMessage} /> : null}
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    submitForm();
+                    onSubmit(validateProjectFields(projectFields));
                 }}
             >
                 <FormControl isRequired={true}>
@@ -159,7 +116,7 @@ function ProjectForm({
                                     );
                                 })}
                             </Select>
-                            <CustomerForm refreshCustomers={refreshCustomers} />
+                            <CustomerForm />
                         </Flex>
                     </FormControl>
                 </Flex>
@@ -190,5 +147,38 @@ function ProjectForm({
         </Flex>
     );
 }
+
+type ProjectFormPropsBase = {
+    employees: EmployeeDTO[];
+    customers: CustomerDTO[];
+};
+
+type CreateProjectFormProps = ProjectFormPropsBase & { project: undefined; projectId: undefined };
+type EditProjectFormProps = ProjectFormPropsBase & { project: ProjectDTO; projectId: number };
+type ProjectFormProps = CreateProjectFormProps | EditProjectFormProps;
+type ProjectFormBodyProps = ProjectFormProps & { onSubmit: (project: ProjectDTO) => void };
+
+function CreateProjectForm(props: ProjectFormProps) {
+    const router = useRouter();
+    const { postProject } = useProjects();
+    const onSubmit = async (project: ProjectDTO) => {
+        await postProject(project);
+        router.push('/projects');
+    };
+    return <ProjectFormBody {...props} onSubmit={onSubmit} />;
+}
+
+function EditProjectForm(props: EditProjectFormProps) {
+    const router = useRouter();
+    const { putProject } = useProjectDetail(props.projectId);
+    const onSubmit = async (project: ProjectDTO) => {
+        await putProject(project);
+        router.push(`/projects/${props.projectId}`);
+    };
+    return <ProjectFormBody {...props} onSubmit={onSubmit} />;
+}
+
+const ProjectForm = (props: ProjectFormProps): JSX.Element =>
+    props.projectId ? <EditProjectForm {...props} /> : <CreateProjectForm {...props} />;
 
 export default ProjectForm;

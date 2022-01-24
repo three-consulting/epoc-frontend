@@ -1,6 +1,6 @@
-import { TimesheetDTO, ProjectDTO, EmployeeDTO } from '@/lib/types/dto';
-import { postTimesheet } from '@/lib/utils/apiRequests';
-import { FormControl, FormLabel, Select, Input, FormErrorMessage, ModalFooter, Button, Box } from '@chakra-ui/react';
+import useTimesheets from '@/lib/hooks/useTimesheets';
+import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
+import { Box, Button, FormControl, FormErrorMessage, FormLabel, Input, ModalFooter, Select } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 
@@ -24,14 +24,15 @@ const validateTimesheetFields = (fields: TimesheetFields): TimesheetDTO => {
 
 interface TimesheetFormProps {
     project: ProjectDTO;
-    refreshTimesheets: () => void;
+    projectId: number;
     employees: EmployeeDTO[];
     onClose: () => void;
 }
 
-export function TimesheetForm({ project, refreshTimesheets, employees, onClose }: TimesheetFormProps): JSX.Element {
+export function TimesheetForm({ project, projectId, employees, onClose }: TimesheetFormProps): JSX.Element {
     const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>({ project });
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const { postTimesheet } = useTimesheets(projectId);
 
     const setEmployee = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
@@ -50,7 +51,6 @@ export function TimesheetForm({ project, refreshTimesheets, employees, onClose }
         e.preventDefault();
         try {
             await postTimesheet(validateTimesheetFields(timesheetFields));
-            await refreshTimesheets();
             onClose();
         } catch (error) {
             setErrorMessage(`${error}`);
