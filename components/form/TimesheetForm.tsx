@@ -1,4 +1,4 @@
-import useTimesheets from '@/lib/hooks/useTimesheets';
+import { useUpdateTimesheets } from '@/lib/hooks/useTimesheets';
 import { Employee, Project, Timesheet } from '@/lib/types/apiTypes';
 import { Box, Button, FormControl, FormErrorMessage, FormLabel, Input, ModalFooter, Select } from '@chakra-ui/react';
 import React, { useState } from 'react';
@@ -24,15 +24,14 @@ const validateTimesheetFields = (fields: TimesheetFields): Timesheet => {
 
 interface TimesheetFormProps {
     project: Project;
-    projectId: number;
     employees: Employee[];
     onClose: () => void;
 }
 
-export function TimesheetForm({ project, projectId, employees, onClose }: TimesheetFormProps): JSX.Element {
+export function TimesheetForm({ project, employees, onClose }: TimesheetFormProps): JSX.Element {
     const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>({ project });
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const { postTimesheet } = useTimesheets(projectId);
+    const { postTimesheet } = useUpdateTimesheets();
 
     const setEmployee = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();

@@ -6,9 +6,9 @@ import ProjectForm from '@/components/form/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import { useRouter } from 'next/dist/client/router';
-import useCustomers from '@/lib/hooks/useCustomers';
-import useEmployees from '@/lib/hooks/useEmployees';
-import useProjectDetail from '@/lib/hooks/useProjectDetail';
+import { useCustomers } from '@/lib/hooks/useCustomers';
+import { useEmployees } from '@/lib/hooks/useEmployees';
+import { useProjectDetail } from '@/lib/hooks/useProjects';
 
 type Props = {
     id: number;

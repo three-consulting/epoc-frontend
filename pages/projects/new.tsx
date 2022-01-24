@@ -5,8 +5,8 @@ import Layout from '@/components/common/Layout';
 import ProjectForm from '@/components/form/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
-import useCustomers from '@/lib/hooks/useCustomers';
-import useEmployees from '@/lib/hooks/useEmployees';
+import { useCustomers } from '@/lib/hooks/useCustomers';
+import { useEmployees } from '@/lib/hooks/useEmployees';
 
 const New: NextPage = () => {
     const { customersResponse } = useCustomers();

@@ -16,7 +16,7 @@ import {
 import React, { useState } from 'react';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import { Customer } from '@/lib/types/apiTypes';
-import useCustomers from '@/lib/hooks/useCustomers';
+import { useUpdateCustomers } from '@/lib/hooks/useCustomers';
 
 type CustomerFields = Partial<Customer>;
 
@@ -33,7 +33,7 @@ function CustomerForm(): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({});
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const { postCustomer } = useCustomers();
+    const { postCustomer } = useUpdateCustomers();
 
     const submitForm = async (e: React.MouseEvent) => {
         e.preventDefault();

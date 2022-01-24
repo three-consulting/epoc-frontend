@@ -1,4 +1,4 @@
-import useTasks from '@/lib/hooks/useTasks';
+import { useUpdateTasks } from '@/lib/hooks/useTasks';
 import { Project, Task } from '@/lib/types/apiTypes';
 import { FormControl, FormLabel, Input, FormErrorMessage, ModalFooter, Button, Box } from '@chakra-ui/react';
 import React, { useState } from 'react';
@@ -24,12 +24,12 @@ interface TaskFormProps {
     onClose: () => void;
 }
 
-export function TaskForm({ project, projectId, onClose }: TaskFormProps): JSX.Element {
+export function TaskForm({ project, onClose }: TaskFormProps): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>({
         project: project,
     });
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const { postTask } = useTasks(projectId);
+    const { postTask } = useUpdateTasks();
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Box, Flex } from '@chakra-ui/layout';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/dist/client/router';
-import ProjectDetail from '@/components/detail/ProjectDetail';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import Layout from '@/components/common/Layout';
@@ -10,17 +9,19 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useD
 import Link from 'next/link';
 import TimesheetTable from '@/components/table/TimesheetTable';
 import TaskTable from '@/components/table/TaskTable';
-import useProjectDetail from '@/lib/hooks/useProjectDetail';
-import useTimesheets from '@/lib/hooks/useTimesheets';
-import useEmployees from '@/lib/hooks/useEmployees';
+import { useProjectDetail, useUpdateProjects } from '@/lib/hooks/useProjects';
+import ProjectDetail from '@/components/detail/ProjectDetail';
+import { useEmployees } from '@/lib/hooks/useEmployees';
 import useTasks from '@/lib/hooks/useTasks';
+import { useTimesheets } from '@/lib/hooks/useTimesheets';
 
 type Props = {
     projectId: number;
 };
 
-function InspectProjectPage({ projectId }: Props): JSX.Element {
-    const { projectDetailResponse, putProject } = useProjectDetail(projectId);
+function ProjectDetailPage({ projectId }: Props): JSX.Element {
+    const { projectDetailResponse } = useProjectDetail(projectId);
+    const { putProject } = useUpdateProjects();
     const { timesheetsResponse } = useTimesheets(projectId);
     const { employeesResponse } = useEmployees();
     const { tasksResponse } = useTasks(projectId);
@@ -106,7 +107,7 @@ function InspectProjectPage({ projectId }: Props): JSX.Element {
 const Id: NextPage = () => {
     const router = useRouter();
     const id = router.query.id as string | undefined;
-    return id ? <InspectProjectPage projectId={parseInt(id)} /> : null;
+    return id ? <ProjectDetailPage projectId={parseInt(id)} /> : null;
 };
 
 export default Id;

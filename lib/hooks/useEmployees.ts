@@ -5,13 +5,11 @@ import { ApiResponseType, swrToData } from '../types/swrUtil';
 
 const employeeEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/employee`;
 
-type ReturnType = {
+type EmployeeList = {
     employeesResponse: ApiResponseType<Employee[]>;
 };
 
-function useEmployees(): ReturnType {
+export const useEmployees = (): EmployeeList => {
     const employeesResponse = swrToData(useSWR<Employee[], Error>(employeeEndpointURL, get));
     return { employeesResponse };
-}
-
-export default useEmployees;
+};
