@@ -1,6 +1,6 @@
 import useSWR, { useSWRConfig } from 'swr';
 import { Task } from '../types/apiTypes';
-import { get, post } from '../utils/fetch';
+import { get, post, put } from '../utils/fetch';
 import { swrToData, ApiResponseType } from '../types/swrUtil';
 
 const taskEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/task`;
@@ -11,6 +11,7 @@ type TaskList = {
 
 type UpdateTasks = {
     postTask: (task: Task) => void;
+    putTask: (task: Task) => void;
 };
 
 function useTasks(projectId: number): TaskList {
@@ -28,7 +29,13 @@ export const useUpdateTasks = (): UpdateTasks => {
         mutate(taskEndpointURL);
         return response;
     };
-    return { postTask };
+
+    const putTask = async (task: Task) => {
+        const response = await put(taskEndpointURL, task);
+        mutate(taskEndpointURL);
+        return response;
+    };
+    return { postTask, putTask };
 };
 
 export default useTasks;
