@@ -10,7 +10,7 @@ interface TaskRowProps {
     task: TaskDTO;
 }
 
-function TaskItem({ task }: TaskRowProps): JSX.Element {
+function TaskRow({ task }: TaskRowProps): JSX.Element {
     return (
         <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
             <Td>{task.name}</Td>
@@ -53,7 +53,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                         </Thead>
                         <Tbody>
                             {tasks.map((task, idx) => (
-                                <TaskItem task={task} key={idx} />
+                                <TaskRow task={task} key={idx} />
                             ))}
                         </Tbody>
                     </Table>
