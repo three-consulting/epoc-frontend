@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import type { NextPage } from 'next';
-import { Box, Heading, Text, Flex } from '@chakra-ui/layout';
+import { Box, Heading } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/react';
 import Layout from '@/components/common/Layout';
 import ProjectTable from '@/components/table/ProjectTable';
@@ -24,22 +24,7 @@ const Projects: NextPage = () => {
             {projectResponse.isError && (
                 <ErrorAlert title={projectResponse.errorMessage} message={projectResponse.errorMessage} />
             )}
-            {projectResponse.isSuccess && projectResponse.data.length > 0 ? (
-                <ProjectTable projects={projectResponse.data} />
-            ) : (
-                <Flex
-                    backgroundColor="white"
-                    border="solid 0.5px"
-                    borderColor="gray.400"
-                    borderRadius="0.2rem"
-                    padding="0.5rem 1rem"
-                    boxShadow="sm"
-                    flexDirection="column"
-                >
-                    <Heading size="lg">No projects</Heading>
-                    <Text marginBottom="0.2rem">Add a new project by clicking the button below</Text>
-                </Flex>
-            )}
+            {projectResponse.isSuccess && <ProjectTable projects={projectResponse.data} />}
             <Box margin="1rem 0rem">
                 <Button colorScheme="blue" onClick={() => router.push('/projects/new')}>
                     Add project

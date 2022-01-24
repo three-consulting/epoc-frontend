@@ -22,6 +22,12 @@ function EditProjectForm({ id }: Props): JSX.Element {
     const [employeesResponse] = useData(employeesRequest);
     const [projectResponse] = useData(projectRequest);
 
+    const errorMessage =
+        (customerResponse.isError && customerResponse.errorMessage) ||
+        (employeesResponse.isError && employeesResponse.errorMessage) ||
+        (projectResponse.isError && projectResponse.errorMessage) ||
+        '';
+
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">
@@ -29,7 +35,7 @@ function EditProjectForm({ id }: Props): JSX.Element {
             </Heading>
             {(customerResponse.isLoading || employeesResponse.isLoading || projectResponse.isLoading) && <Loading />}
             {(customerResponse.isError || employeesResponse.isError || projectResponse.isError) && (
-                <ErrorAlert title="Error loading data" message="Could not load the required data from the server" />
+                <ErrorAlert title={errorMessage} message={errorMessage} />
             )}
             {customerResponse.isSuccess && employeesResponse.isSuccess && projectResponse.isSuccess && (
                 <ProjectForm

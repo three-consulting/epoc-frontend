@@ -4,12 +4,27 @@ import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from '@chakra-ui/react'
 import Link from 'next/link';
 import { ProjectDTO } from '@/lib/types/dto';
 
-interface ProjectListProps {
+interface ProjectRowProps {
+    project: ProjectDTO;
+}
+
+function ProjectRow({ project }: ProjectRowProps) {
+    return (
+        <Link href={`projects/${project.id}`}>
+            <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
+                <Td>{project.name}</Td>
+                <Td>{project.customer?.name}</Td>
+            </Tr>
+        </Link>
+    );
+}
+
+interface ProjectTableProps {
     projects: ProjectDTO[];
 }
 
-function ProjectList({ projects }: ProjectListProps) {
-    return (
+function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
+    return projects ? (
         <Box backgroundColor="white" border="solid 0.5px" borderColor="gray.400" borderRadius="0.2rem">
             <Table variant="simple">
                 <TableCaption>All projects</TableCaption>
@@ -20,29 +35,12 @@ function ProjectList({ projects }: ProjectListProps) {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {projects.map((project, idx) => {
-                        return (
-                            <Link href={`projects/${project.id}`} key={idx}>
-                                <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
-                                    <Td>{project.name}</Td>
-                                    <Td>{project.customer?.name}</Td>
-                                </Tr>
-                            </Link>
-                        );
-                    })}
+                    {projects.map((project, idx) => (
+                        <ProjectRow project={project} key={idx} />
+                    ))}
                 </Tbody>
             </Table>
         </Box>
-    );
-}
-
-interface ProjectTableProps {
-    projects: ProjectDTO[];
-}
-
-function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
-    return projects ? (
-        <ProjectList projects={projects} />
     ) : (
         <Box>
             <Heading>No projects found</Heading>

@@ -13,6 +13,12 @@ const New: NextPage = () => {
     const employeesRequest = useCallback(() => listEmployees(), []);
     const [customerResponse, refreshCustomers] = useData(customerRequest);
     const [employeesResponse] = useData(employeesRequest);
+
+    const errorMessage =
+        (customerResponse.isError && customerResponse.errorMessage) ||
+        (employeesResponse.isError && employeesResponse.errorMessage) ||
+        '';
+
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">
@@ -20,7 +26,7 @@ const New: NextPage = () => {
             </Heading>
             {(customerResponse.isLoading || employeesResponse.isLoading) && <Loading />}
             {(customerResponse.isError || employeesResponse.isError) && (
-                <ErrorAlert title="Error loading data" message="Could not load the required data from the server" />
+                <ErrorAlert title={errorMessage} message={errorMessage} />
             )}
             {customerResponse.isSuccess && employeesResponse.isSuccess && (
                 <ProjectForm

@@ -8,12 +8,13 @@ import { putTimesheet } from '@/lib/utils/apiRequests';
 import { EmployeeDTO, ProjectDTO, TimesheetDTO } from '@/lib/types/dto';
 import { TimesheetForm } from '../form/TimesheetForm';
 
-interface TimesheetListProps {
-    timesheets: TimesheetDTO[];
+interface TimesheetRowProps {
+    timesheet: TimesheetDTO;
     refreshTimesheets: () => void;
 }
-function TimesheetList({ timesheets, refreshTimesheets }: TimesheetListProps): JSX.Element {
+function TimesheetRow({ timesheet, refreshTimesheets }: TimesheetRowProps): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string>('');
+
     const archiveTimesheet = async (timesheet: TimesheetDTO, e: React.MouseEvent) => {
         e.preventDefault();
         try {
@@ -25,40 +26,25 @@ function TimesheetList({ timesheets, refreshTimesheets }: TimesheetListProps): J
     };
 
     return (
-        <Box borderWidth="1px" padding="1rem" margin="1rem">
-            <Table variant="simple">
-                <Thead>
-                    <Tr>
-                        <Th>Name</Th>
-                        <Th>Allocation</Th>
-                        <Th />
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {timesheets.map((timesheet, idx) => {
-                        if (timesheet.status === 'ACTIVE') {
-                            return (
-                                <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }} key={idx}>
-                                    <Td>
-                                        {timesheet.employee?.first_name} {timesheet.employee?.last_name}
-                                    </Td>
-                                    <Td>{timesheet.allocation} %</Td>
-                                    <Td>
-                                        <Button onClick={(e) => archiveTimesheet(timesheet, e)}>x</Button>
-                                    </Td>
-                                </Tr>
-                            );
-                        }
-                    })}
-                    {errorMessage ? (
-                        <>
-                            <ErrorAlert />
-                            <Box>{errorMessage}</Box>
-                        </>
-                    ) : null}
-                </Tbody>
-            </Table>
-        </Box>
+        <>
+            {timesheet.status === 'ACTIVE' ? (
+                <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
+                    <Td>
+                        {timesheet.employee?.first_name} {timesheet.employee?.last_name}
+                    </Td>
+                    <Td>{timesheet.allocation} %</Td>
+                    <Td>
+                        <Button onClick={(e) => archiveTimesheet(timesheet, e)}>x</Button>
+                    </Td>
+                </Tr>
+            ) : null}
+            {errorMessage ? (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            ) : null}
+        </>
     );
 }
 
@@ -86,7 +72,22 @@ function TimesheetTable({ project, refreshTimesheets, timesheets, employees }: T
                 Users
             </Heading>
             {timesheets ? (
-                <TimesheetList timesheets={timesheets} refreshTimesheets={refreshTimesheets} />
+                <Box borderWidth="1px" padding="1rem" margin="1rem">
+                    <Table variant="simple">
+                        <Thead>
+                            <Tr>
+                                <Th>Name</Th>
+                                <Th>Allocation</Th>
+                                <Th />
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {timesheets.map((timesheet, idx) => (
+                                <TimesheetRow timesheet={timesheet} refreshTimesheets={refreshTimesheets} key={idx} />
+                            ))}
+                        </Tbody>
+                    </Table>
+                </Box>
             ) : (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     No users in this project.
