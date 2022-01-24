@@ -13,7 +13,7 @@ type Props = {
     id: number;
 };
 
-function EditProjectForm({ id }: Props): JSX.Element {
+function EditProjectPage({ id }: Props): JSX.Element {
     const customerRequest = useCallback(() => listCustomers(), []);
     const employeesRequest = useCallback(() => listEmployees(), []);
     const projectRequest = useCallback(() => getProject(id), []);
@@ -53,7 +53,7 @@ function EditProjectForm({ id }: Props): JSX.Element {
 const Edit: NextPage = () => {
     const router = useRouter();
     const id = router.query.id as string | undefined;
-    return id ? <EditProjectForm id={Number(id)} /> : null;
+    return id ? <EditProjectPage id={Number(id)} /> : null;
 };
 
 export default Edit;

@@ -17,7 +17,7 @@ type Props = {
     projectId: number;
 };
 
-function InspectProjectForm({ projectId }: Props): JSX.Element {
+function InspectProjectPage({ projectId }: Props): JSX.Element {
     const projectRequest = useCallback(() => getProject(projectId), []);
     const taskRequest = useCallback(() => listTasks(projectId), []);
     const timesheetRequest = useCallback(() => listTimesheets(projectId), []);
@@ -108,7 +108,7 @@ function InspectProjectForm({ projectId }: Props): JSX.Element {
 const Id: NextPage = () => {
     const router = useRouter();
     const id = router.query.id as string | undefined;
-    return id ? <InspectProjectForm projectId={parseInt(id)} /> : null;
+    return id ? <InspectProjectPage projectId={parseInt(id)} /> : null;
 };
 
 export default Id;
