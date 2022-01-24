@@ -7,7 +7,7 @@ import ProjectTable from '@/components/table/ProjectTable';
 import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
-import useProjects from '@/lib/hooks/useProjects';
+import { useProjects } from '@/lib/hooks/useProjects';
 
 const Projects: NextPage = () => {
     const router = useRouter();

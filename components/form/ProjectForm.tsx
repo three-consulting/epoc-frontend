@@ -1,5 +1,4 @@
-import useProjectDetail from '@/lib/hooks/useProjectDetail';
-import useProjects from '@/lib/hooks/useProjects';
+import { useUpdateProjects } from '@/lib/hooks/useProjects';
 import { Customer, Employee, Project } from '@/lib/types/apiTypes';
 import { Flex } from '@chakra-ui/layout';
 import { Button, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
@@ -160,7 +159,7 @@ type ProjectFormBodyProps = ProjectFormProps & { onSubmit: (project: Project) =>
 
 function CreateProjectForm(props: ProjectFormProps) {
     const router = useRouter();
-    const { postProject } = useProjects();
+    const { postProject } = useUpdateProjects();
     const onSubmit = async (project: Project) => {
         await postProject(project);
         router.push('/projects');
@@ -170,7 +169,7 @@ function CreateProjectForm(props: ProjectFormProps) {
 
 function EditProjectForm(props: EditProjectFormProps) {
     const router = useRouter();
-    const { putProject } = useProjectDetail(props.projectId);
+    const { putProject } = useUpdateProjects();
     const onSubmit = async (project: Project) => {
         await putProject(project);
         router.push(`/projects/${props.projectId}`);

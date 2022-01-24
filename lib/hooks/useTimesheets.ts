@@ -5,18 +5,25 @@ import { swrToData, ApiResponseType } from '../types/swrUtil';
 
 const timesheetEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/timesheet`;
 
-type ReturnType = {
+type TimesheetList = {
     timesheetsResponse: ApiResponseType<Timesheet[]>;
+};
+
+type UpdateTimesheets = {
     postTimesheet: (timesheet: Timesheet) => void;
     putTimesheet: (timesheet: Timesheet) => void;
 };
 
-function useTimesheets(projectId: number): ReturnType {
-    const { mutate } = useSWRConfig();
-
+export const useTimesheets = (projectId: number): TimesheetList => {
     const timesheetsResponse = swrToData(
         useSWR<Timesheet[], Error>(timesheetEndpointURL, () => get(timesheetEndpointURL, { projectId: projectId })),
     );
+    return { timesheetsResponse };
+};
+
+export const useUpdateTimesheets = (): UpdateTimesheets => {
+    const { mutate } = useSWRConfig();
+
     const postTimesheet = async (timesheet: Timesheet) => {
         const response = await post(timesheetEndpointURL, timesheet);
         mutate(timesheetEndpointURL);
@@ -27,7 +34,6 @@ function useTimesheets(projectId: number): ReturnType {
         mutate(timesheetEndpointURL);
         return response;
     };
-    return { timesheetsResponse, postTimesheet, putTimesheet };
-}
 
-export default useTimesheets;
+    return { postTimesheet, putTimesheet };
+};

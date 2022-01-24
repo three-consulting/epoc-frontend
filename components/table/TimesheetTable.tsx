@@ -6,15 +6,14 @@ import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 import { Employee, Project, Timesheet } from '@/lib/types/apiTypes';
 import { TimesheetForm } from '../form/TimesheetForm';
-import useTimesheets from '@/lib/hooks/useTimesheets';
+import { useUpdateTimesheets } from '@/lib/hooks/useTimesheets';
 
 interface TimesheetRowProps {
     timesheet: Timesheet;
-    projectId: number;
 }
-function TimesheetRow({ timesheet, projectId }: TimesheetRowProps): JSX.Element {
+function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const { putTimesheet } = useTimesheets(projectId);
+    const { putTimesheet } = useUpdateTimesheets();
 
     const archiveTimesheet = async (timesheet: Timesheet, e: React.MouseEvent) => {
         e.preventDefault();
@@ -81,11 +80,9 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {timesheets.map((timesheet, idx) =>
-                                project.id ? (
-                                    <TimesheetRow timesheet={timesheet} projectId={project.id} key={idx} />
-                                ) : null,
-                            )}
+                            {timesheets.map((timesheet, idx) => (
+                                <TimesheetRow timesheet={timesheet} key={idx} />
+                            ))}
                         </Tbody>
                     </Table>
                 </Box>
@@ -96,29 +93,24 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                     To add a user click the button below.
                 </Box>
             )}
-            {project.id ? (
-                <>
-                    <Flex flexDirection="row-reverse">
-                        <Button colorScheme="blue" onClick={() => setDisplayNewTimesheetForm(true)}>
-                            Add User
-                        </Button>
-                    </Flex>
+            <Flex flexDirection="row-reverse">
+                <Button colorScheme="blue" onClick={() => setDisplayNewTimesheetForm(true)}>
+                    Add User
+                </Button>
+            </Flex>
 
-                    <Modal isOpen={displayNewTimesheetForm} onClose={() => setDisplayNewTimesheetForm(false)}>
-                        <ModalOverlay />
-                        <ModalContent px="0.5rem">
-                            <ModalHeader>Add user to project</ModalHeader>
-                            <TimesheetForm
-                                project={project}
-                                projectId={project.id}
-                                employees={employees}
-                                onClose={() => setDisplayNewTimesheetForm(false)}
-                            />
-                            <ModalCloseButton />
-                        </ModalContent>
-                    </Modal>
-                </>
-            ) : null}
+            <Modal isOpen={displayNewTimesheetForm} onClose={() => setDisplayNewTimesheetForm(false)}>
+                <ModalOverlay />
+                <ModalContent px="0.5rem">
+                    <ModalHeader>Add user to project</ModalHeader>
+                    <TimesheetForm
+                        project={project}
+                        employees={employees}
+                        onClose={() => setDisplayNewTimesheetForm(false)}
+                    />
+                    <ModalCloseButton />
+                </ModalContent>
+            </Modal>
         </Flex>
     );
 }
