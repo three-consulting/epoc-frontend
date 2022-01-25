@@ -26,23 +26,21 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
 
     return (
         <>
-            {timesheet.status === 'ACTIVE' ? (
-                <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
-                    <Td>
-                        {timesheet.employee?.first_name} {timesheet.employee?.last_name}
-                    </Td>
-                    <Td>{timesheet.allocation} %</Td>
-                    <Td>
-                        <Button onClick={(e) => archiveTimesheet(timesheet, e)}>x</Button>
-                    </Td>
-                </Tr>
-            ) : null}
-            {errorMessage ? (
+            <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
+                <Td>
+                    {timesheet.employee?.first_name} {timesheet.employee?.last_name}
+                </Td>
+                <Td>{timesheet.allocation} %</Td>
+                <Td>
+                    <Button onClick={(e) => archiveTimesheet(timesheet, e)}>x</Button>
+                </Td>
+            </Tr>
+            {errorMessage && (
                 <>
                     <ErrorAlert />
                     <Box>{errorMessage}</Box>
                 </>
-            ) : null}
+            )}
         </>
     );
 }
@@ -69,7 +67,7 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
             <Heading as="h2" size="md">
                 Users
             </Heading>
-            {timesheets ? (
+            {timesheets.filter((timesheet) => timesheet.status !== 'ARCHIVED').length ? (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
@@ -80,9 +78,10 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {timesheets.map((timesheet, idx) => (
-                                <TimesheetRow timesheet={timesheet} key={idx} />
-                            ))}
+                            {timesheets.map(
+                                (timesheet, idx) =>
+                                    timesheet.status !== 'ARCHIVED' && <TimesheetRow timesheet={timesheet} key={idx} />,
+                            )}
                         </Tbody>
                     </Table>
                 </Box>
