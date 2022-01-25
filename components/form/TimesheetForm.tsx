@@ -37,8 +37,10 @@ export function CreateTimesheetForm({
     onCancel,
 }: TimesheetFormProps): JSX.Element {
     const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>({ project });
-    const [errorMessage] = useState<string>('');
     const { postTimesheet } = useUpdateTimesheets();
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
 
     const setEmployee = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
@@ -53,12 +55,15 @@ export function CreateTimesheetForm({
         }
     };
 
-    const submitTimesheet = async (e: React.MouseEvent) => {
+    const onSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
-        const newTimesheet = await postTimesheet(validateTimesheetFields(timesheetFields, projectId), () => {
-            undefined;
-        });
-        afterSubmit && afterSubmit(newTimesheet);
+        try {
+            const timesheet = validateTimesheetFields(timesheetFields, projectId);
+            const newTimesheet = await postTimesheet(timesheet, errorHandler);
+            afterSubmit && afterSubmit(newTimesheet);
+        } catch (error) {
+            errorHandler(error as Error);
+        }
     };
 
     const invalidAllocation =
@@ -118,19 +123,19 @@ export function CreateTimesheetForm({
                 </FormControl>
             </div>
             <div style={{ textAlign: 'right', padding: '20px' }}>
-                <Button colorScheme="blue" mr={3} onClick={submitTimesheet}>
+                <Button colorScheme="blue" mr={3} onClick={onSubmit}>
                     Submit
                 </Button>
-                <Button colorScheme="gray" onCancel={onCancel}>
+                <Button colorScheme="gray" onClick={onCancel}>
                     Cancel
                 </Button>
             </div>
-            {errorMessage ? (
+            {errorMessage && (
                 <>
                     <ErrorAlert />
                     <Box>{errorMessage}</Box>
                 </>
-            ) : null}
+            )}
         </>
     );
 }

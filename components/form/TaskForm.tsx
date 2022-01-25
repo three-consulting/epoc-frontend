@@ -29,15 +29,20 @@ export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: Ta
     const [taskFields, setTaskFields] = useState<TaskFields>({
         project: project,
     });
-    const [errorMessage] = useState<string>('');
     const { postTask } = useUpdateTasks();
 
-    const handleSubmit = async (e: React.MouseEvent) => {
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
+    const onSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
-        const newTask = await postTask(validateTaskFields(taskFields, projectId), () => {
-            undefined;
-        });
-        afterSubmit && afterSubmit(newTask);
+        try {
+            const task = validateTaskFields(taskFields, projectId);
+            const newTask = await postTask(task, errorHandler);
+            afterSubmit && afterSubmit(newTask);
+        } catch (error) {
+            errorHandler(error as Error);
+        }
     };
 
     return (
@@ -70,19 +75,19 @@ export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: Ta
                 </FormControl>
             </div>
             <div style={{ textAlign: 'right', padding: '20px' }}>
-                <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+                <Button colorScheme="blue" mr={3} onClick={onSubmit}>
                     Submit
                 </Button>
                 <Button colorScheme="gray" onClick={onCancel}>
                     Cancel
                 </Button>
             </div>
-            {errorMessage ? (
+            {errorMessage && (
                 <>
                     <ErrorAlert />
                     <Box>{errorMessage}</Box>
                 </>
-            ) : null}
+            )}
         </>
     );
 }

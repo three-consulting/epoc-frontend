@@ -1,8 +1,9 @@
-import { FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
+import { FormControl, FormLabel, Input, Button, Box } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Customer } from '@/lib/types/apiTypes';
 import { useUpdateCustomers } from '@/lib/hooks/useCustomers';
 import { FormBase } from '@/lib/types/forms';
+import ErrorAlert from '../common/ErrorAlert';
 
 type CustomerFields = Partial<Customer>;
 
@@ -17,15 +18,20 @@ const validateCustomerFields = (fields: CustomerFields): Customer => {
 
 type CreateCustomerFormProps = FormBase<Customer>;
 
-export function CreateCustomerForm({ afterSubmit }: CreateCustomerFormProps): JSX.Element {
+export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerFormProps): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({});
     const { postCustomer } = useUpdateCustomers();
 
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
     const onSubmit = async () => {
-        const newCustomer = await postCustomer(validateCustomerFields(customerFields), () => {
-            undefined;
-        });
-        afterSubmit && afterSubmit(newCustomer);
+        try {
+            const newCustomer = await postCustomer(() => validateCustomerFields(customerFields), errorHandler);
+            return afterSubmit && afterSubmit(newCustomer);
+        } catch (error) {
+            errorHandler(error as Error);
+        }
     };
 
     return (
@@ -61,10 +67,16 @@ export function CreateCustomerForm({ afterSubmit }: CreateCustomerFormProps): JS
                 <Button colorScheme="blue" mr={3} onClick={onSubmit}>
                     Save
                 </Button>
-                <Button colorScheme="grey" variant="outline" onClick={() => null}>
+                <Button colorScheme="grey" variant="outline" onClick={onCancel}>
                     Cancel
                 </Button>
             </div>
+            {errorMessage && (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            )}
         </>
     );
 }

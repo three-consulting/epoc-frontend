@@ -5,6 +5,7 @@ import { Box, Flex, Heading } from '@chakra-ui/layout';
 import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Tbody } from '@chakra-ui/react';
 import { Table, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
+import ErrorAlert from '../common/ErrorAlert';
 import { CreateTaskForm } from '../form/TaskForm';
 
 interface TaskRowProps {
@@ -13,17 +14,26 @@ interface TaskRowProps {
 
 function TaskRow({ task }: TaskRowProps): JSX.Element {
     const { putTask } = useUpdateTasks();
-    const archiveTask = () =>
-        putTask({ ...task, status: 'ARCHIVED' }, () => {
-            undefined;
-        });
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
+    const archiveTask = () => putTask({ ...task, status: 'ARCHIVED' }, errorHandler);
     return (
-        <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
-            <Td>{task.name}</Td>
-            <Td>
-                <Button onClick={archiveTask}>x</Button>
-            </Td>
-        </Tr>
+        <>
+            <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
+                <Td>{task.name}</Td>
+                <Td>
+                    <Button onClick={archiveTask}>x</Button>
+                </Td>
+            </Tr>
+            {errorMessage && (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            )}
+        </>
     );
 }
 
@@ -84,7 +94,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                             <CreateTaskForm
                                 project={project}
                                 projectId={project.id}
-                                afterSubmit={() => setDisplayNewTaskForm(false)}
+                                afterSubmit={(task) => (task ? setDisplayNewTaskForm(false) : undefined)}
                                 onCancel={() => setDisplayNewTaskForm(false)}
                             />
                         </ModalContent>

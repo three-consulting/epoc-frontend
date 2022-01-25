@@ -14,8 +14,10 @@ import {
     ModalHeader,
     ModalCloseButton,
     ModalContent,
+    Box,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import ErrorAlert from '../common/ErrorAlert';
 import { CreateCustomerForm } from './CustomerForm';
 
 type ProjectFields = Partial<Project>;
@@ -44,6 +46,10 @@ type ProjectFormProps = CreateProjectFormProps & {
 function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, onCancel }: ProjectFormProps) {
     const [projectFields, setProjectFields] = useState<ProjectFields>(projectOrNull || {});
     const [displayCreateCustomerForm, setDisplayCreateCustomerForm] = useState(false);
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = e.currentTarget.value;
@@ -64,6 +70,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
 
     const invalidEndDate =
         (projectFields.startDate && projectFields.endDate && projectFields.startDate > projectFields.endDate) || false;
+
     const abortSubmission = onCancel ? onCancel : () => undefined;
 
     return (
@@ -78,7 +85,12 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    onSubmit(validateProjectFields(projectFields));
+                    try {
+                        const project = validateProjectFields(projectFields);
+                        onSubmit(project);
+                    } catch (error) {
+                        errorHandler(error as Error);
+                    }
                 }}
             >
                 <FormControl isRequired={true}>
@@ -145,7 +157,10 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                                 <ModalContent>
                                     <ModalHeader>Add New Customer</ModalHeader>
                                     <ModalCloseButton />
-                                    <CreateCustomerForm afterSubmit={() => setDisplayCreateCustomerForm(false)} />
+                                    <CreateCustomerForm
+                                        afterSubmit={() => setDisplayCreateCustomerForm(false)}
+                                        onCancel={() => setDisplayCreateCustomerForm(false)}
+                                    />
                                 </ModalContent>
                             </Modal>
                         </Flex>
@@ -174,6 +189,12 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                 <Button colorScheme="gray" type="button" marginLeft="0.5rem" onClick={abortSubmission}>
                     Cancel
                 </Button>
+                {errorMessage && (
+                    <>
+                        <ErrorAlert />
+                        <Box>{errorMessage}</Box>
+                    </>
+                )}
             </form>
         </Flex>
     );
@@ -186,13 +207,26 @@ type CreateProjectFormProps = FormBase<Project> & {
 
 export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element => {
     const { postProject } = useUpdateProjects();
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
     const onSubmit = async (project: Project) => {
-        const newProject = await postProject(project, () => {
-            undefined;
-        });
+        const newProject = await postProject(project, errorHandler);
         props.afterSubmit && props.afterSubmit(newProject);
     };
-    return <ProjectForm {...props} project={undefined} onSubmit={onSubmit} />;
+
+    return (
+        <>
+            <ProjectForm {...props} project={undefined} onSubmit={onSubmit} />
+            {errorMessage && (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            )}
+        </>
+    );
 };
 
 type EditProjectFormProps = CreateProjectFormProps & {
@@ -202,11 +236,24 @@ type EditProjectFormProps = CreateProjectFormProps & {
 
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
     const { putProject } = useUpdateProjects();
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
     const onSubmit = async (project: Project) => {
-        const updatedProject = await putProject(project, () => {
-            undefined;
-        });
+        const updatedProject = await putProject(project, errorHandler);
         props.afterSubmit && props.afterSubmit(updatedProject);
     };
-    return <ProjectForm {...props} onSubmit={onSubmit} />;
+
+    return (
+        <>
+            <ProjectForm {...props} onSubmit={onSubmit} />
+            {errorMessage && (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            )}
+        </>
+    );
 };

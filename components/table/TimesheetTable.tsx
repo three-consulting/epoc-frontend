@@ -12,18 +12,14 @@ interface TimesheetRowProps {
     timesheet: Timesheet;
 }
 function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
-    const [errorMessage, setErrorMessage] = useState<string>('');
     const { putTimesheet } = useUpdateTimesheets();
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
 
     const archiveTimesheet = async (timesheet: Timesheet, e: React.MouseEvent) => {
         e.preventDefault();
-        try {
-            await putTimesheet({ ...timesheet, status: 'ARCHIVED' }, () => {
-                undefined;
-            });
-        } catch (error) {
-            setErrorMessage(`${error}`);
-        }
+        await putTimesheet({ ...timesheet, status: 'ARCHIVED' }, errorHandler);
     };
 
     return (
@@ -108,7 +104,7 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                             project={project}
                             projectId={project.id}
                             employees={employees}
-                            afterSubmit={() => setDisplayNewTimesheetForm(false)}
+                            afterSubmit={(timesheet) => (timesheet ? setDisplayNewTimesheetForm(false) : undefined)}
                             onCancel={() => setDisplayNewTimesheetForm(false)}
                         />
                         <ModalCloseButton />
