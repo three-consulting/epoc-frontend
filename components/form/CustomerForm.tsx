@@ -15,17 +15,17 @@ const validateCustomerFields = (fields: CustomerFields): Customer => {
     }
 };
 
-type CreateCustomerFormProps = FormBase;
+type CreateCustomerFormProps = FormBase<Customer>;
 
 export function CreateCustomerForm({ afterSubmit }: CreateCustomerFormProps): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({});
     const { postCustomer } = useUpdateCustomers();
 
     const onSubmit = async () => {
-        await postCustomer(validateCustomerFields(customerFields), () => {
+        const newCustomer = await postCustomer(validateCustomerFields(customerFields), () => {
             undefined;
         });
-        afterSubmit && afterSubmit();
+        afterSubmit && afterSubmit(newCustomer);
     };
 
     return (

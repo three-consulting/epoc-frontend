@@ -179,7 +179,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
     );
 }
 
-type CreateProjectFormProps = FormBase & {
+type CreateProjectFormProps = FormBase<Project> & {
     employees: Employee[];
     customers: Customer[];
 };
@@ -187,10 +187,10 @@ type CreateProjectFormProps = FormBase & {
 export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element => {
     const { postProject } = useUpdateProjects();
     const onSubmit = async (project: Project) => {
-        await postProject(project, () => {
+        const newProject = await postProject(project, () => {
             undefined;
         });
-        props.afterSubmit && props.afterSubmit();
+        props.afterSubmit && props.afterSubmit(newProject);
     };
     return <ProjectForm {...props} project={undefined} onSubmit={onSubmit} />;
 };
@@ -203,10 +203,10 @@ type EditProjectFormProps = CreateProjectFormProps & {
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
     const { putProject } = useUpdateProjects();
     const onSubmit = async (project: Project) => {
-        await putProject(project, () => {
+        const updatedProject = await putProject(project, () => {
             undefined;
         });
-        props.afterSubmit && props.afterSubmit();
+        props.afterSubmit && props.afterSubmit(updatedProject);
     };
     return <ProjectForm {...props} onSubmit={onSubmit} />;
 };

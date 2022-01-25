@@ -23,15 +23,21 @@ const validateTimesheetFields = (fields: TimesheetFields, projectId: number): Ti
     }
 };
 
-type TimesheetFormProps = FormBase & {
+type TimesheetFormProps = FormBase<Timesheet> & {
     project: Project;
     projectId: number;
     employees: Employee[];
 };
 
-export function CreateTimesheetForm({ project, projectId, employees, afterSubmit }: TimesheetFormProps): JSX.Element {
+export function CreateTimesheetForm({
+    project,
+    projectId,
+    employees,
+    afterSubmit,
+    onCancel,
+}: TimesheetFormProps): JSX.Element {
     const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>({ project });
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [errorMessage] = useState<string>('');
     const { postTimesheet } = useUpdateTimesheets();
 
     const setEmployee = (e: React.FormEvent<HTMLSelectElement>) => {
@@ -49,14 +55,10 @@ export function CreateTimesheetForm({ project, projectId, employees, afterSubmit
 
     const submitTimesheet = async (e: React.MouseEvent) => {
         e.preventDefault();
-        try {
-            await postTimesheet(validateTimesheetFields(timesheetFields, projectId), () => {
-                undefined;
-            });
-            afterSubmit && afterSubmit();
-        } catch (error) {
-            setErrorMessage(`${error}`);
-        }
+        const newTimesheet = await postTimesheet(validateTimesheetFields(timesheetFields, projectId), () => {
+            undefined;
+        });
+        afterSubmit && afterSubmit(newTimesheet);
     };
 
     const invalidAllocation =
@@ -119,7 +121,7 @@ export function CreateTimesheetForm({ project, projectId, employees, afterSubmit
                 <Button colorScheme="blue" mr={3} onClick={submitTimesheet}>
                     Submit
                 </Button>
-                <Button colorScheme="gray" onClick={afterSubmit}>
+                <Button colorScheme="gray" onCancel={onCancel}>
                     Cancel
                 </Button>
             </div>

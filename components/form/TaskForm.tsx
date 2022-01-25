@@ -20,28 +20,24 @@ const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
     }
 };
 
-type TaskFormProps = FormBase & {
+type TaskFormProps = FormBase<Task> & {
     project: Project;
     projectId: number;
 };
 
-export function CreateTaskForm({ project, projectId, afterSubmit }: TaskFormProps): JSX.Element {
+export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: TaskFormProps): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>({
         project: project,
     });
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [errorMessage] = useState<string>('');
     const { postTask } = useUpdateTasks();
 
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
-        try {
-            await postTask(validateTaskFields(taskFields, projectId), () => {
-                undefined;
-            });
-            afterSubmit && afterSubmit();
-        } catch (error) {
-            setErrorMessage(`${error}`);
-        }
+        const newTask = await postTask(validateTaskFields(taskFields, projectId), () => {
+            undefined;
+        });
+        afterSubmit && afterSubmit(newTask);
     };
 
     return (
@@ -77,7 +73,7 @@ export function CreateTaskForm({ project, projectId, afterSubmit }: TaskFormProp
                 <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
                     Submit
                 </Button>
-                <Button colorScheme="gray" onClick={afterSubmit}>
+                <Button colorScheme="gray" onClick={onCancel}>
                     Cancel
                 </Button>
             </div>

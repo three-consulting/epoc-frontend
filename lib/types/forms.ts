@@ -1,4 +1,4 @@
-export type FormBase = {
-    afterSubmit?: () => void;
+export type FormBase<T> = {
+    afterSubmit?: (returnValue: T | undefined) => void;
     onCancel?: () => void;
 };
