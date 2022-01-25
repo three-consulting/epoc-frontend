@@ -4,7 +4,7 @@ import { Box, Flex, Heading } from '@chakra-ui/layout';
 import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Tbody } from '@chakra-ui/react';
 import { Table, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
-import { TaskForm } from '../form/TaskForm';
+import { CreateTaskForm } from '../form/TaskForm';
 
 interface TaskRowProps {
     task: Task;
@@ -77,7 +77,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                         <ModalContent px="0.5rem">
                             <ModalHeader>Add task to project</ModalHeader>
                             <ModalCloseButton />
-                            <TaskForm
+                            <CreateTaskForm
                                 project={project}
                                 projectId={project.id}
                                 onClose={() => setDisplayNewTaskForm(false)}

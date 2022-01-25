@@ -5,7 +5,7 @@ import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 import { Employee, Project, Timesheet } from '@/lib/types/apiTypes';
-import { TimesheetForm } from '../form/TimesheetForm';
+import { CreateTimesheetForm } from '../form/TimesheetForm';
 import { useUpdateTimesheets } from '@/lib/hooks/useTimesheets';
 
 interface TimesheetRowProps {
@@ -103,7 +103,7 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                 <ModalOverlay />
                 <ModalContent px="0.5rem">
                     <ModalHeader>Add user to project</ModalHeader>
-                    <TimesheetForm
+                    <CreateTimesheetForm
                         project={project}
                         employees={employees}
                         onClose={() => setDisplayNewTimesheetForm(false)}

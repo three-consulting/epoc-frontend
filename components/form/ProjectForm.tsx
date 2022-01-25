@@ -4,7 +4,7 @@ import { Flex } from '@chakra-ui/layout';
 import { Button, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import CustomerForm from './CustomerForm';
+import CreateCustomerForm from './CustomerForm';
 
 type ProjectFields = Partial<Project>;
 
@@ -117,7 +117,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit }:
                                     );
                                 })}
                             </Select>
-                            <CustomerForm />
+                            <CreateCustomerForm />
                         </Flex>
                     </FormControl>
                 </Flex>

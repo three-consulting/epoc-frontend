@@ -28,7 +28,7 @@ interface TimesheetFormProps {
     onClose: () => void;
 }
 
-export function TimesheetForm({ project, employees, onClose }: TimesheetFormProps): JSX.Element {
+export function CreateTimesheetForm({ project, employees, onClose }: TimesheetFormProps): JSX.Element {
     const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>({ project });
     const [errorMessage, setErrorMessage] = useState<string>('');
     const { postTimesheet } = useUpdateTimesheets();
