@@ -97,19 +97,22 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                     Add User
                 </Button>
             </Flex>
-
-            <Modal isOpen={displayNewTimesheetForm} onClose={() => setDisplayNewTimesheetForm(false)}>
-                <ModalOverlay />
-                <ModalContent px="0.5rem">
-                    <ModalHeader>Add user to project</ModalHeader>
-                    <CreateTimesheetForm
-                        project={project}
-                        employees={employees}
-                        onClose={() => setDisplayNewTimesheetForm(false)}
-                    />
-                    <ModalCloseButton />
-                </ModalContent>
-            </Modal>
+            {project.id && (
+                <Modal isOpen={displayNewTimesheetForm} onClose={() => setDisplayNewTimesheetForm(false)}>
+                    <ModalOverlay />
+                    <ModalContent px="0.5rem">
+                        <ModalHeader>Add user to project</ModalHeader>
+                        <CreateTimesheetForm
+                            project={project}
+                            projectId={project.id}
+                            employees={employees}
+                            afterSubmit={() => setDisplayNewTimesheetForm(false)}
+                            onCancel={() => setDisplayNewTimesheetForm(false)}
+                        />
+                        <ModalCloseButton />
+                    </ModalContent>
+                </Modal>
+            )}
         </Flex>
     );
 }

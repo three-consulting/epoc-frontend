@@ -11,19 +11,22 @@ import { useEmployees } from '@/lib/hooks/useEmployees';
 import { useProjectDetail } from '@/lib/hooks/useProjects';
 
 type Props = {
-    id: number;
+    projectId: number;
 };
 
-function EditProjectPage({ id }: Props): JSX.Element {
+function EditProjectPage({ projectId }: Props): JSX.Element {
+    const router = useRouter();
     const { customersResponse } = useCustomers();
     const { employeesResponse } = useEmployees();
-    const { projectDetailResponse } = useProjectDetail(id);
+    const { projectDetailResponse } = useProjectDetail(projectId);
 
     const errorMessage =
         (customersResponse.isError && customersResponse.errorMessage) ||
         (employeesResponse.isError && employeesResponse.errorMessage) ||
         (projectDetailResponse.isError && projectDetailResponse.errorMessage) ||
         '';
+
+    const redirectToProjectDetail = () => router.push(`/projects/${projectId}`);
 
     return (
         <Layout>
@@ -45,6 +48,8 @@ function EditProjectPage({ id }: Props): JSX.Element {
                         employees={employeesResponse.data}
                         project={projectDetailResponse.data}
                         projectId={projectDetailResponse.data.id}
+                        afterSubmit={redirectToProjectDetail}
+                        onCancel={redirectToProjectDetail}
                     />
                 )}
         </Layout>
@@ -54,7 +59,7 @@ function EditProjectPage({ id }: Props): JSX.Element {
 const Edit: NextPage = () => {
     const router = useRouter();
     const id = router.query.id as string | undefined;
-    return id ? <EditProjectPage id={Number(id)} /> : null;
+    return id ? <EditProjectPage projectId={Number(id)} /> : null;
 };
 
 export default Edit;

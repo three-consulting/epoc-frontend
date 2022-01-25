@@ -1,16 +1,18 @@
 import { useUpdateTasks } from '@/lib/hooks/useTasks';
 import { Project, Task } from '@/lib/types/apiTypes';
-import { FormControl, FormLabel, Input, FormErrorMessage, ModalFooter, Button, Box } from '@chakra-ui/react';
+import { FormBase } from '@/lib/types/forms';
+import { FormControl, FormLabel, Input, FormErrorMessage, Button, Box } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 
 type TaskFields = Partial<Task> & { project: Project };
 
-const validateTaskFields = (fields: TaskFields): Task => {
-    const { name } = fields;
+const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
+    const { name, project } = fields;
     if (name) {
         return {
             ...fields,
+            project: { ...project, id: projectId },
             name,
         };
     } else {
@@ -18,13 +20,12 @@ const validateTaskFields = (fields: TaskFields): Task => {
     }
 };
 
-interface TaskFormProps {
+type TaskFormProps = FormBase & {
     project: Project;
     projectId: number;
-    onClose: () => void;
-}
+};
 
-export function CreateTaskForm({ project, onClose }: TaskFormProps): JSX.Element {
+export function CreateTaskForm({ project, projectId, afterSubmit }: TaskFormProps): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>({
         project: project,
     });
@@ -34,8 +35,8 @@ export function CreateTaskForm({ project, onClose }: TaskFormProps): JSX.Element
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await postTask(validateTaskFields(taskFields));
-            onClose();
+            await postTask(validateTaskFields(taskFields, projectId));
+            afterSubmit && afterSubmit();
         } catch (error) {
             setErrorMessage(`${error}`);
         }
@@ -43,39 +44,41 @@ export function CreateTaskForm({ project, onClose }: TaskFormProps): JSX.Element
 
     return (
         <>
-            <FormControl isInvalid={!taskFields.name} isRequired>
-                <FormLabel>Task Name</FormLabel>
-                <Input
-                    placeholder="Task Name"
-                    onChange={(e) =>
-                        setTaskFields({
-                            ...taskFields,
-                            name: e.target.value,
-                        })
-                    }
-                />
-                <FormErrorMessage>Task name cannot be empty.</FormErrorMessage>
-            </FormControl>
-            <FormControl>
-                <FormLabel>Description</FormLabel>
-                <Input
-                    placeholder="Description"
-                    onChange={(e) =>
-                        setTaskFields({
-                            ...taskFields,
-                            description: e.target.value,
-                        })
-                    }
-                />
-            </FormControl>
-            <ModalFooter>
+            <div style={{ padding: '20px' }}>
+                <FormControl isInvalid={!taskFields.name} isRequired>
+                    <FormLabel>Task Name</FormLabel>
+                    <Input
+                        placeholder="Task Name"
+                        onChange={(e) =>
+                            setTaskFields({
+                                ...taskFields,
+                                name: e.target.value,
+                            })
+                        }
+                    />
+                    <FormErrorMessage>Task name cannot be empty.</FormErrorMessage>
+                </FormControl>
+                <FormControl>
+                    <FormLabel>Description</FormLabel>
+                    <Input
+                        placeholder="Description"
+                        onChange={(e) =>
+                            setTaskFields({
+                                ...taskFields,
+                                description: e.target.value,
+                            })
+                        }
+                    />
+                </FormControl>
+            </div>
+            <div style={{ textAlign: 'right', padding: '20px' }}>
                 <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
                     Submit
                 </Button>
-                <Button colorScheme="gray" onClick={onClose}>
+                <Button colorScheme="gray" onClick={afterSubmit}>
                     Cancel
                 </Button>
-            </ModalFooter>
+            </div>
             {errorMessage ? (
                 <>
                     <ErrorAlert />

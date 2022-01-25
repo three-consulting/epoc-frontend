@@ -81,7 +81,8 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                             <CreateTaskForm
                                 project={project}
                                 projectId={project.id}
-                                onClose={() => setDisplayNewTaskForm(false)}
+                                afterSubmit={() => setDisplayNewTaskForm(false)}
+                                onCancel={() => setDisplayNewTaskForm(false)}
                             />
                         </ModalContent>
                     </Modal>
