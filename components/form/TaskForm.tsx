@@ -24,7 +24,7 @@ interface TaskFormProps {
     onClose: () => void;
 }
 
-export function TaskForm({ project, onClose }: TaskFormProps): JSX.Element {
+export function CreateTaskForm({ project, onClose }: TaskFormProps): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>({
         project: project,
     });

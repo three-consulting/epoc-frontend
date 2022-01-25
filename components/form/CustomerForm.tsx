@@ -29,7 +29,7 @@ const validateCustomerFields = (fields: CustomerFields): Customer => {
     }
 };
 
-function CustomerForm(): JSX.Element {
+function CreateCustomerForm(): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({});
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -101,4 +101,4 @@ function CustomerForm(): JSX.Element {
     );
 }
 
-export default CustomerForm;
+export default CreateCustomerForm;
