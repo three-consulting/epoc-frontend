@@ -2,7 +2,7 @@ import React from 'react';
 import type { NextPage } from 'next';
 import { Heading } from '@chakra-ui/layout';
 import Layout from '@/components/common/Layout';
-import ProjectForm from '@/components/form/ProjectForm';
+import { EditProjectForm } from '@/components/form/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import { useRouter } from 'next/dist/client/router';
@@ -40,7 +40,7 @@ function EditProjectPage({ id }: Props): JSX.Element {
                 employeesResponse.isSuccess &&
                 projectDetailResponse.isSuccess &&
                 projectDetailResponse.data.id && (
-                    <ProjectForm
+                    <EditProjectForm
                         customers={customersResponse.data}
                         employees={employeesResponse.data}
                         project={projectDetailResponse.data}

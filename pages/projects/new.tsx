@@ -2,11 +2,11 @@ import React from 'react';
 import type { NextPage } from 'next';
 import { Heading } from '@chakra-ui/layout';
 import Layout from '@/components/common/Layout';
-import ProjectForm from '@/components/form/ProjectForm';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import { useCustomers } from '@/lib/hooks/useCustomers';
 import { useEmployees } from '@/lib/hooks/useEmployees';
+import { CreateProjectForm } from '@/components/form/ProjectForm';
 
 const New: NextPage = () => {
     const { customersResponse } = useCustomers();
@@ -27,12 +27,7 @@ const New: NextPage = () => {
                 <ErrorAlert title={errorMessage} message={errorMessage} />
             )}
             {customersResponse.isSuccess && employeesResponse.isSuccess && (
-                <ProjectForm
-                    customers={customersResponse.data}
-                    employees={employeesResponse.data}
-                    project={undefined}
-                    projectId={undefined}
-                />
+                <CreateProjectForm customers={customersResponse.data} employees={employeesResponse.data} />
             )}
         </Layout>
     );
