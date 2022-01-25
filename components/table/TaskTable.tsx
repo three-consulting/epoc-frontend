@@ -1,3 +1,4 @@
+import { useUpdateTasks } from '@/lib/hooks/useTasks';
 import { Project, Task } from '@/lib/types/apiTypes';
 import { Button } from '@chakra-ui/button';
 import { Box, Flex, Heading } from '@chakra-ui/layout';
@@ -11,11 +12,13 @@ interface TaskRowProps {
 }
 
 function TaskRow({ task }: TaskRowProps): JSX.Element {
+    const { putTask } = useUpdateTasks();
+    const archiveTask = () => putTask({ ...task, status: 'ARCHIVED' });
     return (
         <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
             <Td>{task.name}</Td>
             <Td>
-                <Button>x</Button>
+                <Button onClick={archiveTask}>x</Button>
             </Td>
         </Tr>
     );
@@ -42,7 +45,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
             <Heading as="h2" size="md">
                 Tasks
             </Heading>
-            {tasks ? (
+            {tasks.filter((task) => task.status !== 'ARCHIVED').length ? (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
@@ -52,9 +55,9 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {tasks.map((task, idx) => (
-                                <TaskRow task={task} key={idx} />
-                            ))}
+                            {tasks.map((task, idx) =>
+                                task.status !== 'ARCHIVED' ? <TaskRow task={task} key={idx} /> : null,
+                            )}
                         </Tbody>
                     </Table>
                 </Box>
