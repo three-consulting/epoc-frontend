@@ -55,9 +55,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {tasks.map((task, idx) =>
-                                task.status !== 'ARCHIVED' ? <TaskRow task={task} key={idx} /> : null,
-                            )}
+                            {tasks.map((task, idx) => task.status !== 'ARCHIVED' && <TaskRow task={task} key={idx} />)}
                         </Tbody>
                     </Table>
                 </Box>
