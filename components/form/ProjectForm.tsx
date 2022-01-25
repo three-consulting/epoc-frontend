@@ -23,7 +23,11 @@ const validateProjectFields = (form: ProjectFields): Project => {
     }
 };
 
-type ProjectFormProps = EditProjectFormProps & { onSubmit: (project: Project) => void };
+type ProjectFormProps = CreateProjectFormProps & {
+    project?: Project;
+    projectId?: number;
+    onSubmit: (project: Project) => void;
+};
 
 function ProjectForm({ project: projectOrNull, customers, employees, onSubmit }: ProjectFormProps) {
     const router = useRouter();
@@ -165,8 +169,8 @@ export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element =>
 };
 
 type EditProjectFormProps = CreateProjectFormProps & {
-    project?: Project;
-    projectId?: number;
+    project: Project;
+    projectId: number;
 };
 
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
