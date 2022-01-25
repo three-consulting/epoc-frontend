@@ -50,7 +50,9 @@ export function CreateTimesheetForm({ project, projectId, employees, afterSubmit
     const submitTimesheet = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await postTimesheet(validateTimesheetFields(timesheetFields, projectId));
+            await postTimesheet(validateTimesheetFields(timesheetFields, projectId), () => {
+                undefined;
+            });
             afterSubmit && afterSubmit();
         } catch (error) {
             setErrorMessage(`${error}`);

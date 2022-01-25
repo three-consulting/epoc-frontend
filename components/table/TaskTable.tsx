@@ -13,7 +13,10 @@ interface TaskRowProps {
 
 function TaskRow({ task }: TaskRowProps): JSX.Element {
     const { putTask } = useUpdateTasks();
-    const archiveTask = () => putTask({ ...task, status: 'ARCHIVED' });
+    const archiveTask = () =>
+        putTask({ ...task, status: 'ARCHIVED' }, () => {
+            undefined;
+        });
     return (
         <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
             <Td>{task.name}</Td>

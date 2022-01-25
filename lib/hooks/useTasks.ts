@@ -10,8 +10,8 @@ type TaskList = {
 };
 
 type UpdateTasks = {
-    postTask: (task: Task) => void;
-    putTask: (task: Task) => void;
+    postTask: (task: Task, errorHandler: (error: Error) => void) => Promise<Task | undefined>;
+    putTask: (task: Task, errorHandler: (error: Error) => void) => Promise<Task | undefined>;
 };
 
 function useTasks(projectId: number): TaskList {
@@ -24,16 +24,16 @@ function useTasks(projectId: number): TaskList {
 export const useUpdateTasks = (): UpdateTasks => {
     const { mutate } = useSWRConfig();
 
-    const postTask = async (task: Task) => {
-        const response = await post(taskEndpointURL, task);
+    const postTask = async (task: Task, errorHandler: (error: Error) => void) => {
+        const newTask = await post<Task, Task>(taskEndpointURL, task).catch(errorHandler);
         mutate(taskEndpointURL);
-        return response;
+        return newTask || undefined;
     };
 
-    const putTask = async (task: Task) => {
-        const response = await put(taskEndpointURL, task);
+    const putTask = async (task: Task, errorHandler: (error: Error) => void) => {
+        const updatedTask = await put<Task, Task>(taskEndpointURL, task).catch(errorHandler);
         mutate(taskEndpointURL);
-        return response;
+        return updatedTask || undefined;
     };
     return { postTask, putTask };
 };

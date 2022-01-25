@@ -1,8 +1,7 @@
-import { FormControl, FormLabel, Input, Button, Box } from '@chakra-ui/react';
+import { FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Customer } from '@/lib/types/apiTypes';
 import { useUpdateCustomers } from '@/lib/hooks/useCustomers';
-import ErrorAlert from '../common/ErrorAlert';
 import { FormBase } from '@/lib/types/forms';
 
 type CustomerFields = Partial<Customer>;
@@ -21,15 +20,12 @@ type CreateCustomerFormProps = FormBase;
 export function CreateCustomerForm({ afterSubmit }: CreateCustomerFormProps): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({});
     const { postCustomer } = useUpdateCustomers();
-    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const onSubmit = async () => {
-        try {
-            await postCustomer(validateCustomerFields(customerFields));
-            afterSubmit && afterSubmit();
-        } catch (error) {
-            setErrorMessage(`${error}`);
-        }
+        await postCustomer(validateCustomerFields(customerFields), () => {
+            undefined;
+        });
+        afterSubmit && afterSubmit();
     };
 
     return (
@@ -69,12 +65,6 @@ export function CreateCustomerForm({ afterSubmit }: CreateCustomerFormProps): JS
                     Cancel
                 </Button>
             </div>
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
         </>
     );
 }

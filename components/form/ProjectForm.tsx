@@ -187,7 +187,9 @@ type CreateProjectFormProps = FormBase & {
 export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element => {
     const { postProject } = useUpdateProjects();
     const onSubmit = async (project: Project) => {
-        await postProject(project);
+        await postProject(project, () => {
+            undefined;
+        });
         props.afterSubmit && props.afterSubmit();
     };
     return <ProjectForm {...props} project={undefined} onSubmit={onSubmit} />;
@@ -201,7 +203,9 @@ type EditProjectFormProps = CreateProjectFormProps & {
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
     const { putProject } = useUpdateProjects();
     const onSubmit = async (project: Project) => {
-        await putProject(project);
+        await putProject(project, () => {
+            undefined;
+        });
         props.afterSubmit && props.afterSubmit();
     };
     return <ProjectForm {...props} onSubmit={onSubmit} />;

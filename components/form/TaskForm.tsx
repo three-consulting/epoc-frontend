@@ -35,7 +35,9 @@ export function CreateTaskForm({ project, projectId, afterSubmit }: TaskFormProp
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await postTask(validateTaskFields(taskFields, projectId));
+            await postTask(validateTaskFields(taskFields, projectId), () => {
+                undefined;
+            });
             afterSubmit && afterSubmit();
         } catch (error) {
             setErrorMessage(`${error}`);

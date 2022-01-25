@@ -18,7 +18,9 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     const archiveTimesheet = async (timesheet: Timesheet, e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await putTimesheet({ ...timesheet, status: 'ARCHIVED' });
+            await putTimesheet({ ...timesheet, status: 'ARCHIVED' }, () => {
+                undefined;
+            });
         } catch (error) {
             setErrorMessage(`${error}`);
         }

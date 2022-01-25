@@ -10,8 +10,8 @@ type TimesheetList = {
 };
 
 type UpdateTimesheets = {
-    postTimesheet: (timesheet: Timesheet) => void;
-    putTimesheet: (timesheet: Timesheet) => void;
+    postTimesheet: (timesheet: Timesheet, errorHandler: (error: Error) => void) => Promise<Timesheet | undefined>;
+    putTimesheet: (timesheet: Timesheet, errorHandler: (error: Error) => void) => Promise<Timesheet | undefined>;
 };
 
 export const useTimesheets = (projectId: number): TimesheetList => {
@@ -24,15 +24,16 @@ export const useTimesheets = (projectId: number): TimesheetList => {
 export const useUpdateTimesheets = (): UpdateTimesheets => {
     const { mutate } = useSWRConfig();
 
-    const postTimesheet = async (timesheet: Timesheet) => {
-        const response = await post(timesheetEndpointURL, timesheet);
+    const postTimesheet = async (timesheet: Timesheet, errorHandler: (error: Error) => void) => {
+        const newTimesheet = await post<Timesheet, Timesheet>(timesheetEndpointURL, timesheet).catch(errorHandler);
         mutate(timesheetEndpointURL);
-        return response;
+        return newTimesheet || undefined;
     };
-    const putTimesheet = async (timesheet: Timesheet) => {
-        const response = await put(timesheetEndpointURL, timesheet);
+
+    const putTimesheet = async (timesheet: Timesheet, errorHandler: (error: Error) => void) => {
+        const newTimesheet = await put<Timesheet, Timesheet>(timesheetEndpointURL, timesheet).catch(errorHandler);
         mutate(timesheetEndpointURL);
-        return response;
+        return newTimesheet || undefined;
     };
 
     return { postTimesheet, putTimesheet };
