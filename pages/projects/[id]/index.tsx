@@ -32,12 +32,10 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
     const archiveProject = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (projectDetailResponse.isSuccess) {
-            try {
-                await putProject({ ...projectDetailResponse.data, status: 'ARCHIVED' });
-                onOpen();
-            } catch (error) {
-                setErrorMessage(`${error}`);
-            }
+            await putProject({ ...projectDetailResponse.data, status: 'ARCHIVED' }, (error) =>
+                setErrorMessage(`${error}`),
+            );
+            onOpen();
         } else {
             setErrorMessage('Project failed to load.');
         }

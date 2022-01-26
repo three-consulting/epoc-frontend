@@ -1,22 +1,9 @@
-import {
-    FormControl,
-    FormLabel,
-    Input,
-    Modal,
-    Button,
-    useDisclosure,
-    ModalOverlay,
-    ModalHeader,
-    ModalCloseButton,
-    ModalContent,
-    ModalBody,
-    ModalFooter,
-    Box,
-} from '@chakra-ui/react';
+import { FormControl, FormLabel, Input, Button, Box } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import ErrorAlert from '@/components/common/ErrorAlert';
 import { Customer } from '@/lib/types/apiTypes';
 import { useUpdateCustomers } from '@/lib/hooks/useCustomers';
+import { FormBase } from '@/lib/types/forms';
+import ErrorAlert from '../common/ErrorAlert';
 
 type CustomerFields = Partial<Customer>;
 
@@ -29,76 +16,69 @@ const validateCustomerFields = (fields: CustomerFields): Customer => {
     }
 };
 
-function CreateCustomerForm(): JSX.Element {
+type CreateCustomerFormProps = FormBase<Customer>;
+
+export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerFormProps): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({});
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const [errorMessage, setErrorMessage] = useState<string>('');
     const { postCustomer } = useUpdateCustomers();
 
-    const submitForm = async (e: React.MouseEvent) => {
-        e.preventDefault();
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
+    const onSubmit = async () => {
         try {
-            await postCustomer(validateCustomerFields(customerFields));
-            onClose();
+            const newCustomer = await postCustomer(() => validateCustomerFields(customerFields), errorHandler);
+            return afterSubmit && afterSubmit(newCustomer);
         } catch (error) {
-            setErrorMessage(`${error}`);
+            errorHandler(error as Error);
         }
     };
 
     return (
         <>
-            <Button onClick={onOpen}>Add Customer</Button>
-            <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>Add New Customer</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <FormControl>
-                            <FormLabel>Customer Name</FormLabel>
-                            <Input
-                                placeholder="Customer Name"
-                                onChange={(e) =>
-                                    setCustomerFields({
-                                        ...customerFields,
-                                        name: e.target.value,
-                                    })
-                                }
-                            />
-                        </FormControl>
+            <div style={{ padding: '20px' }}>
+                <FormControl>
+                    <FormLabel>Customer Name</FormLabel>
+                    <Input
+                        placeholder="Customer Name"
+                        onChange={(e) =>
+                            setCustomerFields({
+                                ...customerFields,
+                                name: e.target.value,
+                            })
+                        }
+                    />
+                </FormControl>
 
-                        <FormControl mt={4}>
-                            <FormLabel>Description</FormLabel>
-                            <Input
-                                placeholder="Description"
-                                onChange={(e) =>
-                                    setCustomerFields({
-                                        ...customerFields,
-                                        description: e.target.value,
-                                    })
-                                }
-                            />
-                        </FormControl>
-                        {errorMessage ? (
-                            <>
-                                <ErrorAlert />
-                                <Box>{errorMessage}</Box>
-                            </>
-                        ) : null}
-                    </ModalBody>
-
-                    <ModalFooter>
-                        <Button colorScheme="blue" mr={3} onClick={submitForm}>
-                            Save
-                        </Button>
-                        <Button colorScheme="grey" variant="outline" onClick={onClose}>
-                            Cancel
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+                <FormControl mt={4}>
+                    <FormLabel>Description</FormLabel>
+                    <Input
+                        placeholder="Description"
+                        onChange={(e) =>
+                            setCustomerFields({
+                                ...customerFields,
+                                description: e.target.value,
+                            })
+                        }
+                    />
+                </FormControl>
+            </div>
+            <div style={{ textAlign: 'right', padding: '20px' }}>
+                <Button colorScheme="blue" mr={3} onClick={onSubmit}>
+                    Save
+                </Button>
+                <Button colorScheme="grey" variant="outline" onClick={onCancel}>
+                    Cancel
+                </Button>
+            </div>
+            {errorMessage && (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            )}
         </>
     );
 }
 
-export default CreateCustomerForm;
+export default CreateCustomerFormProps;

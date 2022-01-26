@@ -10,7 +10,7 @@ type CustomerList = {
 };
 
 type CustomersUpdate = {
-    postCustomer: (customer: Customer) => void;
+    postCustomer: (customer: Customer, errorHandler: (error: Error) => void) => Promise<Customer | undefined>;
 };
 
 export const useCustomers = (): CustomerList => {
@@ -20,10 +20,10 @@ export const useCustomers = (): CustomerList => {
 
 export const useUpdateCustomers = (): CustomersUpdate => {
     const { mutate } = useSWRConfig();
-    const postCustomer = async (customer: Customer) => {
-        const response = await post(customerEndpointURL, customer);
+    const postCustomer = async (customer: Customer, errorHandler: (error: Error) => void) => {
+        const newCustomer = await post<Customer, Customer>(customerEndpointURL, customer).catch(errorHandler);
         mutate(customerEndpointURL);
-        return response;
+        return newCustomer || undefined;
     };
     return { postCustomer };
 };

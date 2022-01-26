@@ -18,8 +18,8 @@ interface ProjectDetail {
     projectDetailResponse: ApiResponseType<Project>;
 }
 interface UpdateProjects {
-    postProject: (project: Project) => void;
-    putProject: (project: Project) => void;
+    postProject: (project: Project, errorHandler: (error: Error) => void) => Promise<Project | undefined>;
+    putProject: (project: Project, errorHandler: (error: Error) => void) => Promise<Project | undefined>;
 }
 
 export const useProjects = (): ProjectList => {
@@ -38,18 +38,18 @@ export const useUpdateProjects = (): UpdateProjects => {
     const { mutate } = useSWRConfig();
     const matchMutate = useMatchMutate();
 
-    const postProject = async (project: Project) => {
-        const response = await post(projectEndpointURL, project);
+    const postProject = async (project: Project, errorHandler: (error: Error) => void) => {
+        const newProject = await post<Project, Project>(projectEndpointURL, project).catch(errorHandler);
         mutate(projectEndpointURL);
         matchMutate(projectIdEndpointCacheKeyRegex);
-        return response;
+        return newProject || undefined;
     };
 
-    const putProject = async (project: Project) => {
-        const response = await put(projectEndpointURL, project);
+    const putProject = async (project: Project, errorHandler: (error: Error) => void) => {
+        const updatedProject = await put<Project, Project>(projectEndpointURL, project).catch(errorHandler);
         mutate(projectEndpointURL);
         matchMutate(projectIdEndpointCacheKeyRegex);
-        return response;
+        return updatedProject || undefined;
     };
 
     return { postProject, putProject };

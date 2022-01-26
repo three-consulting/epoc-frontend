@@ -12,16 +12,14 @@ interface TimesheetRowProps {
     timesheet: Timesheet;
 }
 function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
-    const [errorMessage, setErrorMessage] = useState<string>('');
     const { putTimesheet } = useUpdateTimesheets();
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
 
     const archiveTimesheet = async (timesheet: Timesheet, e: React.MouseEvent) => {
         e.preventDefault();
-        try {
-            await putTimesheet({ ...timesheet, status: 'ARCHIVED' });
-        } catch (error) {
-            setErrorMessage(`${error}`);
-        }
+        await putTimesheet({ ...timesheet, status: 'ARCHIVED' }, errorHandler);
     };
 
     return (
@@ -97,19 +95,22 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                     Add User
                 </Button>
             </Flex>
-
-            <Modal isOpen={displayNewTimesheetForm} onClose={() => setDisplayNewTimesheetForm(false)}>
-                <ModalOverlay />
-                <ModalContent px="0.5rem">
-                    <ModalHeader>Add user to project</ModalHeader>
-                    <CreateTimesheetForm
-                        project={project}
-                        employees={employees}
-                        onClose={() => setDisplayNewTimesheetForm(false)}
-                    />
-                    <ModalCloseButton />
-                </ModalContent>
-            </Modal>
+            {project.id && (
+                <Modal isOpen={displayNewTimesheetForm} onClose={() => setDisplayNewTimesheetForm(false)}>
+                    <ModalOverlay />
+                    <ModalContent px="0.5rem">
+                        <ModalHeader>Add user to project</ModalHeader>
+                        <CreateTimesheetForm
+                            project={project}
+                            projectId={project.id}
+                            employees={employees}
+                            afterSubmit={(timesheet) => (timesheet ? setDisplayNewTimesheetForm(false) : undefined)}
+                            onCancel={() => setDisplayNewTimesheetForm(false)}
+                        />
+                        <ModalCloseButton />
+                    </ModalContent>
+                </Modal>
+            )}
         </Flex>
     );
 }

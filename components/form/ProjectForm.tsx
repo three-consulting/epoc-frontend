@@ -1,10 +1,24 @@
 import { useUpdateProjects } from '@/lib/hooks/useProjects';
 import { Customer, Employee, Project } from '@/lib/types/apiTypes';
+import { FormBase } from '@/lib/types/forms';
 import { Flex } from '@chakra-ui/layout';
-import { Button, FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
+import {
+    Button,
+    FormControl,
+    FormErrorMessage,
+    FormLabel,
+    Input,
+    Select,
+    Modal,
+    ModalOverlay,
+    ModalHeader,
+    ModalCloseButton,
+    ModalContent,
+    Box,
+} from '@chakra-ui/react';
 import React, { useState } from 'react';
-import CreateCustomerForm from './CustomerForm';
+import ErrorAlert from '../common/ErrorAlert';
+import { CreateCustomerForm } from './CustomerForm';
 
 type ProjectFields = Partial<Project>;
 
@@ -29,9 +43,13 @@ type ProjectFormProps = CreateProjectFormProps & {
     onSubmit: (project: Project) => void;
 };
 
-function ProjectForm({ project: projectOrNull, customers, employees, onSubmit }: ProjectFormProps) {
-    const router = useRouter();
+function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, onCancel }: ProjectFormProps) {
     const [projectFields, setProjectFields] = useState<ProjectFields>(projectOrNull || {});
+    const [displayCreateCustomerForm, setDisplayCreateCustomerForm] = useState(false);
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
         e.preventDefault();
         const id = e.currentTarget.value;
@@ -53,6 +71,8 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit }:
     const invalidEndDate =
         (projectFields.startDate && projectFields.endDate && projectFields.startDate > projectFields.endDate) || false;
 
+    const abortSubmission = onCancel ? onCancel : () => undefined;
+
     return (
         <Flex
             flexDirection="column"
@@ -65,7 +85,12 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit }:
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    onSubmit(validateProjectFields(projectFields));
+                    try {
+                        const project = validateProjectFields(projectFields);
+                        onSubmit(project);
+                    } catch (error) {
+                        errorHandler(error as Error);
+                    }
                 }}
             >
                 <FormControl isRequired={true}>
@@ -121,7 +146,23 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit }:
                                     );
                                 })}
                             </Select>
-                            <CreateCustomerForm />
+
+                            <Button onClick={() => setDisplayCreateCustomerForm(true)}>Add Customer</Button>
+                            <Modal
+                                closeOnOverlayClick={false}
+                                isOpen={displayCreateCustomerForm}
+                                onClose={() => setDisplayCreateCustomerForm(false)}
+                            >
+                                <ModalOverlay />
+                                <ModalContent>
+                                    <ModalHeader>Add New Customer</ModalHeader>
+                                    <ModalCloseButton />
+                                    <CreateCustomerForm
+                                        afterSubmit={() => setDisplayCreateCustomerForm(false)}
+                                        onCancel={() => setDisplayCreateCustomerForm(false)}
+                                    />
+                                </ModalContent>
+                            </Modal>
                         </Flex>
                     </FormControl>
                 </Flex>
@@ -145,27 +186,47 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit }:
                 <Button colorScheme="blue" type="submit">
                     Submit
                 </Button>
-                <Button colorScheme="gray" type="button" marginLeft="0.5rem" onClick={() => router.push('/projects')}>
+                <Button colorScheme="gray" type="button" marginLeft="0.5rem" onClick={abortSubmission}>
                     Cancel
                 </Button>
+                {errorMessage && (
+                    <>
+                        <ErrorAlert />
+                        <Box>{errorMessage}</Box>
+                    </>
+                )}
             </form>
         </Flex>
     );
 }
 
-type CreateProjectFormProps = {
+type CreateProjectFormProps = FormBase<Project> & {
     employees: Employee[];
     customers: Customer[];
 };
 
 export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element => {
-    const router = useRouter();
     const { postProject } = useUpdateProjects();
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
     const onSubmit = async (project: Project) => {
-        await postProject(project);
-        router.push('/projects');
+        const newProject = await postProject(project, errorHandler);
+        props.afterSubmit && props.afterSubmit(newProject);
     };
-    return <ProjectForm {...props} project={undefined} projectId={undefined} onSubmit={onSubmit} />;
+
+    return (
+        <>
+            <ProjectForm {...props} project={undefined} onSubmit={onSubmit} />
+            {errorMessage && (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            )}
+        </>
+    );
 };
 
 type EditProjectFormProps = CreateProjectFormProps & {
@@ -174,11 +235,25 @@ type EditProjectFormProps = CreateProjectFormProps & {
 };
 
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
-    const router = useRouter();
     const { putProject } = useUpdateProjects();
+
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+
     const onSubmit = async (project: Project) => {
-        await putProject(project);
-        router.push(`/projects/${props.projectId}`);
+        const updatedProject = await putProject(project, errorHandler);
+        props.afterSubmit && props.afterSubmit(updatedProject);
     };
-    return <ProjectForm {...props} onSubmit={onSubmit} />;
+
+    return (
+        <>
+            <ProjectForm {...props} onSubmit={onSubmit} />
+            {errorMessage && (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            )}
+        </>
+    );
 };
