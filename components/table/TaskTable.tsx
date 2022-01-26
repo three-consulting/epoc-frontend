@@ -94,7 +94,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                             <CreateTaskForm
                                 project={project}
                                 projectId={project.id}
-                                afterSubmit={(task) => (task ? setDisplayNewTaskForm(false) : undefined)}
+                                afterSubmit={(taskUpdate) => taskUpdate.isSuccess && setDisplayNewTaskForm(false)}
                                 onCancel={() => setDisplayNewTaskForm(false)}
                             />
                         </ModalContent>

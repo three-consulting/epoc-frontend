@@ -1,7 +1,13 @@
 import useSWR, { useSWRConfig } from 'swr';
 import { Project } from '../types/apiTypes';
 import { get, post, put } from '../utils/fetch';
-import { ApiResponseType, swrToData } from '../types/swrUtil';
+import {
+    ApiGetResponse,
+    swrToApiGetResponse,
+    UpdateHookArgs,
+    UpdateHookFunction,
+    updateToApiUpdateResponse,
+} from '../types/hooks';
 import { useMatchMutate } from '../utils/matchMutate';
 
 const projectEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/project`;
@@ -10,46 +16,33 @@ const projectIdEndpointCacheKey = (id: number): string => `/project/${id}`;
 
 const projectIdEndpointCacheKeyRegex = /^\/project\/([0-9]+)$/;
 
-interface ProjectList {
-    projectsResponse: ApiResponseType<Project[]>;
-}
-
-interface ProjectDetail {
-    projectDetailResponse: ApiResponseType<Project>;
-}
 interface UpdateProjects {
-    postProject: (project: Project, errorHandler: (error: Error) => void) => Promise<Project | undefined>;
-    putProject: (project: Project, errorHandler: (error: Error) => void) => Promise<Project | undefined>;
+    postProject: UpdateHookFunction<Project>;
+    putProject: UpdateHookFunction<Project>;
 }
 
-export const useProjects = (): ProjectList => {
-    const projectsResponse = swrToData(useSWR<Project[], Error>(projectEndpointURL, get));
-    return { projectsResponse };
-};
+export const useProjects = (): ApiGetResponse<Project[]> =>
+    swrToApiGetResponse(useSWR<Project[], Error>(projectEndpointURL, get));
 
-export const useProjectDetail = (id: number): ProjectDetail => {
-    const projectDetailResponse = swrToData(
-        useSWR<Project, Error>(projectIdEndpointCacheKey(id), () => get(projectIdEndpointURL(id))),
-    );
-    return { projectDetailResponse };
-};
+export const useProjectDetail = (id: number): ApiGetResponse<Project> =>
+    swrToApiGetResponse(useSWR<Project, Error>(projectIdEndpointCacheKey(id), () => get(projectIdEndpointURL(id))));
 
 export const useUpdateProjects = (): UpdateProjects => {
     const { mutate } = useSWRConfig();
     const matchMutate = useMatchMutate();
 
-    const postProject = async (project: Project, errorHandler: (error: Error) => void) => {
+    const postProject = async (...[project, errorHandler]: UpdateHookArgs<Project>) => {
         const newProject = await post<Project, Project>(projectEndpointURL, project).catch(errorHandler);
         mutate(projectEndpointURL);
         matchMutate(projectIdEndpointCacheKeyRegex);
-        return newProject || undefined;
+        return updateToApiUpdateResponse(newProject || undefined);
     };
 
-    const putProject = async (project: Project, errorHandler: (error: Error) => void) => {
+    const putProject = async (...[project, errorHandler]: UpdateHookArgs<Project>) => {
         const updatedProject = await put<Project, Project>(projectEndpointURL, project).catch(errorHandler);
         mutate(projectEndpointURL);
         matchMutate(projectIdEndpointCacheKeyRegex);
-        return updatedProject || undefined;
+        return updateToApiUpdateResponse(updatedProject || undefined);
     };
 
     return { postProject, putProject };

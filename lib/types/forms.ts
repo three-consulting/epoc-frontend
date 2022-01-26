@@ -1,4 +1,6 @@
+import { ApiUpdateResponse } from './hooks';
+
 export type FormBase<T> = {
-    afterSubmit?: (returnValue: T | undefined) => void;
+    afterSubmit?: (returnValue: ApiUpdateResponse<T>) => void;
     onCancel?: () => void;
 };

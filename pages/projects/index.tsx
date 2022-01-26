@@ -11,7 +11,7 @@ import { useProjects } from '@/lib/hooks/useProjects';
 
 const Projects: NextPage = () => {
     const router = useRouter();
-    const { projectsResponse } = useProjects();
+    const projectsResponse = useProjects();
 
     return (
         <Layout>
