@@ -138,6 +138,7 @@ export interface components {
       created?: string;
       /** Format: date-time */
       updated?: string;
+      billable: boolean;
       /** @enum {string} */
       status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
