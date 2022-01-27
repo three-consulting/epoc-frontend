@@ -8,6 +8,8 @@ import { useCustomers } from '@/lib/hooks/useCustomers';
 import { useEmployees } from '@/lib/hooks/useEmployees';
 import { CreateProjectForm } from '@/components/form/ProjectForm';
 import { useRouter } from 'next/router';
+import { Project } from '@/lib/types/apiTypes';
+import { ApiUpdateResponse } from '@/lib/types/hooks';
 
 const New: NextPage = () => {
     const router = useRouter();
@@ -20,6 +22,10 @@ const New: NextPage = () => {
         '';
 
     const redirectToProjectList = () => router.push('/projects');
+    const redirectToProjectDetails = (createProjectResponse: ApiUpdateResponse<Project>) =>
+        createProjectResponse.isSuccess &&
+        createProjectResponse.data.id &&
+        router.push(`/projects/${createProjectResponse.data.id}`);
 
     return (
         <Layout>
@@ -34,7 +40,7 @@ const New: NextPage = () => {
                 <CreateProjectForm
                     customers={customersResponse.data}
                     employees={employeesResponse.data}
-                    afterSubmit={redirectToProjectList}
+                    afterSubmit={redirectToProjectDetails}
                     onCancel={redirectToProjectList}
                 />
             )}
