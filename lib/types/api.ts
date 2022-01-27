@@ -71,65 +71,93 @@ export interface paths {
 export interface components {
   schemas: {
     CustomerDTO: {
+      /** Format: int64 */
       id?: number;
       name: string;
       description?: string;
+      /** Format: date-time */
       created?: string;
+      /** Format: date-time */
       updated?: string;
       enabled?: boolean;
     };
     EmployeeDTO: {
+      /** Format: int64 */
       id?: number;
       first_name: string;
       last_name: string;
       email: string;
+      /** Format: date */
       start_date?: string;
+      /** Format: date-time */
       created?: string;
+      /** Format: date-time */
       updated?: string;
     };
     ProjectDTO: {
+      /** Format: int64 */
       id?: number;
       name: string;
       description?: string;
+      /** Format: date */
       startDate: string;
+      /** Format: date */
       endDate?: string;
       customer: components["schemas"]["CustomerDTO"];
       managingEmployee: components["schemas"]["EmployeeDTO"];
+      /** @enum {string} */
       status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      /** Format: date-time */
       created?: string;
+      /** Format: date-time */
       updated?: string;
     };
     TimesheetDTO: {
+      /** Format: int64 */
       id?: number;
       name: string;
       description?: string;
+      /** Format: int32 */
       allocation?: number;
       project: components["schemas"]["ProjectDTO"];
       employee: components["schemas"]["EmployeeDTO"];
+      /** Format: date-time */
       created?: string;
+      /** Format: date-time */
       updated?: string;
+      /** @enum {string} */
       status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TaskDTO: {
+      /** Format: int64 */
       id?: number;
       name: string;
       description?: string;
       project: components["schemas"]["ProjectDTO"];
+      /** Format: date-time */
       created?: string;
+      /** Format: date-time */
       updated?: string;
+      /** @enum {string} */
       status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     };
     TimeCategoryDTO: {
+      /** Format: int64 */
       id?: number;
       name: string;
       description?: string;
+      /** Format: date-time */
       created?: string;
+      /** Format: date-time */
       updated?: string;
     };
     TimesheetEntryDTO: {
+      /** Format: int64 */
       id?: number;
       quantity: {
+        /** Format: int64 */
         seconds?: number;
+        /** Format: int32 */
         nano?: number;
         negative?: boolean;
         zero?: boolean;
@@ -137,7 +165,9 @@ export interface components {
           dateBased?: boolean;
           timeBased?: boolean;
           duration?: {
+            /** Format: int64 */
             seconds?: number;
+            /** Format: int32 */
             nano?: number;
             negative?: boolean;
             zero?: boolean;
@@ -145,12 +175,15 @@ export interface components {
           durationEstimated?: boolean;
         }[];
       };
+      /** Format: date */
       date: string;
       description?: string;
       timesheet: components["schemas"]["TimesheetDTO"];
       timeCategory: components["schemas"]["TimeCategoryDTO"];
       task: components["schemas"]["TaskDTO"];
+      /** Format: date-time */
       created?: string;
+      /** Format: date-time */
       updated?: string;
     };
   };
