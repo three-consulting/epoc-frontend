@@ -5,7 +5,7 @@ import { useRouter } from 'next/dist/client/router';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import Loading from '@/components/common/Loading';
 import Layout from '@/components/common/Layout';
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay, useDisclosure } from '@chakra-ui/react';
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay } from '@chakra-ui/react';
 import Link from 'next/link';
 import TimesheetTable from '@/components/table/TimesheetTable';
 import TaskTable from '@/components/table/TaskTable';
@@ -20,13 +20,14 @@ type Props = {
 };
 
 function ProjectDetailPage({ projectId }: Props): JSX.Element {
-    const { projectDetailResponse } = useProjectDetail(projectId);
-    const { putProject } = useUpdateProjects();
-    const { timesheetsResponse } = useTimesheets(projectId);
-    const { employeesResponse } = useEmployees();
-    const { tasksResponse } = useTasks(projectId);
+    const projectDetailResponse = useProjectDetail(projectId);
+    const timesheetsResponse = useTimesheets(projectId);
+    const employeesResponse = useEmployees();
+    const tasksResponse = useTasks(projectId);
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { putProject } = useUpdateProjects();
+
+    const [displayArchivedModal, setDisplayArchivedModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
 
     const archiveProject = async (e: React.MouseEvent) => {
@@ -35,7 +36,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
             await putProject({ ...projectDetailResponse.data, status: 'ARCHIVED' }, (error) =>
                 setErrorMessage(`${error}`),
             );
-            onOpen();
+            setDisplayArchivedModal(true);
         } else {
             setErrorMessage('Project failed to load.');
         }
@@ -68,13 +69,13 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                             Archive Project
                         </Button>
                     )}
-                    <Modal isOpen={isOpen} onClose={onClose}>
+                    <Modal isOpen={displayArchivedModal} onClose={() => setDisplayArchivedModal(false)}>
                         <ModalOverlay />
                         <ModalContent>
                             <ModalBody marginTop="1rem">{projectDetailResponse.data.name} has been archived.</ModalBody>
 
                             <ModalFooter>
-                                <Button colorScheme="blue" onClick={onClose}>
+                                <Button colorScheme="blue" onClick={() => setDisplayArchivedModal(false)}>
                                     Close
                                 </Button>
                             </ModalFooter>

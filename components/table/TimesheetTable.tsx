@@ -104,7 +104,9 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                             project={project}
                             projectId={project.id}
                             employees={employees}
-                            afterSubmit={(timesheet) => (timesheet ? setDisplayNewTimesheetForm(false) : undefined)}
+                            afterSubmit={(timesheetUpdate) =>
+                                timesheetUpdate.isSuccess && setDisplayNewTimesheetForm(false)
+                            }
                             onCancel={() => setDisplayNewTimesheetForm(false)}
                         />
                         <ModalCloseButton />

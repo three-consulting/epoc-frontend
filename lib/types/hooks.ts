@@ -1,4 +1,4 @@
-export type ApiResponseType<T> =
+export type ApiGetResponse<T> =
     | {
           isSuccess: true;
           isLoading: false;
@@ -17,9 +17,23 @@ export type ApiResponseType<T> =
           isError: false;
       };
 
+export type ApiUpdateResponse<T> =
+    | {
+          isSuccess: true;
+          isError: false;
+          data: T;
+      }
+    | {
+          isSuccess: false;
+          isError: true;
+      };
+
+export type UpdateHookArgs<T> = [updatedObject: T, errorHandler: (error: Error) => void];
+export type UpdateHookFunction<T> = (...args: UpdateHookArgs<T>) => Promise<ApiUpdateResponse<T>>;
+
 export type swrType<T> = { data?: T; error?: { message: string } };
 
-export const swrToData = <T>({ data, error }: swrType<T>): ApiResponseType<T> => {
+export const swrToApiGetResponse = <T>({ data, error }: swrType<T>): ApiGetResponse<T> => {
     if (error) {
         return { isSuccess: false, isLoading: false, isError: true, errorMessage: error.message };
     } else if (!data) {
@@ -28,3 +42,6 @@ export const swrToData = <T>({ data, error }: swrType<T>): ApiResponseType<T> =>
         return { isSuccess: true, isLoading: false, isError: false, data: data };
     }
 };
+
+export const updateToApiUpdateResponse = <T>(response?: T): ApiUpdateResponse<T> =>
+    response ? { isSuccess: true, isError: false, data: response } : { isSuccess: false, isError: true };

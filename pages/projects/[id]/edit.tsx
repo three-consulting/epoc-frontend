@@ -16,9 +16,10 @@ type Props = {
 
 function EditProjectPage({ projectId }: Props): JSX.Element {
     const router = useRouter();
-    const { customersResponse } = useCustomers();
-    const { employeesResponse } = useEmployees();
-    const { projectDetailResponse } = useProjectDetail(projectId);
+
+    const customersResponse = useCustomers();
+    const employeesResponse = useEmployees();
+    const projectDetailResponse = useProjectDetail(projectId);
 
     const errorMessage =
         (customersResponse.isError && customersResponse.errorMessage) ||

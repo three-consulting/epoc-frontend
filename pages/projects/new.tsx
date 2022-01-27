@@ -11,8 +11,8 @@ import { useRouter } from 'next/router';
 
 const New: NextPage = () => {
     const router = useRouter();
-    const { customersResponse } = useCustomers();
-    const { employeesResponse } = useEmployees();
+    const customersResponse = useCustomers();
+    const employeesResponse = useEmployees();
 
     const errorMessage =
         (customersResponse.isError && customersResponse.errorMessage) ||
