@@ -1,19 +1,20 @@
 import { useUpdateTasks } from '@/lib/hooks/useTasks';
 import { Project, Task } from '@/lib/types/apiTypes';
 import { FormBase } from '@/lib/types/forms';
-import { FormControl, FormLabel, Input, FormErrorMessage, Button, Box } from '@chakra-ui/react';
+import { FormControl, FormLabel, Input, FormErrorMessage, Button, Box, Flex, Checkbox } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import ErrorAlert from '../common/ErrorAlert';
 
-type TaskFields = Partial<Task> & { project: Project };
+type TaskFields = Partial<Task> & { project: Project; billable: boolean };
 
 const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
-    const { name, project } = fields;
-    if (name) {
+    const { name, project, billable } = fields;
+    if (name && billable !== undefined) {
         return {
             ...fields,
             project: { ...project, id: projectId },
             name,
+            billable,
         };
     } else {
         throw 'Invalid task form: missing required fields';
@@ -28,6 +29,7 @@ type TaskFormProps = FormBase<Task> & {
 export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: TaskFormProps): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>({
         project: project,
+        billable: true,
     });
     const { postTask } = useUpdateTasks();
 
@@ -72,6 +74,20 @@ export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: Ta
                             })
                         }
                     />
+                </FormControl>
+                <FormControl py="0.5rem">
+                    <Flex flexDirection={'row'} alignItems={'baseline'}>
+                        <FormLabel>Billable</FormLabel>
+                        <Checkbox
+                            isChecked={taskFields.billable}
+                            onChange={(e) =>
+                                setTaskFields({
+                                    ...taskFields,
+                                    billable: e.target.checked,
+                                })
+                            }
+                        />
+                    </Flex>
                 </FormControl>
             </div>
             <div style={{ textAlign: 'right', padding: '20px' }}>
