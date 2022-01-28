@@ -10,7 +10,7 @@ interface ProjectRowProps {
 
 function ProjectRow({ project }: ProjectRowProps) {
     return (
-        <Link href={`projects/${project.id}`}>
+        <Link href={`project/${project.id}`}>
             <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
                 <Td>{project.name}</Td>
                 <Td>{project.customer?.name}</Td>

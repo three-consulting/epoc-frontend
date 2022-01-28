@@ -24,7 +24,7 @@ const Projects: NextPage = () => {
             )}
             {projectsResponse.isSuccess && <ProjectTable projects={projectsResponse.data} />}
             <Box margin="1rem 0rem">
-                <Button colorScheme="blue" onClick={() => router.push('/projects/new')}>
+                <Button colorScheme="blue" onClick={() => router.push('/project/new')}>
                     Add project
                 </Button>
             </Box>

@@ -21,11 +21,11 @@ const New: NextPage = () => {
         (employeesResponse.isError && employeesResponse.errorMessage) ||
         '';
 
-    const redirectToProjectList = () => router.push('/projects');
+    const redirectToProjectList = () => router.push('/project');
     const redirectToProjectDetails = (createProjectResponse: ApiUpdateResponse<Project>) =>
         createProjectResponse.isSuccess &&
         createProjectResponse.data.id &&
-        router.push(`/projects/${createProjectResponse.data.id}`);
+        router.push(`/project/${createProjectResponse.data.id}`);
 
     return (
         <Layout>

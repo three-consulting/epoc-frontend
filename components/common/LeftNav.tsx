@@ -13,7 +13,7 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
     { name: 'Home', icon: BsHouse, href: '/' },
-    { name: 'Projects', icon: BsBriefcase, href: '/projects' },
+    { name: 'Projects', icon: BsBriefcase, href: '/project' },
 ];
 
 const NavItem = ({ name, icon, href }: LinkItemProps) => {
