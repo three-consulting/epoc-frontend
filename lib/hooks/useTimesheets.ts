@@ -10,6 +10,8 @@ import {
 import { get, post, put } from '../utils/fetch';
 
 const timesheetEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/timesheet`;
+const timesheetIdEndpointURL = (id: number): string => `${process.env.NEXT_PUBLIC_API_URL}/timesheet/${id}`;
+const timesheetIdEndpointCacheKey = (id: number): string => `/timesheet/${id}`;
 
 type UpdateTimesheets = {
     postTimesheet: UpdateHookFunction<Timesheet>;
@@ -19,6 +21,11 @@ type UpdateTimesheets = {
 export const useTimesheets = (projectId: number): ApiGetResponse<Timesheet[]> =>
     swrToApiGetResponse(
         useSWR<Timesheet[], Error>(timesheetEndpointURL, () => get(timesheetEndpointURL, { projectId: projectId })),
+    );
+
+export const useTimesheetDetail = (id: number): ApiGetResponse<Timesheet> =>
+    swrToApiGetResponse(
+        useSWR<Timesheet, Error>(timesheetIdEndpointCacheKey(id), () => get(timesheetIdEndpointURL(id))),
     );
 
 export const useUpdateTimesheets = (): UpdateTimesheets => {
