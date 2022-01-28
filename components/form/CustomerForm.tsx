@@ -27,8 +27,9 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
 
     const onSubmit = async () => {
         try {
-            const newCustomer = await postCustomer(() => validateCustomerFields(customerFields), errorHandler);
-            return afterSubmit && afterSubmit(newCustomer);
+            const customer = validateCustomerFields(customerFields);
+            const createCustomerRequest = await postCustomer(customer, errorHandler);
+            return afterSubmit && afterSubmit(createCustomerRequest);
         } catch (error) {
             errorHandler(error as Error);
         }
@@ -47,6 +48,7 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
                                 name: e.target.value,
                             })
                         }
+                        data-testid={'form-field-name'}
                     />
                 </FormControl>
 
@@ -60,14 +62,15 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
                                 description: e.target.value,
                             })
                         }
+                        data-testid={'form-field-description'}
                     />
                 </FormControl>
             </div>
             <div style={{ textAlign: 'right', padding: '20px' }}>
-                <Button colorScheme="blue" mr={3} onClick={onSubmit}>
+                <Button colorScheme="blue" mr={3} onClick={onSubmit} data-testid="form-button-submit">
                     Save
                 </Button>
-                <Button colorScheme="grey" variant="outline" onClick={onCancel}>
+                <Button colorScheme="grey" variant="outline" onClick={onCancel} data-testid="form-button-cancel">
                     Cancel
                 </Button>
             </div>
