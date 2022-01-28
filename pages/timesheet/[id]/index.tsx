@@ -7,6 +7,8 @@ import Loading from '@/components/common/Loading';
 import Layout from '@/components/common/Layout';
 import { useTimesheetDetail } from '@/lib/hooks/useTimesheets';
 import TimesheetDetail from '@/components/detail/TimesheetDetail';
+import Link from 'next/link';
+import { Button } from '@chakra-ui/react';
 
 type Props = {
     timesheetId: number;
@@ -25,7 +27,14 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
                 />
             )}
             {timesheetDetailResponse.isSuccess ? (
-                <TimesheetDetail timesheet={timesheetDetailResponse.data} />
+                <>
+                    <TimesheetDetail timesheet={timesheetDetailResponse.data} />
+                    <Link key={`${timesheetDetailResponse.data.id}`} href={`${timesheetDetailResponse.data.id}/edit`}>
+                        <Button colorScheme="blue" marginTop="1rem">
+                            Edit Timesheet
+                        </Button>
+                    </Link>
+                </>
             ) : (
                 <Box>Not found</Box>
             )}
