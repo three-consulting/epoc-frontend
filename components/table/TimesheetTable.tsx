@@ -7,11 +7,13 @@ import ErrorAlert from '../common/ErrorAlert';
 import { Employee, Project, Timesheet } from '@/lib/types/apiTypes';
 import { CreateTimesheetForm } from '../form/TimesheetForm';
 import { useUpdateTimesheets } from '@/lib/hooks/useTimesheets';
+import { useRouter } from 'next/router';
 
 interface TimesheetRowProps {
     timesheet: Timesheet;
 }
 function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
+    const router = useRouter();
     const { putTimesheet } = useUpdateTimesheets();
 
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -25,10 +27,13 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     return (
         <>
             <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
-                <Td>
-                    {timesheet.employee?.first_name} {timesheet.employee?.last_name}
-                </Td>
-                <Td>{timesheet.allocation} %</Td>
+                <Flex onClick={() => router.push(`/timesheets/${timesheet.id}`)}>
+                    <Td>
+                        {timesheet.employee?.first_name} {timesheet.employee?.last_name}
+                    </Td>
+                    <Td>{timesheet.allocation} %</Td>
+                </Flex>
+
                 <Td>
                     <Button onClick={(e) => archiveTimesheet(timesheet, e)}>x</Button>
                 </Td>
