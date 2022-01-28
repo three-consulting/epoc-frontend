@@ -27,7 +27,7 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
         (projectDetailResponse.isError && projectDetailResponse.errorMessage) ||
         '';
 
-    const redirectToProjectDetail = () => router.push(`/projects/${projectId}`);
+    const redirectToProjectDetail = () => router.push(`/project/${projectId}`);
 
     return (
         <Layout>
