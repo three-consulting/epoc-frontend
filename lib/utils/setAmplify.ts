@@ -2,9 +2,10 @@
 // @ts-nocheck
 import config from "../../aws-exports"
 import { UpdatedAwsConfig } from "@/lib/types/auth"
+import { PROCESS_ENV } from "../conf"
 
 export function setAmplify(): UpdatedAwsConfig {
-    const isLocalhost = process.env.NODE_ENV === "development" ? true : false
+    const isLocalhost = PROCESS_ENV === "development"
 
     const [localRedirectSignIn, productionRedirectSignIn] = config.oauth.redirectSignIn.split(",")
 

@@ -11,9 +11,8 @@ const validateCustomerFields = (fields: CustomerFields): Customer => {
     const { name } = fields
     if (name) {
         return { ...fields, name }
-    } else {
-        throw "Invalid customer form: missing required fields"
     }
+    throw Error("Invalid customer form: missing required fields")
 }
 
 type CreateCustomerFormProps = FormBase<Customer>
@@ -32,6 +31,7 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
             return afterSubmit && afterSubmit(createCustomerRequest)
         } catch (error) {
             errorHandler(error as Error)
+            return null
         }
     }
 
@@ -42,10 +42,10 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
                     <FormLabel>Customer Name</FormLabel>
                     <Input
                         placeholder="Customer Name"
-                        onChange={(e) =>
+                        onChange={(event) =>
                             setCustomerFields({
                                 ...customerFields,
-                                name: e.target.value,
+                                name: event.target.value,
                             })
                         }
                         data-testid={"form-field-name"}
@@ -56,10 +56,10 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
                     <FormLabel>Description</FormLabel>
                     <Input
                         placeholder="Description"
-                        onChange={(e) =>
+                        onChange={(event) =>
                             setCustomerFields({
                                 ...customerFields,
-                                description: e.target.value,
+                                description: event.target.value,
                             })
                         }
                         data-testid={"form-field-description"}

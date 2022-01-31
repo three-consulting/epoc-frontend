@@ -5,12 +5,13 @@ import { useMediaQuery } from "react-responsive"
 
 function Footer(): JSX.Element {
     const isMobile = useMediaQuery({ query: "(max-width: 1224px)" })
-    if (isMobile)
+    if (isMobile) {
         return (
             <Box borderTop="1px" borderColor="gray.400">
                 <NavBarMobile />
             </Box>
         )
+    }
     return <Box borderTop="1px" borderColor="gray.400" />
 }
 

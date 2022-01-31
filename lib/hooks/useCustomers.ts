@@ -8,8 +8,9 @@ import {
     UpdateHookFunction,
     updateToApiUpdateResponse,
 } from "../types/hooks"
+import { NEXT_PUBLIC_API_URL } from "../conf"
 
-export const customerEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/customer`
+export const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/customer`
 
 type CustomersUpdate = {
     postCustomer: UpdateHookFunction<Customer>
@@ -24,7 +25,8 @@ export const useUpdateCustomers = (): CustomersUpdate => {
     const postCustomer = async (...[customer, errorHandler]: UpdateHookArgs<Customer>) => {
         const newCustomer = await post<Customer, Customer>(customerEndpointURL, customer).catch(errorHandler)
         mutate(customerEndpointURL)
-        return updateToApiUpdateResponse(newCustomer || undefined)
+
+        return updateToApiUpdateResponse(newCustomer || null)
     }
 
     return { postCustomer }

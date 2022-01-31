@@ -16,26 +16,24 @@ const LinkItems: Array<LinkItemProps> = [
     { name: "Projects", icon: BsBriefcase, href: "/project" },
 ]
 
-const NavItem = ({ name, icon, href }: LinkItemProps) => {
-    return (
-        <Flex
-            _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}
-            color="black"
-            fontSize="md"
-            margin="0.5rem 0rem"
-            padding="0"
-        >
-            <Link href={href}>
-                <a>
-                    <HStack>
-                        <Icon as={icon} />
-                        <Text>{name}</Text>
-                    </HStack>
-                </a>
-            </Link>
-        </Flex>
-    )
-}
+const NavItem = ({ name, icon, href }: LinkItemProps) => (
+    <Flex
+        _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}
+        color="black"
+        fontSize="md"
+        margin="0.5rem 0rem"
+        padding="0"
+    >
+        <Link href={href}>
+            <a>
+                <HStack>
+                    <Icon as={icon} />
+                    <Text>{name}</Text>
+                </HStack>
+            </a>
+        </Link>
+    </Flex>
+)
 
 function LeftNav(): JSX.Element {
     const user = useUser()

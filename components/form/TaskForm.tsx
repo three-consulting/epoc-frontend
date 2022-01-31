@@ -9,16 +9,17 @@ type TaskFields = Partial<Task> & { project: Project; billable: boolean }
 
 const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
     const { name, project, billable } = fields
-    if (name && billable !== undefined) {
+
+    if (name && typeof billable !== "undefined") {
         return {
             ...fields,
             project: { ...project, id: projectId },
             name,
             billable,
         }
-    } else {
-        throw "Invalid task form: missing required fields"
     }
+
+    throw Error("Invalid task form: missing required fields")
 }
 
 type TaskFormProps = FormBase<Task> & {
@@ -28,7 +29,7 @@ type TaskFormProps = FormBase<Task> & {
 
 export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: TaskFormProps): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>({
-        project: project,
+        project,
         billable: true,
     })
     const { postTask } = useUpdateTasks()
@@ -36,14 +37,15 @@ export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: Ta
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const onSubmit = async (e: React.MouseEvent) => {
-        e.preventDefault()
+    const onSubmit = async (event: React.MouseEvent) => {
+        event.preventDefault()
         try {
             const task = validateTaskFields(taskFields, projectId)
             const newTask = await postTask(task, errorHandler)
-            afterSubmit && afterSubmit(newTask)
+            return afterSubmit && afterSubmit(newTask)
         } catch (error) {
             errorHandler(error as Error)
+            return null
         }
     }
 
@@ -54,10 +56,10 @@ export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: Ta
                     <FormLabel>Task Name</FormLabel>
                     <Input
                         placeholder="Task Name"
-                        onChange={(e) =>
+                        onChange={(event) =>
                             setTaskFields({
                                 ...taskFields,
-                                name: e.target.value,
+                                name: event.target.value,
                             })
                         }
                     />
@@ -67,10 +69,10 @@ export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: Ta
                     <FormLabel>Description</FormLabel>
                     <Input
                         placeholder="Description"
-                        onChange={(e) =>
+                        onChange={(event) =>
                             setTaskFields({
                                 ...taskFields,
-                                description: e.target.value,
+                                description: event.target.value,
                             })
                         }
                     />
@@ -80,10 +82,10 @@ export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: Ta
                         <FormLabel>Billable</FormLabel>
                         <Checkbox
                             isChecked={taskFields.billable}
-                            onChange={(e) =>
+                            onChange={(event) =>
                                 setTaskFields({
                                     ...taskFields,
-                                    billable: e.target.checked,
+                                    billable: event.target.checked,
                                 })
                             }
                         />

@@ -19,9 +19,9 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const archiveTimesheet = async (timesheet: Timesheet, e: React.MouseEvent) => {
-        e.preventDefault()
-        await putTimesheet({ ...timesheet, status: "ARCHIVED" }, errorHandler)
+    const archiveTimesheet = async (timesheetToArchive: Timesheet, event: React.MouseEvent) => {
+        event.preventDefault()
+        await putTimesheet({ ...timesheetToArchive, status: "ARCHIVED" }, errorHandler)
     }
 
     return (
@@ -35,7 +35,7 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
                 </Flex>
 
                 <Td>
-                    <Button onClick={(e) => archiveTimesheet(timesheet, e)}>x</Button>
+                    <Button onClick={(event) => archiveTimesheet(timesheet, event)}>x</Button>
                 </Td>
             </Tr>
             {errorMessage && (

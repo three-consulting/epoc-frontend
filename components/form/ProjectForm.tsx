@@ -20,6 +20,22 @@ import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { CreateCustomerForm } from "./CustomerForm"
 
+type CreateProjectFormProps = FormBase<Project> & {
+    employees: Employee[]
+    customers: Customer[]
+}
+
+type EditProjectFormProps = CreateProjectFormProps & {
+    project: Project
+    projectId: number
+}
+
+type ProjectFormProps = CreateProjectFormProps & {
+    project?: Project
+    projectId?: number
+    onSubmit: (project: Project) => void
+}
+
 type ProjectFields = Partial<Project>
 
 const validateProjectFields = (form: ProjectFields): Project => {
@@ -32,15 +48,8 @@ const validateProjectFields = (form: ProjectFields): Project => {
             customer,
             managingEmployee,
         }
-    } else {
-        throw "Invalid project form: missing required fields"
     }
-}
-
-type ProjectFormProps = CreateProjectFormProps & {
-    project?: Project
-    projectId?: number
-    onSubmit: (project: Project) => void
+    throw Error("Invalid project form: missing required fields")
 }
 
 function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, onCancel }: ProjectFormProps) {
@@ -50,20 +59,20 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
-        e.preventDefault()
-        const id = e.currentTarget.value
+    const handleCustomerChange = (event: React.FormEvent<HTMLSelectElement>) => {
+        event.preventDefault()
+        const id = event.currentTarget.value
         if (id) {
-            const customer = customers.find((el) => el.id === Number(id))
-            setProjectFields({ ...projectFields, customer: customer })
+            const customer = customers.find((customerIterator) => customerIterator.id === Number(id))
+            setProjectFields({ ...projectFields, customer })
         }
     }
 
-    const handleEmployeeChange = (e: React.FormEvent<HTMLSelectElement>) => {
-        e.preventDefault()
-        const id = e.currentTarget.value
+    const handleEmployeeChange = (event: React.FormEvent<HTMLSelectElement>) => {
+        event.preventDefault()
+        const id = event.currentTarget.value
         if (id) {
-            const employee = employees.find((el) => el.id === Number(id))
+            const employee = employees.find((employeeIterator) => employeeIterator.id === Number(id))
             setProjectFields({ ...projectFields, managingEmployee: employee })
         }
     }
@@ -71,7 +80,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
     const invalidEndDate =
         (projectFields.startDate && projectFields.endDate && projectFields.startDate > projectFields.endDate) || false
 
-    const abortSubmission = onCancel ? onCancel : () => undefined
+    const abortSubmission = onCancel && onCancel
 
     return (
         <Flex
@@ -83,8 +92,8 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
             padding="1rem 1rem"
         >
             <form
-                onSubmit={(e) => {
-                    e.preventDefault()
+                onSubmit={(event) => {
+                    event.preventDefault()
                     try {
                         const project = validateProjectFields(projectFields)
                         onSubmit(project)
@@ -98,7 +107,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                     <Input
                         value={projectFields.name || ""}
                         placeholder="Project name"
-                        onChange={(e) => setProjectFields({ ...projectFields, name: e.target.value })}
+                        onChange={(event) => setProjectFields({ ...projectFields, name: event.target.value })}
                     />
                 </FormControl>
                 <FormControl>
@@ -106,7 +115,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                     <Input
                         value={projectFields.description || ""}
                         placeholder="Project description"
-                        onChange={(e) => setProjectFields({ ...projectFields, description: e.target.value })}
+                        onChange={(event) => setProjectFields({ ...projectFields, description: event.target.value })}
                     />
                 </FormControl>
                 <FormControl isRequired={true}>
@@ -115,7 +124,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                         type="date"
                         value={projectFields.startDate || ""}
                         placeholder="Project start date"
-                        onChange={(e) => setProjectFields({ ...projectFields, startDate: e.target.value })}
+                        onChange={(event) => setProjectFields({ ...projectFields, startDate: event.target.value })}
                     />
                 </FormControl>
                 <FormControl isInvalid={invalidEndDate}>
@@ -124,7 +133,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                         type="date"
                         value={projectFields.endDate || ""}
                         placeholder="Project end date"
-                        onChange={(e) => setProjectFields({ ...projectFields, endDate: e.target.value })}
+                        onChange={(event) => setProjectFields({ ...projectFields, endDate: event.target.value })}
                     />
                     <FormErrorMessage>End date precedes start date</FormErrorMessage>
                 </FormControl>
@@ -138,13 +147,11 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                                 marginRight="0.3rem"
                                 value={projectFields.customer?.id}
                             >
-                                {customers.map((customer, idx) => {
-                                    return (
-                                        <option key={idx} value={customer.id}>
-                                            {customer.name}
-                                        </option>
-                                    )
-                                })}
+                                {customers.map((customer, idx) => (
+                                    <option key={idx} value={customer.id}>
+                                        {customer.name}
+                                    </option>
+                                ))}
                             </Select>
 
                             <Button onClick={() => setDisplayCreateCustomerForm(true)}>Add Customer</Button>
@@ -173,13 +180,11 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                         placeholder="Select employee"
                         value={projectFields.managingEmployee?.id}
                     >
-                        {employees.map((employee, idx) => {
-                            return (
-                                <option key={idx} value={employee.id}>
-                                    {`${employee.first_name} ${employee.last_name}`}
-                                </option>
-                            )
-                        })}
+                        {employees.map((employee, idx) => (
+                            <option key={idx} value={employee.id}>
+                                {`${employee.first_name} ${employee.last_name}`}
+                            </option>
+                        ))}
                     </Select>
                 </FormControl>
                 <br />
@@ -200,11 +205,6 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
     )
 }
 
-type CreateProjectFormProps = FormBase<Project> & {
-    employees: Employee[]
-    customers: Customer[]
-}
-
 export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element => {
     const { postProject } = useUpdateProjects()
 
@@ -213,12 +213,12 @@ export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element =>
 
     const onSubmit = async (project: Project) => {
         const newProject = await postProject(project, errorHandler)
-        props.afterSubmit && props.afterSubmit(newProject)
+        return props.afterSubmit && props.afterSubmit(newProject)
     }
 
     return (
         <>
-            <ProjectForm {...props} project={undefined} onSubmit={onSubmit} />
+            <ProjectForm {...props} onSubmit={onSubmit} />
             {errorMessage && (
                 <>
                     <ErrorAlert />
@@ -229,11 +229,6 @@ export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element =>
     )
 }
 
-type EditProjectFormProps = CreateProjectFormProps & {
-    project: Project
-    projectId: number
-}
-
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
     const { putProject } = useUpdateProjects()
 
@@ -242,7 +237,7 @@ export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
 
     const onSubmit = async (project: Project) => {
         const updatedProject = await putProject(project, errorHandler)
-        props.afterSubmit && props.afterSubmit(updatedProject)
+        return props.afterSubmit && props.afterSubmit(updatedProject)
     }
 
     return (

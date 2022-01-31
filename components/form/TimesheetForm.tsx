@@ -5,8 +5,27 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, Sel
 import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 
+type CreateTimesheetFormProps = FormBase<Timesheet> & {
+    employees: Employee[]
+    project: Project
+    projectId: number
+}
+
+type EditTimesheetFormProps = CreateTimesheetFormProps & {
+    timesheet: Timesheet
+    timesheetId: number
+}
+
 type TimesheetFields = Partial<Timesheet> & {
     project: Project
+}
+
+const maximumAllocation = 100
+
+type TimesheetFormProps = CreateTimesheetFormProps & {
+    timesheet?: Timesheet
+    timesheetId?: number
+    onSubmit: (timesheet: Timesheet) => void
 }
 
 const validateTimesheetFields = (fields: TimesheetFields, projectId: number): Timesheet => {
@@ -18,15 +37,8 @@ const validateTimesheetFields = (fields: TimesheetFields, projectId: number): Ti
             name,
             employee,
         }
-    } else {
-        throw "Invalid timesheet form: Missing required fields"
     }
-}
-
-type TimesheetFormProps = CreateTimesheetFormProps & {
-    timesheet?: Timesheet
-    timesheetId?: number
-    onSubmit: (timesheet: Timesheet) => void
+    throw Error("Invalid timesheet form: Missing required fields")
 }
 
 function TimesheetForm({
@@ -42,23 +54,25 @@ function TimesheetForm({
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const setEmployee = (e: React.FormEvent<HTMLSelectElement>) => {
-        e.preventDefault()
-        const id = parseInt(e.currentTarget.value)
+    const setEmployee = (event: React.FormEvent<HTMLSelectElement>) => {
+        event.preventDefault()
+        const id = Number(event.currentTarget.value)
         if (id && employees) {
-            const employee = employees.find((employee) => employee.id === id)
+            const employee = employees.find((employeeIterator) => employeeIterator.id === id)
             if (employee) {
                 setTimesheetFields({ ...timesheetFields, employee: { ...employee }, project: { ...project } })
             } else {
-                throw `Error timesheet form could not find employee with id ${id}.`
+                throw Error(`Error timesheet form could not find employee with id ${id}.`)
             }
         }
     }
 
     const invalidAllocation =
-        (timesheetFields.allocation && (timesheetFields.allocation < 0 || timesheetFields.allocation > 100)) || false
+        (timesheetFields.allocation &&
+            (timesheetFields.allocation < 0 || timesheetFields.allocation > maximumAllocation)) ||
+        false
 
-    const abortSubmission = onCancel ? onCancel : () => undefined
+    const abortSubmission = onCancel && onCancel
 
     return (
         <Flex
@@ -70,8 +84,8 @@ function TimesheetForm({
             padding="1rem 1rem"
         >
             <form
-                onSubmit={(e) => {
-                    e.preventDefault()
+                onSubmit={(event) => {
+                    event.preventDefault()
                     try {
                         const timesheet = validateTimesheetFields(timesheetFields, projectId)
                         onSubmit(timesheet)
@@ -84,17 +98,15 @@ function TimesheetForm({
                     <FormControl>
                         <FormLabel>User</FormLabel>
                         <Select
-                            value={timesheetFields.employee?.id || undefined}
+                            value={timesheetFields.employee?.id}
                             onChange={setEmployee}
                             placeholder="Select employee"
                         >
-                            {employees.map((employee, idx) => {
-                                return (
-                                    <option key={idx} value={employee.id}>
-                                        {`${employee.first_name} ${employee.last_name}`}
-                                    </option>
-                                )
-                            })}
+                            {employees.map((employee, idx) => (
+                                <option key={idx} value={employee.id}>
+                                    {`${employee.first_name} ${employee.last_name}`}
+                                </option>
+                            ))}
                         </Select>
                     </FormControl>
                     <FormControl>
@@ -102,10 +114,10 @@ function TimesheetForm({
                         <Input
                             value={timesheetFields.name || ""}
                             placeholder="Timesheet Name"
-                            onChange={(e) =>
+                            onChange={(event) =>
                                 setTimesheetFields({
                                     ...timesheetFields,
-                                    name: e.target.value,
+                                    name: event.target.value,
                                 })
                             }
                         />
@@ -115,10 +127,10 @@ function TimesheetForm({
                         <Input
                             value={timesheetFields.description || ""}
                             placeholder="Description"
-                            onChange={(e) =>
+                            onChange={(event) =>
                                 setTimesheetFields({
                                     ...timesheetFields,
-                                    description: e.target.value,
+                                    description: event.target.value,
                                 })
                             }
                         />
@@ -128,10 +140,10 @@ function TimesheetForm({
                         <Input
                             value={timesheetFields.allocation || ""}
                             placeholder="0"
-                            onChange={(e) =>
+                            onChange={(event) =>
                                 setTimesheetFields({
                                     ...timesheetFields,
-                                    allocation: parseInt(e.target.value),
+                                    allocation: Number(event.target.value),
                                 })
                             }
                         />
@@ -157,12 +169,6 @@ function TimesheetForm({
     )
 }
 
-type CreateTimesheetFormProps = FormBase<Timesheet> & {
-    employees: Employee[]
-    project: Project
-    projectId: number
-}
-
 export const CreateTimesheetForm = (props: CreateTimesheetFormProps): JSX.Element => {
     const { postTimesheet } = useUpdateTimesheets()
 
@@ -171,12 +177,12 @@ export const CreateTimesheetForm = (props: CreateTimesheetFormProps): JSX.Elemen
 
     const onSubmit = async (timesheet: Timesheet) => {
         const newTimesheet = await postTimesheet(timesheet, errorHandler)
-        props.afterSubmit && props.afterSubmit(newTimesheet)
+        return props.afterSubmit && props.afterSubmit(newTimesheet)
     }
 
     return (
         <>
-            <TimesheetForm {...props} timesheet={undefined} onSubmit={onSubmit} />
+            <TimesheetForm {...props} onSubmit={onSubmit} />
             {errorMessage && (
                 <>
                     <ErrorAlert />
@@ -187,11 +193,6 @@ export const CreateTimesheetForm = (props: CreateTimesheetFormProps): JSX.Elemen
     )
 }
 
-type EditTimesheetFormProps = CreateTimesheetFormProps & {
-    timesheet: Timesheet
-    timesheetId: number
-}
-
 export const EditTimesheetForm = (props: EditTimesheetFormProps): JSX.Element => {
     const { putTimesheet } = useUpdateTimesheets()
 
@@ -200,7 +201,7 @@ export const EditTimesheetForm = (props: EditTimesheetFormProps): JSX.Element =>
 
     const onSubmit = async (timesheet: Timesheet) => {
         const updatedTimesheet = await putTimesheet(timesheet, errorHandler)
-        props.afterSubmit && props.afterSubmit(updatedTimesheet)
+        return props.afterSubmit && props.afterSubmit(updatedTimesheet)
     }
 
     return (

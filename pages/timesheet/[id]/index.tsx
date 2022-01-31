@@ -42,10 +42,10 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
     )
 }
 
-const Id: NextPage = () => {
+const Page: NextPage = () => {
     const router = useRouter()
     const id = router.query.id as string | undefined
-    return id ? <TimesheetDetailPage timesheetId={parseInt(id)} /> : null
+    return id ? <TimesheetDetailPage timesheetId={Number(id)} /> : null
 }
 
-export default Id
+export default Page

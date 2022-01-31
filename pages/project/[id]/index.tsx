@@ -30,8 +30,8 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
     const [displayArchivedModal, setDisplayArchivedModal] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
 
-    const archiveProject = async (e: React.MouseEvent) => {
-        e.preventDefault()
+    const archiveProject = async (mouseEvent: React.MouseEvent) => {
+        mouseEvent.preventDefault()
         if (projectDetailResponse.isSuccess) {
             await putProject({ ...projectDetailResponse.data, status: "ARCHIVED" }, (error) =>
                 setErrorMessage(`${error}`)
@@ -103,10 +103,10 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
     )
 }
 
-const Id: NextPage = () => {
+const Page: NextPage = () => {
     const router = useRouter()
     const id = router.query.id as string | undefined
-    return id ? <ProjectDetailPage projectId={parseInt(id)} /> : null
+    return id ? <ProjectDetailPage projectId={Number(id)} /> : null
 }
 
-export default Id
+export default Page

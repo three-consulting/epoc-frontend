@@ -38,10 +38,9 @@ export const swrToApiGetResponse = <T>({ data, error }: swrType<T>): ApiGetRespo
         return { isSuccess: false, isLoading: false, isError: true, errorMessage: error.message }
     } else if (!data) {
         return { isSuccess: false, isLoading: true, isError: false }
-    } else {
-        return { isSuccess: true, isLoading: false, isError: false, data: data }
     }
+    return { isSuccess: true, isLoading: false, isError: false, data }
 }
 
-export const updateToApiUpdateResponse = <T>(response?: T): ApiUpdateResponse<T> =>
-    response ? { isSuccess: true, isError: false, data: response } : { isSuccess: false, isError: true }
+export const updateToApiUpdateResponse = <T>(response: T | null): ApiUpdateResponse<T> =>
+    response === null ? { isSuccess: false, isError: true } : { isSuccess: true, isError: false, data: response }
