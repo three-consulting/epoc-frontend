@@ -1,5 +1,5 @@
-import React from 'react';
-import { SkeletonCircle, Box, SkeletonText } from '@chakra-ui/react';
+import React from "react"
+import { SkeletonCircle, Box, SkeletonText } from "@chakra-ui/react"
 
 function Loading(): JSX.Element {
     return (
@@ -7,7 +7,7 @@ function Loading(): JSX.Element {
             <SkeletonCircle size="10" />
             <SkeletonText mt="4" noOfLines={4} spacing="4" />
         </Box>
-    );
+    )
 }
 
-export default Loading;
+export default Loading

@@ -1,7 +1,7 @@
-import { useUpdateProjects } from '@/lib/hooks/useProjects';
-import { Customer, Employee, Project } from '@/lib/types/apiTypes';
-import { FormBase } from '@/lib/types/forms';
-import { Flex } from '@chakra-ui/layout';
+import { useUpdateProjects } from "@/lib/hooks/useProjects"
+import { Customer, Employee, Project } from "@/lib/types/apiTypes"
+import { FormBase } from "@/lib/types/forms"
+import { Flex } from "@chakra-ui/layout"
 import {
     Button,
     FormControl,
@@ -15,15 +15,15 @@ import {
     ModalCloseButton,
     ModalContent,
     Box,
-} from '@chakra-ui/react';
-import React, { useState } from 'react';
-import ErrorAlert from '../common/ErrorAlert';
-import { CreateCustomerForm } from './CustomerForm';
+} from "@chakra-ui/react"
+import React, { useState } from "react"
+import ErrorAlert from "../common/ErrorAlert"
+import { CreateCustomerForm } from "./CustomerForm"
 
-type ProjectFields = Partial<Project>;
+type ProjectFields = Partial<Project>
 
 const validateProjectFields = (form: ProjectFields): Project => {
-    const { name, startDate, customer, managingEmployee } = form;
+    const { name, startDate, customer, managingEmployee } = form
     if (name && startDate && customer && managingEmployee) {
         return {
             ...form,
@@ -31,47 +31,47 @@ const validateProjectFields = (form: ProjectFields): Project => {
             startDate,
             customer,
             managingEmployee,
-        };
+        }
     } else {
-        throw 'Invalid project form: missing required fields';
+        throw "Invalid project form: missing required fields"
     }
-};
+}
 
 type ProjectFormProps = CreateProjectFormProps & {
-    project?: Project;
-    projectId?: number;
-    onSubmit: (project: Project) => void;
-};
+    project?: Project
+    projectId?: number
+    onSubmit: (project: Project) => void
+}
 
 function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, onCancel }: ProjectFormProps) {
-    const [projectFields, setProjectFields] = useState<ProjectFields>(projectOrNull || {});
-    const [displayCreateCustomerForm, setDisplayCreateCustomerForm] = useState(false);
+    const [projectFields, setProjectFields] = useState<ProjectFields>(projectOrNull || {})
+    const [displayCreateCustomerForm, setDisplayCreateCustomerForm] = useState(false)
 
-    const [errorMessage, setErrorMessage] = useState<string>('');
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+    const [errorMessage, setErrorMessage] = useState<string>("")
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const handleCustomerChange = (e: React.FormEvent<HTMLSelectElement>) => {
-        e.preventDefault();
-        const id = e.currentTarget.value;
+        e.preventDefault()
+        const id = e.currentTarget.value
         if (id) {
-            const customer = customers.find((el) => el.id === Number(id));
-            setProjectFields({ ...projectFields, customer: customer });
+            const customer = customers.find((el) => el.id === Number(id))
+            setProjectFields({ ...projectFields, customer: customer })
         }
-    };
+    }
 
     const handleEmployeeChange = (e: React.FormEvent<HTMLSelectElement>) => {
-        e.preventDefault();
-        const id = e.currentTarget.value;
+        e.preventDefault()
+        const id = e.currentTarget.value
         if (id) {
-            const employee = employees.find((el) => el.id === Number(id));
-            setProjectFields({ ...projectFields, managingEmployee: employee });
+            const employee = employees.find((el) => el.id === Number(id))
+            setProjectFields({ ...projectFields, managingEmployee: employee })
         }
-    };
+    }
 
     const invalidEndDate =
-        (projectFields.startDate && projectFields.endDate && projectFields.startDate > projectFields.endDate) || false;
+        (projectFields.startDate && projectFields.endDate && projectFields.startDate > projectFields.endDate) || false
 
-    const abortSubmission = onCancel ? onCancel : () => undefined;
+    const abortSubmission = onCancel ? onCancel : () => undefined
 
     return (
         <Flex
@@ -84,19 +84,19 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
         >
             <form
                 onSubmit={(e) => {
-                    e.preventDefault();
+                    e.preventDefault()
                     try {
-                        const project = validateProjectFields(projectFields);
-                        onSubmit(project);
+                        const project = validateProjectFields(projectFields)
+                        onSubmit(project)
                     } catch (error) {
-                        errorHandler(error as Error);
+                        errorHandler(error as Error)
                     }
                 }}
             >
                 <FormControl isRequired={true}>
                     <FormLabel>Project name</FormLabel>
                     <Input
-                        value={projectFields.name || ''}
+                        value={projectFields.name || ""}
                         placeholder="Project name"
                         onChange={(e) => setProjectFields({ ...projectFields, name: e.target.value })}
                     />
@@ -104,7 +104,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                 <FormControl>
                     <FormLabel>Project description</FormLabel>
                     <Input
-                        value={projectFields.description || ''}
+                        value={projectFields.description || ""}
                         placeholder="Project description"
                         onChange={(e) => setProjectFields({ ...projectFields, description: e.target.value })}
                     />
@@ -113,7 +113,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                     <FormLabel>Start date</FormLabel>
                     <Input
                         type="date"
-                        value={projectFields.startDate || ''}
+                        value={projectFields.startDate || ""}
                         placeholder="Project start date"
                         onChange={(e) => setProjectFields({ ...projectFields, startDate: e.target.value })}
                     />
@@ -122,7 +122,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                     <FormLabel>End date</FormLabel>
                     <Input
                         type="date"
-                        value={projectFields.endDate || ''}
+                        value={projectFields.endDate || ""}
                         placeholder="Project end date"
                         onChange={(e) => setProjectFields({ ...projectFields, endDate: e.target.value })}
                     />
@@ -143,7 +143,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                                         <option key={idx} value={customer.id}>
                                             {customer.name}
                                         </option>
-                                    );
+                                    )
                                 })}
                             </Select>
 
@@ -178,7 +178,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                                 <option key={idx} value={employee.id}>
                                     {`${employee.first_name} ${employee.last_name}`}
                                 </option>
-                            );
+                            )
                         })}
                     </Select>
                 </FormControl>
@@ -197,24 +197,24 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                 )}
             </form>
         </Flex>
-    );
+    )
 }
 
 type CreateProjectFormProps = FormBase<Project> & {
-    employees: Employee[];
-    customers: Customer[];
-};
+    employees: Employee[]
+    customers: Customer[]
+}
 
 export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element => {
-    const { postProject } = useUpdateProjects();
+    const { postProject } = useUpdateProjects()
 
-    const [errorMessage, setErrorMessage] = useState<string>('');
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+    const [errorMessage, setErrorMessage] = useState<string>("")
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (project: Project) => {
-        const newProject = await postProject(project, errorHandler);
-        props.afterSubmit && props.afterSubmit(newProject);
-    };
+        const newProject = await postProject(project, errorHandler)
+        props.afterSubmit && props.afterSubmit(newProject)
+    }
 
     return (
         <>
@@ -226,24 +226,24 @@ export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element =>
                 </>
             )}
         </>
-    );
-};
+    )
+}
 
 type EditProjectFormProps = CreateProjectFormProps & {
-    project: Project;
-    projectId: number;
-};
+    project: Project
+    projectId: number
+}
 
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
-    const { putProject } = useUpdateProjects();
+    const { putProject } = useUpdateProjects()
 
-    const [errorMessage, setErrorMessage] = useState<string>('');
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+    const [errorMessage, setErrorMessage] = useState<string>("")
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (project: Project) => {
-        const updatedProject = await putProject(project, errorHandler);
-        props.afterSubmit && props.afterSubmit(updatedProject);
-    };
+        const updatedProject = await putProject(project, errorHandler)
+        props.afterSubmit && props.afterSubmit(updatedProject)
+    }
 
     return (
         <>
@@ -255,5 +255,5 @@ export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
                 </>
             )}
         </>
-    );
-};
+    )
+}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Flex } from '@chakra-ui/react';
+import React from "react"
+import { Flex } from "@chakra-ui/react"
 
 function Header(): JSX.Element {
     return (
@@ -13,7 +13,7 @@ function Header(): JSX.Element {
             paddingRight="1rem"
             backgroundColor="white"
         />
-    );
+    )
 }
 
-export default Header;
+export default Header

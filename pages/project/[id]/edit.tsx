@@ -1,33 +1,33 @@
-import React from 'react';
-import type { NextPage } from 'next';
-import { Heading } from '@chakra-ui/layout';
-import Layout from '@/components/common/Layout';
-import { EditProjectForm } from '@/components/form/ProjectForm';
-import ErrorAlert from '@/components/common/ErrorAlert';
-import Loading from '@/components/common/Loading';
-import { useRouter } from 'next/dist/client/router';
-import { useCustomers } from '@/lib/hooks/useCustomers';
-import { useEmployees } from '@/lib/hooks/useEmployees';
-import { useProjectDetail } from '@/lib/hooks/useProjects';
+import React from "react"
+import type { NextPage } from "next"
+import { Heading } from "@chakra-ui/layout"
+import Layout from "@/components/common/Layout"
+import { EditProjectForm } from "@/components/form/ProjectForm"
+import ErrorAlert from "@/components/common/ErrorAlert"
+import Loading from "@/components/common/Loading"
+import { useRouter } from "next/dist/client/router"
+import { useCustomers } from "@/lib/hooks/useCustomers"
+import { useEmployees } from "@/lib/hooks/useEmployees"
+import { useProjectDetail } from "@/lib/hooks/useProjects"
 
 type Props = {
-    projectId: number;
-};
+    projectId: number
+}
 
 function EditProjectPage({ projectId }: Props): JSX.Element {
-    const router = useRouter();
+    const router = useRouter()
 
-    const customersResponse = useCustomers();
-    const employeesResponse = useEmployees();
-    const projectDetailResponse = useProjectDetail(projectId);
+    const customersResponse = useCustomers()
+    const employeesResponse = useEmployees()
+    const projectDetailResponse = useProjectDetail(projectId)
 
     const errorMessage =
         (customersResponse.isError && customersResponse.errorMessage) ||
         (employeesResponse.isError && employeesResponse.errorMessage) ||
         (projectDetailResponse.isError && projectDetailResponse.errorMessage) ||
-        '';
+        ""
 
-    const redirectToProjectDetail = () => router.push(`/project/${projectId}`);
+    const redirectToProjectDetail = () => router.push(`/project/${projectId}`)
 
     return (
         <Layout>
@@ -54,13 +54,13 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
                     />
                 )}
         </Layout>
-    );
+    )
 }
 
 const Edit: NextPage = () => {
-    const router = useRouter();
-    const id = router.query.id as string | undefined;
-    return id ? <EditProjectPage projectId={Number(id)} /> : null;
-};
+    const router = useRouter()
+    const id = router.query.id as string | undefined
+    return id ? <EditProjectPage projectId={Number(id)} /> : null
+}
 
-export default Edit;
+export default Edit

@@ -1,14 +1,14 @@
-import React, { ReactNode } from 'react';
-import { Box, Flex } from '@chakra-ui/react';
-import { useMediaQuery } from 'react-responsive';
-import LeftNav from './LeftNav';
+import React, { ReactNode } from "react"
+import { Box, Flex } from "@chakra-ui/react"
+import { useMediaQuery } from "react-responsive"
+import LeftNav from "./LeftNav"
 
 interface MainProps {
-    children?: ReactNode;
+    children?: ReactNode
 }
 
 function Main({ children }: MainProps): JSX.Element {
-    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' });
+    const isTabletOrMobile = useMediaQuery({ query: "(max-width: 1224px)" })
 
     if (isTabletOrMobile) {
         return (
@@ -19,11 +19,11 @@ function Main({ children }: MainProps): JSX.Element {
                 marginRight="auto"
                 paddingTop="1rem"
                 paddingBottom="1rem"
-                width={['95vw', '75vw', '62.5vw', '50vw']}
+                width={["95vw", "75vw", "62.5vw", "50vw"]}
             >
                 {children}
             </Box>
-        );
+        )
     }
     return (
         <Box
@@ -33,14 +33,14 @@ function Main({ children }: MainProps): JSX.Element {
             marginRight="auto"
             paddingTop="1rem"
             paddingBottom="1rem"
-            width={['95vw', '75vw', '62.5vw', '70vw']}
+            width={["95vw", "75vw", "62.5vw", "70vw"]}
         >
             <Flex flexDirection="row" alignContent="center" justifyContent="center">
                 <LeftNav />
                 <Box minWidth="40vw">{children}</Box>
             </Flex>
         </Box>
-    );
+    )
 }
 
-export default Main;
+export default Main

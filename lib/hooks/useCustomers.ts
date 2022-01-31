@@ -1,31 +1,31 @@
-import useSWR, { useSWRConfig } from 'swr';
-import { Customer } from '../types/apiTypes';
-import { get, post } from '../utils/fetch';
+import useSWR, { useSWRConfig } from "swr"
+import { Customer } from "../types/apiTypes"
+import { get, post } from "../utils/fetch"
 import {
     swrToApiGetResponse,
     ApiGetResponse,
     UpdateHookArgs,
     UpdateHookFunction,
     updateToApiUpdateResponse,
-} from '../types/hooks';
+} from "../types/hooks"
 
-export const customerEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/customer`;
+export const customerEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/customer`
 
 type CustomersUpdate = {
-    postCustomer: UpdateHookFunction<Customer>;
-};
+    postCustomer: UpdateHookFunction<Customer>
+}
 
 export const useCustomers = (): ApiGetResponse<Customer[]> =>
-    swrToApiGetResponse(useSWR<Customer[], Error>(customerEndpointURL, get));
+    swrToApiGetResponse(useSWR<Customer[], Error>(customerEndpointURL, get))
 
 export const useUpdateCustomers = (): CustomersUpdate => {
-    const { mutate } = useSWRConfig();
+    const { mutate } = useSWRConfig()
 
     const postCustomer = async (...[customer, errorHandler]: UpdateHookArgs<Customer>) => {
-        const newCustomer = await post<Customer, Customer>(customerEndpointURL, customer).catch(errorHandler);
-        mutate(customerEndpointURL);
-        return updateToApiUpdateResponse(newCustomer || undefined);
-    };
+        const newCustomer = await post<Customer, Customer>(customerEndpointURL, customer).catch(errorHandler)
+        mutate(customerEndpointURL)
+        return updateToApiUpdateResponse(newCustomer || undefined)
+    }
 
-    return { postCustomer };
-};
+    return { postCustomer }
+}

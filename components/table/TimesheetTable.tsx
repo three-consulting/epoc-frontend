@@ -1,32 +1,32 @@
-import { Button } from '@chakra-ui/button';
-import { Box, Flex, Heading } from '@chakra-ui/layout';
-import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
-import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/table';
-import React, { useState } from 'react';
-import ErrorAlert from '../common/ErrorAlert';
-import { Employee, Project, Timesheet } from '@/lib/types/apiTypes';
-import { CreateTimesheetForm } from '../form/TimesheetForm';
-import { useUpdateTimesheets } from '@/lib/hooks/useTimesheets';
-import { useRouter } from 'next/router';
+import { Button } from "@chakra-ui/button"
+import { Box, Flex, Heading } from "@chakra-ui/layout"
+import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react"
+import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table"
+import React, { useState } from "react"
+import ErrorAlert from "../common/ErrorAlert"
+import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
+import { CreateTimesheetForm } from "../form/TimesheetForm"
+import { useUpdateTimesheets } from "@/lib/hooks/useTimesheets"
+import { useRouter } from "next/router"
 
 interface TimesheetRowProps {
-    timesheet: Timesheet;
+    timesheet: Timesheet
 }
 function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
-    const router = useRouter();
-    const { putTimesheet } = useUpdateTimesheets();
+    const router = useRouter()
+    const { putTimesheet } = useUpdateTimesheets()
 
-    const [errorMessage, setErrorMessage] = useState<string>('');
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+    const [errorMessage, setErrorMessage] = useState<string>("")
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const archiveTimesheet = async (timesheet: Timesheet, e: React.MouseEvent) => {
-        e.preventDefault();
-        await putTimesheet({ ...timesheet, status: 'ARCHIVED' }, errorHandler);
-    };
+        e.preventDefault()
+        await putTimesheet({ ...timesheet, status: "ARCHIVED" }, errorHandler)
+    }
 
     return (
         <>
-            <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
+            <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
                 <Flex onClick={() => router.push(`/timesheet/${timesheet.id}`)}>
                     <Td>
                         {timesheet.employee?.first_name} {timesheet.employee?.last_name}
@@ -45,17 +45,17 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
                 </>
             )}
         </>
-    );
+    )
 }
 
 interface TimesheetTableProps {
-    project: Project;
-    timesheets: Timesheet[];
-    employees: Employee[];
+    project: Project
+    timesheets: Timesheet[]
+    employees: Employee[]
 }
 
 function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps): JSX.Element {
-    const [displayNewTimesheetForm, setDisplayNewTimesheetForm] = useState(false);
+    const [displayNewTimesheetForm, setDisplayNewTimesheetForm] = useState(false)
 
     return (
         <Flex
@@ -70,7 +70,7 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
             <Heading as="h2" size="md">
                 Users
             </Heading>
-            {timesheets.filter((timesheet) => timesheet.status !== 'ARCHIVED').length ? (
+            {timesheets.filter((timesheet) => timesheet.status !== "ARCHIVED").length ? (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
@@ -83,7 +83,7 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                         <Tbody>
                             {timesheets.map(
                                 (timesheet, idx) =>
-                                    timesheet.status !== 'ARCHIVED' && <TimesheetRow timesheet={timesheet} key={idx} />,
+                                    timesheet.status !== "ARCHIVED" && <TimesheetRow timesheet={timesheet} key={idx} />
                             )}
                         </Tbody>
                     </Table>
@@ -119,7 +119,7 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                 </Modal>
             )}
         </Flex>
-    );
+    )
 }
 
-export default TimesheetTable;
+export default TimesheetTable

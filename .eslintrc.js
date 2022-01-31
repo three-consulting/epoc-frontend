@@ -4,20 +4,20 @@ module.exports = {
         es2021: true,
         node: true,
     },
-    extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:@typescript-eslint/recommended'],
-    parser: '@typescript-eslint/parser',
+    extends: ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
+    parser: "@typescript-eslint/parser",
     parserOptions: {
         ecmaFeatures: {
             jsx: true,
         },
         ecmaVersion: 12,
-        sourceType: 'module',
+        sourceType: "module",
     },
-    plugins: ['react', '@typescript-eslint'],
-    rules: { 'no-console': 'error' },
+    plugins: ["react", "@typescript-eslint"],
+    rules: { "no-console": "error" },
     settings: {
         react: {
-            version: 'detect',
+            version: "detect",
         },
     },
-};
+}
