@@ -5,6 +5,7 @@ import { CreateCustomerForm } from '@/components/form/CustomerForm';
 import sinon, { spy } from 'sinon';
 import { Customer } from '@/lib/types/apiTypes';
 import { ApiUpdateResponse } from '@/lib/types/hooks';
+import _ from 'lodash';
 
 const customerEndpointURL = `${process.env.NEXT_PUBLIC_API_URL}/customer`;
 const bodySpy = sinon.spy((body) => body);
@@ -72,4 +73,15 @@ test('onCancel is invoked', async () => {
     await waitFor(() => fireEvent.click(cancelButton));
 
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1));
+});
+
+test('a required field cannot be missing', async () => {
+    render(<CreateCustomerForm />);
+    for (const field of Object.keys(testCustomerRequiredFields)) {
+        const customerMissingRequired = _.omit(testCustomerAllFields, field);
+        await fillAndSubmitForm(customerMissingRequired as Customer);
+        await new Promise((resolve) => setTimeout(() => resolve(null), 100));
+        expect(pathSpy.callCount).toEqual(0);
+        expect(bodySpy.callCount).toEqual(0);
+    }
 });
