@@ -1,13 +1,13 @@
-import { Project } from '@/lib/types/apiTypes';
-import { Box, Flex, Heading } from '@chakra-ui/layout';
-import React from 'react';
+import { Project } from "@/lib/types/apiTypes"
+import { Box, Flex, Heading } from "@chakra-ui/layout"
+import React from "react"
 
 type ProjectDetailProps = {
-    project: Project;
-};
+    project: Project
+}
 
 function ProjectDetail({ project }: ProjectDetailProps): JSX.Element {
-    const { name, description, customer, startDate, endDate, status, managingEmployee } = project;
+    const { name, description, customer, startDate, endDate, status, managingEmployee } = project
     return (
         <Flex
             flexDirection="column"
@@ -29,7 +29,7 @@ function ProjectDetail({ project }: ProjectDetailProps): JSX.Element {
             </Flex>
             <Flex>Project status: {status}</Flex>
         </Flex>
-    );
+    )
 }
 
-export default ProjectDetail;
+export default ProjectDetail

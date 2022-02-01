@@ -1,46 +1,46 @@
-import React, { useState } from 'react';
-import { Box, Flex } from '@chakra-ui/layout';
-import type { NextPage } from 'next';
-import { useRouter } from 'next/dist/client/router';
-import ErrorAlert from '@/components/common/ErrorAlert';
-import Loading from '@/components/common/Loading';
-import Layout from '@/components/common/Layout';
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay } from '@chakra-ui/react';
-import Link from 'next/link';
-import TimesheetTable from '@/components/table/TimesheetTable';
-import TaskTable from '@/components/table/TaskTable';
-import { useProjectDetail, useUpdateProjects } from '@/lib/hooks/useProjects';
-import ProjectDetail from '@/components/detail/ProjectDetail';
-import { useEmployees } from '@/lib/hooks/useEmployees';
-import useTasks from '@/lib/hooks/useTasks';
-import { useTimesheets } from '@/lib/hooks/useTimesheets';
+import React, { useState } from "react"
+import { Box, Flex } from "@chakra-ui/layout"
+import type { NextPage } from "next"
+import { useRouter } from "next/dist/client/router"
+import ErrorAlert from "@/components/common/ErrorAlert"
+import Loading from "@/components/common/Loading"
+import Layout from "@/components/common/Layout"
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay } from "@chakra-ui/react"
+import Link from "next/link"
+import TimesheetTable from "@/components/table/TimesheetTable"
+import TaskTable from "@/components/table/TaskTable"
+import { useProjectDetail, useUpdateProjects } from "@/lib/hooks/useProjects"
+import ProjectDetail from "@/components/detail/ProjectDetail"
+import { useEmployees } from "@/lib/hooks/useEmployees"
+import useTasks from "@/lib/hooks/useTasks"
+import { useTimesheets } from "@/lib/hooks/useTimesheets"
 
 type Props = {
-    projectId: number;
-};
+    projectId: number
+}
 
 function ProjectDetailPage({ projectId }: Props): JSX.Element {
-    const projectDetailResponse = useProjectDetail(projectId);
-    const timesheetsResponse = useTimesheets(projectId);
-    const employeesResponse = useEmployees();
-    const tasksResponse = useTasks(projectId);
+    const projectDetailResponse = useProjectDetail(projectId)
+    const timesheetsResponse = useTimesheets(projectId)
+    const employeesResponse = useEmployees()
+    const tasksResponse = useTasks(projectId)
 
-    const { putProject } = useUpdateProjects();
+    const { putProject } = useUpdateProjects()
 
-    const [displayArchivedModal, setDisplayArchivedModal] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [displayArchivedModal, setDisplayArchivedModal] = useState(false)
+    const [errorMessage, setErrorMessage] = useState<string>("")
 
-    const archiveProject = async (e: React.MouseEvent) => {
-        e.preventDefault();
+    const archiveProject = async (mouseEvent: React.MouseEvent) => {
+        mouseEvent.preventDefault()
         if (projectDetailResponse.isSuccess) {
-            await putProject({ ...projectDetailResponse.data, status: 'ARCHIVED' }, (error) =>
-                setErrorMessage(`${error}`),
-            );
-            setDisplayArchivedModal(true);
+            await putProject({ ...projectDetailResponse.data, status: "ARCHIVED" }, (error) =>
+                setErrorMessage(`${error}`)
+            )
+            setDisplayArchivedModal(true)
         } else {
-            setErrorMessage('Project failed to load.');
+            setErrorMessage("Project failed to load.")
         }
-    };
+    }
 
     return (
         <Layout>
@@ -64,7 +64,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                             Edit Project
                         </Button>
                     </Link>
-                    {projectDetailResponse.data.status !== 'ARCHIVED' && (
+                    {projectDetailResponse.data.status !== "ARCHIVED" && (
                         <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={archiveProject}>
                             Archive Project
                         </Button>
@@ -100,13 +100,13 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                 <Box>Not found</Box>
             )}
         </Layout>
-    );
+    )
 }
 
-const Id: NextPage = () => {
-    const router = useRouter();
-    const id = router.query.id as string | undefined;
-    return id ? <ProjectDetailPage projectId={parseInt(id)} /> : null;
-};
+const Page: NextPage = () => {
+    const router = useRouter()
+    const id = router.query.id as string | undefined
+    return id ? <ProjectDetailPage projectId={Number(id)} /> : null
+}
 
-export default Id;
+export default Page

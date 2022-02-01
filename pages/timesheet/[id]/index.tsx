@@ -1,21 +1,21 @@
-import React from 'react';
-import { Box } from '@chakra-ui/layout';
-import type { NextPage } from 'next';
-import { useRouter } from 'next/dist/client/router';
-import ErrorAlert from '@/components/common/ErrorAlert';
-import Loading from '@/components/common/Loading';
-import Layout from '@/components/common/Layout';
-import { useTimesheetDetail } from '@/lib/hooks/useTimesheets';
-import TimesheetDetail from '@/components/detail/TimesheetDetail';
-import Link from 'next/link';
-import { Button } from '@chakra-ui/react';
+import React from "react"
+import { Box } from "@chakra-ui/layout"
+import type { NextPage } from "next"
+import { useRouter } from "next/dist/client/router"
+import ErrorAlert from "@/components/common/ErrorAlert"
+import Loading from "@/components/common/Loading"
+import Layout from "@/components/common/Layout"
+import { useTimesheetDetail } from "@/lib/hooks/useTimesheets"
+import TimesheetDetail from "@/components/detail/TimesheetDetail"
+import Link from "next/link"
+import { Button } from "@chakra-ui/react"
 
 type Props = {
-    timesheetId: number;
-};
+    timesheetId: number
+}
 
 function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
-    const timesheetDetailResponse = useTimesheetDetail(timesheetId);
+    const timesheetDetailResponse = useTimesheetDetail(timesheetId)
 
     return (
         <Layout>
@@ -39,13 +39,13 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
                 <Box>Not found</Box>
             )}
         </Layout>
-    );
+    )
 }
 
-const Id: NextPage = () => {
-    const router = useRouter();
-    const id = router.query.id as string | undefined;
-    return id ? <TimesheetDetailPage timesheetId={parseInt(id)} /> : null;
-};
+const Page: NextPage = () => {
+    const router = useRouter()
+    const id = router.query.id as string | undefined
+    return id ? <TimesheetDetailPage timesheetId={Number(id)} /> : null
+}
 
-export default Id;
+export default Page

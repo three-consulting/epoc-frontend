@@ -1,54 +1,54 @@
-import { FormControl, FormLabel, Input, Button, Box } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { Customer } from '@/lib/types/apiTypes';
-import { useUpdateCustomers } from '@/lib/hooks/useCustomers';
-import { FormBase } from '@/lib/types/forms';
-import ErrorAlert from '../common/ErrorAlert';
+import { FormControl, FormLabel, Input, Button, Box } from "@chakra-ui/react"
+import React, { useState } from "react"
+import { Customer } from "@/lib/types/apiTypes"
+import { useUpdateCustomers } from "@/lib/hooks/useCustomers"
+import { FormBase } from "@/lib/types/forms"
+import ErrorAlert from "../common/ErrorAlert"
 
-type CustomerFields = Partial<Customer>;
+type CreateCustomerFormProps = FormBase<Customer>
+
+type CustomerFields = Partial<Customer>
 
 const validateCustomerFields = (fields: CustomerFields): Customer => {
-    const { name } = fields;
+    const { name } = fields
     if (name) {
-        return { ...fields, name };
-    } else {
-        throw 'Invalid customer form: missing required fields';
+        return { ...fields, name }
     }
-};
-
-type CreateCustomerFormProps = FormBase<Customer>;
+    throw Error("Invalid customer form: missing required fields")
+}
 
 export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerFormProps): JSX.Element {
-    const [customerFields, setCustomerFields] = useState<CustomerFields>({});
-    const { postCustomer } = useUpdateCustomers();
+    const [customerFields, setCustomerFields] = useState<CustomerFields>({})
+    const { postCustomer } = useUpdateCustomers()
 
-    const [errorMessage, setErrorMessage] = useState<string>('');
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`);
+    const [errorMessage, setErrorMessage] = useState<string>("")
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async () => {
         try {
-            const customer = validateCustomerFields(customerFields);
-            const createCustomerRequest = await postCustomer(customer, errorHandler);
-            return afterSubmit && afterSubmit(createCustomerRequest);
+            const customer = validateCustomerFields(customerFields)
+            const createCustomerRequest = await postCustomer(customer, errorHandler)
+            return afterSubmit && afterSubmit(createCustomerRequest)
         } catch (error) {
-            errorHandler(error as Error);
+            errorHandler(error as Error)
+            return null
         }
-    };
+    }
 
     return (
         <>
-            <div style={{ padding: '20px' }}>
+            <div style={{ padding: "20px" }}>
                 <FormControl>
                     <FormLabel>Customer Name</FormLabel>
                     <Input
                         placeholder="Customer Name"
-                        onChange={(e) =>
+                        onChange={(event) =>
                             setCustomerFields({
                                 ...customerFields,
-                                name: e.target.value,
+                                name: event.target.value,
                             })
                         }
-                        data-testid={'form-field-name'}
+                        data-testid={"form-field-name"}
                     />
                 </FormControl>
 
@@ -56,17 +56,17 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
                     <FormLabel>Description</FormLabel>
                     <Input
                         placeholder="Description"
-                        onChange={(e) =>
+                        onChange={(event) =>
                             setCustomerFields({
                                 ...customerFields,
-                                description: e.target.value,
+                                description: event.target.value,
                             })
                         }
-                        data-testid={'form-field-description'}
+                        data-testid={"form-field-description"}
                     />
                 </FormControl>
             </div>
-            <div style={{ textAlign: 'right', padding: '20px' }}>
+            <div style={{ textAlign: "right", padding: "20px" }}>
                 <Button colorScheme="blue" mr={3} onClick={onSubmit} data-testid="form-button-submit">
                     Save
                 </Button>
@@ -81,7 +81,7 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
                 </>
             )}
         </>
-    );
+    )
 }
 
-export default CreateCustomerFormProps;
+export default CreateCustomerFormProps

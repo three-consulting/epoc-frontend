@@ -1,9 +1,9 @@
 module.exports = {
     transform: {
-        '^.+\\.(t|j)sx?$': '@swc/jest',
+        "^.+\\.(t|j)sx?$": "@swc/jest",
     },
     moduleNameMapper: {
-        '^@/components/(.*)$': '<rootDir>/components/$1',
-        '^@/lib/(.*)$': '<rootDir>/lib/$1',
+        "^@/components/(.*)$": "<rootDir>/components/$1",
+        "^@/lib/(.*)$": "<rootDir>/lib/$1",
     },
-};
+}

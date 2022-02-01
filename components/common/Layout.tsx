@@ -1,11 +1,11 @@
-import React, { ReactNode } from 'react';
-import Header from './Header';
-import Footer from './Footer';
-import Main from './Main';
-import { Flex } from '@chakra-ui/react';
+import React, { ReactNode } from "react"
+import Header from "./Header"
+import Footer from "./Footer"
+import Main from "./Main"
+import { Flex } from "@chakra-ui/react"
 
 interface LayoutProps {
-    children?: ReactNode;
+    children?: ReactNode
 }
 
 function Layout({ children }: LayoutProps): JSX.Element {
@@ -15,7 +15,7 @@ function Layout({ children }: LayoutProps): JSX.Element {
             <Main>{children}</Main>
             <Footer />
         </Flex>
-    );
+    )
 }
 
-export default Layout;
+export default Layout

@@ -1,13 +1,13 @@
-import { Timesheet } from '@/lib/types/apiTypes';
-import { Box, Flex, Heading } from '@chakra-ui/layout';
-import React from 'react';
+import { Timesheet } from "@/lib/types/apiTypes"
+import { Box, Flex, Heading } from "@chakra-ui/layout"
+import React from "react"
 
 type TimesheetDetailProps = {
-    timesheet: Timesheet;
-};
+    timesheet: Timesheet
+}
 
 function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
-    const { name, description, allocation, project, employee, created, updated, status } = timesheet;
+    const { name, description, allocation, project, employee, created, updated, status } = timesheet
     return (
         <Flex
             flexDirection="column"
@@ -31,7 +31,7 @@ function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
             </Flex>
             <Flex>Timesheet status: {status}</Flex>
         </Flex>
-    );
+    )
 }
 
-export default TimesheetDetail;
+export default TimesheetDetail

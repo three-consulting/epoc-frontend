@@ -1,26 +1,26 @@
-import React from 'react';
-import { Box, Heading } from '@chakra-ui/layout';
-import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from '@chakra-ui/react';
-import Link from 'next/link';
-import { Project } from '@/lib/types/apiTypes';
+import React from "react"
+import { Box, Heading } from "@chakra-ui/layout"
+import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from "@chakra-ui/react"
+import Link from "next/link"
+import { Project } from "@/lib/types/apiTypes"
 
 interface ProjectRowProps {
-    project: Project;
+    project: Project
 }
 
 function ProjectRow({ project }: ProjectRowProps) {
     return (
         <Link href={`project/${project.id}`}>
-            <Tr _hover={{ backgroundColor: 'gray.200', cursor: 'pointer' }}>
+            <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
                 <Td>{project.name}</Td>
                 <Td>{project.customer?.name}</Td>
             </Tr>
         </Link>
-    );
+    )
 }
 
 interface ProjectTableProps {
-    projects: Project[];
+    projects: Project[]
 }
 
 function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
@@ -45,7 +45,7 @@ function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
         <Box>
             <Heading>No projects found</Heading>
         </Box>
-    );
+    )
 }
 
-export default ProjectTable;
+export default ProjectTable
