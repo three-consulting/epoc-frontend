@@ -6,6 +6,7 @@ import sinon, { spy } from "sinon"
 import { Customer } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
+import { testCustomerAllFields, testCustomerRequiredFields } from "../../fixtures"
 
 // eslint-disable-next-line id-match, id-length
 import _ from "lodash"
@@ -18,9 +19,6 @@ jest.mock("@/lib/utils/fetch", () => ({
     // eslint-disable-next-line require-await
     post: async (path: string, body: object): Promise<ApiUpdateResponse<Customer>> => pathSpy(path) && bodySpy(body),
 }))
-
-const testCustomerRequiredFields: Customer = { name: "Name" }
-const testCustomerAllFields: Customer = { name: "anotherName", description: "description" }
 
 afterEach(() => {
     bodySpy.resetHistory()
@@ -85,8 +83,8 @@ test("onCancel is invoked", async () => {
 
 test("a required field cannot be missing", async () => {
     const submitTimeout = 100
-    render(<CreateCustomerForm />)
     for (const field of Object.keys(testCustomerRequiredFields)) {
+        const form = render(<CreateCustomerForm />)
         const customerMissingRequired = _.omit(testCustomerAllFields, field)
 
         /* eslint-disable no-await-in-loop */
@@ -96,5 +94,6 @@ test("a required field cannot be missing", async () => {
 
         expect(pathSpy.callCount).toEqual(0)
         expect(bodySpy.callCount).toEqual(0)
+        form.unmount()
     }
 })

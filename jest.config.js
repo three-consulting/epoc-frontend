@@ -6,4 +6,5 @@ module.exports = {
         "^@/components/(.*)$": "<rootDir>/components/$1",
         "^@/lib/(.*)$": "<rootDir>/lib/$1",
     },
+    testPathIgnorePatterns: ["/fixtures.ts$"],
 }
