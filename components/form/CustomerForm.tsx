@@ -5,6 +5,8 @@ import { useUpdateCustomers } from "@/lib/hooks/useCustomers"
 import { FormBase } from "@/lib/types/forms"
 import ErrorAlert from "../common/ErrorAlert"
 
+type CreateCustomerFormProps = FormBase<Customer>
+
 type CustomerFields = Partial<Customer>
 
 const validateCustomerFields = (fields: CustomerFields): Customer => {
@@ -14,8 +16,6 @@ const validateCustomerFields = (fields: CustomerFields): Customer => {
     }
     throw Error("Invalid customer form: missing required fields")
 }
-
-type CreateCustomerFormProps = FormBase<Customer>
 
 export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerFormProps): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({})

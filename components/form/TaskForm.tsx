@@ -5,6 +5,11 @@ import { FormControl, FormLabel, Input, FormErrorMessage, Button, Box, Flex, Che
 import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 
+type TaskFormProps = FormBase<Task> & {
+    project: Project
+    projectId: number
+}
+
 type TaskFields = Partial<Task> & { project: Project; billable: boolean }
 
 const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
@@ -20,11 +25,6 @@ const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
     }
 
     throw Error("Invalid task form: missing required fields")
-}
-
-type TaskFormProps = FormBase<Task> & {
-    project: Project
-    projectId: number
 }
 
 export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: TaskFormProps): JSX.Element {

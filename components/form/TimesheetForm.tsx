@@ -16,16 +16,14 @@ type EditTimesheetFormProps = CreateTimesheetFormProps & {
     timesheetId: number
 }
 
-type TimesheetFields = Partial<Timesheet> & {
-    project: Project
-}
-
-const maximumAllocation = 100
-
 type TimesheetFormProps = CreateTimesheetFormProps & {
     timesheet?: Timesheet
     timesheetId?: number
     onSubmit: (timesheet: Timesheet) => void
+}
+
+type TimesheetFields = Partial<Timesheet> & {
+    project: Project
 }
 
 const validateTimesheetFields = (fields: TimesheetFields, projectId: number): Timesheet => {
@@ -50,7 +48,6 @@ function TimesheetForm({
     onCancel,
 }: TimesheetFormProps): JSX.Element {
     const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>(timesheetOrNull || { project })
-
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
@@ -66,6 +63,8 @@ function TimesheetForm({
             }
         }
     }
+
+    const maximumAllocation = 100
 
     const invalidAllocation =
         (timesheetFields.allocation &&
