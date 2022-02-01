@@ -29,7 +29,7 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
             <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
                 <Flex onClick={() => router.push(`/timesheet/${timesheet.id}`)}>
                     <Td>
-                        {timesheet.employee?.first_name} {timesheet.employee?.last_name}
+                        {timesheet.employee?.firstName} {timesheet.employee?.lastName}
                     </Td>
                     <Td>{timesheet.allocation} %</Td>
                 </Flex>

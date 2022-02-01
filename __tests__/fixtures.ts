@@ -1,7 +1,6 @@
 import { Customer, Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 
-// eslint-disable-next-line camelcase
-export const testEmployee: Employee = { id: 1, first_name: "testi", last_name: "tekija", email: "test@test.test" }
+export const testEmployee: Employee = { id: 1, firstName: "testi", lastName: "tekija", email: "test@test.test" }
 
 export const testProject: Project = {
     id: 1,

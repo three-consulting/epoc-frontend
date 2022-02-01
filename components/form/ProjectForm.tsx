@@ -182,7 +182,7 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                     >
                         {employees.map((employee, idx) => (
                             <option key={idx} value={employee.id}>
-                                {`${employee.first_name} ${employee.last_name}`}
+                                {`${employee.firstName} ${employee.lastName}`}
                             </option>
                         ))}
                     </Select>
