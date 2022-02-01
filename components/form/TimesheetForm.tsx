@@ -100,6 +100,7 @@ function TimesheetForm({
                             value={timesheetFields.employee?.id}
                             onChange={setEmployee}
                             placeholder="Select employee"
+                            data-testid="form-field-employee"
                         >
                             {employees.map((employee, idx) => (
                                 <option key={idx} value={employee.id}>
@@ -119,6 +120,7 @@ function TimesheetForm({
                                     name: event.target.value,
                                 })
                             }
+                            data-testid="form-field-name"
                         />
                     </FormControl>
                     <FormControl>
@@ -132,6 +134,7 @@ function TimesheetForm({
                                     description: event.target.value,
                                 })
                             }
+                            data-testid="form-field-description"
                         />
                     </FormControl>
                     <FormControl isInvalid={invalidAllocation}>
@@ -145,15 +148,16 @@ function TimesheetForm({
                                     allocation: Number(event.target.value),
                                 })
                             }
+                            data-testid="form-field-allocation"
                         />
                         <FormErrorMessage>Allocation needs to be between 1 and 100 %.</FormErrorMessage>
                     </FormControl>
                 </div>
                 <div style={{ textAlign: "right", padding: "20px" }}>
-                    <Button colorScheme="blue" mr={3} type="submit">
+                    <Button colorScheme="blue" mr={3} type="submit" data-testid="form-button-submit">
                         Submit
                     </Button>
-                    <Button colorScheme="gray" onClick={abortSubmission}>
+                    <Button colorScheme="gray" onClick={abortSubmission} data-testid="form-button-cancel">
                         Cancel
                     </Button>
                 </div>
