@@ -25,7 +25,7 @@ function ProjectDetail({ project }: ProjectDetailProps): JSX.Element {
             <Flex>Start date: {startDate}</Flex>
             <Flex>End date: {endDate}</Flex>
             <Flex>
-                Managing employee: {managingEmployee?.first_name} {managingEmployee?.last_name}
+                Managing employee: {managingEmployee?.firstName} {managingEmployee?.lastName}
             </Flex>
             <Flex>Project status: {status}</Flex>
         </Flex>

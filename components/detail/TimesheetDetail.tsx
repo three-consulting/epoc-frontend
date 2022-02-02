@@ -27,7 +27,7 @@ function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
             <Flex>Created: {created}</Flex>
             <Flex>Updated: {updated}</Flex>
             <Flex>
-                Employee: {employee.first_name} {employee.last_name}
+                Employee: {employee.firstName} {employee.lastName}
             </Flex>
             <Flex>Timesheet status: {status}</Flex>
         </Flex>

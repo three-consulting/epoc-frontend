@@ -84,11 +84,11 @@ export interface components {
     EmployeeDTO: {
       /** Format: int64 */
       id?: number;
-      first_name: string;
-      last_name: string;
+      firstName: string;
+      lastName: string;
       email: string;
       /** Format: date */
-      start_date?: string;
+      startDate?: string;
       /** Format: date-time */
       created?: string;
       /** Format: date-time */
