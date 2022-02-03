@@ -22,8 +22,13 @@ export const useCustomers = (): ApiGetResponse<Customer[]> =>
 export const useUpdateCustomers = (): CustomersUpdate => {
     const { mutate } = useSWRConfig()
 
-    const postCustomer = async (...[customer, errorHandler]: UpdateHookArgs<Customer>) => {
-        const newCustomer = await post<Customer, Customer>(customerEndpointURL, customer).catch(errorHandler)
+    const postCustomer = async (
+        ...[customer, errorHandler]: UpdateHookArgs<Customer>
+    ) => {
+        const newCustomer = await post<Customer, Customer>(
+            customerEndpointURL,
+            customer
+        ).catch(errorHandler)
         mutate(customerEndpointURL)
 
         return updateToApiUpdateResponse(newCustomer || null)

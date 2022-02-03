@@ -5,3 +5,5 @@ node_modules/
 lib/types/api.ts
 amplify/
 aws-exports.js
+next-env.d.ts
+

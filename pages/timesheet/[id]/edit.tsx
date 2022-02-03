@@ -20,18 +20,21 @@ function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
     const employeesResponse = useEmployees()
 
     const errorMessage =
-        (timesheetDetailResponse.isError && timesheetDetailResponse.errorMessage) ||
+        (timesheetDetailResponse.isError &&
+            timesheetDetailResponse.errorMessage) ||
         (employeesResponse.isError && employeesResponse.errorMessage) ||
         ""
 
-    const redirectToTimesheetDetail = () => router.push(`/timesheet/${timesheetId}`)
+    const redirectToTimesheetDetail = () =>
+        router.push(`/timesheet/${timesheetId}`)
 
     return (
         <Layout>
             <Heading fontWeight="black" margin="1rem 0rem">
                 Edit timesheet
             </Heading>
-            {(timesheetDetailResponse.isLoading || employeesResponse.isLoading) && <Loading />}
+            {(timesheetDetailResponse.isLoading ||
+                employeesResponse.isLoading) && <Loading />}
             {(timesheetDetailResponse.isError || employeesResponse.isError) && (
                 <ErrorAlert title={errorMessage} message={errorMessage} />
             )}

@@ -2,7 +2,14 @@ import { useUpdateTasks } from "@/lib/hooks/useTasks"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { Button } from "@chakra-ui/button"
 import { Box, Flex, Heading } from "@chakra-ui/layout"
-import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Tbody } from "@chakra-ui/react"
+import {
+    Modal,
+    ModalCloseButton,
+    ModalContent,
+    ModalHeader,
+    ModalOverlay,
+    Tbody,
+} from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
@@ -18,7 +25,8 @@ function TaskRow({ task }: TaskRowProps): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const archiveTask = () => putTask({ ...task, status: "ARCHIVED" }, errorHandler)
+    const archiveTask = () =>
+        putTask({ ...task, status: "ARCHIVED" }, errorHandler)
     return (
         <>
             <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
@@ -68,7 +76,12 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {tasks.map((task, idx) => task.status !== "ARCHIVED" && <TaskRow task={task} key={idx} />)}
+                            {tasks.map(
+                                (task, idx) =>
+                                    task.status !== "ARCHIVED" && (
+                                        <TaskRow task={task} key={idx} />
+                                    )
+                            )}
                         </Tbody>
                     </Table>
                 </Box>
@@ -82,11 +95,17 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
             {project.id ? (
                 <>
                     <Flex flexDirection="row-reverse">
-                        <Button colorScheme="blue" onClick={() => setDisplayNewTaskForm(true)}>
+                        <Button
+                            colorScheme="blue"
+                            onClick={() => setDisplayNewTaskForm(true)}
+                        >
                             Add Task
                         </Button>
                     </Flex>
-                    <Modal isOpen={displayNewTaskForm} onClose={() => setDisplayNewTaskForm(false)}>
+                    <Modal
+                        isOpen={displayNewTaskForm}
+                        onClose={() => setDisplayNewTaskForm(false)}
+                    >
                         <ModalOverlay />
                         <ModalContent px="0.5rem">
                             <ModalHeader>Add task to project</ModalHeader>
@@ -94,7 +113,10 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                             <CreateTaskForm
                                 project={project}
                                 projectId={project.id}
-                                afterSubmit={(taskUpdate) => taskUpdate.isSuccess && setDisplayNewTaskForm(false)}
+                                afterSubmit={(taskUpdate) =>
+                                    taskUpdate.isSuccess &&
+                                    setDisplayNewTaskForm(false)
+                                }
                                 onCancel={() => setDisplayNewTaskForm(false)}
                             />
                         </ModalContent>

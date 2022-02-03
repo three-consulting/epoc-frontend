@@ -25,7 +25,12 @@ interface ProjectTableProps {
 
 function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
     return projects ? (
-        <Box backgroundColor="white" border="solid 0.5px" borderColor="gray.400" borderRadius="0.2rem">
+        <Box
+            backgroundColor="white"
+            border="solid 0.5px"
+            borderColor="gray.400"
+            borderRadius="0.2rem"
+        >
             <Table variant="simple">
                 <TableCaption>All projects</TableCaption>
                 <Thead>

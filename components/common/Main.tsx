@@ -35,7 +35,11 @@ function Main({ children }: MainProps): JSX.Element {
             paddingBottom="1rem"
             width={["95vw", "75vw", "62.5vw", "70vw"]}
         >
-            <Flex flexDirection="row" alignContent="center" justifyContent="center">
+            <Flex
+                flexDirection="row"
+                alignContent="center"
+                justifyContent="center"
+            >
                 <LeftNav />
                 <Box minWidth="40vw">{children}</Box>
             </Flex>

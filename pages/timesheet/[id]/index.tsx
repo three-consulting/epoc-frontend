@@ -29,7 +29,10 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
             {timesheetDetailResponse.isSuccess ? (
                 <>
                     <TimesheetDetail timesheet={timesheetDetailResponse.data} />
-                    <Link key={`${timesheetDetailResponse.data.id}`} href={`${timesheetDetailResponse.data.id}/edit`}>
+                    <Link
+                        key={`${timesheetDetailResponse.data.id}`}
+                        href={`${timesheetDetailResponse.data.id}/edit`}
+                    >
                         <Button colorScheme="blue" marginTop="1rem">
                             Edit Timesheet
                         </Button>
