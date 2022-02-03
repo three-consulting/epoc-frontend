@@ -40,6 +40,9 @@ yarn-error.log*
 # vscode
 .vscode
 
+# vim
+*.swp
+
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
 amplify/.config/local-*
