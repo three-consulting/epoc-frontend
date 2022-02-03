@@ -17,7 +17,10 @@ const validateCustomerFields = (fields: CustomerFields): Customer => {
     throw Error("Invalid customer form: missing required fields")
 }
 
-export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerFormProps): JSX.Element {
+export function CreateCustomerForm({
+    afterSubmit,
+    onCancel,
+}: CreateCustomerFormProps): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({})
     const { postCustomer } = useUpdateCustomers()
 
@@ -27,7 +30,10 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
     const onSubmit = async () => {
         try {
             const customer = validateCustomerFields(customerFields)
-            const createCustomerRequest = await postCustomer(customer, errorHandler)
+            const createCustomerRequest = await postCustomer(
+                customer,
+                errorHandler
+            )
             return afterSubmit && afterSubmit(createCustomerRequest)
         } catch (error) {
             errorHandler(error as Error)
@@ -67,10 +73,20 @@ export function CreateCustomerForm({ afterSubmit, onCancel }: CreateCustomerForm
                 </FormControl>
             </div>
             <div style={{ textAlign: "right", padding: "20px" }}>
-                <Button colorScheme="blue" mr={3} onClick={onSubmit} data-testid="form-button-submit">
+                <Button
+                    colorScheme="blue"
+                    mr={3}
+                    onClick={onSubmit}
+                    data-testid="form-button-submit"
+                >
                     Save
                 </Button>
-                <Button colorScheme="grey" variant="outline" onClick={onCancel} data-testid="form-button-cancel">
+                <Button
+                    colorScheme="grey"
+                    variant="outline"
+                    onClick={onCancel}
+                    data-testid="form-button-cancel"
+                >
                     Cancel
                 </Button>
             </div>

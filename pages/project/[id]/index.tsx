@@ -5,7 +5,14 @@ import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import Layout from "@/components/common/Layout"
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalOverlay } from "@chakra-ui/react"
+import {
+    Button,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalOverlay,
+} from "@chakra-ui/react"
 import Link from "next/link"
 import TimesheetTable from "@/components/table/TimesheetTable"
 import TaskTable from "@/components/table/TaskTable"
@@ -33,8 +40,9 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
     const archiveProject = async (mouseEvent: React.MouseEvent) => {
         mouseEvent.preventDefault()
         if (projectDetailResponse.isSuccess) {
-            await putProject({ ...projectDetailResponse.data, status: "ARCHIVED" }, (error) =>
-                setErrorMessage(`${error}`)
+            await putProject(
+                { ...projectDetailResponse.data, status: "ARCHIVED" },
+                (error) => setErrorMessage(`${error}`)
             )
             setDisplayArchivedModal(true)
         } else {
@@ -52,7 +60,10 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
             ) : null}
             {projectDetailResponse.isLoading && <Loading />}
             {projectDetailResponse.isError && (
-                <ErrorAlert title={projectDetailResponse.errorMessage} message={projectDetailResponse.errorMessage} />
+                <ErrorAlert
+                    title={projectDetailResponse.errorMessage}
+                    message={projectDetailResponse.errorMessage}
+                />
             )}
             {projectDetailResponse.isSuccess ? (
                 <>
@@ -65,17 +76,33 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                         </Button>
                     </Link>
                     {projectDetailResponse.data.status !== "ARCHIVED" && (
-                        <Button colorScheme="teal" marginTop="1rem" marginLeft="0.5rem" onClick={archiveProject}>
+                        <Button
+                            colorScheme="teal"
+                            marginTop="1rem"
+                            marginLeft="0.5rem"
+                            onClick={archiveProject}
+                        >
                             Archive Project
                         </Button>
                     )}
-                    <Modal isOpen={displayArchivedModal} onClose={() => setDisplayArchivedModal(false)}>
+                    <Modal
+                        isOpen={displayArchivedModal}
+                        onClose={() => setDisplayArchivedModal(false)}
+                    >
                         <ModalOverlay />
                         <ModalContent>
-                            <ModalBody marginTop="1rem">{projectDetailResponse.data.name} has been archived.</ModalBody>
+                            <ModalBody marginTop="1rem">
+                                {projectDetailResponse.data.name} has been
+                                archived.
+                            </ModalBody>
 
                             <ModalFooter>
-                                <Button colorScheme="blue" onClick={() => setDisplayArchivedModal(false)}>
+                                <Button
+                                    colorScheme="blue"
+                                    onClick={() =>
+                                        setDisplayArchivedModal(false)
+                                    }
+                                >
                                     Close
                                 </Button>
                             </ModalFooter>
@@ -83,17 +110,24 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                     </Modal>
                     {timesheetsResponse.isLoading && <Loading />}
                     {timesheetsResponse.isError && (
-                        <ErrorAlert title={timesheetsResponse.errorMessage} message={timesheetsResponse.errorMessage} />
-                    )}
-                    {timesheetsResponse.isSuccess && employeesResponse.isSuccess && (
-                        <TimesheetTable
-                            project={projectDetailResponse.data}
-                            timesheets={timesheetsResponse.data}
-                            employees={employeesResponse.data}
+                        <ErrorAlert
+                            title={timesheetsResponse.errorMessage}
+                            message={timesheetsResponse.errorMessage}
                         />
                     )}
+                    {timesheetsResponse.isSuccess &&
+                        employeesResponse.isSuccess && (
+                            <TimesheetTable
+                                project={projectDetailResponse.data}
+                                timesheets={timesheetsResponse.data}
+                                employees={employeesResponse.data}
+                            />
+                        )}
                     {tasksResponse.isSuccess && (
-                        <TaskTable project={projectDetailResponse.data} tasks={tasksResponse.data} />
+                        <TaskTable
+                            project={projectDetailResponse.data}
+                            tasks={tasksResponse.data}
+                        />
                     )}
                 </>
             ) : (

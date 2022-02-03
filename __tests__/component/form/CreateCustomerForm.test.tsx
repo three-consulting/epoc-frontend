@@ -6,7 +6,10 @@ import sinon, { spy } from "sinon"
 import { Customer } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
-import { testCustomerAllFields, testCustomerRequiredFields } from "../../fixtures"
+import {
+    testCustomerAllFields,
+    testCustomerRequiredFields,
+} from "../../fixtures"
 
 // eslint-disable-next-line id-match, id-length
 import _ from "lodash"
@@ -17,7 +20,10 @@ const pathSpy = sinon.spy((path) => path)
 
 jest.mock("@/lib/utils/fetch", () => ({
     // eslint-disable-next-line require-await
-    post: async (path: string, body: object): Promise<ApiUpdateResponse<Customer>> => pathSpy(path) && bodySpy(body),
+    post: async (
+        path: string,
+        body: object
+    ): Promise<ApiUpdateResponse<Customer>> => pathSpy(path) && bodySpy(body),
 }))
 
 afterEach(() => {
@@ -33,7 +39,9 @@ const fillAndSubmitForm = async (customer: Customer) => {
 
     const descriptionInput = screen.getByTestId("form-field-description")
     if (customer.description) {
-        fireEvent.change(descriptionInput, { target: { value: customer.description } })
+        fireEvent.change(descriptionInput, {
+            target: { value: customer.description },
+        })
     }
 
     const submitButton = screen.getByTestId("form-button-submit")
@@ -46,7 +54,9 @@ test("a customer with the required fields only can be submitted", async () => {
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(testCustomerRequiredFields)
+    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(
+        testCustomerRequiredFields
+    )
 })
 
 test("a customer with all fields can be submitted", async () => {
@@ -59,7 +69,9 @@ test("a customer with all fields can be submitted", async () => {
 })
 
 test("afterSubmit is invoked with the correct data", async () => {
-    const afterSubmitSpy = spy((createCustomerResponse) => createCustomerResponse)
+    const afterSubmitSpy = spy(
+        (createCustomerResponse) => createCustomerResponse
+    )
     render(<CreateCustomerForm afterSubmit={afterSubmitSpy} />)
     await fillAndSubmitForm(testCustomerRequiredFields)
 
@@ -89,7 +101,9 @@ test("a required field cannot be missing", async () => {
 
         /* eslint-disable no-await-in-loop */
         await fillAndSubmitForm(customerMissingRequired as Customer)
-        await new Promise((resolve) => setTimeout(() => resolve(null), submitTimeout))
+        await new Promise((resolve) =>
+            setTimeout(() => resolve(null), submitTimeout)
+        )
         /* eslint-enable */
 
         expect(pathSpy.callCount).toEqual(0)

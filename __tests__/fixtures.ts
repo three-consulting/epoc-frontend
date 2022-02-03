@@ -1,6 +1,11 @@
 import { Customer, Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 
-export const testEmployee: Employee = { id: 1, firstName: "testi", lastName: "tekija", email: "test@test.test" }
+export const testEmployee: Employee = {
+    id: 1,
+    firstName: "testi",
+    lastName: "tekija",
+    email: "test@test.test",
+}
 
 export const testProject: Project = {
     id: 1,
@@ -10,7 +15,11 @@ export const testProject: Project = {
     managingEmployee: testEmployee,
 }
 
-export const testTimesheetRequiredFields: Timesheet = { name: "Name", project: testProject, employee: testEmployee }
+export const testTimesheetRequiredFields: Timesheet = {
+    name: "Name",
+    project: testProject,
+    employee: testEmployee,
+}
 
 export const testTimesheetAllFields: Timesheet = {
     name: "Another name",
@@ -22,7 +31,10 @@ export const testTimesheetAllFields: Timesheet = {
 
 export const testCustomerRequiredFields: Customer = { name: "Name" }
 
-export const testCustomerAllFields: Customer = { name: "anotherName", description: "description" }
+export const testCustomerAllFields: Customer = {
+    name: "anotherName",
+    description: "description",
+}
 
 export const testTimesheet: Timesheet = {
     id: 1,

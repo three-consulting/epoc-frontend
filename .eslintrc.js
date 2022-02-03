@@ -4,7 +4,12 @@ module.exports = {
         es2021: true,
         node: true,
     },
-    extends: ["strict", "eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
+    extends: [
+        "strict",
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+    ],
     parser: "@typescript-eslint/parser",
     parserOptions: {
         ecmaFeatures: {
@@ -27,6 +32,7 @@ module.exports = {
         complexity: 0,
         "filenames/match-regex": 0,
         "id-blacklist": 0,
+        "operator-linebreak": 0,
     },
     settings: {
         react: {

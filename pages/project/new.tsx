@@ -22,7 +22,9 @@ const New: NextPage = () => {
         ""
 
     const redirectToProjectList = () => router.push("/project")
-    const redirectToProjectDetails = (createProjectResponse: ApiUpdateResponse<Project>) =>
+    const redirectToProjectDetails = (
+        createProjectResponse: ApiUpdateResponse<Project>
+    ) =>
         createProjectResponse.isSuccess &&
         createProjectResponse.data.id &&
         router.push(`/project/${createProjectResponse.data.id}`)
@@ -32,7 +34,9 @@ const New: NextPage = () => {
             <Heading fontWeight="black" margin="1rem 0rem">
                 New project
             </Heading>
-            {(customersResponse.isLoading || employeesResponse.isLoading) && <Loading />}
+            {(customersResponse.isLoading || employeesResponse.isLoading) && (
+                <Loading />
+            )}
             {(customersResponse.isError || employeesResponse.isError) && (
                 <ErrorAlert title={errorMessage} message={errorMessage} />
             )}

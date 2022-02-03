@@ -7,7 +7,16 @@ type TimesheetDetailProps = {
 }
 
 function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
-    const { name, description, allocation, project, employee, created, updated, status } = timesheet
+    const {
+        name,
+        description,
+        allocation,
+        project,
+        employee,
+        created,
+        updated,
+        status,
+    } = timesheet
     return (
         <Flex
             flexDirection="column"

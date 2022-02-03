@@ -1,7 +1,16 @@
 import { useUpdateTimesheets } from "@/lib/hooks/useTimesheets"
 import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, Select } from "@chakra-ui/react"
+import {
+    Box,
+    Button,
+    Flex,
+    FormControl,
+    FormErrorMessage,
+    FormLabel,
+    Input,
+    Select,
+} from "@chakra-ui/react"
 import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 
@@ -26,7 +35,10 @@ type TimesheetFields = Partial<Timesheet> & {
     project: Project
 }
 
-const validateTimesheetFields = (fields: TimesheetFields, projectId: number): Timesheet => {
+const validateTimesheetFields = (
+    fields: TimesheetFields,
+    projectId: number
+): Timesheet => {
     const { name, project, employee } = fields
     if (name && project && employee) {
         return {
@@ -47,7 +59,9 @@ function TimesheetForm({
     onSubmit,
     onCancel,
 }: TimesheetFormProps): JSX.Element {
-    const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>(timesheetOrNull || { project })
+    const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>(
+        timesheetOrNull || { project }
+    )
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
@@ -55,11 +69,19 @@ function TimesheetForm({
         event.preventDefault()
         const id = Number(event.currentTarget.value)
         if (id && employees) {
-            const employee = employees.find((employeeIterator) => employeeIterator.id === id)
+            const employee = employees.find(
+                (employeeIterator) => employeeIterator.id === id
+            )
             if (employee) {
-                setTimesheetFields({ ...timesheetFields, employee: { ...employee }, project: { ...project } })
+                setTimesheetFields({
+                    ...timesheetFields,
+                    employee: { ...employee },
+                    project: { ...project },
+                })
             } else {
-                throw Error(`Error timesheet form could not find employee with id ${id}.`)
+                throw Error(
+                    `Error timesheet form could not find employee with id ${id}.`
+                )
             }
         }
     }
@@ -68,7 +90,8 @@ function TimesheetForm({
 
     const invalidAllocation =
         (timesheetFields.allocation &&
-            (timesheetFields.allocation < 0 || timesheetFields.allocation > maximumAllocation)) ||
+            (timesheetFields.allocation < 0 ||
+                timesheetFields.allocation > maximumAllocation)) ||
         false
 
     const abortSubmission = onCancel && onCancel
@@ -86,7 +109,10 @@ function TimesheetForm({
                 onSubmit={(event) => {
                     event.preventDefault()
                     try {
-                        const timesheet = validateTimesheetFields(timesheetFields, projectId)
+                        const timesheet = validateTimesheetFields(
+                            timesheetFields,
+                            projectId
+                        )
                         onSubmit(timesheet)
                     } catch (error) {
                         errorHandler(error as Error)
@@ -150,14 +176,25 @@ function TimesheetForm({
                             }
                             data-testid="form-field-allocation"
                         />
-                        <FormErrorMessage>Allocation needs to be between 1 and 100 %.</FormErrorMessage>
+                        <FormErrorMessage>
+                            Allocation needs to be between 1 and 100 %.
+                        </FormErrorMessage>
                     </FormControl>
                 </div>
                 <div style={{ textAlign: "right", padding: "20px" }}>
-                    <Button colorScheme="blue" mr={3} type="submit" data-testid="form-button-submit">
+                    <Button
+                        colorScheme="blue"
+                        mr={3}
+                        type="submit"
+                        data-testid="form-button-submit"
+                    >
                         Submit
                     </Button>
-                    <Button colorScheme="gray" onClick={abortSubmission} data-testid="form-button-cancel">
+                    <Button
+                        colorScheme="gray"
+                        onClick={abortSubmission}
+                        data-testid="form-button-cancel"
+                    >
                         Cancel
                     </Button>
                 </div>
@@ -172,7 +209,9 @@ function TimesheetForm({
     )
 }
 
-export const CreateTimesheetForm = (props: CreateTimesheetFormProps): JSX.Element => {
+export const CreateTimesheetForm = (
+    props: CreateTimesheetFormProps
+): JSX.Element => {
     const { postTimesheet } = useUpdateTimesheets()
 
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -196,7 +235,9 @@ export const CreateTimesheetForm = (props: CreateTimesheetFormProps): JSX.Elemen
     )
 }
 
-export const EditTimesheetForm = (props: EditTimesheetFormProps): JSX.Element => {
+export const EditTimesheetForm = (
+    props: EditTimesheetFormProps
+): JSX.Element => {
     const { putTimesheet } = useUpdateTimesheets()
 
     const [errorMessage, setErrorMessage] = useState<string>("")
