@@ -1,6 +1,12 @@
 import { Button } from "@chakra-ui/button"
 import { Box, Flex, Heading } from "@chakra-ui/layout"
-import { Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react"
+import {
+    Modal,
+    ModalCloseButton,
+    ModalContent,
+    ModalHeader,
+    ModalOverlay,
+} from "@chakra-ui/react"
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
@@ -19,9 +25,15 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const archiveTimesheet = async (timesheetToArchive: Timesheet, event: React.MouseEvent) => {
+    const archiveTimesheet = async (
+        timesheetToArchive: Timesheet,
+        event: React.MouseEvent
+    ) => {
         event.preventDefault()
-        await putTimesheet({ ...timesheetToArchive, status: "ARCHIVED" }, errorHandler)
+        await putTimesheet(
+            { ...timesheetToArchive, status: "ARCHIVED" },
+            errorHandler
+        )
     }
 
     return (
@@ -29,13 +41,18 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
             <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
                 <Flex onClick={() => router.push(`/timesheet/${timesheet.id}`)}>
                     <Td>
-                        {timesheet.employee?.firstName} {timesheet.employee?.lastName}
+                        {timesheet.employee?.firstName}{" "}
+                        {timesheet.employee?.lastName}
                     </Td>
                     <Td>{timesheet.allocation} %</Td>
                 </Flex>
 
                 <Td>
-                    <Button onClick={(event) => archiveTimesheet(timesheet, event)}>x</Button>
+                    <Button
+                        onClick={(event) => archiveTimesheet(timesheet, event)}
+                    >
+                        x
+                    </Button>
                 </Td>
             </Tr>
             {errorMessage && (
@@ -54,8 +71,13 @@ interface TimesheetTableProps {
     employees: Employee[]
 }
 
-function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps): JSX.Element {
-    const [displayNewTimesheetForm, setDisplayNewTimesheetForm] = useState(false)
+function TimesheetTable({
+    project,
+    timesheets,
+    employees,
+}: TimesheetTableProps): JSX.Element {
+    const [displayNewTimesheetForm, setDisplayNewTimesheetForm] =
+        useState(false)
 
     return (
         <Flex
@@ -70,7 +92,8 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
             <Heading as="h2" size="md">
                 Users
             </Heading>
-            {timesheets.filter((timesheet) => timesheet.status !== "ARCHIVED").length ? (
+            {timesheets.filter((timesheet) => timesheet.status !== "ARCHIVED")
+                .length ? (
                 <Box borderWidth="1px" padding="1rem" margin="1rem">
                     <Table variant="simple">
                         <Thead>
@@ -83,7 +106,12 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                         <Tbody>
                             {timesheets.map(
                                 (timesheet, idx) =>
-                                    timesheet.status !== "ARCHIVED" && <TimesheetRow timesheet={timesheet} key={idx} />
+                                    timesheet.status !== "ARCHIVED" && (
+                                        <TimesheetRow
+                                            timesheet={timesheet}
+                                            key={idx}
+                                        />
+                                    )
                             )}
                         </Tbody>
                     </Table>
@@ -96,12 +124,18 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                 </Box>
             )}
             <Flex flexDirection="row-reverse">
-                <Button colorScheme="blue" onClick={() => setDisplayNewTimesheetForm(true)}>
+                <Button
+                    colorScheme="blue"
+                    onClick={() => setDisplayNewTimesheetForm(true)}
+                >
                     Add User
                 </Button>
             </Flex>
             {project.id && (
-                <Modal isOpen={displayNewTimesheetForm} onClose={() => setDisplayNewTimesheetForm(false)}>
+                <Modal
+                    isOpen={displayNewTimesheetForm}
+                    onClose={() => setDisplayNewTimesheetForm(false)}
+                >
                     <ModalOverlay />
                     <ModalContent px="0.5rem">
                         <ModalHeader>Add user to project</ModalHeader>
@@ -110,7 +144,8 @@ function TimesheetTable({ project, timesheets, employees }: TimesheetTableProps)
                             projectId={project.id}
                             employees={employees}
                             afterSubmit={(timesheetUpdate) =>
-                                timesheetUpdate.isSuccess && setDisplayNewTimesheetForm(false)
+                                timesheetUpdate.isSuccess &&
+                                setDisplayNewTimesheetForm(false)
                             }
                             onCancel={() => setDisplayNewTimesheetForm(false)}
                         />

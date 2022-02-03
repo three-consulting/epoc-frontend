@@ -1,5 +1,10 @@
 import React from "react"
-import { Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react"
+import {
+    Alert,
+    AlertIcon,
+    AlertTitle,
+    AlertDescription,
+} from "@chakra-ui/react"
 
 interface AlertProps {
     title?: string

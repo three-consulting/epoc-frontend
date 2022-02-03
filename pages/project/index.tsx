@@ -20,11 +20,19 @@ const Projects: NextPage = () => {
             </Heading>
             {projectsResponse.isLoading && <Loading />}
             {projectsResponse.isError && (
-                <ErrorAlert title={projectsResponse.errorMessage} message={projectsResponse.errorMessage} />
+                <ErrorAlert
+                    title={projectsResponse.errorMessage}
+                    message={projectsResponse.errorMessage}
+                />
             )}
-            {projectsResponse.isSuccess && <ProjectTable projects={projectsResponse.data} />}
+            {projectsResponse.isSuccess && (
+                <ProjectTable projects={projectsResponse.data} />
+            )}
             <Box margin="1rem 0rem">
-                <Button colorScheme="blue" onClick={() => router.push("/project/new")}>
+                <Button
+                    colorScheme="blue"
+                    onClick={() => router.push("/project/new")}
+                >
                     Add project
                 </Button>
             </Box>

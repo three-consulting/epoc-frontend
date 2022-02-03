@@ -24,7 +24,10 @@ export function useAuth(): AuthState {
         }
     }, [setUser])
 
-    const signIn = () => Auth.federatedSignIn({ provider: CognitoHostedUIIdentityProvider.Google })
+    const signIn = () =>
+        Auth.federatedSignIn({
+            provider: CognitoHostedUIIdentityProvider.Google,
+        })
     const signOut = () => Auth.signOut()
 
     return { user, signIn, signOut }

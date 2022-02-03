@@ -34,10 +34,12 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
             <Heading fontWeight="black" margin="1rem 0rem">
                 Edit project
             </Heading>
-            {(customersResponse.isLoading || employeesResponse.isLoading || projectDetailResponse.isLoading) && (
-                <Loading />
-            )}
-            {(customersResponse.isError || employeesResponse.isError || projectDetailResponse.isError) && (
+            {(customersResponse.isLoading ||
+                employeesResponse.isLoading ||
+                projectDetailResponse.isLoading) && <Loading />}
+            {(customersResponse.isError ||
+                employeesResponse.isError ||
+                projectDetailResponse.isError) && (
                 <ErrorAlert title={errorMessage} message={errorMessage} />
             )}
             {customersResponse.isSuccess &&

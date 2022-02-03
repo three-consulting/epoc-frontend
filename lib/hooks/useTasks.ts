@@ -18,20 +18,28 @@ type UpdateTasks = {
 }
 
 const useTasks = (projectId: number): ApiGetResponse<Task[]> =>
-    swrToApiGetResponse(useSWR<Task[], Error>(taskEndpointURL, () => get(taskEndpointURL, { projectId })))
+    swrToApiGetResponse(
+        useSWR<Task[], Error>(taskEndpointURL, () =>
+            get(taskEndpointURL, { projectId })
+        )
+    )
 
 export const useUpdateTasks = (): UpdateTasks => {
     const { mutate } = useSWRConfig()
 
     const postTask = async (...[task, errorHandler]: UpdateHookArgs<Task>) => {
-        const newTask = await post<Task, Task>(taskEndpointURL, task).catch(errorHandler)
+        const newTask = await post<Task, Task>(taskEndpointURL, task).catch(
+            errorHandler
+        )
         mutate(taskEndpointURL)
 
         return updateToApiUpdateResponse(newTask || null)
     }
 
     const putTask = async (...[task, errorHandler]: UpdateHookArgs<Task>) => {
-        const updatedTask = await put<Task, Task>(taskEndpointURL, task).catch(errorHandler)
+        const updatedTask = await put<Task, Task>(taskEndpointURL, task).catch(
+            errorHandler
+        )
         mutate(taskEndpointURL)
 
         return updateToApiUpdateResponse(updatedTask || null)

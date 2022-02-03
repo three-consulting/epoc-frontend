@@ -40,12 +40,22 @@ function LeftNav(): JSX.Element {
     const signIn = useSignIn()
     const signOut = useSignout()
     return (
-        <Flex flexDirection="column" justifyContent="left" padding="0.5rem" pr="3.5rem">
+        <Flex
+            flexDirection="column"
+            justifyContent="left"
+            padding="0.5rem"
+            pr="3.5rem"
+        >
             <Text color="black" fontWeight="black" fontSize="xl">
                 Navigation
             </Text>
             {LinkItems.map((item, idx) => (
-                <NavItem key={idx} name={item.name} icon={item.icon} href={item.href} />
+                <NavItem
+                    key={idx}
+                    name={item.name}
+                    icon={item.icon}
+                    href={item.href}
+                />
             ))}
 
             <Flex

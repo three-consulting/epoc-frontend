@@ -52,33 +52,53 @@ const validateProjectFields = (form: ProjectFields): Project => {
     throw Error("Invalid project form: missing required fields")
 }
 
-function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, onCancel }: ProjectFormProps) {
-    const [projectFields, setProjectFields] = useState<ProjectFields>(projectOrNull || {})
-    const [displayCreateCustomerForm, setDisplayCreateCustomerForm] = useState(false)
+function ProjectForm({
+    project: projectOrNull,
+    customers,
+    employees,
+    onSubmit,
+    onCancel,
+}: ProjectFormProps) {
+    const [projectFields, setProjectFields] = useState<ProjectFields>(
+        projectOrNull || {}
+    )
+    const [displayCreateCustomerForm, setDisplayCreateCustomerForm] =
+        useState(false)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const handleCustomerChange = (event: React.FormEvent<HTMLSelectElement>) => {
+    const handleCustomerChange = (
+        event: React.FormEvent<HTMLSelectElement>
+    ) => {
         event.preventDefault()
         const id = event.currentTarget.value
         if (id) {
-            const customer = customers.find((customerIterator) => customerIterator.id === Number(id))
+            const customer = customers.find(
+                (customerIterator) => customerIterator.id === Number(id)
+            )
             setProjectFields({ ...projectFields, customer })
         }
     }
 
-    const handleEmployeeChange = (event: React.FormEvent<HTMLSelectElement>) => {
+    const handleEmployeeChange = (
+        event: React.FormEvent<HTMLSelectElement>
+    ) => {
         event.preventDefault()
         const id = event.currentTarget.value
         if (id) {
-            const employee = employees.find((employeeIterator) => employeeIterator.id === Number(id))
+            const employee = employees.find(
+                (employeeIterator) => employeeIterator.id === Number(id)
+            )
             setProjectFields({ ...projectFields, managingEmployee: employee })
         }
     }
 
     const invalidEndDate =
-        (projectFields.startDate && projectFields.endDate && projectFields.startDate > projectFields.endDate) || false
+        (projectFields.startDate &&
+            projectFields.endDate &&
+            projectFields.startDate > projectFields.endDate) ||
+        false
 
     const abortSubmission = onCancel && onCancel
 
@@ -107,7 +127,12 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                     <Input
                         value={projectFields.name || ""}
                         placeholder="Project name"
-                        onChange={(event) => setProjectFields({ ...projectFields, name: event.target.value })}
+                        onChange={(event) =>
+                            setProjectFields({
+                                ...projectFields,
+                                name: event.target.value,
+                            })
+                        }
                     />
                 </FormControl>
                 <FormControl>
@@ -115,7 +140,12 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                     <Input
                         value={projectFields.description || ""}
                         placeholder="Project description"
-                        onChange={(event) => setProjectFields({ ...projectFields, description: event.target.value })}
+                        onChange={(event) =>
+                            setProjectFields({
+                                ...projectFields,
+                                description: event.target.value,
+                            })
+                        }
                     />
                 </FormControl>
                 <FormControl isRequired={true}>
@@ -124,7 +154,12 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                         type="date"
                         value={projectFields.startDate || ""}
                         placeholder="Project start date"
-                        onChange={(event) => setProjectFields({ ...projectFields, startDate: event.target.value })}
+                        onChange={(event) =>
+                            setProjectFields({
+                                ...projectFields,
+                                startDate: event.target.value,
+                            })
+                        }
                     />
                 </FormControl>
                 <FormControl isInvalid={invalidEndDate}>
@@ -133,14 +168,24 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                         type="date"
                         value={projectFields.endDate || ""}
                         placeholder="Project end date"
-                        onChange={(event) => setProjectFields({ ...projectFields, endDate: event.target.value })}
+                        onChange={(event) =>
+                            setProjectFields({
+                                ...projectFields,
+                                endDate: event.target.value,
+                            })
+                        }
                     />
-                    <FormErrorMessage>End date precedes start date</FormErrorMessage>
+                    <FormErrorMessage>
+                        End date precedes start date
+                    </FormErrorMessage>
                 </FormControl>
                 <Flex flexDirection="row" justifyContent="center">
                     <FormControl isRequired={true}>
                         <FormLabel>Customer</FormLabel>
-                        <Flex flexDirection="row" justifyContent="space-between">
+                        <Flex
+                            flexDirection="row"
+                            justifyContent="space-between"
+                        >
                             <Select
                                 onChange={handleCustomerChange}
                                 placeholder="Select customer"
@@ -154,19 +199,31 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                                 ))}
                             </Select>
 
-                            <Button onClick={() => setDisplayCreateCustomerForm(true)}>Add Customer</Button>
+                            <Button
+                                onClick={() =>
+                                    setDisplayCreateCustomerForm(true)
+                                }
+                            >
+                                Add Customer
+                            </Button>
                             <Modal
                                 closeOnOverlayClick={false}
                                 isOpen={displayCreateCustomerForm}
-                                onClose={() => setDisplayCreateCustomerForm(false)}
+                                onClose={() =>
+                                    setDisplayCreateCustomerForm(false)
+                                }
                             >
                                 <ModalOverlay />
                                 <ModalContent>
                                     <ModalHeader>Add New Customer</ModalHeader>
                                     <ModalCloseButton />
                                     <CreateCustomerForm
-                                        afterSubmit={() => setDisplayCreateCustomerForm(false)}
-                                        onCancel={() => setDisplayCreateCustomerForm(false)}
+                                        afterSubmit={() =>
+                                            setDisplayCreateCustomerForm(false)
+                                        }
+                                        onCancel={() =>
+                                            setDisplayCreateCustomerForm(false)
+                                        }
                                     />
                                 </ModalContent>
                             </Modal>
@@ -191,7 +248,12 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
                 <Button colorScheme="blue" type="submit">
                     Submit
                 </Button>
-                <Button colorScheme="gray" type="button" marginLeft="0.5rem" onClick={abortSubmission}>
+                <Button
+                    colorScheme="gray"
+                    type="button"
+                    marginLeft="0.5rem"
+                    onClick={abortSubmission}
+                >
                     Cancel
                 </Button>
                 {errorMessage && (
@@ -205,7 +267,9 @@ function ProjectForm({ project: projectOrNull, customers, employees, onSubmit, o
     )
 }
 
-export const CreateProjectForm = (props: CreateProjectFormProps): JSX.Element => {
+export const CreateProjectForm = (
+    props: CreateProjectFormProps
+): JSX.Element => {
     const { postProject } = useUpdateProjects()
 
     const [errorMessage, setErrorMessage] = useState<string>("")

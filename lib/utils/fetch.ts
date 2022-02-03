@@ -4,7 +4,10 @@ async function http<T>(path: string, config?: RequestInit): Promise<T> {
     const authSession = await Auth.currentSession()
     const jwt = authSession.getIdToken()?.getJwtToken()
     const request = new Request(path, {
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${jwt}` },
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwt}`,
+        },
         ...config,
     })
     const response = await fetch(request)
@@ -17,9 +20,15 @@ async function http<T>(path: string, config?: RequestInit): Promise<T> {
     return response.json().catch(() => ({}))
 }
 
-export function get<T>(path: string, params?: Record<string, string | number>, config?: RequestInit): Promise<T> {
+export function get<T>(
+    path: string,
+    params?: Record<string, string | number>,
+    config?: RequestInit
+): Promise<T> {
     const url = new URL(path)
-    url.search = new URLSearchParams(params as Record<string, string>).toString()
+    url.search = new URLSearchParams(
+        params as Record<string, string>
+    ).toString()
     const init = { method: "get", ...config }
     return http<T>(url.href, init)
 }
@@ -36,11 +45,17 @@ export function post<T, U>(
         ...config,
     }
     const url = new URL(path)
-    url.search = new URLSearchParams(params as Record<string, string>).toString()
+    url.search = new URLSearchParams(
+        params as Record<string, string>
+    ).toString()
     return http<U>(path, init)
 }
 
-export function put<T, U>(path: string, body: T, config?: RequestInit): Promise<U> {
+export function put<T, U>(
+    path: string,
+    body: T,
+    config?: RequestInit
+): Promise<U> {
     const init = {
         method: "put",
         body: JSON.stringify(body),

@@ -1,7 +1,16 @@
 import { useUpdateTasks } from "@/lib/hooks/useTasks"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
-import { FormControl, FormLabel, Input, FormErrorMessage, Button, Box, Flex, Checkbox } from "@chakra-ui/react"
+import {
+    FormControl,
+    FormLabel,
+    Input,
+    FormErrorMessage,
+    Button,
+    Box,
+    Flex,
+    Checkbox,
+} from "@chakra-ui/react"
 import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 
@@ -27,7 +36,12 @@ const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
     throw Error("Invalid task form: missing required fields")
 }
 
-export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: TaskFormProps): JSX.Element {
+export function CreateTaskForm({
+    project,
+    projectId,
+    afterSubmit,
+    onCancel,
+}: TaskFormProps): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>({
         project,
         billable: true,
@@ -63,7 +77,9 @@ export function CreateTaskForm({ project, projectId, afterSubmit, onCancel }: Ta
                             })
                         }
                     />
-                    <FormErrorMessage>Task name cannot be empty.</FormErrorMessage>
+                    <FormErrorMessage>
+                        Task name cannot be empty.
+                    </FormErrorMessage>
                 </FormControl>
                 <FormControl>
                     <FormLabel>Description</FormLabel>
