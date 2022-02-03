@@ -23,7 +23,10 @@ const pathSpy = sinon.spy((path) => path)
 
 jest.mock("@/lib/utils/fetch", () => ({
     // eslint-disable-next-line require-await
-    put: async (path: string, body: object): Promise<ApiUpdateResponse<Timesheet>> => pathSpy(path) && bodySpy(body),
+    put: async (
+        path: string,
+        body: object
+    ): Promise<ApiUpdateResponse<Timesheet>> => pathSpy(path) && bodySpy(body),
 }))
 
 afterEach(() => {
@@ -41,17 +44,23 @@ const fillAndSubmitForm = async (timesheet: Timesheet) => {
 
     const descriptionInput = screen.getByTestId("form-field-description")
     if (timesheet.description) {
-        fireEvent.change(descriptionInput, { target: { value: timesheet.description } })
+        fireEvent.change(descriptionInput, {
+            target: { value: timesheet.description },
+        })
     }
 
     const allocationInput = screen.getByTestId("form-field-allocation")
     if (timesheet.allocation) {
-        fireEvent.change(allocationInput, { target: { value: timesheet.allocation } })
+        fireEvent.change(allocationInput, {
+            target: { value: timesheet.allocation },
+        })
     }
 
     const employeeInput = screen.getByTestId("form-field-employee")
     if (timesheet.employee) {
-        fireEvent.change(employeeInput, { target: { value: timesheet.employee.id } })
+        fireEvent.change(employeeInput, {
+            target: { value: timesheet.employee.id },
+        })
     } else {
         fireEvent.change(employeeInput, { target: { value: null } })
     }
@@ -79,7 +88,10 @@ test("a timesheet can be edited with required fields", async () => {
     await fillAndSubmitForm(testTimesheetRequiredFields)
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual({ id: testTimesheet.id, ...testTimesheetRequiredFields })
+    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual({
+        id: testTimesheet.id,
+        ...testTimesheetRequiredFields,
+    })
 })
 
 test("a timesheet can be edited with all fields", async () => {
@@ -108,7 +120,9 @@ test("a timesheet can be edited with all fields", async () => {
 })
 
 test("afterSubmit is invoked with the correct data", async () => {
-    const afterSubmitSpy = spy((createTimesheetResponse) => createTimesheetResponse)
+    const afterSubmitSpy = spy(
+        (createTimesheetResponse) => createTimesheetResponse
+    )
     expect(testProject.id).toBeDefined()
     expect(testTimesheet.id).toBeDefined()
     render(
@@ -183,7 +197,9 @@ test("a required field cannot be missing when editing timesheet form", async () 
 
         /* eslint-disable no-await-in-loop */
         await fillAndSubmitForm(timesheetMissingRequired as Timesheet)
-        await new Promise((resolve) => setTimeout(() => resolve(null), submitTimeout))
+        await new Promise((resolve) =>
+            setTimeout(() => resolve(null), submitTimeout)
+        )
         /* eslint-enable */
         expect(pathSpy.callCount).toEqual(0)
         expect(bodySpy.callCount).toEqual(0)
