@@ -36,34 +36,22 @@ afterEach(() => {
 
 const fillAndSubmitForm = async (timesheet: Timesheet) => {
     const nameInput = screen.getByTestId("form-field-name")
-    if (timesheet.name) {
-        fireEvent.change(nameInput, { target: { value: timesheet.name } })
-    } else {
-        fireEvent.change(nameInput, { target: { value: "" } })
-    }
+    fireEvent.change(nameInput, { target: { value: timesheet.name || "" } })
 
     const descriptionInput = screen.getByTestId("form-field-description")
-    if (timesheet.description) {
-        fireEvent.change(descriptionInput, {
-            target: { value: timesheet.description },
-        })
-    }
+    fireEvent.change(descriptionInput, {
+        target: { value: timesheet.description || "" },
+    })
 
     const allocationInput = screen.getByTestId("form-field-allocation")
-    if (timesheet.allocation) {
-        fireEvent.change(allocationInput, {
-            target: { value: timesheet.allocation },
-        })
-    }
+    fireEvent.change(allocationInput, {
+        target: { value: timesheet.allocation || "" },
+    })
 
     const employeeInput = screen.getByTestId("form-field-employee")
-    if (timesheet.employee) {
-        fireEvent.change(employeeInput, {
-            target: { value: timesheet.employee.id },
-        })
-    } else {
-        fireEvent.change(employeeInput, { target: { value: null } })
-    }
+    fireEvent.change(employeeInput, {
+        target: { value: timesheet.employee.id || "" },
+    })
 
     const submitButton = screen.getByTestId("form-button-submit")
     await waitFor(() => fireEvent.click(submitButton))
