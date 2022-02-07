@@ -1,18 +1,14 @@
 import { useUpdateTasks } from "@/lib/hooks/useTasks"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
-import {
-    FormControl,
-    FormLabel,
-    Input,
-    FormErrorMessage,
-    Button,
-    Box,
-    Flex,
-    Checkbox,
-} from "@chakra-ui/react"
 import React, { useState } from "react"
-import ErrorAlert from "../common/ErrorAlert"
+import {
+    CheckBoxField,
+    FormAlerts,
+    FormContainer,
+    FormInputField,
+    FromButtons,
+} from "../common/FormFields"
 
 type TaskFormProps = FormBase<Task> & {
     project: Project
@@ -65,63 +61,43 @@ export function CreateTaskForm({
 
     return (
         <>
-            <div style={{ padding: "20px" }}>
-                <FormControl isInvalid={!taskFields.name} isRequired>
-                    <FormLabel>Task Name</FormLabel>
-                    <Input
-                        placeholder="Task Name"
-                        onChange={(event) =>
-                            setTaskFields({
-                                ...taskFields,
-                                name: event.target.value,
-                            })
-                        }
-                    />
-                    <FormErrorMessage>
-                        Task name cannot be empty.
-                    </FormErrorMessage>
-                </FormControl>
-                <FormControl>
-                    <FormLabel>Description</FormLabel>
-                    <Input
-                        placeholder="Description"
-                        onChange={(event) =>
-                            setTaskFields({
-                                ...taskFields,
-                                description: event.target.value,
-                            })
-                        }
-                    />
-                </FormControl>
-                <FormControl py="0.5rem">
-                    <Flex flexDirection={"row"} alignItems={"baseline"}>
-                        <FormLabel>Billable</FormLabel>
-                        <Checkbox
-                            isChecked={taskFields.billable}
-                            onChange={(event) =>
-                                setTaskFields({
-                                    ...taskFields,
-                                    billable: event.target.checked,
-                                })
-                            }
-                        />
-                    </Flex>
-                </FormControl>
-            </div>
-            <div style={{ textAlign: "right", padding: "20px" }}>
-                <Button colorScheme="blue" mr={3} onClick={onSubmit}>
-                    Submit
-                </Button>
-                <Button colorScheme="gray" onClick={onCancel}>
-                    Cancel
-                </Button>
-            </div>
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
+            <FormContainer>
+                <FormInputField
+                    label={"Name"}
+                    placeholder={"Task name"}
+                    isRequired={true}
+                    isInvalid={!taskFields.name}
+                    formErrorMessage={"Task name cannot be empty."}
+                    onChange={(event) =>
+                        setTaskFields({
+                            ...taskFields,
+                            name: event.target.value,
+                        })
+                    }
+                />
+                <FormInputField
+                    label={"Description"}
+                    placeholder={"Description"}
+                    onChange={(event) =>
+                        setTaskFields({
+                            ...taskFields,
+                            description: event.target.value,
+                        })
+                    }
+                />
+                <CheckBoxField
+                    label={"Billable"}
+                    isChecked={taskFields.billable}
+                    onChange={(event) =>
+                        setTaskFields({
+                            ...taskFields,
+                            billable: event.target.checked,
+                        })
+                    }
+                />
+                <FromButtons onSubmit={onSubmit} onCancel={onCancel} />
+            </FormContainer>
+            {errorMessage && <FormAlerts errorMessage={errorMessage} />}
         </>
     )
 }
