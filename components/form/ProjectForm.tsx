@@ -133,6 +133,7 @@ function ProjectForm({
                                 name: event.target.value,
                             })
                         }
+                        data-testid={"form-field-name"}
                     />
                 </FormControl>
                 <FormControl>
@@ -146,6 +147,7 @@ function ProjectForm({
                                 description: event.target.value,
                             })
                         }
+                        data-testid={"form-field-description"}
                     />
                 </FormControl>
                 <FormControl isRequired={true}>
@@ -160,6 +162,7 @@ function ProjectForm({
                                 startDate: event.target.value,
                             })
                         }
+                        data-testid={"form-field-start-date"}
                     />
                 </FormControl>
                 <FormControl isInvalid={invalidEndDate}>
@@ -174,6 +177,7 @@ function ProjectForm({
                                 endDate: event.target.value,
                             })
                         }
+                        data-testid={"form-field-end-date"}
                     />
                     <FormErrorMessage>
                         End date precedes start date
@@ -191,6 +195,7 @@ function ProjectForm({
                                 placeholder="Select customer"
                                 marginRight="0.3rem"
                                 value={projectFields.customer?.id}
+                                data-testid={"form-field-customer"}
                             >
                                 {customers.map((customer, idx) => (
                                     <option key={idx} value={customer.id}>
@@ -236,6 +241,7 @@ function ProjectForm({
                         onChange={handleEmployeeChange}
                         placeholder="Select employee"
                         value={projectFields.managingEmployee?.id}
+                        data-testid={"form-field-managing-employee"}
                     >
                         {employees.map((employee, idx) => (
                             <option key={idx} value={employee.id}>
@@ -245,7 +251,11 @@ function ProjectForm({
                     </Select>
                 </FormControl>
                 <br />
-                <Button colorScheme="blue" type="submit">
+                <Button
+                    colorScheme="blue"
+                    type="submit"
+                    data-testid={"form-button-submit"}
+                >
                     Submit
                 </Button>
                 <Button
@@ -253,6 +263,7 @@ function ProjectForm({
                     type="button"
                     marginLeft="0.5rem"
                     onClick={abortSubmission}
+                    data-testid={"form-button-cancel"}
                 >
                     Cancel
                 </Button>
