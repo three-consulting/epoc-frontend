@@ -35,3 +35,10 @@ export const testCustomerAllFields: Customer = {
     name: "anotherName",
     description: "description",
 }
+
+export const testTimesheet: Timesheet = {
+    id: 1,
+    name: "Test timesheet",
+    project: testProject,
+    employee: testEmployee,
+}
