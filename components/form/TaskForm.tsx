@@ -74,6 +74,7 @@ export function CreateTaskForm({
                             name: event.target.value,
                         })
                     }
+                    testId={"form-field-name"}
                 />
                 <FormInputField
                     label={"Description"}
@@ -84,6 +85,7 @@ export function CreateTaskForm({
                             description: event.target.value,
                         })
                     }
+                    testId={"form-field-description"}
                 />
                 <CheckBoxField
                     label={"Billable"}
@@ -94,6 +96,7 @@ export function CreateTaskForm({
                             billable: event.target.checked,
                         })
                     }
+                    testId={"form-field-billable"}
                 />
                 <FromButtons onSubmit={onSubmit} onCancel={onCancel} />
             </FormContainer>
