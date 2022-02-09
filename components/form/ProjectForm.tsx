@@ -9,16 +9,11 @@ import {
     FormLabel,
     Input,
     Select,
-    Modal,
-    ModalOverlay,
-    ModalHeader,
-    ModalCloseButton,
-    ModalContent,
     Box,
 } from "@chakra-ui/react"
 import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
-import { CreateCustomerForm } from "./CustomerForm"
+import { FromButton, NewCustomerModal } from "../common/FormFields"
 
 type CreateProjectFormProps = FormBase<Project> & {
     employees: Employee[]
@@ -204,34 +199,20 @@ function ProjectForm({
                                 ))}
                             </Select>
 
-                            <Button
+                            <FromButton
+                                buttonName="Add Customer"
                                 onClick={() =>
                                     setDisplayCreateCustomerForm(true)
                                 }
-                            >
-                                Add Customer
-                            </Button>
-                            <Modal
-                                closeOnOverlayClick={false}
-                                isOpen={displayCreateCustomerForm}
-                                onClose={() =>
-                                    setDisplayCreateCustomerForm(false)
+                            />
+                            <NewCustomerModal
+                                displayCreateCustomerForm={
+                                    displayCreateCustomerForm
                                 }
-                            >
-                                <ModalOverlay />
-                                <ModalContent>
-                                    <ModalHeader>Add New Customer</ModalHeader>
-                                    <ModalCloseButton />
-                                    <CreateCustomerForm
-                                        afterSubmit={() =>
-                                            setDisplayCreateCustomerForm(false)
-                                        }
-                                        onCancel={() =>
-                                            setDisplayCreateCustomerForm(false)
-                                        }
-                                    />
-                                </ModalContent>
-                            </Modal>
+                                setDisplayCreateCustomerForm={
+                                    setDisplayCreateCustomerForm
+                                }
+                            />
                         </Flex>
                     </FormControl>
                 </Flex>

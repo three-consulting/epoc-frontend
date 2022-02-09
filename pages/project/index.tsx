@@ -8,10 +8,13 @@ import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useProjects } from "@/lib/hooks/useProjects"
+import { useCustomers } from "@/lib/hooks/useCustomers"
+import CustomerTable from "@/components/table/CustomerTable"
 
 const Projects: NextPage = () => {
     const router = useRouter()
     const projectsResponse = useProjects()
+    const customersResponse = useCustomers()
 
     return (
         <Layout>
@@ -36,6 +39,19 @@ const Projects: NextPage = () => {
                     Add project
                 </Button>
             </Box>
+            <Heading fontWeight="black" margin="1rem 0rem">
+                Customers
+            </Heading>
+            {customersResponse.isLoading && <Loading />}
+            {customersResponse.isError && (
+                <ErrorAlert
+                    title={customersResponse.errorMessage}
+                    message={customersResponse.errorMessage}
+                />
+            )}
+            {customersResponse.isSuccess && (
+                <CustomerTable customers={customersResponse.data} />
+            )}
         </Layout>
     )
 }

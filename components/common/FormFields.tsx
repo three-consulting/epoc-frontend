@@ -6,9 +6,15 @@ import {
     FormErrorMessage,
     FormLabel,
     Input,
+    Modal,
+    ModalCloseButton,
+    ModalContent,
+    ModalHeader,
+    ModalOverlay,
 } from "@chakra-ui/react"
 import styled from "@emotion/styled"
 import ErrorAlert from "./ErrorAlert"
+import { CreateCustomerForm } from "../form/CustomerForm"
 
 type FormInputFieldProps = {
     label: string
@@ -68,7 +74,7 @@ export const CheckBoxField = ({
     </FormControl>
 )
 
-type FormButtonProps = {
+type FormButtonsProps = {
     onSubmit: (event: React.MouseEvent) => void
     onCancel: (() => void) | undefined
 }
@@ -76,7 +82,7 @@ type FormButtonProps = {
 export const FromButtons = ({
     onSubmit,
     onCancel,
-}: FormButtonProps): JSX.Element => (
+}: FormButtonsProps): JSX.Element => (
     <>
         <Button
             colorScheme="blue"
@@ -88,6 +94,24 @@ export const FromButtons = ({
         </Button>
         <Button onClick={onCancel} data-testid={"form-button-cancel"}>
             Cancel
+        </Button>
+    </>
+)
+
+type FormButtonProps = {
+    buttonName: string
+    buttonColor?: string
+    onClick: (event: React.MouseEvent) => void
+}
+
+export const FromButton = ({
+    buttonName,
+    buttonColor,
+    onClick,
+}: FormButtonProps): JSX.Element => (
+    <>
+        <Button colorScheme={buttonColor} onClick={onClick}>
+            {buttonName}
         </Button>
     </>
 )
@@ -106,4 +130,30 @@ export const FormAlerts = ({ errorMessage }: FormAlertProps): JSX.Element => (
         <ErrorAlert />
         <div>{errorMessage}</div>
     </>
+)
+
+type NewCustomerModalProps = {
+    displayCreateCustomerForm: boolean
+    setDisplayCreateCustomerForm: (value: React.SetStateAction<boolean>) => void
+}
+
+export const NewCustomerModal = ({
+    displayCreateCustomerForm,
+    setDisplayCreateCustomerForm,
+}: NewCustomerModalProps): JSX.Element => (
+    <Modal
+        closeOnOverlayClick={false}
+        isOpen={displayCreateCustomerForm}
+        onClose={() => setDisplayCreateCustomerForm(false)}
+    >
+        <ModalOverlay />
+        <ModalContent>
+            <ModalHeader>Add New Customer</ModalHeader>
+            <ModalCloseButton />
+            <CreateCustomerForm
+                afterSubmit={() => setDisplayCreateCustomerForm(false)}
+                onCancel={() => setDisplayCreateCustomerForm(false)}
+            />
+        </ModalContent>
+    </Modal>
 )
