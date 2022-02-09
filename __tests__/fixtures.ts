@@ -7,11 +7,46 @@ export const testEmployee: Employee = {
     email: "test@test.test",
 }
 
+export const anotherTestEmployee: Employee = {
+    id: 2,
+    firstName: "test",
+    lastName: "worker",
+    email: "test2@test.test",
+}
+
+export const testCustomer: Customer = {
+    id: 1,
+    name: "Some test customer",
+    description: "Used in tests.",
+}
+
+export const anotherTestCustomer: Customer = {
+    id: 2,
+    name: "Another test customer",
+    description: "Used in tests.",
+}
+
+export const testProjectAllFields: Project = {
+    name: "Some project",
+    description: "Some description",
+    startDate: "2022-02-08",
+    endDate: "2022-02-09",
+    customer: testCustomer,
+    managingEmployee: testEmployee,
+}
+
+export const testProjectRequiredFields: Project = {
+    name: "Some project",
+    startDate: "2022-02-08",
+    customer: anotherTestCustomer,
+    managingEmployee: anotherTestEmployee,
+}
+
 export const testProject: Project = {
     id: 1,
     name: "test project",
-    startDate: "2022-1-31",
-    customer: { name: "test customer" } as Customer,
+    startDate: "2022-01-31",
+    customer: testCustomer,
     managingEmployee: testEmployee,
 }
 
