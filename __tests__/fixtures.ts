@@ -1,4 +1,10 @@
-import { Customer, Employee, Project, Timesheet } from "@/lib/types/apiTypes"
+import {
+    Customer,
+    Employee,
+    Project,
+    Task,
+    Timesheet,
+} from "@/lib/types/apiTypes"
 
 export const testEmployee: Employee = {
     id: 1,
@@ -76,4 +82,17 @@ export const testTimesheet: Timesheet = {
     name: "Test timesheet",
     project: testProject,
     employee: testEmployee,
+}
+
+export const testTaskAllFields: Task = {
+    name: "Task name",
+    description: "Some description",
+    project: testProject,
+    billable: false,
+}
+
+export const testTaskRequiredFields: Task = {
+    name: "Task name",
+    project: testProject,
+    billable: false,
 }

@@ -1,7 +1,6 @@
 import React, { ChangeEventHandler } from "react"
 import {
     Button,
-    Checkbox,
     Flex,
     FormControl,
     FormErrorMessage,
@@ -18,6 +17,7 @@ type FormInputFieldProps = {
     isInvalid?: boolean
     formErrorMessage?: string
     onChange: ChangeEventHandler<HTMLInputElement>
+    testId?: string
 }
 
 export const FormInputField = ({
@@ -27,10 +27,15 @@ export const FormInputField = ({
     isInvalid,
     formErrorMessage,
     onChange,
+    testId,
 }: FormInputFieldProps): JSX.Element => (
     <FormControl isInvalid={isInvalid} isRequired={isRequired}>
         <FormLabel>{label}</FormLabel>
-        <Input placeholder={placeholder} onChange={onChange} />
+        <Input
+            placeholder={placeholder}
+            onChange={onChange}
+            data-testid={testId}
+        />
         {formErrorMessage && (
             <FormErrorMessage>{formErrorMessage}</FormErrorMessage>
         )}
@@ -41,17 +46,24 @@ type CheckBoxFieldProps = {
     label: string
     isChecked: boolean
     onChange: ChangeEventHandler<HTMLInputElement>
+    testId?: string
 }
 
 export const CheckBoxField = ({
     label,
     isChecked,
     onChange,
+    testId,
 }: CheckBoxFieldProps): JSX.Element => (
     <FormControl py="0.5rem">
         <Flex flexDirection={"row"} alignItems={"baseline"}>
             <FormLabel>{label}</FormLabel>
-            <Checkbox isChecked={isChecked} onChange={onChange} />
+            <input
+                type={"checkbox"}
+                checked={isChecked}
+                onChange={onChange}
+                data-testid={testId}
+            />
         </Flex>
     </FormControl>
 )
@@ -66,10 +78,17 @@ export const FromButtons = ({
     onCancel,
 }: FormButtonProps): JSX.Element => (
     <>
-        <Button colorScheme="blue" mr={3} onClick={onSubmit}>
+        <Button
+            colorScheme="blue"
+            mr={3}
+            onClick={onSubmit}
+            data-testid={"form-button-submit"}
+        >
             Submit
         </Button>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={onCancel} data-testid={"form-button-cancel"}>
+            Cancel
+        </Button>
     </>
 )
 
