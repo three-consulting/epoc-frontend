@@ -14,12 +14,14 @@ import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { CreateTaskForm } from "../form/TaskForm"
+import { useRouter } from "next/router"
 
 interface TaskRowProps {
     task: Task
 }
 
 function TaskRow({ task }: TaskRowProps): JSX.Element {
+    const router = useRouter()
     const { putTask } = useUpdateTasks()
 
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -30,7 +32,9 @@ function TaskRow({ task }: TaskRowProps): JSX.Element {
     return (
         <>
             <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
-                <Td>{task.name}</Td>
+                <Flex onClick={() => router.push(`/task/${task.id}`)}>
+                    <Td>{task.name}</Td>
+                </Flex>
                 <Td>
                     <Button onClick={archiveTask}>x</Button>
                 </Td>

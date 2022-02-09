@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler } from "react"
+import React, { ChangeEventHandler, ReactNode } from "react"
 import {
     Button,
     Flex,
@@ -19,6 +19,7 @@ import { CreateCustomerForm } from "../form/CustomerForm"
 type FormInputFieldProps = {
     label: string
     placeholder: string
+    value?: string
     isRequired?: boolean
     isInvalid?: boolean
     formErrorMessage?: string
@@ -29,6 +30,7 @@ type FormInputFieldProps = {
 export const FormInputField = ({
     label,
     placeholder,
+    value,
     isRequired,
     isInvalid,
     formErrorMessage,
@@ -39,6 +41,7 @@ export const FormInputField = ({
         <FormLabel>{label}</FormLabel>
         <Input
             placeholder={placeholder}
+            value={value}
             onChange={onChange}
             data-testid={testId}
         />
@@ -116,10 +119,28 @@ export const FromButton = ({
     </>
 )
 
-export const FormContainer = styled.div`
+export const FormFieldsContainer = styled.div`
     padding: 20px;
     text-align: right;
 `
+type FormBackgroundProps = {
+    children: ReactNode
+}
+
+export const FormContainer = ({
+    children,
+}: FormBackgroundProps): JSX.Element => (
+    <Flex
+        flexDirection="column"
+        backgroundColor="white"
+        border="1px solid"
+        borderColor="gray.400"
+        borderRadius="0.2rem"
+        padding="1rem 1rem"
+    >
+        {children}
+    </Flex>
+)
 
 type FormAlertProps = {
     errorMessage: string

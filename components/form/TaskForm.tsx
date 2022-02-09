@@ -6,13 +6,25 @@ import {
     CheckBoxField,
     FormAlerts,
     FormContainer,
+    FormFieldsContainer,
     FormInputField,
     FromButtons,
 } from "../common/FormFields"
 
-type TaskFormProps = FormBase<Task> & {
+type CreateTaskFormProps = FormBase<Task> & {
     project: Project
     projectId: number
+}
+
+type EditTaskFormProps = CreateTaskFormProps & {
+    task: Task
+    taskId: number
+}
+
+type TaskFormProps = CreateTaskFormProps & {
+    task?: Task
+    taskId?: number
+    onSubmit: (task: Task) => void
 }
 
 type TaskFields = Partial<Task> & { project: Project; billable: boolean }
@@ -32,39 +44,42 @@ const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
     throw Error("Invalid task form: missing required fields")
 }
 
-export function CreateTaskForm({
+function TaskForm({
+    task: taskOrNull,
     project,
     projectId,
-    afterSubmit,
+    onSubmit,
     onCancel,
 }: TaskFormProps): JSX.Element {
-    const [taskFields, setTaskFields] = useState<TaskFields>({
-        project,
-        billable: true,
-    })
-    const { postTask } = useUpdateTasks()
+    const [taskFields, setTaskFields] = useState<TaskFields>(
+        taskOrNull || {
+            project,
+            billable: true,
+        }
+    )
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const onSubmit = async (event: React.MouseEvent) => {
+    const abortSubmission = onCancel && onCancel
+
+    const formOnSubmit = (event: React.MouseEvent) => {
         event.preventDefault()
         try {
             const task = validateTaskFields(taskFields, projectId)
-            const newTask = await postTask(task, errorHandler)
-            return afterSubmit && afterSubmit(newTask)
+            onSubmit(task)
         } catch (error) {
             errorHandler(error as Error)
-            return null
         }
     }
 
     return (
-        <>
-            <FormContainer>
+        <FormContainer>
+            <FormFieldsContainer>
                 <FormInputField
                     label={"Name"}
                     placeholder={"Task name"}
+                    value={taskFields.name || ""}
                     isRequired={true}
                     isInvalid={!taskFields.name}
                     formErrorMessage={"Task name cannot be empty."}
@@ -79,6 +94,7 @@ export function CreateTaskForm({
                 <FormInputField
                     label={"Description"}
                     placeholder={"Description"}
+                    value={taskFields.description || ""}
                     onChange={(event) =>
                         setTaskFields({
                             ...taskFields,
@@ -98,8 +114,49 @@ export function CreateTaskForm({
                     }
                     testId={"form-field-billable"}
                 />
-                <FromButtons onSubmit={onSubmit} onCancel={onCancel} />
-            </FormContainer>
+                <FromButtons
+                    onSubmit={formOnSubmit}
+                    onCancel={abortSubmission}
+                />
+            </FormFieldsContainer>
+            {errorMessage && <FormAlerts errorMessage={errorMessage} />}
+        </FormContainer>
+    )
+}
+
+export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
+    const { postTask } = useUpdateTasks()
+
+    const [errorMessage, setErrorMessage] = useState<string>("")
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
+
+    const onSubmit = async (task: Task) => {
+        const newTask = await postTask(task, errorHandler)
+        return props.afterSubmit && props.afterSubmit(newTask)
+    }
+
+    return (
+        <>
+            <TaskForm {...props} onSubmit={onSubmit} />
+            {errorMessage && <FormAlerts errorMessage={errorMessage} />}
+        </>
+    )
+}
+
+export const EditTaskForm = (props: EditTaskFormProps): JSX.Element => {
+    const { putTask } = useUpdateTasks()
+
+    const [errorMessage, setErrorMessage] = useState<string>("")
+    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
+
+    const onSubmit = async (task: Task) => {
+        const updatedTask = await putTask(task, errorHandler)
+        return props.afterSubmit && props.afterSubmit(updatedTask)
+    }
+
+    return (
+        <>
+            <TaskForm {...props} onSubmit={onSubmit} />
             {errorMessage && <FormAlerts errorMessage={errorMessage} />}
         </>
     )
