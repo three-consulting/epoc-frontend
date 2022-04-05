@@ -6,9 +6,13 @@ To run the project locally in development mode, run `yarn dev`.
 
 To generate types from the backend, be sure that you've got the backend running locally and run `yarn types`. This will generate types for you to the types folder in `lib/types/api.ts` file.
 
-## Docker compose
+## Run app in dev mode
+Requirements:
+- Working [secrets](https://github.com/three-consulting/secrets)
+- [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) with correct access rights
+- docker & docker-compose installed
 
-To spin up the backend run `docker-compose -f epoc-compose.yaml up`
+To run the app with backend locally, run `yarn dev-local`.
 
 ## Commitlint
 
