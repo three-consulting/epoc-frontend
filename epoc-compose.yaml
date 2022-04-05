@@ -1,7 +1,7 @@
 version: "3"
 services:
     back:
-        image: ghcr.io/three-consulting/epoc-backend:latest
+        image: registry.heroku.com/epoc-backend-testing/web:latest
         ports:
             - "8080:8080"
         environment:
