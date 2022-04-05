@@ -4,6 +4,7 @@ import { ChakraProvider } from "@chakra-ui/react"
 import Amplify from "aws-amplify"
 import { AuthProvider } from "@/lib/contexts/AuthContext"
 import { setAmplify } from "@/lib/utils/setAmplify"
+import "styles/Calendar.css"
 
 const updatedAwsConfig = setAmplify()
 

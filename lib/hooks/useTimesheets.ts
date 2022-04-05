@@ -15,6 +15,9 @@ const timesheetIdEndpointURL = (id: number): string =>
     `${NEXT_PUBLIC_API_URL}/timesheet/${id}`
 const timesheetIdEndpointCacheKey = (id: number): string => `/timesheet/${id}`
 
+const timesheetByEmployeeEndpointURLCacheKey = (employeeId: number): string =>
+    `/timesheet?employeeId=${employeeId}`
+
 type UpdateTimesheets = {
     postTimesheet: UpdateHookFunction<Timesheet>
     putTimesheet: UpdateHookFunction<Timesheet>
@@ -31,6 +34,16 @@ export const useTimesheetDetail = (id: number): ApiGetResponse<Timesheet> =>
     swrToApiGetResponse(
         useSWR<Timesheet, Error>(timesheetIdEndpointCacheKey(id), () =>
             get(timesheetIdEndpointURL(id))
+        )
+    )
+
+export const useTimesheetByEmployee = (
+    employeeId: number
+): ApiGetResponse<Timesheet[]> =>
+    swrToApiGetResponse(
+        useSWR<Timesheet[], Error>(
+            timesheetByEmployeeEndpointURLCacheKey(employeeId),
+            () => get(timesheetEndpointURL, { employeeId })
         )
     )
 

@@ -10,6 +10,7 @@ export interface paths {
     post: operations["createTimesheet"];
   };
   "/timesheet-entry": {
+    get: operations["getTimesheetEntriesForTimesheetId"];
     put: operations["updateTimesheetEntryForId"];
     post: operations["createTimesheetEntry"];
   };
@@ -155,27 +156,8 @@ export interface components {
     TimesheetEntryDTO: {
       /** Format: int64 */
       id?: number;
-      quantity: {
-        /** Format: int64 */
-        seconds?: number;
-        /** Format: int32 */
-        nano?: number;
-        negative?: boolean;
-        zero?: boolean;
-        units?: {
-          dateBased?: boolean;
-          timeBased?: boolean;
-          duration?: {
-            /** Format: int64 */
-            seconds?: number;
-            /** Format: int32 */
-            nano?: number;
-            negative?: boolean;
-            zero?: boolean;
-          };
-          durationEstimated?: boolean;
-        }[];
-      };
+      /** Format: float */
+      quantity: number;
       /** Format: date */
       date: string;
       description?: string;
@@ -194,7 +176,8 @@ export interface operations {
   getTimesheets: {
     parameters: {
       query: {
-        projectId: number;
+        projectId?: number;
+        employeeId?: number;
       };
     };
     responses: {
@@ -233,6 +216,21 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["TimesheetDTO"];
+      };
+    };
+  };
+  getTimesheetEntriesForTimesheetId: {
+    parameters: {
+      query: {
+        timesheetId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TimesheetEntryDTO"][];
+        };
       };
     };
   };
