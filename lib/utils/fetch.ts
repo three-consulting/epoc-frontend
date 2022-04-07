@@ -66,6 +66,9 @@ export function put<T, U>(
 
 // delete is a reserved keyword
 export function del<T>(path: string, config?: RequestInit): Promise<T> {
-    const init = { method: "delete", ...config }
+    const init = {
+        method: "delete",
+        ...config,
+    }
     return http<T>(path, init)
 }
