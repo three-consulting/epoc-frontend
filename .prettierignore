@@ -3,6 +3,5 @@ node_modules/
 .next/
 .vscode/
 lib/types/api.ts
-aws-exports.js
 next-env.d.ts
 .github/
