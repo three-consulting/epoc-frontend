@@ -1,8 +1,8 @@
-import { Auth } from "aws-amplify"
+import { getAuth } from "firebase/auth"
 
 async function http<T>(path: string, config?: RequestInit): Promise<T> {
-    const authSession = await Auth.currentSession()
-    const jwt = authSession.getIdToken()?.getJwtToken()
+    const auth = getAuth()
+    const jwt = await auth.currentUser?.getIdToken()
     const request = new Request(path, {
         headers: {
             "Content-Type": "application/json",
