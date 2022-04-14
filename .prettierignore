@@ -3,7 +3,5 @@ node_modules/
 .next/
 .vscode/
 lib/types/api.ts
-amplify/
 aws-exports.js
 next-env.d.ts
-

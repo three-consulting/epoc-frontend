@@ -1,7 +1,6 @@
 lib/types/api.ts
 lib/utils/fetcher.ts
 README.md
-amplify/
 aws-exports.js
 next-env.d.ts
 

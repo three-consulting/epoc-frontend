@@ -8,12 +8,10 @@ import {
     Icon,
 } from "@chakra-ui/react"
 import { BsBriefcase, BsHouse, BsDoorOpen, BsDoorClosed } from "react-icons/bs"
-import { useSignIn, useSignout, useUser } from "@/lib/hooks/useAuth"
+import useFirebaseAuth from "@/lib/hooks/useFirebaseAuth"
 
 function NavBarMobile(): JSX.Element {
-    const user = useUser()
-    const signIn = useSignIn()
-    const signOut = useSignout()
+    const { user, signInWithGoogle, signOutAndClear } = useFirebaseAuth()
     return (
         <nav>
             <Breadcrumb padding="0.5rem" separator="">
@@ -59,7 +57,7 @@ function NavBarMobile(): JSX.Element {
                         }}
                     >
                         {user ? (
-                            <VStack onClick={signOut}>
+                            <VStack onClick={signOutAndClear}>
                                 <Icon as={BsDoorClosed} />
                                 <Text
                                     fontSize="xs"
@@ -70,7 +68,7 @@ function NavBarMobile(): JSX.Element {
                                 </Text>
                             </VStack>
                         ) : (
-                            <VStack onClick={signIn}>
+                            <VStack onClick={signInWithGoogle}>
                                 <Icon as={BsDoorOpen} />
                                 <Text
                                     fontSize="xs"
