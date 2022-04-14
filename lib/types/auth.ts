@@ -1,5 +1,6 @@
 import { CognitoUser } from "@aws-amplify/auth"
 import { ICredentials } from "@aws-amplify/core"
+import { User as FirebaseUser } from "firebase/auth"
 
 // See this issue regarding the Amplify library and types
 // https://github.com/aws-amplify/amplify-js/issues/4927
@@ -19,6 +20,14 @@ export interface AuthState {
     user?: CognitoUserExt
     signIn?(): Promise<ICredentials>
     signOut?(): Promise<void>
+}
+
+export interface FirebaseAuthState {
+    user: FirebaseUser | null
+    loading: boolean
+    firebaseError: unknown
+    signOutAndClear: () => Promise<void>
+    signInWithGoogle: () => Promise<void>
 }
 
 // type interface for the object in the gitignored file aws-exports.js
