@@ -3,7 +3,6 @@ on:
     push:
         branches:
             - main
-            - feat/heroku
 jobs:
     test-build-and-deploy:
         runs-on: ubuntu-latest
