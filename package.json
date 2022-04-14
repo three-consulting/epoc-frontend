@@ -2,6 +2,9 @@
     "name": "epoc-frontend",
     "version": "0.1.0",
     "private": true,
+    "engines": {
+        "node": "16"
+    },
     "scripts": {
         "dev": "next dev",
         "dev-local": "export JWT_ISSUER=$(gopass show --password 3/epoc/auth/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI) && concurrently yarn:heroku-login yarn:start-server yarn:dev",
