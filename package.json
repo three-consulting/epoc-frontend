@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "dev-local": "export JWT_ISSUER=$(gopass show --password 3/epoc/aws/cognito-jwt-issuer-uri) && docker login --username=_ --password=$(heroku auth:token) registry.heroku.com && concurrently yarn:start-server yarn:dev",
+        "dev-local": "concurrently yarn:heroku-login yarn:set-backend-envs yarn:start-server yarn:dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint && yarn prettier . --check",
@@ -13,17 +13,17 @@
         "postinstall": "husky install",
         "types": "yarn openapi-typescript http://localhost:8080/docs --output lib/types/api.ts",
         "start-server": "docker-compose -f epoc-compose.yaml up",
+        "heroku-login": "docker login --username=_ --password=$(heroku auth:token) registry.heroku.com",
+        "set-backend-envs": "export JWT_ISSUER=$(gopass show --password 3/epoc/auth/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI) && JWT_JWK=$(gopass show --password 3/epoc/auth/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI)",
         "test": "jest --env=jsdom"
     },
     "dependencies": {
-        "@aws-amplify/ui-components": "^1.9.6",
         "@chakra-ui/icons": "^1.0.15",
         "@chakra-ui/react": "^1.6.7",
         "@emotion/react": "^11.4.1",
         "@emotion/styled": "^11.3.0",
         "@swc/core": "^1.2.130",
         "@swc/jest": "^0.2.17",
-        "aws-amplify": "^4.3.7",
         "firebase": "^9.6.10",
         "firebase-admin": "^10.0.2",
         "framer-motion": "^6.2.1",

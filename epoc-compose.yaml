@@ -9,6 +9,7 @@ services:
             - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/epoc
             - SPRING_DATASOURCE_USERNAME=user
             - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI=${JWT_ISSUER}
+            - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI=${JWT_JWK}
     postgres:
         image: ghcr.io/three-consulting/epoc-db:latest
         ports:
