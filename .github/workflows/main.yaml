@@ -32,10 +32,10 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           buildpack: heroku/nodejs
 
-  draft_release:
+  draft-release:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: run_tests_build_and_push
+    needs: test-build-and-deploy
     steps:
 
       - uses: actions/checkout@v2
