@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { createFirebaseApp } from "firebase/clientApp"
+import { createFirebaseApp } from "@/firebase/clientApp"
 import {
     User as FirebaseUser,
     onAuthStateChanged,

@@ -1,7 +1,7 @@
 import React from "react"
 import { Text, Flex, Icon, HStack } from "@chakra-ui/react"
 import { BsBriefcase, BsHouse, BsDoorOpen, BsDoorClosed } from "react-icons/bs"
-import { useSignIn, useSignout, useUser } from "@/lib/hooks/useAuth"
+import useFirebaseAuth from "@/lib/hooks/useFirebaseAuth"
 import Link from "next/link"
 import { IconType } from "react-icons"
 
@@ -36,9 +36,7 @@ const NavItem = ({ name, icon, href }: LinkItemProps) => (
 )
 
 function LeftNav(): JSX.Element {
-    const user = useUser()
-    const signIn = useSignIn()
-    const signOut = useSignout()
+    const { user, signInWithGoogle, signOutAndClear } = useFirebaseAuth()
     return (
         <Flex
             flexDirection="column"
@@ -65,12 +63,12 @@ function LeftNav(): JSX.Element {
                 margin="0.5rem 0rem"
             >
                 {user ? (
-                    <HStack onClick={signOut}>
+                    <HStack onClick={signOutAndClear}>
                         <Icon as={BsDoorClosed} />
                         <Text>Sign-out</Text>
                     </HStack>
                 ) : (
-                    <HStack onClick={signIn}>
+                    <HStack onClick={signInWithGoogle}>
                         <Icon as={BsDoorOpen} />
                         <Text>Sign-in</Text>
                     </HStack>
