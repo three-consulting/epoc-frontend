@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "dev-local": "concurrently yarn:heroku-login yarn:set-backend-envs yarn:start-server yarn:dev",
+        "dev-local": "export JWT_ISSUER=$(gopass show --password 3/epoc/auth/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI) && concurrently yarn:heroku-login yarn:start-server yarn:dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint && yarn prettier . --check",
@@ -14,7 +14,6 @@
         "types": "yarn openapi-typescript http://localhost:8080/docs --output lib/types/api.ts",
         "start-server": "docker-compose -f epoc-compose.yaml up",
         "heroku-login": "docker login --username=_ --password=$(heroku auth:token) registry.heroku.com",
-        "set-backend-envs": "export JWT_ISSUER=$(gopass show --password 3/epoc/auth/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI) && JWT_JWK=$(gopass show --password 3/epoc/auth/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI)",
         "test": "jest --env=jsdom"
     },
     "dependencies": {
