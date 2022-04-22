@@ -7,3 +7,7 @@ export interface FirebaseAuthState {
     signOutAndClear: () => Promise<void>
     signInWithGoogle: () => Promise<void>
 }
+
+export interface UserState {
+    user: FirebaseUser
+}

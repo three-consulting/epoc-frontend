@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { Box, Flex } from "@chakra-ui/layout"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
@@ -21,18 +21,20 @@ import ProjectDetail from "@/components/detail/ProjectDetail"
 import { useEmployees } from "@/lib/hooks/useEmployees"
 import useTasks from "@/lib/hooks/useTasks"
 import { useTimesheets } from "@/lib/hooks/useTimesheets"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     projectId: number
 }
 
 function ProjectDetailPage({ projectId }: Props): JSX.Element {
-    const projectDetailResponse = useProjectDetail(projectId)
-    const timesheetsResponse = useTimesheets(projectId)
-    const employeesResponse = useEmployees()
-    const tasksResponse = useTasks(projectId)
+    const { user } = useContext(UserContext)
+    const projectDetailResponse = useProjectDetail(projectId, user)
+    const timesheetsResponse = useTimesheets(projectId, user)
+    const employeesResponse = useEmployees(user)
+    const tasksResponse = useTasks(projectId, user)
 
-    const { putProject } = useUpdateProjects()
+    const { putProject } = useUpdateProjects(user)
 
     const [displayArchivedModal, setDisplayArchivedModal] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -51,7 +53,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
     }
 
     return (
-        <Layout>
+        <div>
             {errorMessage ? (
                 <>
                     <ErrorAlert />
@@ -133,7 +135,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
             ) : (
                 <Box>Not found</Box>
             )}
-        </Layout>
+        </div>
     )
 }
 

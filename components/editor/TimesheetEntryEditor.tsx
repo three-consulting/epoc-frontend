@@ -1,3 +1,4 @@
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
 import {
     Task,
@@ -6,7 +7,7 @@ import {
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
 import { Heading, Link } from "@chakra-ui/react"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import Calendar from "react-calendar"
 import {
     CreateTimesheetEntryForm,
@@ -36,7 +37,8 @@ const DayEditor = ({
     timeCategories,
     entries,
 }: DayEditorProps): JSX.Element => {
-    const { deleteTimesheetEntry } = useUpdateTimesheetEntries()
+    const { user } = useContext(UserContext)
+    const { deleteTimesheetEntry } = useUpdateTimesheetEntries(user)
 
     const dateStr = dateToString(date)
     const displayString = date.toLocaleDateString("fin")

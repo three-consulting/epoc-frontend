@@ -1,3 +1,4 @@
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheets } from "@/lib/hooks/useTimesheets"
 import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
@@ -11,7 +12,7 @@ import {
     Input,
     Select,
 } from "@chakra-ui/react"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 
 type CreateTimesheetFormProps = FormBase<Timesheet> & {
@@ -212,7 +213,8 @@ function TimesheetForm({
 export const CreateTimesheetForm = (
     props: CreateTimesheetFormProps
 ): JSX.Element => {
-    const { postTimesheet } = useUpdateTimesheets()
+    const { user } = useContext(UserContext)
+    const { postTimesheet } = useUpdateTimesheets(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -238,7 +240,8 @@ export const CreateTimesheetForm = (
 export const EditTimesheetForm = (
     props: EditTimesheetFormProps
 ): JSX.Element => {
-    const { putTimesheet } = useUpdateTimesheets()
+    const { user } = useContext(UserContext)
+    const { putTimesheet } = useUpdateTimesheets(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

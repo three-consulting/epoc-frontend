@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
 import Layout from "@/components/common/Layout"
@@ -8,6 +8,7 @@ import { TimesheetEntryEditor } from "@/components/editor/TimesheetEntryEditor"
 import { useTimeCategories } from "@/lib/hooks/useTimeCategories"
 import { TimeCategory, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
 import useTasks from "@/lib/hooks/useTasks"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type TimesheetTaskFetcherProps = {
     projectId: number
@@ -22,7 +23,8 @@ function TimesheetTaskFetcher({
     entries,
     timeCategories,
 }: TimesheetTaskFetcherProps): JSX.Element {
-    const tasksResponse = useTasks(projectId)
+    const { user } = useContext(UserContext)
+    const tasksResponse = useTasks(projectId, user)
     return (
         <>
             {tasksResponse.isSuccess && (
@@ -44,12 +46,13 @@ type TimesheetEntryEditorPageProps = {
 function TimesheetEntryEditorPage({
     timesheetId,
 }: TimesheetEntryEditorPageProps): JSX.Element {
-    const timesheetResponse = useTimesheetDetail(timesheetId)
-    const timesheetEntriesResponse = useTimesheetEntries(timesheetId)
-    const timeCategoriesResponse = useTimeCategories()
+    const { user } = useContext(UserContext)
+    const timesheetResponse = useTimesheetDetail(timesheetId, user)
+    const timesheetEntriesResponse = useTimesheetEntries(timesheetId, user)
+    const timeCategoriesResponse = useTimeCategories(user)
 
     return (
-        <Layout>
+        <div>
             {timesheetEntriesResponse.isSuccess &&
                 timesheetResponse.isSuccess &&
                 timeCategoriesResponse.isSuccess &&
@@ -61,7 +64,7 @@ function TimesheetEntryEditorPage({
                         timeCategories={timeCategoriesResponse.data}
                     />
                 )}
-        </Layout>
+        </div>
     )
 }
 

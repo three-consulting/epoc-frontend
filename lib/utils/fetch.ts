@@ -1,8 +1,11 @@
-import { getAuth } from "firebase/auth"
+import { getAuth, User } from "firebase/auth"
 
-async function http<T>(path: string, config?: RequestInit): Promise<T> {
-    const auth = getAuth()
-    const jwt = await auth.currentUser?.getIdToken()
+async function http<T>(
+    path: string,
+    user: User,
+    config?: RequestInit
+): Promise<T> {
+    const jwt = await user.getIdToken()
     const request = new Request(path, {
         headers: {
             "Content-Type": "application/json",
@@ -22,6 +25,7 @@ async function http<T>(path: string, config?: RequestInit): Promise<T> {
 
 export function get<T>(
     path: string,
+    user: User,
     params?: Record<string, string | number>,
     config?: RequestInit
 ): Promise<T> {
@@ -30,11 +34,12 @@ export function get<T>(
         params as Record<string, string>
     ).toString()
     const init = { method: "get", ...config }
-    return http<T>(url.href, init)
+    return http<T>(url.href, user, init)
 }
 
 export function post<T, U>(
     path: string,
+    user: User,
     body: T,
     params?: Record<string, string | number>,
     config?: RequestInit
@@ -48,11 +53,12 @@ export function post<T, U>(
     url.search = new URLSearchParams(
         params as Record<string, string>
     ).toString()
-    return http<U>(path, init)
+    return http<U>(path, user, init)
 }
 
 export function put<T, U>(
     path: string,
+    user: User,
     body: T,
     config?: RequestInit
 ): Promise<U> {
@@ -61,14 +67,18 @@ export function put<T, U>(
         body: JSON.stringify(body),
         ...config,
     }
-    return http<U>(path, init)
+    return http<U>(path, user, init)
 }
 
 // delete is a reserved keyword
-export function del<T>(path: string, config?: RequestInit): Promise<T> {
+export function del<T>(
+    path: string,
+    user: User,
+    config?: RequestInit
+): Promise<T> {
     const init = {
         method: "delete",
         ...config,
     }
-    return http<T>(path, init)
+    return http<T>(path, user, init)
 }

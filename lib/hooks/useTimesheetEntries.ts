@@ -1,3 +1,4 @@
+import { User } from "firebase/auth"
 import useSWR, { useSWRConfig } from "swr"
 import { NEXT_PUBLIC_API_URL } from "../conf"
 import { TimesheetEntry } from "../types/apiTypes"
@@ -21,15 +22,18 @@ type UpdateTimesheetEntries = {
 }
 
 export const useTimesheetEntries = (
-    timesheetId: number
+    timesheetId: number,
+    user: User
 ): ApiGetResponse<TimesheetEntry[]> =>
     swrToApiGetResponse(
         useSWR<TimesheetEntry[], Error>(timesheetEntryEndpointURL, () =>
-            get(timesheetEntryEndpointURL, { timesheetId })
+            get(timesheetEntryEndpointURL, user, { timesheetId })
         )
     )
 
-export const useUpdateTimesheetEntries = (): UpdateTimesheetEntries => {
+export const useUpdateTimesheetEntries = (
+    user: User
+): UpdateTimesheetEntries => {
     const { mutate } = useSWRConfig()
 
     const postTimesheetEntry = async (
@@ -37,6 +41,7 @@ export const useUpdateTimesheetEntries = (): UpdateTimesheetEntries => {
     ) => {
         const newTask = await post<TimesheetEntry, TimesheetEntry>(
             timesheetEntryEndpointURL,
+            user,
             task
         ).catch(errorHandler)
         mutate(timesheetEntryEndpointURL)
@@ -49,6 +54,7 @@ export const useUpdateTimesheetEntries = (): UpdateTimesheetEntries => {
     ) => {
         const updatedTask = await put<TimesheetEntry, TimesheetEntry>(
             timesheetEntryEndpointURL,
+            user,
             task
         ).catch(errorHandler)
         mutate(timesheetEntryEndpointURL)
@@ -57,7 +63,7 @@ export const useUpdateTimesheetEntries = (): UpdateTimesheetEntries => {
     }
 
     const deleteTimesheetEntry = async (entryId: number) => {
-        await del<TimesheetEntry>(timesheetIdEntryEndpointURL(entryId))
+        await del<TimesheetEntry>(timesheetIdEntryEndpointURL(entryId), user)
         mutate(timesheetEntryEndpointURL)
     }
 

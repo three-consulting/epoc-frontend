@@ -1,7 +1,6 @@
-import React from "react"
+import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
-import Layout from "@/components/common/Layout"
 import { EditProjectForm } from "@/components/form/ProjectForm"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
@@ -9,6 +8,7 @@ import { useRouter } from "next/dist/client/router"
 import { useCustomers } from "@/lib/hooks/useCustomers"
 import { useEmployees } from "@/lib/hooks/useEmployees"
 import { useProjectDetail } from "@/lib/hooks/useProjects"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     projectId: number
@@ -16,10 +16,11 @@ type Props = {
 
 function EditProjectPage({ projectId }: Props): JSX.Element {
     const router = useRouter()
+    const { user } = useContext(UserContext)
 
-    const customersResponse = useCustomers()
-    const employeesResponse = useEmployees()
-    const projectDetailResponse = useProjectDetail(projectId)
+    const customersResponse = useCustomers(user)
+    const employeesResponse = useEmployees(user)
+    const projectDetailResponse = useProjectDetail(projectId, user)
 
     const errorMessage =
         (customersResponse.isError && customersResponse.errorMessage) ||
@@ -30,7 +31,7 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
     const redirectToProjectDetail = () => router.push(`/project/${projectId}`)
 
     return (
-        <Layout>
+        <div>
             <Heading fontWeight="black" margin="1rem 0rem">
                 Edit project
             </Heading>
@@ -55,7 +56,7 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
                         onCancel={redirectToProjectDetail}
                     />
                 )}
-        </Layout>
+        </div>
     )
 }
 

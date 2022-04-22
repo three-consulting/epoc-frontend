@@ -1,9 +1,10 @@
 import { FormControl, FormLabel, Input, Button, Box } from "@chakra-ui/react"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { Customer } from "@/lib/types/apiTypes"
 import { useUpdateCustomers } from "@/lib/hooks/useCustomers"
 import { FormBase } from "@/lib/types/forms"
 import ErrorAlert from "../common/ErrorAlert"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CreateCustomerFormProps = FormBase<Customer>
 
@@ -22,7 +23,8 @@ export function CreateCustomerForm({
     onCancel,
 }: CreateCustomerFormProps): JSX.Element {
     const [customerFields, setCustomerFields] = useState<CustomerFields>({})
-    const { postCustomer } = useUpdateCustomers()
+    const { user } = useContext(UserContext)
+    const { postCustomer } = useUpdateCustomers(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
