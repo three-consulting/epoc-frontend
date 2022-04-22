@@ -7,7 +7,7 @@
     },
     "scripts": {
         "dev": "next dev",
-        "dev-local": "export JWT_ISSUER=$(gopass show --password 3/epoc/auth/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI) && concurrently yarn:heroku-login yarn:start-server yarn:dev",
+        "dev-local": "export JWT_ISSUER=$(gopass show --password 3/epoc/auth/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI) && export NEXT_PUBLIC_FIREBASE_API_KEY=$(gopass 3/epoc/auth/NEXT_PUBLIC_FIREBASE_API_KEY) && export NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$(gopass 3/epoc/auth/NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN) && concurrently yarn:heroku-login yarn:start-server yarn:dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint && yarn prettier . --check",
