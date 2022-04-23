@@ -1,7 +1,6 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
-import Layout from "@/components/common/Layout"
 import { useTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
 import { useTimesheetDetail } from "@/lib/hooks/useTimesheets"
 import { TimesheetEntryEditor } from "@/components/editor/TimesheetEntryEditor"

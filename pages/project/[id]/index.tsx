@@ -4,7 +4,6 @@ import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
-import Layout from "@/components/common/Layout"
 import {
     Button,
     Modal,

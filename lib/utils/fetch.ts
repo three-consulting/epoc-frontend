@@ -1,4 +1,4 @@
-import { getAuth, User } from "firebase/auth"
+import { User } from "firebase/auth"
 
 async function http<T>(
     path: string,
