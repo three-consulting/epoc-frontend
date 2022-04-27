@@ -10,6 +10,7 @@ import {
 } from "../types/hooks"
 import { useMatchMutate } from "../utils/matchMutate"
 import { NEXT_PUBLIC_API_URL } from "../conf"
+import { User } from "firebase/auth"
 
 const projectEndpointURL = `${NEXT_PUBLIC_API_URL}/project`
 const projectIdEndpointURL = (id: number): string =>
@@ -23,17 +24,24 @@ interface UpdateProjects {
     putProject: UpdateHookFunction<Project>
 }
 
-export const useProjects = (): ApiGetResponse<Project[]> =>
-    swrToApiGetResponse(useSWR<Project[], Error>(projectEndpointURL, get))
-
-export const useProjectDetail = (id: number): ApiGetResponse<Project> =>
+export const useProjects = (user: User): ApiGetResponse<Project[]> =>
     swrToApiGetResponse(
-        useSWR<Project, Error>(projectIdEndpointCacheKey(id), () =>
-            get(projectIdEndpointURL(id))
+        useSWR<Project[], Error>(projectEndpointURL, () =>
+            get(projectEndpointURL, user)
         )
     )
 
-export const useUpdateProjects = (): UpdateProjects => {
+export const useProjectDetail = (
+    id: number,
+    user: User
+): ApiGetResponse<Project> =>
+    swrToApiGetResponse(
+        useSWR<Project, Error>(projectIdEndpointCacheKey(id), () =>
+            get(projectIdEndpointURL(id), user)
+        )
+    )
+
+export const useUpdateProjects = (user: User): UpdateProjects => {
     const { mutate } = useSWRConfig()
     const matchMutate = useMatchMutate()
 
@@ -42,6 +50,7 @@ export const useUpdateProjects = (): UpdateProjects => {
     ) => {
         const newProject = await post<Project, Project>(
             projectEndpointURL,
+            user,
             project
         ).catch(errorHandler)
         mutate(projectEndpointURL)
@@ -55,6 +64,7 @@ export const useUpdateProjects = (): UpdateProjects => {
     ) => {
         const updatedProject = await put<Project, Project>(
             projectEndpointURL,
+            user,
             project
         ).catch(errorHandler)
         mutate(projectEndpointURL)

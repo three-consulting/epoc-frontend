@@ -1,3 +1,4 @@
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateProjects } from "@/lib/hooks/useProjects"
 import { Customer, Employee, Project } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
@@ -11,7 +12,7 @@ import {
     Select,
     Box,
 } from "@chakra-ui/react"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { FromButton, NewCustomerModal } from "../common/FormFields"
 
@@ -262,7 +263,8 @@ function ProjectForm({
 export const CreateProjectForm = (
     props: CreateProjectFormProps
 ): JSX.Element => {
-    const { postProject } = useUpdateProjects()
+    const { user } = useContext(UserContext)
+    const { postProject } = useUpdateProjects(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -286,7 +288,8 @@ export const CreateProjectForm = (
 }
 
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
-    const { putProject } = useUpdateProjects()
+    const { user } = useContext(UserContext)
+    const { putProject } = useUpdateProjects(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

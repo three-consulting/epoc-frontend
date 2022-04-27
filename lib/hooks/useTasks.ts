@@ -9,6 +9,7 @@ import {
     updateToApiUpdateResponse,
 } from "../types/hooks"
 import { NEXT_PUBLIC_API_URL } from "../conf"
+import { User } from "firebase/auth"
 
 const taskEndpointURL = `${NEXT_PUBLIC_API_URL}/task`
 
@@ -17,29 +18,33 @@ type UpdateTasks = {
     putTask: UpdateHookFunction<Task>
 }
 
-const useTasks = (projectId: number): ApiGetResponse<Task[]> =>
+const useTasks = (projectId: number, user: User): ApiGetResponse<Task[]> =>
     swrToApiGetResponse(
         useSWR<Task[], Error>(taskEndpointURL, () =>
-            get(taskEndpointURL, { projectId })
+            get(taskEndpointURL, user, { projectId })
         )
     )
 
-export const useUpdateTasks = (): UpdateTasks => {
+export const useUpdateTasks = (user: User): UpdateTasks => {
     const { mutate } = useSWRConfig()
 
     const postTask = async (...[task, errorHandler]: UpdateHookArgs<Task>) => {
-        const newTask = await post<Task, Task>(taskEndpointURL, task).catch(
-            errorHandler
-        )
+        const newTask = await post<Task, Task>(
+            taskEndpointURL,
+            user,
+            task
+        ).catch(errorHandler)
         mutate(taskEndpointURL)
 
         return updateToApiUpdateResponse(newTask || null)
     }
 
     const putTask = async (...[task, errorHandler]: UpdateHookArgs<Task>) => {
-        const updatedTask = await put<Task, Task>(taskEndpointURL, task).catch(
-            errorHandler
-        )
+        const updatedTask = await put<Task, Task>(
+            taskEndpointURL,
+            user,
+            task
+        ).catch(errorHandler)
         mutate(taskEndpointURL)
 
         return updateToApiUpdateResponse(updatedTask || null)

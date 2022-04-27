@@ -18,6 +18,7 @@ import {
 
 // eslint-disable-next-line id-match, id-length
 import _ from "lodash"
+import { User } from "firebase/auth"
 
 const projectEndpointURL = `${NEXT_PUBLIC_API_URL}/project`
 const bodySpy = sinon.spy((body) => body)
@@ -27,6 +28,7 @@ jest.mock("@/lib/utils/fetch", () => ({
     // eslint-disable-next-line require-await
     put: async (
         path: string,
+        _user: User,
         body: object
     ): Promise<ApiUpdateResponse<Project>> => pathSpy(path) && bodySpy(body),
 }))

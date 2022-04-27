@@ -9,6 +9,7 @@ import {
     updateToApiUpdateResponse,
 } from "../types/hooks"
 import { NEXT_PUBLIC_API_URL } from "../conf"
+import { User } from "firebase/auth"
 
 export const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/customer`
 
@@ -16,10 +17,14 @@ type CustomersUpdate = {
     postCustomer: UpdateHookFunction<Customer>
 }
 
-export const useCustomers = (): ApiGetResponse<Customer[]> =>
-    swrToApiGetResponse(useSWR<Customer[], Error>(customerEndpointURL, get))
+export const useCustomers = (user: User): ApiGetResponse<Customer[]> =>
+    swrToApiGetResponse(
+        useSWR<Customer[], Error>(customerEndpointURL, () =>
+            get(customerEndpointURL, user)
+        )
+    )
 
-export const useUpdateCustomers = (): CustomersUpdate => {
+export const useUpdateCustomers = (user: User): CustomersUpdate => {
     const { mutate } = useSWRConfig()
 
     const postCustomer = async (
@@ -27,6 +32,7 @@ export const useUpdateCustomers = (): CustomersUpdate => {
     ) => {
         const newCustomer = await post<Customer, Customer>(
             customerEndpointURL,
+            user,
             customer
         ).catch(errorHandler)
         mutate(customerEndpointURL)

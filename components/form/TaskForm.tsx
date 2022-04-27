@@ -1,7 +1,8 @@
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTasks } from "@/lib/hooks/useTasks"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import {
     CheckBoxField,
     FormAlerts,
@@ -42,7 +43,8 @@ export function CreateTaskForm({
         project,
         billable: true,
     })
-    const { postTask } = useUpdateTasks()
+    const { user } = useContext(UserContext)
+    const { postTask } = useUpdateTasks(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

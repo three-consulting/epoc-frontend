@@ -1,7 +1,6 @@
-import React from "react"
+import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
-import Layout from "@/components/common/Layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useCustomers } from "@/lib/hooks/useCustomers"
@@ -10,11 +9,13 @@ import { CreateProjectForm } from "@/components/form/ProjectForm"
 import { useRouter } from "next/router"
 import { Project } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
 const New: NextPage = () => {
     const router = useRouter()
-    const customersResponse = useCustomers()
-    const employeesResponse = useEmployees()
+    const { user } = useContext(UserContext)
+    const customersResponse = useCustomers(user)
+    const employeesResponse = useEmployees(user)
 
     const errorMessage =
         (customersResponse.isError && customersResponse.errorMessage) ||
@@ -30,7 +31,7 @@ const New: NextPage = () => {
         router.push(`/project/${createProjectResponse.data.id}`)
 
     return (
-        <Layout>
+        <div>
             <Heading fontWeight="black" margin="1rem 0rem">
                 New project
             </Heading>
@@ -48,7 +49,7 @@ const New: NextPage = () => {
                     onCancel={redirectToProjectList}
                 />
             )}
-        </Layout>
+        </div>
     )
 }
 

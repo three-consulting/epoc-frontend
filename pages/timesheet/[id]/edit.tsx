@@ -1,13 +1,13 @@
-import React from "react"
+import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
-import Layout from "@/components/common/Layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
 import { useTimesheetDetail } from "@/lib/hooks/useTimesheets"
 import { EditTimesheetForm } from "@/components/form/TimesheetForm"
 import { useEmployees } from "@/lib/hooks/useEmployees"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     timesheetId: number
@@ -15,9 +15,10 @@ type Props = {
 
 function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
     const router = useRouter()
+    const { user } = useContext(UserContext)
 
-    const timesheetDetailResponse = useTimesheetDetail(timesheetId)
-    const employeesResponse = useEmployees()
+    const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
+    const employeesResponse = useEmployees(user)
 
     const errorMessage =
         (timesheetDetailResponse.isError &&
@@ -29,7 +30,7 @@ function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
         router.push(`/timesheet/${timesheetId}`)
 
     return (
-        <Layout>
+        <div>
             <Heading fontWeight="black" margin="1rem 0rem">
                 Edit timesheet
             </Heading>
@@ -52,7 +53,7 @@ function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
                         onCancel={redirectToTimesheetDetail}
                     />
                 )}
-        </Layout>
+        </div>
     )
 }
 

@@ -1,10 +1,10 @@
-import React from "react"
+import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { useEmployees } from "@/lib/hooks/useEmployees"
 import { useTimesheetByEmployee } from "@/lib/hooks/useTimesheets"
 import { Employee } from "@/lib/types/apiTypes"
-import Layout from "@/components/common/Layout"
 import { EmployeeTimesheetList } from "@/components/list/EmployeeTimesheetList"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface EmployeeTimesheetListProps {
     id: number
@@ -15,7 +15,8 @@ const EmployeeTimesheetListFetcher = ({
     id,
     employee,
 }: EmployeeTimesheetListProps) => {
-    const timesheetResponse = useTimesheetByEmployee(id)
+    const { user } = useContext(UserContext)
+    const timesheetResponse = useTimesheetByEmployee(id, user)
     return timesheetResponse.isSuccess ? (
         <EmployeeTimesheetList
             employee={employee}
@@ -25,9 +26,10 @@ const EmployeeTimesheetListFetcher = ({
 }
 
 const Home: NextPage = () => {
-    const employeesResponse = useEmployees()
+    const { user } = useContext(UserContext)
+    const employeesResponse = useEmployees(user)
     return (
-        <Layout>
+        <div>
             {employeesResponse.isSuccess &&
                 employeesResponse.data.map(
                     (employee) =>
@@ -39,7 +41,7 @@ const Home: NextPage = () => {
                             />
                         )
                 )}
-        </Layout>
+        </div>
     )
 }
 

@@ -1,3 +1,4 @@
+import { User } from "firebase/auth"
 import useSWR, { useSWRConfig } from "swr"
 import { NEXT_PUBLIC_API_URL } from "../conf"
 import { Timesheet } from "../types/apiTypes"
@@ -23,31 +24,38 @@ type UpdateTimesheets = {
     putTimesheet: UpdateHookFunction<Timesheet>
 }
 
-export const useTimesheets = (projectId: number): ApiGetResponse<Timesheet[]> =>
+export const useTimesheets = (
+    projectId: number,
+    user: User
+): ApiGetResponse<Timesheet[]> =>
     swrToApiGetResponse(
         useSWR<Timesheet[], Error>(timesheetEndpointURL, () =>
-            get(timesheetEndpointURL, { projectId })
+            get(timesheetEndpointURL, user, { projectId })
         )
     )
 
-export const useTimesheetDetail = (id: number): ApiGetResponse<Timesheet> =>
+export const useTimesheetDetail = (
+    id: number,
+    user: User
+): ApiGetResponse<Timesheet> =>
     swrToApiGetResponse(
         useSWR<Timesheet, Error>(timesheetIdEndpointCacheKey(id), () =>
-            get(timesheetIdEndpointURL(id))
+            get(timesheetIdEndpointURL(id), user)
         )
     )
 
 export const useTimesheetByEmployee = (
-    employeeId: number
+    employeeId: number,
+    user: User
 ): ApiGetResponse<Timesheet[]> =>
     swrToApiGetResponse(
         useSWR<Timesheet[], Error>(
             timesheetByEmployeeEndpointURLCacheKey(employeeId),
-            () => get(timesheetEndpointURL, { employeeId })
+            () => get(timesheetEndpointURL, user, { employeeId })
         )
     )
 
-export const useUpdateTimesheets = (): UpdateTimesheets => {
+export const useUpdateTimesheets = (user: User): UpdateTimesheets => {
     const { mutate } = useSWRConfig()
 
     const postTimesheet = async (
@@ -55,6 +63,7 @@ export const useUpdateTimesheets = (): UpdateTimesheets => {
     ) => {
         const newTimesheet = await post<Timesheet, Timesheet>(
             timesheetEndpointURL,
+            user,
             timesheet
         ).catch(errorHandler)
         mutate(timesheetEndpointURL)
@@ -67,6 +76,7 @@ export const useUpdateTimesheets = (): UpdateTimesheets => {
     ) => {
         const updatedTimesheet = await put<Timesheet, Timesheet>(
             timesheetEndpointURL,
+            user,
             timesheet
         ).catch(errorHandler)
         mutate(timesheetEndpointURL)
