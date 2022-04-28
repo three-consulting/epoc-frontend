@@ -1,48 +1,43 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
-import { useEmployees } from "@/lib/hooks/useEmployees"
-import { useTimesheetByEmployee } from "@/lib/hooks/useTimesheets"
-import { Employee } from "@/lib/types/apiTypes"
-import { EmployeeTimesheetList } from "@/components/list/EmployeeTimesheetList"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { useEmployeeTimesheets } from "@/lib/hooks/useTimesheets"
+import { TimesheetEntryEditor } from "@/components/editor/TimesheetEntryEditor"
+import { useTimeCategories } from "@/lib/hooks/useTimeCategories"
+import { Timesheet } from "@/lib/types/apiTypes"
+import { useEmployeeTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
 
-interface EmployeeTimesheetListProps {
-    id: number
-    employee: Employee
+type TimesheetEntryEditorPageProps = {
+    timesheets: Timesheet[]
 }
 
-const EmployeeTimesheetListFetcher = ({
-    id,
-    employee,
-}: EmployeeTimesheetListProps) => {
+function TimesheetEntryEditorPage({
+    timesheets,
+}: TimesheetEntryEditorPageProps): JSX.Element {
     const { user } = useContext(UserContext)
-    const timesheetResponse = useTimesheetByEmployee(id, user)
-    return timesheetResponse.isSuccess ? (
-        <EmployeeTimesheetList
-            employee={employee}
-            timesheets={timesheetResponse.data}
-        />
-    ) : null
+    const timesheetEntriesResponse = useEmployeeTimesheetEntries(user)
+    const timeCategoriesResponse = useTimeCategories(user)
+
+    return (
+        <div>
+            {timesheetEntriesResponse.isSuccess &&
+                timeCategoriesResponse.isSuccess && (
+                    <TimesheetEntryEditor
+                        timesheets={timesheets}
+                        entries={timesheetEntriesResponse.data}
+                        timeCategories={timeCategoriesResponse.data}
+                    />
+                )}
+        </div>
+    )
 }
 
 const Home: NextPage = () => {
     const { user } = useContext(UserContext)
-    const employeesResponse = useEmployees(user)
-    return (
-        <div>
-            {employeesResponse.isSuccess &&
-                employeesResponse.data.map(
-                    (employee) =>
-                        employee.id && (
-                            <EmployeeTimesheetListFetcher
-                                key={employee.id}
-                                id={employee.id}
-                                employee={employee}
-                            />
-                        )
-                )}
-        </div>
-    )
+    const timesheets = useEmployeeTimesheets(user)
+    return timesheets.isSuccess ? (
+        <TimesheetEntryEditorPage timesheets={timesheets.data} />
+    ) : null
 }
 
 export default Home

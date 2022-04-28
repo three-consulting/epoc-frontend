@@ -12,6 +12,8 @@ import { NEXT_PUBLIC_API_URL } from "../conf"
 import { User } from "firebase/auth"
 
 const taskEndpointURL = `${NEXT_PUBLIC_API_URL}/task`
+const taskByProjectEndpointURL = (projectId: number) =>
+    `${NEXT_PUBLIC_API_URL}/task?projectId=${projectId}`
 
 type UpdateTasks = {
     postTask: UpdateHookFunction<Task>
@@ -20,7 +22,7 @@ type UpdateTasks = {
 
 const useTasks = (projectId: number, user: User): ApiGetResponse<Task[]> =>
     swrToApiGetResponse(
-        useSWR<Task[], Error>(taskEndpointURL, () =>
+        useSWR<Task[], Error>(taskByProjectEndpointURL(projectId), () =>
             get(taskEndpointURL, user, { projectId })
         )
     )
