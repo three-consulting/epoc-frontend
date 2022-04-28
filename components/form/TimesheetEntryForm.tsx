@@ -1,4 +1,5 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import useTasks from "@/lib/hooks/useTasks"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
 import {
     Task,
@@ -23,17 +24,17 @@ type TimesheetEntryFormBaseProps = FormBase<TimesheetEntry> & {
 
 type CreateTimesheetEntryFormProps = FormBase<TimesheetEntry> & {
     timesheet: Timesheet
+    projectId: number
     date: string
     timeCategories: TimeCategory[]
-    tasks: Task[]
 }
 
 type EditTimesheetEntryFormProps = FormBase<TimesheetEntry> & {
     entry: TimesheetEntry
     timesheet: Timesheet
+    projectId: number
     date: string
     timeCategories: TimeCategory[]
-    tasks: Task[]
 }
 
 type TimesheetEntryFields = Partial<TimesheetEntry> & {
@@ -171,6 +172,7 @@ export function EditTimesheetEntryForm(
 ): JSX.Element {
     const { user } = useContext(UserContext)
     const { putTimesheetEntry } = useUpdateTimesheetEntries(user)
+    const tasksResponse = useTasks(props.projectId, user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -189,11 +191,14 @@ export function EditTimesheetEntryForm(
     }
     return (
         <>
-            <TimesheetEntryForm
-                {...props}
-                entryOrNull={props.entry}
-                onSubmit={onSubmit}
-            />
+            {tasksResponse.isSuccess && (
+                <TimesheetEntryForm
+                    {...props}
+                    tasks={tasksResponse.data}
+                    entryOrNull={props.entry}
+                    onSubmit={onSubmit}
+                />
+            )}
             {errorMessage && (
                 <>
                     <ErrorAlert />
@@ -209,6 +214,7 @@ export function CreateTimesheetEntryForm(
 ): JSX.Element {
     const { user } = useContext(UserContext)
     const { postTimesheetEntry } = useUpdateTimesheetEntries(user)
+    const tasksResponse = useTasks(props.projectId, user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -227,7 +233,13 @@ export function CreateTimesheetEntryForm(
     }
     return (
         <>
-            <TimesheetEntryForm {...props} onSubmit={onSubmit} />
+            {tasksResponse.isSuccess && (
+                <TimesheetEntryForm
+                    {...props}
+                    tasks={tasksResponse.data}
+                    onSubmit={onSubmit}
+                />
+            )}
             {errorMessage && (
                 <>
                     <ErrorAlert />

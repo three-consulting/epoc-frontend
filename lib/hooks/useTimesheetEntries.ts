@@ -31,6 +31,26 @@ export const useTimesheetEntries = (
         )
     )
 
+export const useEmployeeTimesheetEntries = (
+    user: User
+): ApiGetResponse<TimesheetEntry[]> => {
+    const { email } = user
+    const startDate = "0000-01-01"
+    const endDate = "9999-01-01"
+    if (email) {
+        return swrToApiGetResponse(
+            useSWR<TimesheetEntry[], Error>(timesheetEntryEndpointURL, () =>
+                get(timesheetEntryEndpointURL, user, {
+                    email,
+                    startDate,
+                    endDate,
+                })
+            )
+        )
+    }
+    return { isSuccess: false, isError: false, isLoading: true }
+}
+
 export const useUpdateTimesheetEntries = (
     user: User
 ): UpdateTimesheetEntries => {

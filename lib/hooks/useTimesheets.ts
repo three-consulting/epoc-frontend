@@ -34,6 +34,20 @@ export const useTimesheets = (
         )
     )
 
+export const useEmployeeTimesheets = (
+    user: User
+): ApiGetResponse<Timesheet[]> => {
+    const { email } = user
+    if (email) {
+        return swrToApiGetResponse(
+            useSWR<Timesheet[], Error>(timesheetEndpointURL, () =>
+                get(timesheetEndpointURL, user, { email })
+            )
+        )
+    }
+    throw Error("Could not fetch user email.")
+}
+
 export const useTimesheetDetail = (
     id: number,
     user: User
