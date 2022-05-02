@@ -1,12 +1,7 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
-import {
-    Task,
-    TimeCategory,
-    Timesheet,
-    TimesheetEntry,
-} from "@/lib/types/apiTypes"
-import { Heading, Link } from "@chakra-ui/react"
+import { TimeCategory, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
+import { Heading, Link, Select } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import Calendar from "react-calendar"
 import {
@@ -15,8 +10,7 @@ import {
 } from "../form/TimesheetEntryForm"
 
 interface DayEditorProps {
-    timesheet: Timesheet
-    tasks: Task[]
+    timesheets: Timesheet[]
     date: Date
     timeCategories: TimeCategory[]
     entries: TimesheetEntry[]
@@ -31,8 +25,7 @@ const dateToString = (date: Date): string => {
 }
 
 const DayEditor = ({
-    timesheet,
-    tasks,
+    timesheets,
     date,
     timeCategories,
     entries,
@@ -44,31 +37,62 @@ const DayEditor = ({
     const displayString = date.toLocaleDateString("fin")
 
     const displayEntries = entries.filter((entry) => entry.date === dateStr)
+    const [timesheet, setTimesheet] = useState<Timesheet>()
+
+    const handleTimesheetChange = (
+        event: React.FormEvent<HTMLSelectElement>
+    ) => {
+        event.preventDefault()
+        const id = event.currentTarget.value
+        if (id) {
+            const tms = timesheets.find((_tms) => _tms.id === Number(id))
+            if (tms) {
+                setTimesheet(tms)
+            }
+        }
+    }
 
     return (
         <>
             <Heading as="h2" size="md">
                 Create a new entry on {displayString}
             </Heading>
-            <CreateTimesheetEntryForm
-                timesheet={timesheet}
-                tasks={tasks}
-                date={dateStr}
-                timeCategories={timeCategories}
-            />
+            <Select
+                onChange={handleTimesheetChange}
+                placeholder="Select project"
+                marginRight="0.3rem"
+                value={timesheet?.id}
+            >
+                {timesheets.map((tms, idx) => (
+                    <option key={idx} value={tms.id}>
+                        {tms.project.name}
+                    </option>
+                ))}
+            </Select>
+            {timesheet && timesheet.project.id && (
+                <CreateTimesheetEntryForm
+                    timesheet={timesheet}
+                    projectId={timesheet.project.id}
+                    date={dateStr}
+                    timeCategories={timeCategories}
+                    key={`createEntryEditor-${timesheet.id}`}
+                />
+            )}
             <Heading as="h2" size="md">
                 Previous entries on {displayString}
             </Heading>
             {displayEntries.map((entry) => {
-                if (entry.id) {
-                    const { id } = entry
+                const { id } = entry
+                const projectId = entry.timesheet.project.id
+                if (id && projectId) {
                     return (
                         <div key={`${entry.id}-container`}>
+                            <b>Project: {entry.timesheet.project.name}</b>
                             <EditTimesheetEntryForm
-                                key={`${entry.id}`}
+                                key={`updateEntryEditor-${entry.id}`}
                                 entry={entry}
-                                timesheet={timesheet}
-                                tasks={tasks}
+                                timesheet={entry.timesheet}
+                                projectId={projectId}
                                 date={dateStr}
                                 timeCategories={timeCategories}
                             />
@@ -89,28 +113,21 @@ const DayEditor = ({
 
 interface TimesheetEntryEditorProps {
     entries: TimesheetEntry[]
-    timesheet: Timesheet
+    timesheets: Timesheet[]
     timeCategories: TimeCategory[]
-    tasks: Task[]
 }
 
 export function TimesheetEntryEditor({
     entries,
-    timesheet,
-    tasks,
+    timesheets,
     timeCategories,
 }: TimesheetEntryEditorProps): JSX.Element {
-    const projectName = timesheet.project.name
-    const employeeName = timesheet.employee.firstName
     const [date, onDateChange] = useState(new Date())
 
     const entryDates = entries.map(({ date: entryDate }) => entryDate)
 
     return (
         <>
-            <Heading fontWeight="black" margin="1rem 0rem">
-                Entries of {employeeName} in {projectName}
-            </Heading>
             <div>
                 <Calendar
                     onChange={onDateChange}
@@ -124,9 +141,8 @@ export function TimesheetEntryEditor({
                 />
             </div>
             <DayEditor
-                timesheet={timesheet}
+                timesheets={timesheets}
                 date={date}
-                tasks={tasks}
                 timeCategories={timeCategories}
                 entries={entries}
             />
