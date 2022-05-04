@@ -137,6 +137,17 @@ function TimesheetEntryForm({
                     onChange={(event) => setQuantityString(event.target.value)}
                     data-testid={"form-field-quantity"}
                 />
+                <Input
+                    value={timesheetEntryFields?.description || ""}
+                    placeholder="Description"
+                    onChange={(event) =>
+                        setTimesheetEntryFields({
+                            ...timesheetEntryFields,
+                            description: event.target.value,
+                        })
+                    }
+                    data-testid={"form-field-description"}
+                />
                 <Select
                     onChange={handleTaskChange}
                     placeholder="Select task"
