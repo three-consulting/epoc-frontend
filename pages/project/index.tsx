@@ -7,15 +7,12 @@ import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useProjects } from "@/lib/hooks/useProjects"
-import { useCustomers } from "@/lib/hooks/useCustomers"
-import CustomerTable from "@/components/table/CustomerTable"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
 const Projects: NextPage = () => {
     const router = useRouter()
     const { user } = useContext(UserContext)
     const projectsResponse = useProjects(user)
-    const customersResponse = useCustomers(user)
 
     return (
         <div>
@@ -40,19 +37,6 @@ const Projects: NextPage = () => {
                     Add project
                 </Button>
             </Box>
-            <Heading fontWeight="black" margin="1rem 0rem">
-                Customers
-            </Heading>
-            {customersResponse.isLoading && <Loading />}
-            {customersResponse.isError && (
-                <ErrorAlert
-                    title={customersResponse.errorMessage}
-                    message={customersResponse.errorMessage}
-                />
-            )}
-            {customersResponse.isSuccess && (
-                <CustomerTable customers={customersResponse.data} />
-            )}
         </div>
     )
 }
