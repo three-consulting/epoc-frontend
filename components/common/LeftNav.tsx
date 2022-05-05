@@ -1,6 +1,12 @@
 import React from "react"
 import { Text, Flex, Icon, HStack } from "@chakra-ui/react"
-import { BsBriefcase, BsHouse, BsDoorOpen, BsDoorClosed } from "react-icons/bs"
+import {
+    BsBriefcase,
+    BsHouse,
+    BsDoorOpen,
+    BsDoorClosed,
+    BsPersonBadge,
+} from "react-icons/bs"
 import useFirebaseAuth from "@/lib/hooks/useFirebaseAuth"
 import Link from "next/link"
 import { IconType } from "react-icons"
@@ -14,6 +20,7 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
     { name: "Home", icon: BsHouse, href: "/" },
     { name: "Projects", icon: BsBriefcase, href: "/project" },
+    { name: "Customers", icon: BsPersonBadge, href: "/customer" },
 ]
 
 const NavItem = ({ name, icon, href }: LinkItemProps) => (
