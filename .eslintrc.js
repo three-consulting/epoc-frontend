@@ -29,6 +29,7 @@ module.exports = {
         "array-element-newline": 0,
         "no-confusing-arrow": 0,
         "comma-dangle": 0,
+        "no-undefined": 0,
         complexity: 0,
         "filenames/match-regex": 0,
         "id-blacklist": 0,
