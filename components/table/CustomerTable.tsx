@@ -4,6 +4,7 @@ import { Tbody } from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React, { useState } from "react"
 import { FromButton, NewCustomerModal } from "../common/FormFields"
+import Link from "next/link"
 
 interface CustomerRowProps {
     customer: Customer
@@ -11,9 +12,11 @@ interface CustomerRowProps {
 
 function CustomerRow({ customer }: CustomerRowProps): JSX.Element {
     return (
-        <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
-            <Td>{customer.name}</Td>
-        </Tr>
+        <Link href={`customer/${customer.id}`}>
+            <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
+                <Td>{customer.name}</Td>
+            </Tr>
+        </Link>
     )
 }
 
@@ -37,7 +40,6 @@ function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
                         <Thead>
                             <Tr>
                                 <Th>Name</Th>
-                                <Th />
                             </Tr>
                         </Thead>
                         <Tbody>
