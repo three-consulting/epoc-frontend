@@ -51,7 +51,6 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
                         customers={customersResponse.data}
                         employees={employeesResponse.data}
                         project={projectDetailResponse.data}
-                        projectId={projectDetailResponse.data.id}
                         afterSubmit={redirectToProjectDetail}
                         onCancel={redirectToProjectDetail}
                     />

@@ -18,6 +18,7 @@ import { CreateCustomerForm } from "../form/CustomerForm"
 
 type FormInputFieldProps = {
     label: string
+    value: string | undefined
     placeholder: string
     isRequired?: boolean
     isInvalid?: boolean
@@ -28,6 +29,7 @@ type FormInputFieldProps = {
 
 export const FormInputField = ({
     label,
+    value,
     placeholder,
     isRequired,
     isInvalid,
@@ -38,6 +40,7 @@ export const FormInputField = ({
     <FormControl isInvalid={isInvalid} isRequired={isRequired}>
         <FormLabel>{label}</FormLabel>
         <Input
+            value={value}
             placeholder={placeholder}
             onChange={onChange}
             data-testid={testId}

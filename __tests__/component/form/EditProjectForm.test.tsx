@@ -86,7 +86,6 @@ test("a project can be edited with required fields", async () => {
                     employees={[testEmployee, anotherTestEmployee]}
                     customers={[testCustomer, anotherTestCustomer]}
                     project={testProject}
-                    projectId={testProject.id}
                 />
             )}
         </>
@@ -110,7 +109,6 @@ test("a project can be edited with all fields", async () => {
                     employees={[testEmployee, anotherTestEmployee]}
                     customers={[testCustomer, anotherTestCustomer]}
                     project={testProject}
-                    projectId={testProject.id}
                 />
             )}
         </>
@@ -135,7 +133,6 @@ test("afterSubmit is invoked with the correct data", async () => {
                     employees={[testEmployee, anotherTestEmployee]}
                     customers={[testCustomer, anotherTestCustomer]}
                     project={testProject}
-                    projectId={testProject.id}
                     afterSubmit={afterSubmitSpy}
                 />
             )}
@@ -161,7 +158,6 @@ test("onCancel is invoked", async () => {
                     employees={[testEmployee, anotherTestEmployee]}
                     customers={[testCustomer, anotherTestCustomer]}
                     project={testProject}
-                    projectId={testProject.id}
                     onCancel={onCancelSpy}
                 />
             )}
@@ -187,7 +183,6 @@ test("a required field cannot be missing when editing a project", async () => {
                         employees={[testEmployee, anotherTestEmployee]}
                         customers={[testCustomer, anotherTestCustomer]}
                         project={testProject}
-                        projectId={testProject.id}
                     />
                 )}
             </>
