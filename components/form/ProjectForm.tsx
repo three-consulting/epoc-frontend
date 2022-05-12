@@ -23,12 +23,10 @@ type CreateProjectFormProps = FormBase<Project> & {
 
 type EditProjectFormProps = CreateProjectFormProps & {
     project: Project
-    projectId: number
 }
 
 type ProjectFormProps = CreateProjectFormProps & {
     project?: Project
-    projectId?: number
     onSubmit: (project: Project) => void
 }
 

@@ -14,27 +14,35 @@ import {
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
-import { CreateTaskForm } from "../form/TaskForm"
+import { CreateTaskForm, EditTaskForm } from "../form/TaskForm"
 
 interface TaskRowProps {
     task: Task
+    onClick?: () => void
 }
 
-function TaskRow({ task }: TaskRowProps): JSX.Element {
+function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
     const { user } = useContext(UserContext)
     const { putTask } = useUpdateTasks(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
     const archiveTask = () =>
         putTask({ ...task, status: "ARCHIVED" }, errorHandler)
+
     return (
-        <>
+        <div onClick={onClick}>
             <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
                 <Td>{task.name}</Td>
                 <Td>
-                    <Button onClick={archiveTask}>x</Button>
+                    <Button
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            archiveTask()
+                        }}
+                    >
+                        x
+                    </Button>
                 </Td>
             </Tr>
             {errorMessage && (
@@ -43,7 +51,7 @@ function TaskRow({ task }: TaskRowProps): JSX.Element {
                     <Box>{errorMessage}</Box>
                 </>
             )}
-        </>
+        </div>
     )
 }
 
@@ -54,6 +62,7 @@ interface TaskTableProps {
 
 function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
     const [displayNewTaskForm, setDisplayNewTaskForm] = useState(false)
+    const [taskToEdit, setTaskToEdit] = useState<Task>()
 
     return (
         <Flex
@@ -81,7 +90,11 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                             {tasks.map(
                                 (task, idx) =>
                                     task.status !== "ARCHIVED" && (
-                                        <TaskRow task={task} key={idx} />
+                                        <TaskRow
+                                            task={task}
+                                            key={idx}
+                                            onClick={() => setTaskToEdit(task)}
+                                        />
                                     )
                             )}
                         </Tbody>
@@ -121,6 +134,28 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                                 }
                                 onCancel={() => setDisplayNewTaskForm(false)}
                             />
+                        </ModalContent>
+                    </Modal>
+                    <Modal
+                        isOpen={Boolean(taskToEdit)}
+                        onClose={() => setTaskToEdit(undefined)}
+                    >
+                        <ModalOverlay />
+                        <ModalContent px="0.5rem">
+                            <ModalHeader>Edit task</ModalHeader>
+                            <ModalCloseButton />
+                            {taskToEdit && (
+                                <EditTaskForm
+                                    task={taskToEdit}
+                                    project={project}
+                                    projectId={project.id}
+                                    afterSubmit={(taskUpdate) =>
+                                        taskUpdate.isSuccess &&
+                                        setTaskToEdit(undefined)
+                                    }
+                                    onCancel={() => setTaskToEdit(undefined)}
+                                />
+                            )}
                         </ModalContent>
                     </Modal>
                 </>
