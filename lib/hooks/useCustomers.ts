@@ -1,6 +1,6 @@
 import useSWR, { useSWRConfig } from "swr"
 import { Customer } from "../types/apiTypes"
-import { get, post } from "../utils/fetch"
+import { get, post, put } from "../utils/fetch"
 import {
     swrToApiGetResponse,
     ApiGetResponse,
@@ -19,8 +19,9 @@ const customerIdEndpointCacheKey = (customerId: number): string =>
     `/customer/${customerId}`
 const customerIdEndpointCacheKeyRegex = /^\/customer\/([0-9]+)$/
 
-type CustomersUpdate = {
+interface UpdateCustomers {
     postCustomer: UpdateHookFunction<Customer>
+    putCustomer: UpdateHookFunction<Customer>
 }
 
 export const useCustomerDetail = (
@@ -40,7 +41,7 @@ export const useCustomers = (user: User): ApiGetResponse<Customer[]> =>
         )
     )
 
-export const useUpdateCustomers = (user: User): CustomersUpdate => {
+export const useUpdateCustomers = (user: User): UpdateCustomers => {
     const { mutate } = useSWRConfig()
     const matchMutate = useMatchMutate()
 
@@ -58,5 +59,19 @@ export const useUpdateCustomers = (user: User): CustomersUpdate => {
         return updateToApiUpdateResponse(newCustomer || null)
     }
 
-    return { postCustomer }
+    const putCustomer = async (
+        ...[customer, errorHandler]: UpdateHookArgs<Customer>
+    ) => {
+        const updatedCustomer = await put<Customer, Customer>(
+            customerEndpointURL,
+            user,
+            customer
+        ).catch(errorHandler)
+        mutate(customerEndpointURL)
+        matchMutate(customerIdEndpointCacheKeyRegex)
+
+        return updateToApiUpdateResponse(updatedCustomer || null)
+    }
+
+    return { postCustomer, putCustomer }
 }
