@@ -96,3 +96,10 @@ export const testTaskRequiredFields: Task = {
     project: testProject,
     billable: false,
 }
+
+export const testTask: Task = {
+    name: "Task name",
+    project: testProject,
+    billable: false,
+    id: 1,
+}
