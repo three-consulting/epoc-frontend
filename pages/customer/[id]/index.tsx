@@ -7,6 +7,8 @@ import Loading from "@/components/common/Loading"
 import CustomerDetail from "@/components/detail/CustomerDetail"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useCustomerDetail } from "@/lib/hooks/useCustomers"
+import { Button } from "@chakra-ui/react"
+import Link from "next/link"
 
 type Props = {
     customerId: number
@@ -29,6 +31,11 @@ function CustomerDetailPage({ customerId }: Props): JSX.Element {
             ) : (
                 <Box>Not found</Box>
             )}
+            <Link key={`${customerId}`} href={`${customerId}/edit`}>
+                <Button colorScheme="blue" marginTop="1rem">
+                    Edit customer
+                </Button>
+            </Link>
         </div>
     )
 }
