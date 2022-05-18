@@ -32,6 +32,11 @@ export const anotherTestCustomer: Customer = {
     description: "Used in tests.",
 }
 
+export const thirdTestCustomer: Customer = {
+    id: 1,
+    name: "third customer",
+}
+
 export const testProjectAllFields: Project = {
     name: "Some project",
     description: "Some description",
