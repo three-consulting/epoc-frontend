@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react"
 import Header from "./Header"
-import Footer from "./Footer"
 import Main from "./Main"
 import { Flex } from "@chakra-ui/react"
 
@@ -17,7 +16,6 @@ function Layout({ children }: LayoutProps): JSX.Element {
         >
             <Header />
             <Main>{children}</Main>
-            <Footer />
         </Flex>
     )
 }
