@@ -9,6 +9,13 @@ import {
     EditTimesheetEntryForm,
 } from "../form/TimesheetEntryForm"
 
+interface TimesheetEntryRowProps {
+    entry: TimesheetEntry
+    deleteTimesheetEntry: (entryId: number) => void
+    dateStr: string
+    timeCategories: TimeCategory[]
+}
+
 interface DayEditorProps {
     timesheets: Timesheet[]
     date: Date
@@ -22,6 +29,53 @@ const dateToString = (date: Date): string => {
     return `${year}-${`0${month}`.slice(sliceIndex)}-${`0${day}`.slice(
         sliceIndex
     )}`
+}
+
+const TimesheetEntryRow = ({
+    entry,
+    deleteTimesheetEntry,
+    dateStr,
+    timeCategories,
+}: TimesheetEntryRowProps): JSX.Element => {
+    const { id } = entry
+    const projectId = entry.timesheet.project.id
+    const [edit, setEdit] = useState<boolean>(false)
+
+    return (
+        <div>
+            <Link
+                onClick={() => setEdit(!edit)}
+                style={{
+                    marginRight: ".5rem",
+                    fontWeight: "bold",
+                }}
+            >
+                {entry.quantity} Hours on {entry.timesheet.project.name}
+            </Link>
+            {edit && projectId && id && (
+                <>
+                    <EditTimesheetEntryForm
+                        entry={entry}
+                        timesheet={entry.timesheet}
+                        projectId={projectId}
+                        date={dateStr}
+                        timeCategories={timeCategories}
+                        onCancel={() => setEdit(!edit)}
+                        afterSubmit={() => setEdit(!edit)}
+                    />
+                    <Link
+                        onClick={() => deleteTimesheetEntry(id)}
+                        style={{
+                            marginLeft: ".5rem",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        Delete
+                    </Link>
+                </>
+            )}
+        </div>
+    )
 }
 
 const DayEditor = ({
@@ -81,32 +135,21 @@ const DayEditor = ({
             <Heading as="h2" size="md">
                 Previous entries on {displayString}
             </Heading>
-            {displayEntries.map((entry) => {
-                const { id } = entry
-                const projectId = entry.timesheet.project.id
-                if (id && projectId) {
-                    return (
-                        <div key={`${entry.id}-container`}>
-                            <b>Project: {entry.timesheet.project.name}</b>
-                            <EditTimesheetEntryForm
-                                key={`updateEntryEditor-${entry.id}`}
-                                entry={entry}
-                                timesheet={entry.timesheet}
-                                projectId={projectId}
-                                date={dateStr}
-                                timeCategories={timeCategories}
-                            />
-                            <Link
-                                key={`delete-${entry.id}`}
-                                onClick={() => deleteTimesheetEntry(id)}
-                            >
-                                delete
-                            </Link>
-                        </div>
-                    )
-                }
-                return null
-            })}
+            <ul>
+                {displayEntries.map((entry) => (
+                    <li
+                        key={`timesheet-entry-${entry.id}-editor-container`}
+                        style={{ margin: "20px" }}
+                    >
+                        <TimesheetEntryRow
+                            entry={entry}
+                            deleteTimesheetEntry={deleteTimesheetEntry}
+                            dateStr={dateStr}
+                            timeCategories={timeCategories}
+                        />
+                    </li>
+                ))}
+            </ul>
         </>
     )
 }
