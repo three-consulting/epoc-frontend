@@ -73,7 +73,7 @@ function CustomerForm({
                         <FormLabel>Customer Name</FormLabel>
                         <Input
                             placeholder="Customer Name"
-                            value={customerFields.name}
+                            value={customerFields.name || ""}
                             onChange={(event) =>
                                 setCustomerFields({
                                     ...customerFields,
@@ -88,7 +88,7 @@ function CustomerForm({
                         <FormLabel>Description</FormLabel>
                         <Input
                             placeholder="Description"
-                            value={customerFields.description}
+                            value={customerFields.description || ""}
                             onChange={(event) =>
                                 setCustomerFields({
                                     ...customerFields,
