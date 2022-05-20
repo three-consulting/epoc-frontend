@@ -6,6 +6,8 @@ import { TimesheetEntryEditor } from "@/components/editor/TimesheetEntryEditor"
 import { useTimeCategories } from "@/lib/hooks/useTimeCategories"
 import { Timesheet } from "@/lib/types/apiTypes"
 import { useEmployeeTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
+import ErrorAlert from "@/components/common/ErrorAlert"
+import Loading from "@/components/common/Loading"
 
 type TimesheetEntryEditorPageProps = {
     timesheets: Timesheet[]
@@ -20,6 +22,13 @@ function TimesheetEntryEditorPage({
 
     return (
         <div>
+            {timesheetEntriesResponse.isError && (
+                <ErrorAlert
+                    title={timesheetEntriesResponse.errorMessage}
+                    message={timesheetEntriesResponse.errorMessage}
+                />
+            )}
+            {timesheetEntriesResponse.isLoading && <Loading />}
             {timesheetEntriesResponse.isSuccess &&
                 timeCategoriesResponse.isSuccess && (
                     <TimesheetEntryEditor
@@ -34,10 +43,23 @@ function TimesheetEntryEditorPage({
 
 const Home: NextPage = () => {
     const { user } = useContext(UserContext)
-    const timesheets = useEmployeeTimesheets(user)
-    return timesheets.isSuccess ? (
-        <TimesheetEntryEditorPage timesheets={timesheets.data} />
-    ) : null
+    const timesheetsResponse = useEmployeeTimesheets(user)
+    return (
+        <>
+            {timesheetsResponse.isError && (
+                <ErrorAlert
+                    title={timesheetsResponse.errorMessage}
+                    message={timesheetsResponse.errorMessage}
+                />
+            )}
+            {timesheetsResponse.isLoading && <Loading />}
+            {timesheetsResponse.isSuccess && (
+                <TimesheetEntryEditorPage
+                    timesheets={timesheetsResponse.data}
+                />
+            )}
+        </>
+    )
 }
 
 export default Home
