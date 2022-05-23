@@ -6,6 +6,7 @@ import {
     BsDoorOpen,
     BsDoorClosed,
     BsPersonBadge,
+    BsFillFileTextFill,
 } from "react-icons/bs"
 import useFirebaseAuth from "@/lib/hooks/useFirebaseAuth"
 import Link from "next/link"
@@ -21,6 +22,7 @@ const LinkItems: Array<LinkItemProps> = [
     { name: "Home", icon: BsHouse, href: "/" },
     { name: "Projects", icon: BsBriefcase, href: "/project" },
     { name: "Customers", icon: BsPersonBadge, href: "/customer" },
+    { name: "Reports", icon: BsFillFileTextFill, href: "/report" },
 ]
 
 const NavItem = ({ name, icon, href }: LinkItemProps) => (
