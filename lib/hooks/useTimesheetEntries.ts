@@ -51,6 +51,21 @@ export const useEmployeeTimesheetEntries = (
     return { isSuccess: false, isError: false, isLoading: true }
 }
 
+export const useTimeIntervalTimesheetEntries = (
+    user: User
+): ApiGetResponse<TimesheetEntry[]> => {
+    const startDate = "2022-01-01"
+    const endDate = "2022-12-12"
+    return swrToApiGetResponse(
+        useSWR<TimesheetEntry[], Error>(timesheetEntryEndpointURL, () =>
+            get(timesheetEntryEndpointURL, user, {
+                startDate,
+                endDate,
+            })
+        )
+    )
+}
+
 export const useUpdateTimesheetEntries = (
     user: User
 ): UpdateTimesheetEntries => {
