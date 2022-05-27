@@ -38,17 +38,26 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
         )
     }
 
+    const pushToTimesheet = (
+        timesheetId: number | undefined,
+        event: React.MouseEvent
+    ) => {
+        event.preventDefault()
+        if (timesheetId) {
+            router.push(`/timesheet/${timesheetId}`)
+        }
+    }
+
     return (
         <>
             <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
-                <Flex onClick={() => router.push(`/timesheet/${timesheet.id}`)}>
-                    <Td>
-                        {timesheet.employee?.firstName}{" "}
-                        {timesheet.employee?.lastName}
-                    </Td>
-                    <Td>{timesheet.allocation} %</Td>
-                </Flex>
-
+                <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
+                    {timesheet.employee?.firstName}{" "}
+                    {timesheet.employee?.lastName}
+                </Td>
+                <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
+                    {timesheet.allocation} %
+                </Td>
                 <Td>
                     <Button
                         onClick={(event) => archiveTimesheet(timesheet, event)}
