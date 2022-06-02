@@ -4,6 +4,8 @@ import { Heading } from "@chakra-ui/layout"
 import { useTimeIntervalTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import ReportTable from "@/components/table/ReportTable"
+import Loading from "@/components/common/Loading"
+import ErrorAlert from "@/components/common/ErrorAlert"
 
 const Report: NextPage = () => {
     const { user } = useContext(UserContext)
@@ -17,10 +19,15 @@ const Report: NextPage = () => {
 
     return (
         <div>
-            {reportsResponse.isSuccess && (
-                <Heading fontWeight="black" margin="1rem 0rem">
-                    Reports
-                </Heading>
+            <Heading fontWeight="black" margin="1rem 0rem">
+                Reports
+            </Heading>
+            {reportsResponse.isLoading && <Loading />}
+            {reportsResponse.isError && (
+                <ErrorAlert
+                    title={reportsResponse.errorMessage}
+                    message={reportsResponse.errorMessage}
+                />
             )}
             {reportsResponse.isSuccess && (
                 <ReportTable
