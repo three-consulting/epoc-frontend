@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import { Customer } from "@/lib/types/apiTypes"
-import { useUpdateCustomers } from "@/lib/hooks/useCustomers"
+import { useUpdateCustomers } from "@/lib/hooks/useUpdate"
 import { FormBase } from "@/lib/types/forms"
 import ErrorAlert from "../common/ErrorAlert"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
@@ -132,13 +132,13 @@ export const CreateCustomerForm = (
     props: CreateCustomerFormProps
 ): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { postCustomer } = useUpdateCustomers(user)
+    const { post } = useUpdateCustomers(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (customer: Customer) => {
-        const newCustomer = await postCustomer(customer, errorHandler)
+        const newCustomer = await post(customer, errorHandler)
         return props.afterSubmit && props.afterSubmit(newCustomer)
     }
 
@@ -157,13 +157,13 @@ export const CreateCustomerForm = (
 
 export const EditCustomerForm = (props: EditCustomerFormProps): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { putCustomer } = useUpdateCustomers(user)
+    const { put } = useUpdateCustomers(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (customer: Customer) => {
-        const updatedCustomer = await putCustomer(customer, errorHandler)
+        const updatedCustomer = await put(customer, errorHandler)
         return props.afterSubmit && props.afterSubmit(updatedCustomer)
     }
 

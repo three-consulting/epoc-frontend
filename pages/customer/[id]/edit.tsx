@@ -4,9 +4,9 @@ import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
-import { useCustomerDetail } from "@/lib/hooks/useCustomers"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { EditCustomerForm } from "@/components/form/CustomerForm"
+import { useCustomerDetail } from "@/lib/hooks/useDetail"
 
 type Props = {
     customerId: number

@@ -6,8 +6,8 @@ import ProjectTable from "@/components/table/ProjectTable"
 import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
-import { useProjects } from "@/lib/hooks/useProjects"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { useProjects } from "@/lib/hooks/useList"
 
 const Projects: NextPage = () => {
     const router = useRouter()

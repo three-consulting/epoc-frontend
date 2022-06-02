@@ -1,5 +1,5 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useUpdateTasks } from "@/lib/hooks/useTasks"
+import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
 import { Box } from "@chakra-ui/react"
@@ -120,13 +120,13 @@ function TaskForm({
 
 export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { postTask } = useUpdateTasks(user)
+    const { post } = useUpdateTasks(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (task: Task) => {
-        const newTask = await postTask(task, errorHandler)
+        const newTask = await post(task, errorHandler)
         return props.afterSubmit && props.afterSubmit(newTask)
     }
 
@@ -145,13 +145,13 @@ export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
 
 export const EditTaskForm = (props: EditTaskFormProps): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { putTask } = useUpdateTasks(user)
+    const { put } = useUpdateTasks(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (task: Task) => {
-        const updatedTask = await putTask(task, errorHandler)
+        const updatedTask = await put(task, errorHandler)
         return props.afterSubmit && props.afterSubmit(updatedTask)
     }
 

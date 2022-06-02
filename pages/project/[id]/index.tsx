@@ -15,12 +15,11 @@ import {
 import Link from "next/link"
 import TimesheetTable from "@/components/table/TimesheetTable"
 import TaskTable from "@/components/table/TaskTable"
-import { useProjectDetail, useUpdateProjects } from "@/lib/hooks/useProjects"
 import ProjectDetail from "@/components/detail/ProjectDetail"
-import { useEmployees } from "@/lib/hooks/useEmployees"
-import useTasks from "@/lib/hooks/useTasks"
-import { useTimesheets } from "@/lib/hooks/useTimesheets"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { useProjectDetail } from "@/lib/hooks/useDetail"
+import { useTimesheets, useEmployees, useTasks } from "@/lib/hooks/useList"
+import { useUpdateProjects } from "@/lib/hooks/useUpdate"
 
 type Props = {
     projectId: number
@@ -29,11 +28,11 @@ type Props = {
 function ProjectDetailPage({ projectId }: Props): JSX.Element {
     const { user } = useContext(UserContext)
     const projectDetailResponse = useProjectDetail(projectId, user)
-    const timesheetsResponse = useTimesheets(projectId, user)
+    const timesheetsResponse = useTimesheets(user, { projectId })
     const employeesResponse = useEmployees(user)
     const tasksResponse = useTasks(projectId, user)
 
-    const { putProject } = useUpdateProjects(user)
+    const { put } = useUpdateProjects(user)
 
     const [displayArchivedModal, setDisplayArchivedModal] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -41,7 +40,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
     const archiveProject = async (mouseEvent: React.MouseEvent) => {
         mouseEvent.preventDefault()
         if (projectDetailResponse.isSuccess) {
-            await putProject(
+            await put(
                 { ...projectDetailResponse.data, status: "ARCHIVED" },
                 (error) => setErrorMessage(`${error}`)
             )

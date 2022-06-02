@@ -12,9 +12,9 @@ import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { CreateTimesheetForm } from "../form/TimesheetForm"
-import { useUpdateTimesheets } from "@/lib/hooks/useTimesheets"
 import { useRouter } from "next/router"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
 
 interface TimesheetRowProps {
     timesheet: Timesheet
@@ -22,7 +22,7 @@ interface TimesheetRowProps {
 function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     const router = useRouter()
     const { user } = useContext(UserContext)
-    const { putTimesheet } = useUpdateTimesheets(user)
+    const { put } = useUpdateTimesheets(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -32,10 +32,7 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
         event: React.MouseEvent
     ) => {
         event.preventDefault()
-        await putTimesheet(
-            { ...timesheetToArchive, status: "ARCHIVED" },
-            errorHandler
-        )
+        await put({ ...timesheetToArchive, status: "ARCHIVED" }, errorHandler)
     }
 
     const pushToTimesheet = (

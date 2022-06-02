@@ -1,5 +1,5 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useUpdateProjects } from "@/lib/hooks/useProjects"
+import { useUpdateProjects } from "@/lib/hooks/useUpdate"
 import { Customer, Employee, Project } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
 import { Flex } from "@chakra-ui/layout"
@@ -262,13 +262,13 @@ export const CreateProjectForm = (
     props: CreateProjectFormProps
 ): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { postProject } = useUpdateProjects(user)
+    const { post } = useUpdateProjects(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (project: Project) => {
-        const newProject = await postProject(project, errorHandler)
+        const newProject = await post(project, errorHandler)
         return props.afterSubmit && props.afterSubmit(newProject)
     }
 
@@ -287,13 +287,13 @@ export const CreateProjectForm = (
 
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { putProject } = useUpdateProjects(user)
+    const { put } = useUpdateProjects(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (project: Project) => {
-        const updatedProject = await putProject(project, errorHandler)
+        const updatedProject = await put(project, errorHandler)
         return props.afterSubmit && props.afterSubmit(updatedProject)
     }
 

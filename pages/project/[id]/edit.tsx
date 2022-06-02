@@ -5,10 +5,9 @@ import { EditProjectForm } from "@/components/form/ProjectForm"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
-import { useCustomers } from "@/lib/hooks/useCustomers"
-import { useEmployees } from "@/lib/hooks/useEmployees"
-import { useProjectDetail } from "@/lib/hooks/useProjects"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { useProjectDetail } from "@/lib/hooks/useDetail"
+import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 
 type Props = {
     projectId: number
