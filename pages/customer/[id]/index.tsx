@@ -6,9 +6,9 @@ import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import CustomerDetail from "@/components/detail/CustomerDetail"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useCustomerDetail } from "@/lib/hooks/useCustomers"
 import { Button } from "@chakra-ui/react"
 import Link from "next/link"
+import { useCustomerDetail } from "@/lib/hooks/useDetail"
 
 type Props = {
     customerId: number

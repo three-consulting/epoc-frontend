@@ -1,5 +1,5 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useUpdateTasks } from "@/lib/hooks/useTasks"
+import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { Button } from "@chakra-ui/button"
 import { Box, Flex, Heading } from "@chakra-ui/layout"
@@ -23,12 +23,11 @@ interface TaskRowProps {
 
 function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
     const { user } = useContext(UserContext)
-    const { putTask } = useUpdateTasks(user)
+    const { put } = useUpdateTasks(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-    const archiveTask = () =>
-        putTask({ ...task, status: "ARCHIVED" }, errorHandler)
+    const archiveTask = () => put({ ...task, status: "ARCHIVED" }, errorHandler)
 
     return (
         <div onClick={onClick}>

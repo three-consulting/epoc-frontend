@@ -4,11 +4,11 @@ import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
-import { useTimesheetDetail } from "@/lib/hooks/useTimesheets"
 import TimesheetDetail from "@/components/detail/TimesheetDetail"
 import Link from "next/link"
 import { Button } from "@chakra-ui/react"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { useTimesheetDetail } from "@/lib/hooks/useDetail"
 
 type Props = {
     timesheetId: number

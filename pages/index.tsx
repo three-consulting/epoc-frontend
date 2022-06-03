@@ -1,49 +1,39 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useEmployeeTimesheets } from "@/lib/hooks/useTimesheets"
 import { TimesheetEntryEditor } from "@/components/editor/TimesheetEntryEditor"
-import { useTimeCategories } from "@/lib/hooks/useTimeCategories"
-import { Timesheet } from "@/lib/types/apiTypes"
-import { useEmployeeTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
+import {
+    useTimeCategories,
+    useTimesheetEntries,
+    useTimesheets,
+} from "@/lib/hooks/useList"
 
-type TimesheetEntryEditorPageProps = {
-    timesheets: Timesheet[]
+interface IndexPageProps {
+    email: string
 }
 
-function TimesheetEntryEditorPage({
-    timesheets,
-}: TimesheetEntryEditorPageProps): JSX.Element {
+const IndexPage = ({ email }: IndexPageProps) => {
     const { user } = useContext(UserContext)
-    const timesheetEntriesResponse = useEmployeeTimesheetEntries(user)
+    const timesheetsResponse = useTimesheets(user, { email })
     const timeCategoriesResponse = useTimeCategories(user)
 
-    return (
-        <div>
-            {timesheetEntriesResponse.isError && (
-                <ErrorAlert
-                    title={timesheetEntriesResponse.errorMessage}
-                    message={timesheetEntriesResponse.errorMessage}
-                />
-            )}
-            {timesheetEntriesResponse.isLoading && <Loading />}
-            {timesheetEntriesResponse.isSuccess &&
-                timeCategoriesResponse.isSuccess && (
-                    <TimesheetEntryEditor
-                        timesheets={timesheets}
-                        entries={timesheetEntriesResponse.data}
-                        timeCategories={timeCategoriesResponse.data}
-                    />
-                )}
-        </div>
-    )
-}
+    const startDate = "0000-01-01"
+    const endDate = "9999-01-01"
 
-const Home: NextPage = () => {
-    const { user } = useContext(UserContext)
-    const timesheetsResponse = useEmployeeTimesheets(user)
+    const timesheetEntriesResponse = useTimesheetEntries(
+        user,
+        startDate,
+        endDate,
+        email
+    )
+
+    const isLoading =
+        timesheetsResponse.isLoading ||
+        timeCategoriesResponse.isLoading ||
+        timesheetEntriesResponse.isLoading
+
     return (
         <>
             {timesheetsResponse.isError && (
@@ -52,14 +42,35 @@ const Home: NextPage = () => {
                     message={timesheetsResponse.errorMessage}
                 />
             )}
-            {timesheetsResponse.isLoading && <Loading />}
-            {timesheetsResponse.isSuccess && (
-                <TimesheetEntryEditorPage
-                    timesheets={timesheetsResponse.data}
+            {timeCategoriesResponse.isError && (
+                <ErrorAlert
+                    title={timeCategoriesResponse.errorMessage}
+                    message={timeCategoriesResponse.errorMessage}
                 />
             )}
+            {timesheetEntriesResponse.isError && (
+                <ErrorAlert
+                    title={timesheetEntriesResponse.errorMessage}
+                    message={timesheetEntriesResponse.errorMessage}
+                />
+            )}
+            {isLoading && <Loading />}
+            {timesheetsResponse.isSuccess &&
+                timeCategoriesResponse.isSuccess &&
+                timesheetEntriesResponse.isSuccess && (
+                    <TimesheetEntryEditor
+                        timesheets={timesheetsResponse.data}
+                        timeCategories={timeCategoriesResponse.data}
+                        entries={timesheetEntriesResponse.data}
+                    />
+                )}
         </>
     )
+}
+
+const Home: NextPage = () => {
+    const { user } = useContext(UserContext)
+    return user && user.email ? <IndexPage email={user.email} /> : null
 }
 
 export default Home

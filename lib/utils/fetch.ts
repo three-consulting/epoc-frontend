@@ -23,16 +23,24 @@ async function http<T>(
     return response.json().catch(() => ({}))
 }
 
+export const pathToUrl = (
+    path: string,
+    params?: Record<string, string | number>
+): URL => {
+    const url = new URL(path)
+    url.search = new URLSearchParams(
+        params as Record<string, string>
+    ).toString()
+    return url
+}
+
 export function get<T>(
     path: string,
     user: User,
     params?: Record<string, string | number>,
     config?: RequestInit
 ): Promise<T> {
-    const url = new URL(path)
-    url.search = new URLSearchParams(
-        params as Record<string, string>
-    ).toString()
+    const url = pathToUrl(path, params)
     const init = { method: "get", ...config }
     return http<T>(url.href, user, init)
 }
@@ -49,11 +57,8 @@ export function post<T, U>(
         body: JSON.stringify(body),
         ...config,
     }
-    const url = new URL(path)
-    url.search = new URLSearchParams(
-        params as Record<string, string>
-    ).toString()
-    return http<U>(path, user, init)
+    const url = pathToUrl(path, params)
+    return http<U>(url.href, user, init)
 }
 
 export function put<T, U>(
@@ -67,7 +72,8 @@ export function put<T, U>(
         body: JSON.stringify(body),
         ...config,
     }
-    return http<U>(path, user, init)
+    const url = pathToUrl(path, {})
+    return http<U>(url.href, user, init)
 }
 
 // delete is a reserved keyword
@@ -80,5 +86,6 @@ export function del<T>(
         method: "delete",
         ...config,
     }
-    return http<T>(path, user, init)
+    const url = pathToUrl(path, {})
+    return http<T>(url.href, user, init)
 }

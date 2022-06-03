@@ -36,6 +36,15 @@ export type UpdateHookFunction<T> = (
     ...args: UpdateHookArgs<T>
 ) => Promise<ApiUpdateResponse<T>>
 
+export type DeleteHookArgs = [id: number, errorHandler: (error: Error) => void]
+export type DeleteHookFunction = (...args: DeleteHookArgs) => Promise<void>
+
+export interface UpdateHook<T> {
+    post: UpdateHookFunction<T>
+    put: UpdateHookFunction<T>
+    delete: DeleteHookFunction
+}
+
 export type swrType<T> = { data?: T; error?: { message: string } }
 
 export const swrToApiGetResponse = <T>({

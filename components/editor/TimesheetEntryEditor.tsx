@@ -1,6 +1,7 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useUpdateTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
+import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import { TimeCategory, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
+import { DeleteHookFunction } from "@/lib/types/hooks"
 import { Heading, Link, Select } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import Calendar from "react-calendar"
@@ -11,7 +12,7 @@ import {
 
 interface TimesheetEntryRowProps {
     entry: TimesheetEntry
-    deleteTimesheetEntry: (entryId: number) => void
+    deleteTimesheetEntry: DeleteHookFunction
     dateStr: string
     timeCategories: TimeCategory[]
 }
@@ -64,7 +65,9 @@ const TimesheetEntryRow = ({
                         afterSubmit={() => setEdit(!edit)}
                     />
                     <Link
-                        onClick={() => deleteTimesheetEntry(id)}
+                        onClick={() =>
+                            deleteTimesheetEntry(id, () => undefined)
+                        }
                         style={{
                             marginLeft: ".5rem",
                             fontWeight: "bold",
@@ -85,7 +88,7 @@ const DayEditor = ({
     entries,
 }: DayEditorProps): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { deleteTimesheetEntry } = useUpdateTimesheetEntries(user)
+    const { delete: del } = useUpdateTimesheetEntries(user)
 
     const dateStr = dateToString(date)
     const displayString = date.toLocaleDateString("fin")
@@ -143,7 +146,7 @@ const DayEditor = ({
                     >
                         <TimesheetEntryRow
                             entry={entry}
-                            deleteTimesheetEntry={deleteTimesheetEntry}
+                            deleteTimesheetEntry={del}
                             dateStr={dateStr}
                             timeCategories={timeCategories}
                         />

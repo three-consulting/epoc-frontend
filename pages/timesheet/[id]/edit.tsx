@@ -4,10 +4,10 @@ import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
-import { useTimesheetDetail } from "@/lib/hooks/useTimesheets"
 import { EditTimesheetForm } from "@/components/form/TimesheetForm"
-import { useEmployees } from "@/lib/hooks/useEmployees"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { useTimesheetDetail } from "@/lib/hooks/useDetail"
+import { useEmployees } from "@/lib/hooks/useList"
 
 type Props = {
     timesheetId: number

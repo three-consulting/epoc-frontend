@@ -3,13 +3,12 @@ import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
-import { useCustomers } from "@/lib/hooks/useCustomers"
-import { useEmployees } from "@/lib/hooks/useEmployees"
 import { CreateProjectForm } from "@/components/form/ProjectForm"
 import { useRouter } from "next/router"
 import { Project } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 
 const New: NextPage = () => {
     const router = useRouter()

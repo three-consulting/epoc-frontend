@@ -3,9 +3,9 @@ import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
-import { useCustomers } from "@/lib/hooks/useCustomers"
 import CustomerTable from "@/components/table/CustomerTable"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { useCustomers } from "@/lib/hooks/useList"
 
 const Customers: NextPage = () => {
     const { user } = useContext(UserContext)

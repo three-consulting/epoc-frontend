@@ -1,5 +1,5 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useUpdateTimesheets } from "@/lib/hooks/useTimesheets"
+import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
 import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
 import {
@@ -214,13 +214,13 @@ export const CreateTimesheetForm = (
     props: CreateTimesheetFormProps
 ): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { postTimesheet } = useUpdateTimesheets(user)
+    const { post } = useUpdateTimesheets(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (timesheet: Timesheet) => {
-        const newTimesheet = await postTimesheet(timesheet, errorHandler)
+        const newTimesheet = await post(timesheet, errorHandler)
         return props.afterSubmit && props.afterSubmit(newTimesheet)
     }
 
@@ -241,13 +241,13 @@ export const EditTimesheetForm = (
     props: EditTimesheetFormProps
 ): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { putTimesheet } = useUpdateTimesheets(user)
+    const { put } = useUpdateTimesheets(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const onSubmit = async (timesheet: Timesheet) => {
-        const updatedTimesheet = await putTimesheet(timesheet, errorHandler)
+        const updatedTimesheet = await put(timesheet, errorHandler)
         return props.afterSubmit && props.afterSubmit(updatedTimesheet)
     }
 

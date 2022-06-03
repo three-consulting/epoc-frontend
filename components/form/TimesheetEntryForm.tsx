@@ -1,6 +1,6 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import useTasks from "@/lib/hooks/useTasks"
-import { useUpdateTimesheetEntries } from "@/lib/hooks/useTimesheetEntries"
+import { useTasks } from "@/lib/hooks/useList"
+import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import {
     Task,
     TimeCategory,
@@ -187,7 +187,7 @@ export function EditTimesheetEntryForm(
     props: EditTimesheetEntryFormProps
 ): JSX.Element {
     const { user } = useContext(UserContext)
-    const { putTimesheetEntry } = useUpdateTimesheetEntries(user)
+    const { put } = useUpdateTimesheetEntries(user)
     const tasksResponse = useTasks(props.projectId, user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -195,10 +195,7 @@ export function EditTimesheetEntryForm(
 
     const onSubmit = async (entry: TimesheetEntry) => {
         try {
-            const updatedTimesheetEntry = await putTimesheetEntry(
-                entry,
-                errorHandler
-            )
+            const updatedTimesheetEntry = await put(entry, errorHandler)
             return props.afterSubmit && props.afterSubmit(updatedTimesheetEntry)
         } catch (error) {
             errorHandler(error as Error)
@@ -229,7 +226,7 @@ export function CreateTimesheetEntryForm(
     props: CreateTimesheetEntryFormProps
 ): JSX.Element {
     const { user } = useContext(UserContext)
-    const { postTimesheetEntry } = useUpdateTimesheetEntries(user)
+    const { post } = useUpdateTimesheetEntries(user)
     const tasksResponse = useTasks(props.projectId, user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -237,10 +234,7 @@ export function CreateTimesheetEntryForm(
 
     const onSubmit = async (entry: TimesheetEntry) => {
         try {
-            const newTimesheetEntry = await postTimesheetEntry(
-                entry,
-                errorHandler
-            )
+            const newTimesheetEntry = await post(entry, errorHandler)
             return props.afterSubmit && props.afterSubmit(newTimesheetEntry)
         } catch (error) {
             errorHandler(error as Error)
