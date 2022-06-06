@@ -5,7 +5,11 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import ReportTable from "@/components/table/ReportTable"
 import Loading from "@/components/common/Loading"
 import ErrorAlert from "@/components/common/ErrorAlert"
-import { useCustomers, useTimesheetEntries } from "@/lib/hooks/useList"
+import {
+    useCustomers,
+    useProjects,
+    useTimesheetEntries,
+} from "@/lib/hooks/useList"
 
 const Report: NextPage = () => {
     const { user } = useContext(UserContext)
@@ -15,8 +19,12 @@ const Report: NextPage = () => {
 
     const reportsResponse = useTimesheetEntries(user, startDate, endDate)
     const customersResponse = useCustomers(user)
+    const projectsResponse = useProjects(user)
 
-    const isLoading = reportsResponse.isLoading || customersResponse.isLoading
+    const isLoading =
+        reportsResponse.isLoading ||
+        customersResponse.isLoading ||
+        projectsResponse.isLoading
 
     return (
         <div>
@@ -35,15 +43,24 @@ const Report: NextPage = () => {
                     message={customersResponse.errorMessage}
                 />
             )}
-            {isLoading && <Loading />}
-            {reportsResponse.isSuccess && customersResponse.isSuccess && (
-                <ReportTable
-                    entries={reportsResponse.data}
-                    startDate={startDate}
-                    endDate={endDate}
-                    customers={customersResponse.data}
+            {projectsResponse.isError && (
+                <ErrorAlert
+                    title={projectsResponse.errorMessage}
+                    message={projectsResponse.errorMessage}
                 />
             )}
+            {isLoading && <Loading />}
+            {reportsResponse.isSuccess &&
+                customersResponse.isSuccess &&
+                projectsResponse.isSuccess && (
+                    <ReportTable
+                        entries={reportsResponse.data}
+                        startDate={startDate}
+                        endDate={endDate}
+                        customers={customersResponse.data}
+                        projects={projectsResponse.data}
+                    />
+                )}
         </div>
     )
 }
