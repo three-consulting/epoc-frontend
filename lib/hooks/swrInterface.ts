@@ -21,7 +21,7 @@ export type Endpoint =
     | `time-category`
 
 export const endpointRegex = (endpoint: Endpoint): RegExp =>
-    new RegExp(`^/${endpoint}[/|?].+`)
+    new RegExp(`^/${endpoint}([/|?].+)?`)
 
 const prefixEndpoint = (endpoint: Endpoint) =>
     `${NEXT_PUBLIC_API_URL}/${endpoint}`
