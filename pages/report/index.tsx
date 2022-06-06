@@ -7,6 +7,7 @@ import Loading from "@/components/common/Loading"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import {
     useCustomers,
+    useEmployees,
     useProjects,
     useTimesheetEntries,
 } from "@/lib/hooks/useList"
@@ -20,11 +21,13 @@ const Report: NextPage = () => {
     const reportsResponse = useTimesheetEntries(user, startDate, endDate)
     const customersResponse = useCustomers(user)
     const projectsResponse = useProjects(user)
+    const employeeResponse = useEmployees(user)
 
     const isLoading =
         reportsResponse.isLoading ||
         customersResponse.isLoading ||
-        projectsResponse.isLoading
+        projectsResponse.isLoading ||
+        employeeResponse.isLoading
 
     return (
         <div>
@@ -49,16 +52,24 @@ const Report: NextPage = () => {
                     message={projectsResponse.errorMessage}
                 />
             )}
+            {employeeResponse.isError && (
+                <ErrorAlert
+                    title={employeeResponse.errorMessage}
+                    message={employeeResponse.errorMessage}
+                />
+            )}
             {isLoading && <Loading />}
             {reportsResponse.isSuccess &&
                 customersResponse.isSuccess &&
-                projectsResponse.isSuccess && (
+                projectsResponse.isSuccess &&
+                employeeResponse.isSuccess && (
                     <ReportTable
                         entries={reportsResponse.data}
                         startDate={startDate}
                         endDate={endDate}
                         customers={customersResponse.data}
                         projects={projectsResponse.data}
+                        employees={employeeResponse.data}
                     />
                 )}
         </div>

@@ -1,6 +1,11 @@
 import React from "react"
 import { Flex, ListItem, UnorderedList } from "@chakra-ui/layout"
-import { Customer, Project, TimesheetEntry } from "@/lib/types/apiTypes"
+import {
+    Customer,
+    Employee,
+    Project,
+    TimesheetEntry,
+} from "@/lib/types/apiTypes"
 
 interface TotalHoursProps {
     startDate: string
@@ -18,10 +23,16 @@ interface ProjectHoursRowProps {
     project: Project
 }
 
+interface EmployeeHoursRowProps {
+    entries: TimesheetEntry[]
+    employee: Employee
+}
+
 interface ReportTableProps {
     entries: TimesheetEntry[]
     customers: Customer[]
     projects: Project[]
+    employees: Employee[]
     startDate: string
     endDate: string
 }
@@ -68,10 +79,23 @@ function ProjectHoursRow({
     )
 }
 
+function EmployeeHoursRow({
+    entries,
+    employee,
+}: EmployeeHoursRowProps): JSX.Element {
+    return (
+        <ListItem>
+            Total hours for {employee.firstName} {employee.lastName}:{" "}
+            {entriesQuantitySum(entries)}
+        </ListItem>
+    )
+}
+
 function ReportTable({
     entries,
     customers,
     projects,
+    employees,
     startDate,
     endDate,
 }: ReportTableProps): JSX.Element {
@@ -88,6 +112,13 @@ function ReportTable({
     ) =>
         entriesToFilter.filter(
             (entry) => entry.timesheet.project?.id === projectId
+        )
+    const entriesByEmployee = (
+        entriesToFilter: TimesheetEntry[],
+        employeeId: number
+    ) =>
+        entriesToFilter.filter(
+            (entry) => entry.timesheet.employee?.id === employeeId
         )
     return (
         <Flex
@@ -114,6 +145,7 @@ function ReportTable({
                         )
                 )}
             </UnorderedList>
+            <br></br>
             <b>Total hours per project: </b>
             <UnorderedList>
                 {projects.map(
@@ -127,6 +159,24 @@ function ReportTable({
                         )
                 )}
             </UnorderedList>
+            <br></br>
+            <b>Total hours per employee: </b>
+            <UnorderedList>
+                {employees.map(
+                    (employee) =>
+                        employee.id && (
+                            <EmployeeHoursRow
+                                key={`employee-hours-row-${employee.id}`}
+                                entries={entriesByEmployee(
+                                    entries,
+                                    employee.id
+                                )}
+                                employee={employee}
+                            />
+                        )
+                )}
+            </UnorderedList>
+            <br></br>
             <b>Total hours: </b>
             <TotalHours
                 startDate={startDate}
