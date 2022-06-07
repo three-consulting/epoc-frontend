@@ -24,7 +24,7 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     const { user } = useContext(UserContext)
     const { put } = useUpdateTimesheets(user)
 
-    const [errorMessage, setErrorMessage] = useState<string>("")
+    const [errorMessage, setErrorMessage] = useState<string>()
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
     const archiveTimesheet = async (
