@@ -25,13 +25,16 @@ function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
     const { user } = useContext(UserContext)
     const { put } = useUpdateTasks(user)
 
-    const [errorMessage, setErrorMessage] = useState<string>("")
+    const [errorMessage, setErrorMessage] = useState<string>()
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
     const archiveTask = () => put({ ...task, status: "ARCHIVED" }, errorHandler)
 
     return (
-        <div onClick={onClick}>
-            <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
+        <>
+            <Tr
+                _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}
+                onClick={onClick}
+            >
                 <Td>{task.name}</Td>
                 <Td>
                     <Button
@@ -50,7 +53,7 @@ function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
                     <Box>{errorMessage}</Box>
                 </>
             )}
-        </div>
+        </>
     )
 }
 
