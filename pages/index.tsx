@@ -16,7 +16,7 @@ interface IndexPageProps {
 
 const IndexPage = ({ email }: IndexPageProps) => {
     const { user } = useContext(UserContext)
-    const timesheetsResponse = useTimesheets(user, { email })
+    const timesheetsResponse = useTimesheets(user, undefined, email)
     const timeCategoriesResponse = useTimeCategories(user)
 
     const startDate = "0000-01-01"

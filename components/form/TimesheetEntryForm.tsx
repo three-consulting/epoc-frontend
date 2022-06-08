@@ -188,7 +188,7 @@ export function EditTimesheetEntryForm(
 ): JSX.Element {
     const { user } = useContext(UserContext)
     const { put } = useUpdateTimesheetEntries(user)
-    const tasksResponse = useTasks(props.projectId, user)
+    const tasksResponse = useTasks(user, props.projectId)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -227,7 +227,7 @@ export function CreateTimesheetEntryForm(
 ): JSX.Element {
     const { user } = useContext(UserContext)
     const { post } = useUpdateTimesheetEntries(user)
-    const tasksResponse = useTasks(props.projectId, user)
+    const tasksResponse = useTasks(user, props.projectId)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

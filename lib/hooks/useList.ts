@@ -38,20 +38,20 @@ export const useTimeCategories = (user: User): ApiGetResponse<TimeCategory[]> =>
     useGet(user, listEndpoint("time-category"))
 
 export const useTasks = (
-    projectId: number,
-    user: User
-): ApiGetResponse<Task[]> => useGet(user, listEndpoint("task"), { projectId })
+    user: User,
+    projectId?: number
+): ApiGetResponse<Task[]> =>
+    useGet(user, listEndpoint("task"), pushOptionalFields({}, { projectId }))
 
 export const useTimesheets = (
     user: User,
-    required: { projectId: number } | { email: string },
     projectId?: number,
     email?: string
 ): ApiGetResponse<Timesheet[]> =>
     useGet(
         user,
         listEndpoint("timesheet"),
-        pushOptionalFields(required, { projectId, email })
+        pushOptionalFields({}, { projectId, email })
     )
 
 export const useTimesheetEntries = (

@@ -28,9 +28,9 @@ type Props = {
 function ProjectDetailPage({ projectId }: Props): JSX.Element {
     const { user } = useContext(UserContext)
     const projectDetailResponse = useProjectDetail(projectId, user)
-    const timesheetsResponse = useTimesheets(user, { projectId })
+    const timesheetsResponse = useTimesheets(user, projectId)
     const employeesResponse = useEmployees(user)
-    const tasksResponse = useTasks(projectId, user)
+    const tasksResponse = useTasks(user, projectId)
 
     const { put } = useUpdateProjects(user)
 
