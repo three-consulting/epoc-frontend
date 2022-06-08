@@ -10,6 +10,7 @@ import {
     useEmployees,
     useProjects,
     useTimesheetEntries,
+    useTimesheets,
 } from "@/lib/hooks/useList"
 
 const Report: NextPage = () => {
@@ -22,12 +23,14 @@ const Report: NextPage = () => {
     const customersResponse = useCustomers(user)
     const projectsResponse = useProjects(user)
     const employeeResponse = useEmployees(user)
+    const timesheetsResponse = useTimesheets(user)
 
     const isLoading =
         reportsResponse.isLoading ||
         customersResponse.isLoading ||
         projectsResponse.isLoading ||
-        employeeResponse.isLoading
+        employeeResponse.isLoading ||
+        timesheetsResponse.isLoading
 
     return (
         <div>
@@ -58,11 +61,18 @@ const Report: NextPage = () => {
                     message={employeeResponse.errorMessage}
                 />
             )}
+            {timesheetsResponse.isError && (
+                <ErrorAlert
+                    title={timesheetsResponse.errorMessage}
+                    message={timesheetsResponse.errorMessage}
+                />
+            )}
             {isLoading && <Loading />}
             {reportsResponse.isSuccess &&
                 customersResponse.isSuccess &&
                 projectsResponse.isSuccess &&
-                employeeResponse.isSuccess && (
+                employeeResponse.isSuccess &&
+                timesheetsResponse.isSuccess && (
                     <ReportTable
                         entries={reportsResponse.data}
                         startDate={startDate}
@@ -70,6 +80,7 @@ const Report: NextPage = () => {
                         customers={customersResponse.data}
                         projects={projectsResponse.data}
                         employees={employeeResponse.data}
+                        timesheets={timesheetsResponse.data}
                     />
                 )}
         </div>
