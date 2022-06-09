@@ -89,7 +89,7 @@ function ProjectHoursRow({
 }: ProjectHoursRowProps): JSX.Element {
     return (
         <ListItem>
-            Total hours for {project.name}: {entriesQuantitySum(entries)}
+            {project.name}: {entriesQuantitySum(entries)}
         </ListItem>
     )
 }
@@ -102,7 +102,7 @@ function CustomerHoursRow({
     return (
         <>
             <ListItem>
-                Total hours for {customer.name}: {entriesQuantitySum(entries)}
+                {customer.name}: {entriesQuantitySum(entries)}
             </ListItem>
             {
                 <UnorderedList>
@@ -133,7 +133,7 @@ function EmployeeHoursRow({
     return (
         <>
             <ListItem>
-                Total hours for {employee.firstName} {employee.lastName}:{" "}
+                {employee.firstName} {employee.lastName}:{" "}
                 {entriesQuantitySum(entries)}
             </ListItem>
             <UnorderedList>
@@ -170,62 +170,50 @@ function ReportTable({
             borderRadius="0.2rem"
             padding="1rem 1rem"
         >
-            <b>Total hours per customer: </b>
-            <UnorderedList>
-                {customers.map(
-                    (customer) =>
-                        customer.id && (
-                            <CustomerHoursRow
-                                key={`customer-hours-row-${customer.id}`}
-                                entries={entriesByCustomer(
-                                    entries,
-                                    customer.id
-                                )}
-                                customer={customer}
-                                projects={projectByCustomer(
-                                    projects,
-                                    customer.id
-                                )}
-                            />
-                        )
-                )}
-            </UnorderedList>
-            <br></br>
-            <b>Total hours per project: </b>
-            <UnorderedList>
-                {projects.map(
-                    (project) =>
-                        project.id && (
-                            <ProjectHoursRow
-                                key={`project-hours-row-${project.id}`}
-                                entries={entriesByProject(entries, project.id)}
-                                project={project}
-                            />
-                        )
-                )}
-            </UnorderedList>
-            <br></br>
-            <b>Total hours per employee: </b>
-            <UnorderedList>
-                {employees.map(
-                    (employee) =>
-                        employee.id && (
-                            <EmployeeHoursRow
-                                key={`employee-hours-row-${employee.id}`}
-                                entries={entriesByEmployee(
-                                    entries,
-                                    employee.id
-                                )}
-                                employee={employee}
-                                projects={projectsByEmployeeTimesheets(
-                                    timesheets,
-                                    employee.id
-                                )}
-                            />
-                        )
-                )}
-            </UnorderedList>
-            <br></br>
+            <div style={{ marginBottom: "20px" }}>
+                <b>Hours per customer: </b>
+                <UnorderedList>
+                    {customers.map(
+                        (customer) =>
+                            customer.id && (
+                                <CustomerHoursRow
+                                    key={`customer-hours-row-${customer.id}`}
+                                    entries={entriesByCustomer(
+                                        entries,
+                                        customer.id
+                                    )}
+                                    customer={customer}
+                                    projects={projectByCustomer(
+                                        projects,
+                                        customer.id
+                                    )}
+                                />
+                            )
+                    )}
+                </UnorderedList>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+                <b>Hours per employee: </b>
+                <UnorderedList>
+                    {employees.map(
+                        (employee) =>
+                            employee.id && (
+                                <EmployeeHoursRow
+                                    key={`employee-hours-row-${employee.id}`}
+                                    entries={entriesByEmployee(
+                                        entries,
+                                        employee.id
+                                    )}
+                                    employee={employee}
+                                    projects={projectsByEmployeeTimesheets(
+                                        timesheets,
+                                        employee.id
+                                    )}
+                                />
+                            )
+                    )}
+                </UnorderedList>
+            </div>
             <b>Total hours: </b>
             <TotalHours
                 startDate={startDate}
