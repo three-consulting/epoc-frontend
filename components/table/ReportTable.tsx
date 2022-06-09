@@ -4,6 +4,7 @@ import {
     Customer,
     Employee,
     Project,
+    Timesheet,
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
 
@@ -16,6 +17,7 @@ interface TotalHoursProps {
 interface CustomerHoursRowProps {
     entries: TimesheetEntry[]
     customer: Customer
+    projects: Project[]
 }
 
 interface ProjectHoursRowProps {
@@ -26,6 +28,7 @@ interface ProjectHoursRowProps {
 interface EmployeeHoursRowProps {
     entries: TimesheetEntry[]
     employee: Employee
+    projects: Project[]
 }
 
 interface ReportTableProps {
@@ -33,12 +36,35 @@ interface ReportTableProps {
     customers: Customer[]
     projects: Project[]
     employees: Employee[]
+    timesheets: Timesheet[]
     startDate: string
     endDate: string
 }
 
 const entriesQuantitySum = (entries: TimesheetEntry[]) =>
     entries.reduce((total, currentItem) => total + currentItem.quantity, 0)
+
+const entriesByProject = (entries: TimesheetEntry[], projectId: number) =>
+    entries.filter((entry) => entry.timesheet.project?.id === projectId)
+
+const entriesByCustomer = (entries: TimesheetEntry[], customerId: number) =>
+    entries.filter(
+        (entry) => entry.timesheet.project.customer?.id === customerId
+    )
+
+const entriesByEmployee = (entries: TimesheetEntry[], employeeId: number) =>
+    entries.filter((entry) => entry.timesheet.employee?.id === employeeId)
+
+const projectByCustomer = (projects: Project[], customerId: number) =>
+    projects.filter((project) => project.customer?.id === customerId)
+
+const projectsByEmployeeTimesheets = (
+    timesheets: Timesheet[],
+    employeeId: number
+) =>
+    timesheets
+        .filter((timesheet) => timesheet.employee.id === employeeId)
+        .map((timesheet) => timesheet.project)
 
 function TotalHours({
     startDate,
@@ -57,17 +83,6 @@ function TotalHours({
     )
 }
 
-function CustomerHoursRow({
-    entries,
-    customer,
-}: CustomerHoursRowProps): JSX.Element {
-    return (
-        <ListItem>
-            Total hours for {customer.name}: {entriesQuantitySum(entries)}
-        </ListItem>
-    )
-}
-
 function ProjectHoursRow({
     entries,
     project,
@@ -79,15 +94,61 @@ function ProjectHoursRow({
     )
 }
 
+function CustomerHoursRow({
+    entries,
+    customer,
+    projects,
+}: CustomerHoursRowProps): JSX.Element {
+    return (
+        <>
+            <ListItem>
+                Total hours for {customer.name}: {entriesQuantitySum(entries)}
+            </ListItem>
+            {
+                <UnorderedList>
+                    {projects.map(
+                        (project) =>
+                            project.id && (
+                                <ProjectHoursRow
+                                    entries={entriesByProject(
+                                        entries,
+                                        project.id
+                                    )}
+                                    key={`project-hours-row-customer-${project.id}`}
+                                    project={project}
+                                ></ProjectHoursRow>
+                            )
+                    )}
+                </UnorderedList>
+            }
+        </>
+    )
+}
+
 function EmployeeHoursRow({
     entries,
     employee,
+    projects,
 }: EmployeeHoursRowProps): JSX.Element {
     return (
-        <ListItem>
-            Total hours for {employee.firstName} {employee.lastName}:{" "}
-            {entriesQuantitySum(entries)}
-        </ListItem>
+        <>
+            <ListItem>
+                Total hours for {employee.firstName} {employee.lastName}:{" "}
+                {entriesQuantitySum(entries)}
+            </ListItem>
+            <UnorderedList>
+                {projects.map(
+                    (project) =>
+                        project.id && (
+                            <ProjectHoursRow
+                                entries={entriesByProject(entries, project.id)}
+                                key={`project-hours-row-employee-${project.id}`}
+                                project={project}
+                            ></ProjectHoursRow>
+                        )
+                )}
+            </UnorderedList>
+        </>
     )
 }
 
@@ -95,31 +156,11 @@ function ReportTable({
     entries,
     customers,
     projects,
+    timesheets,
     employees,
     startDate,
     endDate,
 }: ReportTableProps): JSX.Element {
-    const entriesByCustomer = (
-        entriesToFilter: TimesheetEntry[],
-        customerId: number
-    ) =>
-        entriesToFilter.filter(
-            (entry) => entry.timesheet.project.customer?.id === customerId
-        )
-    const entriesByProject = (
-        entriesToFilter: TimesheetEntry[],
-        projectId: number
-    ) =>
-        entriesToFilter.filter(
-            (entry) => entry.timesheet.project?.id === projectId
-        )
-    const entriesByEmployee = (
-        entriesToFilter: TimesheetEntry[],
-        employeeId: number
-    ) =>
-        entriesToFilter.filter(
-            (entry) => entry.timesheet.employee?.id === employeeId
-        )
     return (
         <Flex
             flexDirection="column"
@@ -141,6 +182,10 @@ function ReportTable({
                                     customer.id
                                 )}
                                 customer={customer}
+                                projects={projectByCustomer(
+                                    projects,
+                                    customer.id
+                                )}
                             />
                         )
                 )}
@@ -172,6 +217,10 @@ function ReportTable({
                                     employee.id
                                 )}
                                 employee={employee}
+                                projects={projectsByEmployeeTimesheets(
+                                    timesheets,
+                                    employee.id
+                                )}
                             />
                         )
                 )}
