@@ -4,6 +4,7 @@ import {
     Customer,
     Employee,
     Project,
+    Task,
     Timesheet,
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
@@ -14,21 +15,29 @@ interface TotalHoursProps {
     totalQuantity: number
 }
 
-interface CustomerHoursRowProps {
+interface TaskHoursRowProps {
     entries: TimesheetEntry[]
-    customer: Customer
-    projects: Project[]
+    task: Task
 }
 
 interface ProjectHoursRowProps {
     entries: TimesheetEntry[]
     project: Project
+    tasks: Task[]
+}
+
+interface CustomerHoursRowProps {
+    entries: TimesheetEntry[]
+    customer: Customer
+    projects: Project[]
+    tasks: Task[]
 }
 
 interface EmployeeHoursRowProps {
     entries: TimesheetEntry[]
     employee: Employee
     projects: Project[]
+    tasks: Task[]
 }
 
 interface ReportTableProps {
@@ -37,6 +46,7 @@ interface ReportTableProps {
     projects: Project[]
     employees: Employee[]
     timesheets: Timesheet[]
+    tasks: Task[]
     startDate: string
     endDate: string
 }
@@ -66,6 +76,12 @@ const projectsByEmployeeTimesheets = (
         .filter((timesheet) => timesheet.employee.id === employeeId)
         .map((timesheet) => timesheet.project)
 
+const entriesByTask = (entries: TimesheetEntry[], taskId: number) =>
+    entries.filter((entry) => entry.task.id === taskId)
+
+const taskByProject = (tasks: Task[], projectId: number) =>
+    tasks.filter((task) => task.project.id === projectId)
+
 function TotalHours({
     startDate,
     endDate,
@@ -83,14 +99,39 @@ function TotalHours({
     )
 }
 
+function TaskHoursRow({ entries, task }: TaskHoursRowProps): JSX.Element {
+    return (
+        <ListItem>
+            {task.name}: {entriesQuantitySum(entries)}
+        </ListItem>
+    )
+}
+
 function ProjectHoursRow({
     entries,
     project,
+    tasks,
 }: ProjectHoursRowProps): JSX.Element {
     return (
-        <ListItem>
-            {project.name}: {entriesQuantitySum(entries)}
-        </ListItem>
+        <>
+            <ListItem>
+                {project.name}: {entriesQuantitySum(entries)}
+            </ListItem>
+            {
+                <UnorderedList>
+                    {tasks.map(
+                        (task) =>
+                            task.id && (
+                                <TaskHoursRow
+                                    entries={entriesByTask(entries, task.id)}
+                                    task={task}
+                                    key={`task-hours-row-project-${project.id}`}
+                                ></TaskHoursRow>
+                            )
+                    )}
+                </UnorderedList>
+            }
+        </>
     )
 }
 
@@ -98,6 +139,7 @@ function CustomerHoursRow({
     entries,
     customer,
     projects,
+    tasks,
 }: CustomerHoursRowProps): JSX.Element {
     return (
         <>
@@ -116,6 +158,7 @@ function CustomerHoursRow({
                                     )}
                                     key={`project-hours-row-customer-${project.id}`}
                                     project={project}
+                                    tasks={taskByProject(tasks, project.id)}
                                 ></ProjectHoursRow>
                             )
                     )}
@@ -129,6 +172,7 @@ function EmployeeHoursRow({
     entries,
     employee,
     projects,
+    tasks,
 }: EmployeeHoursRowProps): JSX.Element {
     return (
         <>
@@ -144,6 +188,7 @@ function EmployeeHoursRow({
                                 entries={entriesByProject(entries, project.id)}
                                 key={`project-hours-row-employee-${project.id}`}
                                 project={project}
+                                tasks={taskByProject(tasks, project.id)}
                             ></ProjectHoursRow>
                         )
                 )}
@@ -158,6 +203,7 @@ function ReportTable({
     projects,
     timesheets,
     employees,
+    tasks,
     startDate,
     endDate,
 }: ReportTableProps): JSX.Element {
@@ -187,6 +233,7 @@ function ReportTable({
                                         projects,
                                         customer.id
                                     )}
+                                    tasks={tasks}
                                 />
                             )
                     )}
@@ -209,6 +256,7 @@ function ReportTable({
                                         timesheets,
                                         employee.id
                                     )}
+                                    tasks={tasks}
                                 />
                             )
                     )}
