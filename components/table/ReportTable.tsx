@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Flex, ListItem, UnorderedList } from "@chakra-ui/layout"
 import {
     Customer,
@@ -8,11 +8,13 @@ import {
     Timesheet,
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
+import { Select } from "@chakra-ui/react"
 
 interface TotalHoursProps {
     startDate: string
     endDate: string
     totalQuantity: number
+    employeeName?: string
 }
 
 interface TaskHoursRowProps {
@@ -36,8 +38,6 @@ interface CustomerHoursRowProps {
 interface EmployeeHoursRowProps {
     entries: TimesheetEntry[]
     employee: Employee
-    projects: Project[]
-    tasks: Task[]
 }
 
 interface ReportTableProps {
@@ -76,6 +76,14 @@ const projectsByEmployeeTimesheets = (
         .filter((timesheet) => timesheet.employee.id === employeeId)
         .map((timesheet) => timesheet.project)
 
+const customersByEmployeeTimesheets = (
+    timesheets: Timesheet[],
+    employeeId: number
+) =>
+    timesheets
+        .filter((timesheet) => timesheet.employee.id === employeeId)
+        .map((timesheet) => timesheet.project.customer)
+
 const entriesByTask = (entries: TimesheetEntry[], taskId: number) =>
     entries.filter((entry) => entry.task.id === taskId)
 
@@ -86,11 +94,12 @@ function TotalHours({
     startDate,
     endDate,
     totalQuantity,
+    employeeName,
 }: TotalHoursProps): JSX.Element {
     return totalQuantity > 0 ? (
         <p>
-            The total number of hours between {startDate} and {endDate} is{" "}
-            {totalQuantity}.
+            The total number of hours {employeeName && `by ${employeeName}`}{" "}
+            between {startDate} and {endDate} is {totalQuantity}.
         </p>
     ) : (
         <p>
@@ -171,8 +180,6 @@ function CustomerHoursRow({
 function EmployeeHoursRow({
     entries,
     employee,
-    projects,
-    tasks,
 }: EmployeeHoursRowProps): JSX.Element {
     return (
         <>
@@ -180,33 +187,48 @@ function EmployeeHoursRow({
                 {employee.firstName} {employee.lastName}:{" "}
                 {entriesQuantitySum(entries)}
             </ListItem>
-            <UnorderedList>
-                {projects.map(
-                    (project) =>
-                        project.id && (
-                            <ProjectHoursRow
-                                entries={entriesByProject(entries, project.id)}
-                                key={`project-hours-row-employee-${project.id}`}
-                                project={project}
-                                tasks={taskByProject(tasks, project.id)}
-                            ></ProjectHoursRow>
-                        )
-                )}
-            </UnorderedList>
         </>
     )
 }
 
 function ReportTable({
-    entries,
-    customers,
-    projects,
-    timesheets,
+    entries: allEntries,
+    customers: allCustomers,
+    projects: allProjects,
     employees,
     tasks,
+    timesheets,
     startDate,
     endDate,
 }: ReportTableProps): JSX.Element {
+    const [selectedEmployee, setSelectedEmployee] = useState<Employee>()
+    const handleEmployeeChange = (
+        event: React.FormEvent<HTMLSelectElement>
+    ) => {
+        event.preventDefault()
+        const id = event.currentTarget.value
+        if (id) {
+            const employee = employees.find(
+                (employeeIterator) => employeeIterator.id === Number(id)
+            )
+            setSelectedEmployee(employee)
+        } else {
+            setSelectedEmployee(undefined)
+        }
+    }
+
+    const customers = selectedEmployee?.id
+        ? customersByEmployeeTimesheets(timesheets, selectedEmployee.id)
+        : allCustomers
+
+    const projects = selectedEmployee?.id
+        ? projectsByEmployeeTimesheets(timesheets, selectedEmployee.id)
+        : allProjects
+
+    const entries = selectedEmployee?.id
+        ? entriesByEmployee(allEntries, selectedEmployee.id)
+        : allEntries
+
     return (
         <Flex
             flexDirection="column"
@@ -216,58 +238,74 @@ function ReportTable({
             borderRadius="0.2rem"
             padding="1rem 1rem"
         >
-            <div style={{ marginBottom: "20px" }}>
-                <b>Hours per customer: </b>
-                <UnorderedList>
-                    {customers.map(
-                        (customer) =>
-                            customer.id && (
-                                <CustomerHoursRow
-                                    key={`customer-hours-row-${customer.id}`}
-                                    entries={entriesByCustomer(
-                                        entries,
-                                        customer.id
-                                    )}
-                                    customer={customer}
-                                    projects={projectByCustomer(
-                                        projects,
-                                        customer.id
-                                    )}
-                                    tasks={tasks}
-                                />
-                            )
-                    )}
-                </UnorderedList>
-            </div>
-            <div style={{ marginBottom: "20px" }}>
-                <b>Hours per employee: </b>
-                <UnorderedList>
-                    {employees.map(
-                        (employee) =>
-                            employee.id && (
-                                <EmployeeHoursRow
-                                    key={`employee-hours-row-${employee.id}`}
-                                    entries={entriesByEmployee(
-                                        entries,
-                                        employee.id
-                                    )}
-                                    employee={employee}
-                                    projects={projectsByEmployeeTimesheets(
-                                        timesheets,
-                                        employee.id
-                                    )}
-                                    tasks={tasks}
-                                />
-                            )
-                    )}
-                </UnorderedList>
-            </div>
-            <b>Total hours: </b>
-            <TotalHours
-                startDate={startDate}
-                endDate={endDate}
-                totalQuantity={entriesQuantitySum(entries)}
-            />
+            <Select
+                onChange={handleEmployeeChange}
+                placeholder="Filter by employee"
+                value={selectedEmployee?.id}
+                data-testid={"form-field-managing-employee"}
+            >
+                {employees.map((employee, idx) => (
+                    <option key={idx} value={employee.id}>
+                        {`${employee.firstName} ${employee.lastName}`}
+                    </option>
+                ))}
+            </Select>
+            {
+                <div style={{ marginBottom: "20px" }}>
+                    <b>Grand total: </b>
+                    <TotalHours
+                        startDate={startDate}
+                        endDate={endDate}
+                        totalQuantity={entriesQuantitySum(entries)}
+                        employeeName={selectedEmployee?.firstName}
+                    />
+                </div>
+            }
+            {!selectedEmployee && (
+                <div style={{ marginBottom: "20px" }}>
+                    <b>Total hours by employee: </b>
+                    <UnorderedList>
+                        {employees.map(
+                            (employee) =>
+                                employee.id && (
+                                    <EmployeeHoursRow
+                                        key={`employee-hours-row-${employee.id}`}
+                                        entries={entriesByEmployee(
+                                            entries,
+                                            employee.id
+                                        )}
+                                        employee={employee}
+                                    />
+                                )
+                        )}
+                    </UnorderedList>
+                </div>
+            )}
+            {
+                <div style={{ marginBottom: "20px" }}>
+                    <b>Hours per customer: </b>
+                    <UnorderedList>
+                        {customers.map(
+                            (customer) =>
+                                customer.id && (
+                                    <CustomerHoursRow
+                                        key={`customer-hours-row-${customer.id}`}
+                                        entries={entriesByCustomer(
+                                            entries,
+                                            customer.id
+                                        )}
+                                        customer={customer}
+                                        projects={projectByCustomer(
+                                            projects,
+                                            customer.id
+                                        )}
+                                        tasks={tasks}
+                                    />
+                                )
+                        )}
+                    </UnorderedList>
+                </div>
+            }
         </Flex>
     )
 }
