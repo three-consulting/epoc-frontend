@@ -8,7 +8,7 @@ import {
     Timesheet,
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
-import { Select } from "@chakra-ui/react"
+import { Select, Checkbox } from "@chakra-ui/react"
 
 interface TotalHoursProps {
     startDate: string
@@ -20,12 +20,14 @@ interface TotalHoursProps {
 interface TaskHoursRowProps {
     entries: TimesheetEntry[]
     task: Task
+    displayNull: boolean
 }
 
 interface ProjectHoursRowProps {
     entries: TimesheetEntry[]
     project: Project
     tasks: Task[]
+    displayNull: boolean
 }
 
 interface CustomerHoursRowProps {
@@ -33,11 +35,13 @@ interface CustomerHoursRowProps {
     customer: Customer
     projects: Project[]
     tasks: Task[]
+    displayNull: boolean
 }
 
 interface EmployeeHoursRowProps {
     entries: TimesheetEntry[]
     employee: Employee
+    displayNull: boolean
 }
 
 interface ReportTableProps {
@@ -108,20 +112,28 @@ function TotalHours({
     )
 }
 
-function TaskHoursRow({ entries, task }: TaskHoursRowProps): JSX.Element {
-    return (
-        <ListItem>
-            {task.name}: {entriesQuantitySum(entries)}
-        </ListItem>
+const TaskHoursRow = ({
+    entries,
+    task,
+    displayNull,
+}: TaskHoursRowProps): JSX.Element =>
+    !displayNull || entriesQuantitySum(entries) > 0 ? (
+        <>
+            <ListItem>
+                {task.name}: {entriesQuantitySum(entries)}
+            </ListItem>
+        </>
+    ) : (
+        <> </>
     )
-}
 
-function ProjectHoursRow({
+const ProjectHoursRow = ({
     entries,
     project,
     tasks,
-}: ProjectHoursRowProps): JSX.Element {
-    return (
+    displayNull,
+}: ProjectHoursRowProps): JSX.Element =>
+    !displayNull || entriesQuantitySum(entries) > 0 ? (
         <>
             <ListItem>
                 {project.name}: {entriesQuantitySum(entries)}
@@ -135,22 +147,25 @@ function ProjectHoursRow({
                                     entries={entriesByTask(entries, task.id)}
                                     task={task}
                                     key={`task-hours-row-project-${project.id}`}
+                                    displayNull={displayNull}
                                 ></TaskHoursRow>
                             )
                     )}
                 </UnorderedList>
             }
         </>
+    ) : (
+        <> </>
     )
-}
 
-function CustomerHoursRow({
+const CustomerHoursRow = ({
     entries,
     customer,
     projects,
     tasks,
-}: CustomerHoursRowProps): JSX.Element {
-    return (
+    displayNull,
+}: CustomerHoursRowProps): JSX.Element =>
+    !displayNull || entriesQuantitySum(entries) > 0 ? (
         <>
             <ListItem>
                 {customer.name}: {entriesQuantitySum(entries)}
@@ -168,28 +183,32 @@ function CustomerHoursRow({
                                     key={`project-hours-row-customer-${project.id}`}
                                     project={project}
                                     tasks={taskByProject(tasks, project.id)}
+                                    displayNull={displayNull}
                                 ></ProjectHoursRow>
                             )
                     )}
                 </UnorderedList>
             }
         </>
+    ) : (
+        <> </>
     )
-}
 
-function EmployeeHoursRow({
+const EmployeeHoursRow = ({
     entries,
     employee,
-}: EmployeeHoursRowProps): JSX.Element {
-    return (
+    displayNull,
+}: EmployeeHoursRowProps): JSX.Element =>
+    !displayNull || entriesQuantitySum(entries) > 0 ? (
         <>
             <ListItem>
                 {employee.firstName} {employee.lastName}:{" "}
                 {entriesQuantitySum(entries)}
             </ListItem>
         </>
+    ) : (
+        <> </>
     )
-}
 
 function ReportTable({
     entries: allEntries,
@@ -216,6 +235,10 @@ function ReportTable({
             setSelectedEmployee(undefined)
         }
     }
+    const [hideNull, setHideNull] = useState<boolean>(true)
+    const handleHideNullChange = () => {
+        setHideNull((state) => !state)
+    }
 
     const customers = selectedEmployee?.id
         ? customersByEmployeeTimesheets(timesheets, selectedEmployee.id)
@@ -228,7 +251,6 @@ function ReportTable({
     const entries = selectedEmployee?.id
         ? entriesByEmployee(allEntries, selectedEmployee.id)
         : allEntries
-
     return (
         <Flex
             flexDirection="column"
@@ -250,6 +272,11 @@ function ReportTable({
                     </option>
                 ))}
             </Select>
+            <div style={{ marginBottom: "20px" }}></div>
+            <Checkbox onChange={handleHideNullChange} defaultChecked>
+                Hide empty
+            </Checkbox>
+            <div style={{ marginBottom: "20px" }}></div>
             {
                 <div style={{ marginBottom: "20px" }}>
                     <b>Grand total: </b>
@@ -275,6 +302,7 @@ function ReportTable({
                                             employee.id
                                         )}
                                         employee={employee}
+                                        displayNull={hideNull}
                                     />
                                 )
                         )}
@@ -300,6 +328,7 @@ function ReportTable({
                                             customer.id
                                         )}
                                         tasks={tasks}
+                                        displayNull={hideNull}
                                     />
                                 )
                         )}
