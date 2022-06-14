@@ -10,7 +10,7 @@ export interface paths {
     post: operations["createTimesheet"];
   };
   "/timesheet-entry": {
-    get: operations["getTimesheetEntriesForTimesheetId"];
+    get: operations["getTimesheetEntries"];
     put: operations["updateTimesheetEntryForId"];
     post: operations["createTimesheetEntry"];
   };
@@ -20,7 +20,7 @@ export interface paths {
     post: operations["createTimeCategory"];
   };
   "/task": {
-    get: operations["getTimesheets_1"];
+    get: operations["getTasks"];
     put: operations["updateTaskForId"];
     post: operations["createTask"];
   };
@@ -118,6 +118,8 @@ export interface components {
       id?: number;
       name: string;
       description?: string;
+      /** Format: float */
+      rate: number;
       /** Format: int32 */
       allocation?: number;
       project: components["schemas"]["ProjectDTO"];
@@ -178,6 +180,7 @@ export interface operations {
       query: {
         projectId?: number;
         employeeId?: number;
+        email?: string;
       };
     };
     responses: {
@@ -219,10 +222,13 @@ export interface operations {
       };
     };
   };
-  getTimesheetEntriesForTimesheetId: {
+  getTimesheetEntries: {
     parameters: {
       query: {
-        timesheetId: number;
+        timesheetId?: number;
+        email?: string;
+        startDate?: string;
+        endDate?: string;
       };
     };
     responses: {
@@ -304,10 +310,10 @@ export interface operations {
       };
     };
   };
-  getTimesheets_1: {
+  getTasks: {
     parameters: {
       query: {
-        projectId: number;
+        projectId?: number;
       };
     };
     responses: {

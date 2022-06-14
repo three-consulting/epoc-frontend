@@ -40,12 +40,13 @@ const validateTimesheetFields = (
     fields: TimesheetFields,
     projectId: number
 ): Timesheet => {
-    const { name, project, employee } = fields
-    if (name && project && employee) {
+    const { name, rate, project, employee } = fields
+    if (name && rate && project && employee) {
         return {
             ...fields,
             project: { ...project, id: projectId },
             name,
+            rate,
             employee,
         }
     }
@@ -180,6 +181,20 @@ function TimesheetForm({
                         <FormErrorMessage>
                             Allocation needs to be between 1 and 100 %.
                         </FormErrorMessage>
+                        <FormControl>
+                            <FormLabel>Rate</FormLabel>
+                            <Input
+                                value={timesheetFields.rate || ""}
+                                placeholder="Rate (€/h)"
+                                onChange={(event) =>
+                                    setTimesheetFields({
+                                        ...timesheetFields,
+                                        rate: Number(event.target.value),
+                                    })
+                                }
+                                data-testid="form-field-rate"
+                            />
+                        </FormControl>
                     </FormControl>
                 </div>
                 <div style={{ textAlign: "right", padding: "20px" }}>
