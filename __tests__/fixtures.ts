@@ -63,6 +63,7 @@ export const testProject: Project = {
 
 export const testTimesheetRequiredFields: Timesheet = {
     name: "Name",
+    rate: 100,
     project: testProject,
     employee: testEmployee,
 }
@@ -71,6 +72,7 @@ export const testTimesheetAllFields: Timesheet = {
     name: "Another name",
     description: "description",
     allocation: 100,
+    rate: 100,
     project: testProject,
     employee: testEmployee,
 }
@@ -84,6 +86,7 @@ export const testCustomerAllFields: Customer = {
 
 export const testTimesheet: Timesheet = {
     id: 1,
+    rate: 100,
     name: "Test timesheet",
     project: testProject,
     employee: testEmployee,

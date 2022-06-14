@@ -45,6 +45,11 @@ const fillAndSubmitForm = async (timesheet: Timesheet) => {
         target: { value: timesheet.description || "" },
     })
 
+    const rateInput = screen.getByTestId("form-field-rate")
+    fireEvent.change(rateInput, {
+        target: { value: timesheet.rate || "" },
+    })
+
     const allocationInput = screen.getByTestId("form-field-allocation")
     fireEvent.change(allocationInput, {
         target: { value: timesheet.allocation || "" },

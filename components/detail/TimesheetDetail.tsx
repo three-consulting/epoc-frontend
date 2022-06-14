@@ -11,6 +11,7 @@ function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
         name,
         description,
         allocation,
+        rate,
         project,
         employee,
         created,
@@ -31,6 +32,7 @@ function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
             </Heading>
             <Flex>Description: {description}</Flex>
             <Flex>Allocation: {allocation}</Flex>
+            <Flex>Rate: {rate}€/h</Flex>
             <Flex>Project id: {project.id}</Flex>
             <Flex>Project name: {project.name}</Flex>
             <Flex>Created: {created}</Flex>
