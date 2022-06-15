@@ -34,6 +34,7 @@ module.exports = {
         "filenames/match-regex": 0,
         "id-blacklist": 0,
         "operator-linebreak": 0,
+        "no-mixed-operators": 0,
     },
     settings: {
         react: {

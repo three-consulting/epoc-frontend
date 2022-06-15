@@ -15,6 +15,7 @@ interface TotalHoursProps {
     endDate: string
     totalQuantity: number
     employeeName?: string
+    entries: TimesheetEntry[]
 }
 
 interface TaskHoursRowProps {
@@ -58,6 +59,13 @@ interface ReportTableProps {
 const entriesQuantitySum = (entries: TimesheetEntry[]) =>
     entries.reduce((total, currentItem) => total + currentItem.quantity, 0)
 
+const totalIncome = (entries: TimesheetEntry[]) =>
+    entries.reduce(
+        (total, currentItem) =>
+            total + currentItem.timesheet.rate * currentItem.quantity,
+        0
+    )
+
 const entriesByProject = (entries: TimesheetEntry[], projectId: number) =>
     entries.filter((entry) => entry.timesheet.project?.id === projectId)
 
@@ -94,16 +102,18 @@ const entriesByTask = (entries: TimesheetEntry[], taskId: number) =>
 const taskByProject = (tasks: Task[], projectId: number) =>
     tasks.filter((task) => task.project.id === projectId)
 
-function TotalHours({
+function Total({
     startDate,
     endDate,
     totalQuantity,
     employeeName,
+    entries,
 }: TotalHoursProps): JSX.Element {
     return totalQuantity > 0 ? (
         <p>
             The total number of hours {employeeName && `by ${employeeName}`}{" "}
-            between {startDate} and {endDate} is {totalQuantity}.
+            between {startDate} and {endDate} is {totalQuantity}. The projected
+            income in this interval is {totalIncome(entries)}€.
         </p>
     ) : (
         <p>
@@ -280,11 +290,12 @@ function ReportTable({
             {
                 <div style={{ marginBottom: "20px" }}>
                     <b>Grand total: </b>
-                    <TotalHours
+                    <Total
                         startDate={startDate}
                         endDate={endDate}
                         totalQuantity={entriesQuantitySum(entries)}
                         employeeName={selectedEmployee?.firstName}
+                        entries={entries}
                     />
                 </div>
             }
