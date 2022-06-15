@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
@@ -17,8 +17,16 @@ import {
 const Report: NextPage = () => {
     const { user } = useContext(UserContext)
 
-    const startDate = "2022-01-01"
-    const endDate = "2022-12-12"
+    const date = new Date()
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 2)
+        .toISOString()
+        .replace(/T.*/, "")
+    const lastday = new Date(date.getFullYear(), date.getMonth() + 1, 1)
+        .toISOString()
+        .replace(/T.*/, "")
+
+    const [startDate, setStartDate] = useState<string>(firstDay)
+    const [endDate, setEndDate] = useState<string>(lastday)
 
     const reportsResponse = useTimesheetEntries(user, startDate, endDate)
     const customersResponse = useCustomers(user)
@@ -92,6 +100,8 @@ const Report: NextPage = () => {
                         employees={employeeResponse.data}
                         timesheets={timesheetsResponse.data}
                         tasks={tasksResponse.data}
+                        setStartDate={setStartDate}
+                        setEndDate={setEndDate}
                     />
                 )}
         </div>
