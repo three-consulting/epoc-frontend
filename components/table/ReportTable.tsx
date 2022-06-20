@@ -8,7 +8,23 @@ import {
     Timesheet,
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
-import { Select, Checkbox } from "@chakra-ui/react"
+import {
+    Select,
+    Checkbox,
+    InputGroup,
+    Input,
+    Button,
+    FormControl,
+    FormErrorMessage,
+    FormHelperText,
+} from "@chakra-ui/react"
+
+interface DateInputProps {
+    startDate: string
+    endDate: string
+    setStartDate: React.Dispatch<string>
+    setEndDate: React.Dispatch<string>
+}
 
 interface TotalHoursProps {
     startDate: string
@@ -54,6 +70,8 @@ interface ReportTableProps {
     tasks: Task[]
     startDate: string
     endDate: string
+    setStartDate: React.Dispatch<string>
+    setEndDate: React.Dispatch<string>
 }
 
 const entriesQuantitySum = (entries: TimesheetEntry[]) =>
@@ -101,6 +119,70 @@ const entriesByTask = (entries: TimesheetEntry[], taskId: number) =>
 
 const taskByProject = (tasks: Task[], projectId: number) =>
     tasks.filter((task) => task.project.id === projectId)
+
+function DateInput({ setStartDate, setEndDate }: DateInputProps): JSX.Element {
+    const [newStartDate, setNewStartDate] = useState<string>("")
+    const handleStartDateChange = (event: React.FormEvent<HTMLInputElement>) =>
+        setNewStartDate(event.currentTarget.value)
+
+    const [newEndDate, setNewEndDate] = useState<string>("")
+    const handleEndDateChange = (event: React.FormEvent<HTMLInputElement>) =>
+        setNewEndDate(event.currentTarget.value)
+
+    const isInvalid = newEndDate < newStartDate
+
+    const [errorMessage, setErrorMessage] = useState<string>("Invalid dates")
+
+    const handleOnClick = () => {
+        if (newEndDate > newStartDate) {
+            setStartDate(newStartDate)
+            setEndDate(newEndDate)
+        } else {
+            setErrorMessage("Invalid dates")
+            throw Error(errorMessage)
+        }
+    }
+
+    return (
+        <>
+            <b>Set time interval</b>
+            <InputGroup>
+                <FormControl isInvalid={isInvalid}>
+                    <Input
+                        type={"date"}
+                        value={newStartDate}
+                        onChange={handleStartDateChange}
+                    ></Input>
+                    {isInvalid ? (
+                        <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                    ) : (
+                        <FormHelperText>Interval start</FormHelperText>
+                    )}
+                </FormControl>
+                <FormControl isInvalid={isInvalid}>
+                    <Input
+                        type={"date"}
+                        value={newEndDate}
+                        onChange={handleEndDateChange}
+                    ></Input>
+                    {isInvalid ? (
+                        <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                    ) : (
+                        <FormHelperText>Intrerval end</FormHelperText>
+                    )}
+                </FormControl>
+            </InputGroup>
+            <div style={{ marginBottom: "10px" }}></div>
+            <Button
+                colorScheme={"blue"}
+                alignSelf={"flex-start"}
+                onClick={handleOnClick}
+            >
+                Search
+            </Button>
+        </>
+    )
+}
 
 function Total({
     startDate,
@@ -229,6 +311,8 @@ function ReportTable({
     timesheets,
     startDate,
     endDate,
+    setStartDate,
+    setEndDate,
 }: ReportTableProps): JSX.Element {
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>()
     const handleEmployeeChange = (
@@ -261,6 +345,7 @@ function ReportTable({
     const entries = selectedEmployee?.id
         ? entriesByEmployee(allEntries, selectedEmployee.id)
         : allEntries
+
     return (
         <Flex
             flexDirection="column"
@@ -270,6 +355,13 @@ function ReportTable({
             borderRadius="0.2rem"
             padding="1rem 1rem"
         >
+            <DateInput
+                startDate={startDate}
+                endDate={endDate}
+                setStartDate={setStartDate}
+                setEndDate={setEndDate}
+            ></DateInput>
+            <div style={{ marginBottom: "20px" }}></div>
             <Select
                 onChange={handleEmployeeChange}
                 placeholder="Filter by employee"
@@ -282,7 +374,7 @@ function ReportTable({
                     </option>
                 ))}
             </Select>
-            <div style={{ marginBottom: "20px" }}></div>
+            <div style={{ marginBottom: "10px" }}></div>
             <Checkbox onChange={handleHideNullChange} defaultChecked>
                 Hide empty
             </Checkbox>
