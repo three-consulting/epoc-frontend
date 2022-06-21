@@ -2,26 +2,23 @@ import React from "react"
 import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import "@testing-library/jest-dom"
 import sinon, { spy } from "sinon"
-import { Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
+import { TimesheetEntry } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { CreateTimesheetEntryForm } from "@/components/form/TimesheetEntryForm"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
     anotherTestTimeCategory,
-    testEmployee,
-    testProject,
     testTimeCategory,
     testTimesheetAllFields,
     testTimesheetEntryAllFields,
     testTimesheetEntryRequiredFields,
-    testTimesheetRequiredFields,
 } from "../../fixtures"
 
 // eslint-disable-next-line id-match, id-length
 import _ from "lodash"
 import { User } from "firebase/auth"
 
-const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/timesheetEntry`
+const timesheetEntryEndpointURL = `${NEXT_PUBLIC_API_URL}/timesheet-entry`
 const bodySpy = sinon.spy((body) => body)
 const pathSpy = sinon.spy((path) => path)
 
@@ -76,50 +73,54 @@ const fillAndSubmitForm = async (timesheetEntry: TimesheetEntry) => {
     await waitFor(() => fireEvent.click(submitButton))
 }
 
-test("a timesheetEntry with the required fields only can be submitted", async () => {
+test("a timesheet entry with the required fields only can be submitted", async () => {
     render(
         <CreateTimesheetEntryForm
             timesheet={testTimesheetAllFields}
             projectId={1}
             date={"2022-01-01"}
-            timeCategories={[testTimeCategory, anotherTestTimeCategory]}
+            timeCategories={[testTimeCategory]}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
+    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(
+        timesheetEntryEndpointURL
+    )
     expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(
         testTimesheetEntryRequiredFields
     )
 })
 
-test("a timesheetEntry with all fields can be submitted", async () => {
+test("a timesheet entry with all fields can be submitted", async () => {
     render(
         <CreateTimesheetEntryForm
             timesheet={testTimesheetAllFields}
             projectId={1}
             date={"2022-01-01"}
-            timeCategories={[testTimeCategory, anotherTestTimeCategory]}
+            timeCategories={[testTimeCategory]}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryAllFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
+    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(
+        timesheetEntryEndpointURL
+    )
     expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(testTimesheetAllFields)
 })
 
 test("afterSubmit is invoked with the correct data", async () => {
     const afterSubmitSpy = spy(
-        (createTimesheetResponse) => createTimesheetResponse
+        (createTimesheetEntryResponse) => createTimesheetEntryResponse
     )
     render(
         <CreateTimesheetEntryForm
             timesheet={testTimesheetAllFields}
             projectId={1}
             date={"2022-01-01"}
-            timeCategories={[testTimeCategory, anotherTestTimeCategory]}
+            timeCategories={[testTimeCategory]}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
@@ -128,7 +129,7 @@ test("afterSubmit is invoked with the correct data", async () => {
     expect(afterSubmitSpy.getCalls()[0].args[0]).toStrictEqual({
         isSuccess: true,
         isError: false,
-        data: testTimesheetRequiredFields,
+        data: testTimesheetEntryRequiredFields,
     })
 })
 
@@ -139,7 +140,7 @@ test("onCancel is invoked", async () => {
             timesheet={testTimesheetAllFields}
             projectId={1}
             date={"2022-01-01"}
-            timeCategories={[testTimeCategory, anotherTestTimeCategory]}
+            timeCategories={[testTimeCategory]}
         />
     )
 
@@ -159,7 +160,7 @@ test("a required field cannot be missing", async () => {
                 timesheet={testTimesheetAllFields}
                 projectId={1}
                 date={"2022-01-01"}
-                timeCategories={[testTimeCategory, anotherTestTimeCategory]}
+                timeCategories={[testTimeCategory]}
             />
         )
         const timesheetEntryMissingRequired = _.omit(

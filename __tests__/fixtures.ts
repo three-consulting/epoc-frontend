@@ -129,3 +129,12 @@ export const testTimesheetEntryRequiredFields: TimesheetEntry = {
     timeCategory: testTimeCategory,
     task: testTask
 }
+
+export const testTimesheetEntryAllFields: TimesheetEntry = {
+    quantity: 1,
+    date: "2022-01-01",
+    description: "test",
+    timesheet: testTimesheet,
+    timeCategory: testTimeCategory,
+    task: testTask
+}
