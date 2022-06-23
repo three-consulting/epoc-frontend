@@ -127,7 +127,7 @@ export const testTimesheetEntryRequiredFields: TimesheetEntry = {
     date: "2022-01-01",
     timesheet: testTimesheet,
     timeCategory: testTimeCategory,
-    task: testTask
+    task: testTaskRequiredFields,
 }
 
 export const testTimesheetEntryAllFields: TimesheetEntry = {
@@ -136,5 +136,5 @@ export const testTimesheetEntryAllFields: TimesheetEntry = {
     description: "test",
     timesheet: testTimesheet,
     timeCategory: testTimeCategory,
-    task: testTask
+    task: testTaskRequiredFields,
 }

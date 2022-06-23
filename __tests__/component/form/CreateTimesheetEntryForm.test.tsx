@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import "@testing-library/jest-dom"
 import sinon, { spy } from "sinon"
 import { TimesheetEntry } from "@/lib/types/apiTypes"
-import { ApiUpdateResponse } from "@/lib/types/hooks"
+import { ApiGetResponse, ApiUpdateResponse } from "@/lib/types/hooks"
 import { CreateTimesheetEntryForm } from "@/components/form/TimesheetEntryForm"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
@@ -18,9 +18,11 @@ import {
 import _ from "lodash"
 import { User } from "firebase/auth"
 
-const timesheetEntryEndpointURL = `${NEXT_PUBLIC_API_URL}/timesheet-entry`
+const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/timesheet-entry`
 const bodySpy = sinon.spy((body) => body)
 const pathSpy = sinon.spy((path) => path)
+
+const endpointSpy = sinon.spy((endpoint) => endpoint)
 
 jest.mock("@/lib/utils/fetch", () => ({
     // eslint-disable-next-line require-await
@@ -32,21 +34,28 @@ jest.mock("@/lib/utils/fetch", () => ({
         pathSpy(path) && bodySpy(body),
 }))
 
-afterEach(() => {
-    bodySpy.resetHistory()
-    pathSpy.resetHistory()
-})
+jest.mock("@/lib/hooks/swrInterface", () => ({
+    // eslint-disable-next-line require-await
+    useGet: async (
+        _user: User,
+        endpoint: string
+    ): Promise<ApiGetResponse<TimesheetEntry>> => endpointSpy(endpoint),
+    // eslint-disable-next-line require-await
+    useUpdate: async (
+        _user: User,
+        endpoint: string
+    ): Promise<ApiGetResponse<TimesheetEntry>> => endpointSpy(endpoint),
+    // eslint-disable-next-line require-await
+    listEndpoint: async (
+        endpoint: string
+    ): Promise<ApiGetResponse<TimesheetEntry>> => endpointSpy(endpoint),
+}))
 
 const fillAndSubmitForm = async (timesheetEntry: TimesheetEntry) => {
-    const projectInput = screen.getByTestId("form-field-project")
-    fireEvent.change(projectInput, {
-        target: { value: timesheetEntry.timesheet.project.id },
-    })
-
     const quantityInput = screen.getByTestId("form-field-quantity")
     if (timesheetEntry.quantity) {
         fireEvent.change(quantityInput, {
-            target: { value: timesheetEntry.quantity },
+            target: { value: timesheetEntry.quantity || "" },
         })
     }
 
@@ -59,13 +68,13 @@ const fillAndSubmitForm = async (timesheetEntry: TimesheetEntry) => {
 
     const taskInput = screen.getByTestId("form-field-task")
     fireEvent.change(taskInput, {
-        target: { value: timesheetEntry.task },
+        target: { value: timesheetEntry.task.id || "" },
     })
 
     const timeCategoryInput = screen.getByTestId("form-field-time-category")
     if (timesheetEntry.timeCategory) {
         fireEvent.change(timeCategoryInput, {
-            target: { value: timesheetEntry.timeCategory },
+            target: { value: timesheetEntry.timeCategory || "" },
         })
     }
 
@@ -85,9 +94,7 @@ test("a timesheet entry with the required fields only can be submitted", async (
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(
-        timesheetEntryEndpointURL
-    )
+    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
     expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(
         testTimesheetEntryRequiredFields
     )
@@ -99,16 +106,16 @@ test("a timesheet entry with all fields can be submitted", async () => {
             timesheet={testTimesheetAllFields}
             projectId={1}
             date={"2022-01-01"}
-            timeCategories={[testTimeCategory]}
+            timeCategories={[testTimeCategory, anotherTestTimeCategory]}
         />
     )
-    await fillAndSubmitForm(testTimesheetEntryAllFields)
+    await fillAndSubmitForm(testTimesheetEntryRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(
-        timesheetEntryEndpointURL
+    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
+    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(
+        testTimesheetEntryRequiredFields
     )
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(testTimesheetAllFields)
 })
 
 test("afterSubmit is invoked with the correct data", async () => {
@@ -121,6 +128,7 @@ test("afterSubmit is invoked with the correct data", async () => {
             projectId={1}
             date={"2022-01-01"}
             timeCategories={[testTimeCategory]}
+            afterSubmit={afterSubmitSpy}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
@@ -141,6 +149,7 @@ test("onCancel is invoked", async () => {
             projectId={1}
             date={"2022-01-01"}
             timeCategories={[testTimeCategory]}
+            onCancel={onCancelSpy}
         />
     )
 
