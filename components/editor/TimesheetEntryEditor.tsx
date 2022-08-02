@@ -1,6 +1,11 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
-import { TimeCategory, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
+import {
+    Task,
+    TimeCategory,
+    Timesheet,
+    TimesheetEntry,
+} from "@/lib/types/apiTypes"
 import { DeleteHookFunction } from "@/lib/types/hooks"
 import { Heading, Link, Select } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
@@ -15,6 +20,7 @@ interface TimesheetEntryRowProps {
     deleteTimesheetEntry: DeleteHookFunction
     dateStr: string
     timeCategories: TimeCategory[]
+    tasks: Task[]
 }
 
 interface DayEditorProps {
@@ -22,6 +28,7 @@ interface DayEditorProps {
     date: Date
     timeCategories: TimeCategory[]
     entries: TimesheetEntry[]
+    tasks: Task[]
 }
 
 const dateToString = (date: Date): string => {
@@ -32,11 +39,15 @@ const dateToString = (date: Date): string => {
     )}`
 }
 
+const taskByProject = (tasks: Task[], projectId: number) =>
+    tasks.filter((task) => task.project.id === projectId)
+
 const TimesheetEntryRow = ({
     entry,
     deleteTimesheetEntry,
     dateStr,
     timeCategories,
+    tasks,
 }: TimesheetEntryRowProps): JSX.Element => {
     const { id } = entry
     const projectId = entry.timesheet.project.id
@@ -63,6 +74,7 @@ const TimesheetEntryRow = ({
                         timeCategories={timeCategories}
                         onCancel={() => setEdit(!edit)}
                         afterSubmit={() => setEdit(!edit)}
+                        tasks={tasks}
                     />
                     <Link
                         onClick={() =>
@@ -86,6 +98,7 @@ const DayEditor = ({
     date,
     timeCategories,
     entries,
+    tasks,
 }: DayEditorProps): JSX.Element => {
     const { user } = useContext(UserContext)
     const { delete: del } = useUpdateTimesheetEntries(user)
@@ -133,6 +146,7 @@ const DayEditor = ({
                     date={dateStr}
                     timeCategories={timeCategories}
                     key={`createEntryEditor-${timesheet.id}`}
+                    tasks={taskByProject(tasks, timesheet.project.id)}
                 />
             )}
             <Heading as="h2" size="md">
@@ -144,12 +158,18 @@ const DayEditor = ({
                         key={`timesheet-entry-${entry.id}-editor-container`}
                         style={{ margin: "20px" }}
                     >
-                        <TimesheetEntryRow
-                            entry={entry}
-                            deleteTimesheetEntry={del}
-                            dateStr={dateStr}
-                            timeCategories={timeCategories}
-                        />
+                        {entry.timesheet.project.id && (
+                            <TimesheetEntryRow
+                                entry={entry}
+                                deleteTimesheetEntry={del}
+                                dateStr={dateStr}
+                                timeCategories={timeCategories}
+                                tasks={taskByProject(
+                                    tasks,
+                                    entry.timesheet.project.id
+                                )}
+                            />
+                        )}
                     </li>
                 ))}
             </ul>
@@ -161,12 +181,14 @@ interface TimesheetEntryEditorProps {
     entries: TimesheetEntry[]
     timesheets: Timesheet[]
     timeCategories: TimeCategory[]
+    tasks: Task[]
 }
 
 export function TimesheetEntryEditor({
     entries,
     timesheets,
     timeCategories,
+    tasks,
 }: TimesheetEntryEditorProps): JSX.Element {
     const [date, onDateChange] = useState(new Date())
 
@@ -191,6 +213,7 @@ export function TimesheetEntryEditor({
                 date={date}
                 timeCategories={timeCategories}
                 entries={entries}
+                tasks={tasks}
             />
         </>
     )

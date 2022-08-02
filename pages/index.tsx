@@ -5,6 +5,7 @@ import { TimesheetEntryEditor } from "@/components/editor/TimesheetEntryEditor"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import {
+    useTasks,
     useTimeCategories,
     useTimesheetEntries,
     useTimesheets,
@@ -18,6 +19,7 @@ const IndexPage = ({ email }: IndexPageProps) => {
     const { user } = useContext(UserContext)
     const timesheetsResponse = useTimesheets(user, undefined, email)
     const timeCategoriesResponse = useTimeCategories(user)
+    const tasksResponse = useTasks(user)
 
     const startDate = "0000-01-01"
     const endDate = "9999-01-01"
@@ -32,7 +34,8 @@ const IndexPage = ({ email }: IndexPageProps) => {
     const isLoading =
         timesheetsResponse.isLoading ||
         timeCategoriesResponse.isLoading ||
-        timesheetEntriesResponse.isLoading
+        timesheetEntriesResponse.isLoading ||
+        tasksResponse.isLoading
 
     return (
         <>
@@ -54,14 +57,22 @@ const IndexPage = ({ email }: IndexPageProps) => {
                     message={timesheetEntriesResponse.errorMessage}
                 />
             )}
+            {tasksResponse.isError && (
+                <ErrorAlert
+                    title={tasksResponse.errorMessage}
+                    message={tasksResponse.errorMessage}
+                />
+            )}
             {isLoading && <Loading />}
             {timesheetsResponse.isSuccess &&
                 timeCategoriesResponse.isSuccess &&
-                timesheetEntriesResponse.isSuccess && (
+                timesheetEntriesResponse.isSuccess &&
+                tasksResponse.isSuccess && (
                     <TimesheetEntryEditor
                         timesheets={timesheetsResponse.data}
                         timeCategories={timeCategoriesResponse.data}
                         entries={timesheetEntriesResponse.data}
+                        tasks={tasksResponse.data}
                     />
                 )}
         </>
