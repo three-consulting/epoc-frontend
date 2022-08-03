@@ -41,7 +41,7 @@ const validateTimesheetFields = (
     projectId: number
 ): Timesheet => {
     const { name, rate, project, employee } = fields
-    if (name && rate && project && employee) {
+    if (name && rate !== undefined && project && employee) {
         return {
             ...fields,
             project: { ...project, id: projectId },
@@ -95,6 +95,9 @@ function TimesheetForm({
             (timesheetFields.allocation < 0 ||
                 timesheetFields.allocation > maximumAllocation)) ||
         false
+
+    const rateIsValid =
+        timesheetFields.rate !== undefined && timesheetFields.rate >= 0
 
     const abortSubmission = onCancel && onCancel
 
@@ -168,37 +171,55 @@ function TimesheetForm({
                     <FormControl isInvalid={invalidAllocation}>
                         <FormLabel>Allocation</FormLabel>
                         <Input
-                            value={timesheetFields.allocation || ""}
+                            type={"number"}
+                            value={
+                                timesheetFields.allocation === undefined
+                                    ? ""
+                                    : timesheetFields.allocation
+                            }
                             placeholder="0"
                             onChange={(event) =>
                                 setTimesheetFields({
                                     ...timesheetFields,
-                                    allocation: Number(event.target.value),
+                                    allocation: event.target.value
+                                        ? Number(event.target.value)
+                                        : undefined,
                                 })
                             }
                             data-testid="form-field-allocation"
                         />
                         <FormErrorMessage>
-                            Allocation needs to be between 1 and 100 %.
+                            Allocation needs to be between 0 and 100 %.
                         </FormErrorMessage>
-                        <FormControl>
-                            <FormLabel>Rate</FormLabel>
-                            <Input
-                                value={timesheetFields.rate || ""}
-                                placeholder="Rate (€/h)"
-                                onChange={(event) =>
-                                    setTimesheetFields({
-                                        ...timesheetFields,
-                                        rate: Number(event.target.value),
-                                    })
-                                }
-                                data-testid="form-field-rate"
-                            />
-                        </FormControl>
+                    </FormControl>
+                    <FormControl isInvalid={!rateIsValid}>
+                        <FormLabel>Rate</FormLabel>
+                        <Input
+                            type={"number"}
+                            value={
+                                timesheetFields.rate === undefined
+                                    ? ""
+                                    : timesheetFields.rate
+                            }
+                            placeholder="Rate (€/h)"
+                            onChange={(event) => {
+                                setTimesheetFields({
+                                    ...timesheetFields,
+                                    rate: event.target.value
+                                        ? Number(event.target.value)
+                                        : undefined,
+                                })
+                            }}
+                            data-testid="form-field-rate"
+                        />
+                        <FormErrorMessage>
+                            Rate must be a non-negative number.
+                        </FormErrorMessage>
                     </FormControl>
                 </div>
                 <div style={{ textAlign: "right", padding: "20px" }}>
                     <Button
+                        isDisabled={!rateIsValid || invalidAllocation}
                         colorScheme="blue"
                         mr={3}
                         type="submit"
