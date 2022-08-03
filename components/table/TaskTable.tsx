@@ -90,11 +90,11 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                         </Thead>
                         <Tbody>
                             {tasks.map(
-                                (task, idx) =>
+                                (task) =>
                                     task.status !== "ARCHIVED" && (
                                         <TaskRow
                                             task={task}
-                                            key={idx}
+                                            key={`${task.id}`}
                                             onClick={() => setTaskToEdit(task)}
                                         />
                                     )

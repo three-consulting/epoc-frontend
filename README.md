@@ -10,7 +10,8 @@ To generate types from the backend, be sure that you've got the backend running 
 Requirements:
 - Working [secrets](https://github.com/three-consulting/secrets)
 - [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) with correct access rights
-- docker & docker-compose installed
+- docker installed (compose is included in latest versions)
+    - OBS! Some (linux) users might have to add `docker` into user groups. [Docker post installation](https://docs.docker.com/engine/install/linux-postinstall/)
 
 To run the app with backend locally, run `yarn dev-local`.
 

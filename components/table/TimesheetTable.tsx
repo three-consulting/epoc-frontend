@@ -113,11 +113,11 @@ function TimesheetTable({
                         </Thead>
                         <Tbody>
                             {timesheets.map(
-                                (timesheet, idx) =>
+                                (timesheet) =>
                                     timesheet.status !== "ARCHIVED" && (
                                         <TimesheetRow
                                             timesheet={timesheet}
-                                            key={idx}
+                                            key={`${timesheet.id}`}
                                         />
                                     )
                             )}

@@ -133,8 +133,8 @@ const DayEditor = ({
                 marginRight="0.3rem"
                 value={timesheet?.id}
             >
-                {timesheets.map((tms, idx) => (
-                    <option key={idx} value={tms.id}>
+                {timesheets.map((tms) => (
+                    <option key={`${tms.id}`} value={tms.id}>
                         {tms.project.name}
                     </option>
                 ))}
