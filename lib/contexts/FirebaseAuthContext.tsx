@@ -18,12 +18,14 @@ export const AuthProvider = ({ children }: AuthProps): JSX.Element => {
     return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
 }
 
-export const UserProvider = ({ children }: AuthProps): JSX.Element => {
+export const UserProvider = ({ children }: AuthProps): JSX.Element | null => {
     const { user } = useFirebaseAuth()
 
-    return user ? (
-        <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>
-    ) : (
-        <p>Please log in to see stuff.</p>
+    return (
+        user && (
+            <UserContext.Provider value={{ user }}>
+                {children}
+            </UserContext.Provider>
+        )
     )
 }

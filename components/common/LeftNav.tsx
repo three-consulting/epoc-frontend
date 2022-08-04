@@ -8,14 +8,20 @@ import {
     BsPersonBadge,
     BsFillFileTextFill,
 } from "react-icons/bs"
-import useFirebaseAuth from "@/lib/hooks/useFirebaseAuth"
 import Link from "next/link"
 import { IconType } from "react-icons"
+import { User } from "firebase/auth"
 
 interface LinkItemProps {
     name: string
     icon: IconType
     href: string
+}
+
+interface LeftNavProps {
+    user: User | null
+    signInWithGoogle: () => Promise<void>
+    signOutAndClear: () => Promise<void>
 }
 
 const LinkItems: Array<LinkItemProps> = [
@@ -44,8 +50,11 @@ const NavItem = ({ name, icon, href }: LinkItemProps) => (
     </Flex>
 )
 
-function LeftNav(): JSX.Element {
-    const { user, signInWithGoogle, signOutAndClear } = useFirebaseAuth()
+function LeftNav({
+    user,
+    signInWithGoogle,
+    signOutAndClear,
+}: LeftNavProps): JSX.Element {
     return (
         <Flex
             flexDirection="column"
@@ -56,14 +65,15 @@ function LeftNav(): JSX.Element {
             <Text color="black" fontWeight="black" fontSize="xl">
                 Navigation
             </Text>
-            {LinkItems.map((item) => (
-                <NavItem
-                    key={`${item.name}-${item.href}`}
-                    name={item.name}
-                    icon={item.icon}
-                    href={item.href}
-                />
-            ))}
+            {user &&
+                LinkItems.map((item, idx) => (
+                    <NavItem
+                        key={idx}
+                        name={item.name}
+                        icon={item.icon}
+                        href={item.href}
+                    />
+                ))}
 
             <Flex
                 _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}
