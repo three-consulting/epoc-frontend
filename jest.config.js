@@ -8,4 +8,5 @@ module.exports = {
         "^@/firebase/(.*)$": "<rootDir>/firebase/$1",
     },
     testPathIgnorePatterns: ["/fixtures.ts$"],
+    transformIgnorePatterns: ["node_modules/@firebase/app"],
 }

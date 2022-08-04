@@ -43,8 +43,11 @@ function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
                             </Tr>
                         </Thead>
                         <Tbody>
-                            {customers.map((customer, idx) => (
-                                <CustomerRow customer={customer} key={idx} />
+                            {customers.map((customer) => (
+                                <CustomerRow
+                                    customer={customer}
+                                    key={`${customer.id}`}
+                                />
                             ))}
                         </Tbody>
                     </Table>

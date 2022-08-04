@@ -191,8 +191,11 @@ function ProjectForm({
                                 value={projectFields.customer?.id}
                                 data-testid={"form-field-customer"}
                             >
-                                {customers.map((customer, idx) => (
-                                    <option key={idx} value={customer.id}>
+                                {customers.map((customer) => (
+                                    <option
+                                        key={`${customer.id}`}
+                                        value={customer.id}
+                                    >
                                         {customer.name}
                                     </option>
                                 ))}
@@ -223,8 +226,8 @@ function ProjectForm({
                         value={projectFields.managingEmployee?.id}
                         data-testid={"form-field-managing-employee"}
                     >
-                        {employees.map((employee, idx) => (
-                            <option key={idx} value={employee.id}>
+                        {employees.map((employee) => (
+                            <option key={employee.id} value={employee.id}>
                                 {`${employee.firstName} ${employee.lastName}`}
                             </option>
                         ))}

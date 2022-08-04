@@ -40,8 +40,8 @@ function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {projects.map((project, idx) => (
-                        <ProjectRow project={project} key={idx} />
+                    {projects.map((project) => (
+                        <ProjectRow project={project} key={`${project.id}`} />
                     ))}
                 </Tbody>
             </Table>

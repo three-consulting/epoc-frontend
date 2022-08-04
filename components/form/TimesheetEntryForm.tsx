@@ -157,8 +157,8 @@ function TimesheetEntryForm({
                     data-testid={"form-field-task"}
                     key={taskSelectorKey}
                 >
-                    {tasks.map((task, idx) => (
-                        <option key={idx} value={task.id}>
+                    {tasks.map((task) => (
+                        <option key={`${task.id}`} value={task.id}>
                             {task.name}
                         </option>
                     ))}
@@ -170,8 +170,11 @@ function TimesheetEntryForm({
                     value={timesheetEntryFields.timeCategory?.id}
                     data-testid={"form-field-time-category"}
                 >
-                    {timeCategories.map((timeCategory, idx) => (
-                        <option key={idx} value={timeCategory.id}>
+                    {timeCategories.map((timeCategory) => (
+                        <option
+                            key={`${timeCategory.id}`}
+                            value={timeCategory.id}
+                        >
                             {timeCategory.name}
                         </option>
                     ))}

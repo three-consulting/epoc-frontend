@@ -133,8 +133,11 @@ function TimesheetForm({
                             placeholder="Select employee"
                             data-testid="form-field-employee"
                         >
-                            {employees.map((employee, idx) => (
-                                <option key={idx} value={employee.id}>
+                            {employees.map((employee) => (
+                                <option
+                                    key={`${employee.id}`}
+                                    value={employee.id}
+                                >
                                     {`${employee.firstName} ${employee.lastName}`}
                                 </option>
                             ))}

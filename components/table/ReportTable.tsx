@@ -238,7 +238,7 @@ const ProjectHoursRow = ({
                                 <TaskHoursRow
                                     entries={entriesByTask(entries, task.id)}
                                     task={task}
-                                    key={`task-hours-row-project-${project.id}`}
+                                    key={`task-${task.id}-hours-row-project-${project.id}`}
                                     displayNull={displayNull}
                                 ></TaskHoursRow>
                             )
