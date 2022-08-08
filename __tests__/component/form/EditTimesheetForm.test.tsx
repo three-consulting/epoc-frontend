@@ -17,6 +17,8 @@ import {
 // eslint-disable-next-line id-match, id-length
 import _ from "lodash"
 import { User } from "firebase/auth"
+import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
+import { checkTestRequestBodyRequiredFields } from "../../util"
 
 const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/timesheet`
 const bodySpy = sinon.spy((body) => body)
@@ -64,6 +66,8 @@ const fillAndSubmitForm = async (timesheet: Timesheet) => {
     await waitFor(() => fireEvent.click(submitButton))
 }
 
+export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+
 test("a timesheet can be edited with required fields", async () => {
     expect(testProject.id).toBeDefined()
     expect(testTimesheet.id).toBeDefined()
@@ -83,7 +87,12 @@ test("a timesheet can be edited with required fields", async () => {
     await fillAndSubmitForm(testTimesheetRequiredFields)
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual({
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            timesheetFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual({
         id: testTimesheet.id,
         ...testTimesheetRequiredFields,
     })
@@ -108,7 +117,12 @@ test("a timesheet can be edited with all fields", async () => {
     await fillAndSubmitForm(testTimesheetAllFields)
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual({
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            timesheetFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual({
         id: testTimesheet.id,
         ...testTimesheetAllFields,
     })

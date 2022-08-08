@@ -12,6 +12,7 @@ import { useUpdateCustomers } from "@/lib/hooks/useUpdate"
 import { FormBase } from "@/lib/types/forms"
 import ErrorAlert from "../common/ErrorAlert"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { customerFieldMetadata } from "@/lib/types/typeMetadata"
 
 type CreateCustomerFormProps = FormBase<Customer>
 
@@ -69,7 +70,9 @@ function CustomerForm({
                 }}
             >
                 <div style={{ padding: "20px" }}>
-                    <FormControl isRequired>
+                    <FormControl
+                        isRequired={customerFieldMetadata.name.required}
+                    >
                         <FormLabel>Customer Name</FormLabel>
                         <Input
                             placeholder="Customer Name"
@@ -84,7 +87,10 @@ function CustomerForm({
                         />
                     </FormControl>
 
-                    <FormControl mt={4}>
+                    <FormControl
+                        mt={4}
+                        isRequired={customerFieldMetadata.description.required}
+                    >
                         <FormLabel>Description</FormLabel>
                         <Input
                             placeholder="Description"

@@ -15,6 +15,8 @@ import { User } from "firebase/auth"
 import { EditTaskForm } from "@/components/form/TaskForm"
 // eslint-disable-next-line id-length, id-match
 import _ from "lodash"
+import { taskFieldMetadata } from "@/lib/types/typeMetadata"
+import { checkTestRequestBodyRequiredFields } from "../../util"
 
 const taskEndpointURL = `${NEXT_PUBLIC_API_URL}/task`
 const bodySpy = sinon.spy((body) => body)
@@ -53,6 +55,8 @@ const fillAndSubmitForm = async (task: Task) => {
     fireEvent.change(billableInput, { target: { value: task.billable || "" } })
 }
 
+export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+
 test("a task can be edited with required fields", async () => {
     expect(testTaskRequiredFields).toBeDefined()
     render(
@@ -70,7 +74,12 @@ test("a task can be edited with required fields", async () => {
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(taskEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual({
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            taskFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual({
         id: testTask.id,
         ...testTaskRequiredFields,
     })
@@ -93,7 +102,12 @@ test("a task can be edited with all fields", async () => {
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(taskEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual({
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            taskFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual({
         id: testTask.id,
         ...testTaskAllFields,
     })
