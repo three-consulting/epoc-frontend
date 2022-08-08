@@ -71,10 +71,9 @@ function TaskForm({
             <FormContainer>
                 <FormInputField
                     label={"Name"}
+                    isRequired={true}
                     value={taskFields?.name || ""}
                     placeholder={"Task name"}
-                    isRequired={true}
-                    isInvalid={!taskFields.name}
                     onChange={(event) =>
                         setTaskFields({
                             ...taskFields,
