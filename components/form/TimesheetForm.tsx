@@ -195,7 +195,11 @@ function TimesheetForm({
                             Allocation needs to be between 0 and 100 %.
                         </FormErrorMessage>
                     </FormControl>
-                    <FormControl isInvalid={!rateIsValid}>
+                    <FormControl
+                        isInvalid={
+                            !rateIsValid && timesheetFields.rate !== undefined
+                        }
+                    >
                         <FormLabel>Rate</FormLabel>
                         <Input
                             type={"number"}
@@ -215,7 +219,9 @@ function TimesheetForm({
                             }}
                             data-testid="form-field-rate"
                         />
-                        <FormErrorMessage>
+                        <FormErrorMessage
+                            hidden={timesheetFields.rate === undefined}
+                        >
                             Rate must be a non-negative number.
                         </FormErrorMessage>
                     </FormControl>
