@@ -44,8 +44,8 @@ function GenerateFields(DTO) {
     })
 }
 
-// eslint-disable-next-line no-console
 rl.on("line", () =>
+    // eslint-disable-next-line no-console
     console.log(`export type FieldMetadata = { required: boolean }`)
 )
 
