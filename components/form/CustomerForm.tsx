@@ -69,7 +69,7 @@ function CustomerForm({
                 }}
             >
                 <div style={{ padding: "20px" }}>
-                    <FormControl>
+                    <FormControl isRequired>
                         <FormLabel>Customer Name</FormLabel>
                         <Input
                             placeholder="Customer Name"

@@ -125,7 +125,7 @@ function TimesheetForm({
                 }}
             >
                 <div style={{ padding: "20px" }}>
-                    <FormControl>
+                    <FormControl isRequired>
                         <FormLabel>User</FormLabel>
                         <Select
                             value={timesheetFields.employee?.id}
@@ -143,7 +143,7 @@ function TimesheetForm({
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControl>
+                    <FormControl isRequired>
                         <FormLabel>Timesheet Name</FormLabel>
                         <Input
                             value={timesheetFields.name || ""}
