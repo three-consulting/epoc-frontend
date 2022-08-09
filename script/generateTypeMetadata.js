@@ -9,8 +9,13 @@ const rl = readline.createInterface({
 })
 
 const dataTransferObects = [
-    "CustomerDTO", "EmployeeDTO", "ProjectDTO",
-    "TimesheetDTO", "TaskDTO", "TimeCategoryDTO", "TimesheetEntryDTO"
+    "CustomerDTO",
+    "EmployeeDTO",
+    "ProjectDTO",
+    "TimesheetDTO",
+    "TaskDTO",
+    "TimeCategoryDTO",
+    "TimesheetEntryDTO",
 ]
 
 const fieldToMetadata = (field, required) =>
@@ -40,10 +45,12 @@ function GenerateFields(DTO) {
 }
 
 // eslint-disable-next-line no-console
-rl.on("line", () => console.log(`export type FieldMetadata = { required: boolean }`))
+rl.on("line", () =>
+    console.log(`export type FieldMetadata = { required: boolean }`)
+)
 
 const writeFields = () => {
-    dataTransferObects.map((data) => (GenerateFields(data)))
+    dataTransferObects.map((data) => GenerateFields(data))
 }
 
 writeFields()
