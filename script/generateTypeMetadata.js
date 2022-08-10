@@ -11,12 +11,15 @@ const rl = readline.createInterface({
 const generateFieldMetadata = (field, required) =>
     `${field}: {required: ${required.includes(field)}}`
 
+const firstCharacterToLowerCase = (string) =>
+    string.charAt(0).toLowerCase() + string.slice(1)
+
 const generateSchemaMetadata = (type, schema) => {
     const fields = Object.keys(schema.properties)
     const { required } = schema
-    return `export const ${
-        type[0].toLowerCase() + type.slice(1)
-    }FieldMetadata: Record<string, FieldMetadata> = {
+    return `export const ${firstCharacterToLowerCase(
+        type
+    )}FieldMetadata: Record<string, FieldMetadata> = {
         ${fields
             .map((field) => `${generateFieldMetadata(field, required)}`)
             .join(", ")}}`
