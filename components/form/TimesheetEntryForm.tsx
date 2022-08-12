@@ -7,10 +7,18 @@ import {
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
-import { Box, Flex, Input, Select } from "@chakra-ui/react"
+import {
+    Box,
+    Flex,
+    FormControl,
+    FormLabel,
+    Input,
+    Select,
+} from "@chakra-ui/react"
 import React, { useContext, useEffect, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { FromButtons } from "../common/FormFields"
+import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 
 type TimesheetEntryFormBaseProps = FormBase<TimesheetEntry> & {
     entryOrNull?: TimesheetEntry
@@ -132,53 +140,80 @@ function TimesheetEntryForm({
                 borderRadius="0.2rem"
                 padding="1rem 1rem"
             >
-                <Input
-                    value={quantityString}
-                    placeholder="Hours"
-                    onChange={(event) => setQuantityString(event.target.value)}
-                    data-testid={"form-field-quantity"}
-                />
-                <Input
-                    value={timesheetEntryFields?.description || ""}
-                    placeholder="Description"
-                    onChange={(event) =>
-                        setTimesheetEntryFields({
-                            ...timesheetEntryFields,
-                            description: event.target.value,
-                        })
+                <FormControl
+                    isRequired={timesheetEntryFieldMetadata.quantity.required}
+                >
+                    <FormLabel>Hours</FormLabel>
+                    <Input
+                        value={quantityString}
+                        placeholder="Hours"
+                        isRequired={true}
+                        onChange={(event) =>
+                            setQuantityString(event.target.value)
+                        }
+                        data-testid={"form-field-quantity"}
+                    />
+                </FormControl>
+                <FormControl
+                    isRequired={
+                        timesheetEntryFieldMetadata.description.required
                     }
-                    data-testid={"form-field-description"}
-                />
-                <Select
-                    onChange={handleTaskChange}
-                    placeholder="Select task"
-                    marginRight="0.3rem"
-                    value={timesheetEntryFields.task?.id}
-                    data-testid={"form-field-task"}
-                    key={taskSelectorKey}
                 >
-                    {tasks.map((task) => (
-                        <option key={`${task.id}`} value={task.id}>
-                            {task.name}
-                        </option>
-                    ))}
-                </Select>
-                <Select
-                    onChange={handleTimeCategoryChange}
-                    placeholder="Select time category"
-                    marginRight="0.3rem"
-                    value={timesheetEntryFields.timeCategory?.id}
-                    data-testid={"form-field-time-category"}
+                    <FormLabel>Description</FormLabel>
+                    <Input
+                        value={timesheetEntryFields?.description || ""}
+                        placeholder="Description"
+                        onChange={(event) =>
+                            setTimesheetEntryFields({
+                                ...timesheetEntryFields,
+                                description: event.target.value,
+                            })
+                        }
+                        data-testid={"form-field-description"}
+                    />
+                </FormControl>
+                <FormControl
+                    isRequired={timesheetEntryFieldMetadata.task.required}
                 >
-                    {timeCategories.map((timeCategory) => (
-                        <option
-                            key={`${timeCategory.id}`}
-                            value={timeCategory.id}
-                        >
-                            {timeCategory.name}
-                        </option>
-                    ))}
-                </Select>
+                    <FormLabel>Task</FormLabel>
+                    <Select
+                        onChange={handleTaskChange}
+                        placeholder="Select task"
+                        marginRight="0.3rem"
+                        value={timesheetEntryFields.task?.id}
+                        data-testid={"form-field-task"}
+                        key={taskSelectorKey}
+                    >
+                        {tasks.map((task) => (
+                            <option key={`${task.id}`} value={task.id}>
+                                {task.name}
+                            </option>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl
+                    isRequired={
+                        timesheetEntryFieldMetadata.timeCategory.required
+                    }
+                >
+                    <FormLabel>Time Category</FormLabel>
+                    <Select
+                        onChange={handleTimeCategoryChange}
+                        placeholder="Select time category"
+                        marginRight="0.3rem"
+                        value={timesheetEntryFields.timeCategory?.id}
+                        data-testid={"form-field-time-category"}
+                    >
+                        {timeCategories.map((timeCategory) => (
+                            <option
+                                key={`${timeCategory.id}`}
+                                value={timeCategory.id}
+                            >
+                                {timeCategory.name}
+                            </option>
+                        ))}
+                    </Select>
+                </FormControl>
                 <div>
                     <FromButtons onSubmit={handleSubmit} onCancel={onCancel} />
                 </div>

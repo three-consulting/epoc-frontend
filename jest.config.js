@@ -7,6 +7,6 @@ module.exports = {
         "^@/lib/(.*)$": "<rootDir>/lib/$1",
         "^@/firebase/(.*)$": "<rootDir>/firebase/$1",
     },
-    testPathIgnorePatterns: ["/fixtures.ts$"],
+    testPathIgnorePatterns: ["/fixtures.ts$", "/util.ts$"],
     transformIgnorePatterns: ["node_modules/@firebase/app"],
 }

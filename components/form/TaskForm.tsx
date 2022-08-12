@@ -14,6 +14,7 @@ import {
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { CheckBoxField, FormContainer } from "../common/FormFields"
+import { taskFieldMetadata } from "@/lib/types/typeMetadata"
 
 type CreateTaskFormProps = FormBase<Task> & {
     project: Project
@@ -75,7 +76,7 @@ function TaskForm({
         <Flex>
             <form onSubmit={handleSubmit}>
                 <FormContainer>
-                    <FormControl isRequired>
+                    <FormControl isRequired={taskFieldMetadata.name.required}>
                         <FormLabel>Name</FormLabel>
                         <Input
                             value={taskFields?.name || ""}
@@ -89,18 +90,22 @@ function TaskForm({
                             data-testid={"form-field-name"}
                         />
                     </FormControl>
-                    <FormLabel>Description</FormLabel>
-                    <Input
-                        value={taskFields?.description || ""}
-                        placeholder={"Description"}
-                        onChange={(event) =>
-                            setTaskFields({
-                                ...taskFields,
-                                description: event.target.value,
-                            })
-                        }
-                        data-testid={"form-field-description"}
-                    />
+                    <FormControl
+                        isRequired={taskFieldMetadata.description.required}
+                    >
+                        <FormLabel>Description</FormLabel>
+                        <Input
+                            value={taskFields?.description || ""}
+                            placeholder={"Description"}
+                            onChange={(event) =>
+                                setTaskFields({
+                                    ...taskFields,
+                                    description: event.target.value,
+                                })
+                            }
+                            data-testid={"form-field-description"}
+                        />
+                    </FormControl>
                     <CheckBoxField
                         label={"Billable"}
                         isChecked={taskFields.billable}
