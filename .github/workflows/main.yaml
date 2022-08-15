@@ -23,7 +23,6 @@ jobs:
           yarn prettier --check .
           yarn eslint .
           yarn test
-          yarn validate-types
 
       - name: Build and deploy to heroku
         uses: akhileshns/heroku-deploy@v3.12.12
