@@ -81,6 +81,7 @@ export interface components {
       /** Format: date-time */
       updated?: string;
       enabled?: boolean;
+      lastName?: string;
     };
     EmployeeDTO: {
       /** Format: int64 */
