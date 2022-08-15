@@ -17,7 +17,8 @@
         "types": "yarn openapi-typescript http://localhost:8080/docs --output lib/types/api.ts && curl http://localhost:8080/docs | node ./script/generateTypeMetadata.js > lib/types/typeMetadata.ts && yarn prettier lib/types/typeMetadata.ts --write",
         "start-server": "docker compose -f epoc-compose.yaml up",
         "heroku-login": "docker login --username=_ --password=$(heroku auth:token) registry.heroku.com",
-        "test": "jest --env=jsdom"
+        "test": "jest --env=jsdom",
+        "validate-types": "yarn openapi-typescript https://epoc-backend-testing.herokuapp.com/docs --output tmp.ts && diff tmp.ts lib/types/api.ts ; rm tmp.ts"
     },
     "dependencies": {
         "@chakra-ui/icons": "^1.0.15",
