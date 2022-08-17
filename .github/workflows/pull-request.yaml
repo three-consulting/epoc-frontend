@@ -1,0 +1,47 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Install dependencies and run checks
+        run: |
+          yarn install
+          yarn run type-check
+          yarn prettier --check .
+          yarn eslint .
+          yarn test
+     
+      - name: Check types
+        id: validate_types
+        continue-on-error: true
+        run: |
+          yarn validate-types-dev
+          yarn validate-types-prod
+
+      - name: Comment results of typecheck to pullrequest
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: ${{ steps.validate_types.outputs.* }}
+            })
