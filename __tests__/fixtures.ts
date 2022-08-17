@@ -11,6 +11,8 @@ export const testEmployee: Employee = {
     firstName: "testi",
     lastName: "tekija",
     email: "test@test.test",
+    role: "USER",
+    firebaseUid: "testUid1",
 }
 
 export const anotherTestEmployee: Employee = {
@@ -18,6 +20,8 @@ export const anotherTestEmployee: Employee = {
     firstName: "test",
     lastName: "worker",
     email: "test2@test.test",
+    role: "USER",
+    firebaseUid: "testUid2",
 }
 
 export const testCustomer: Customer = {

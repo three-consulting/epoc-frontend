@@ -14,7 +14,7 @@
         "lint-fix": "eslint . --fix && yarn prettier . --write",
         "type-check": "tsc",
         "postinstall": "husky install",
-        "types": "yarn openapi-typescript http://localhost:8080/docs --output lib/types/api.ts && curl http://localhost:8080/docs | node ./script/generateTypeMetadata.js > lib/types/typeMetadata.ts && yarn prettier lib/types/typeMetadata.ts --write",
+        "types": "yarn openapi-typescript https://epoc-backend-testing.herokuapp.com/docs --output lib/types/api.ts && curl https://epoc-backend-testing.herokuapp.com/docs | node ./script/generateTypeMetadata.js > lib/types/typeMetadata.ts && yarn prettier lib/types/typeMetadata.ts --write",
         "start-server": "docker compose -f epoc-compose.yaml up",
         "heroku-login": "docker login --username=_ --password=$(heroku auth:token) registry.heroku.com",
         "test": "jest --env=jsdom",

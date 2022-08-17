@@ -18,6 +18,8 @@ export const employeeFieldMetadata: Record<string, FieldMetadata> = {
     startDate: { required: false },
     created: { required: false },
     updated: { required: false },
+    firebaseUid: { required: false },
+    role: { required: true },
 }
 
 export const projectFieldMetadata: Record<string, FieldMetadata> = {
