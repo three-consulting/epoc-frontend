@@ -94,6 +94,9 @@ export interface components {
       created?: string;
       /** Format: date-time */
       updated?: string;
+      firebaseUid?: string;
+      /** @enum {string} */
+      role: "USER" | "ADMIN";
     };
     ProjectDTO: {
       /** Format: int64 */
