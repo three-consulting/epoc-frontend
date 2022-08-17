@@ -1,0 +1,69 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Install dependencies and run checks
+        run: |
+          yarn install
+          yarn run type-check
+          yarn prettier --check .
+          yarn eslint .
+          yarn test
+   
+      - name: Check types
+        id: validate_types
+        run: |
+          yarn openapi-typescript https://epoc-backend-testing.herokuapp.com/docs --output dev.ts
+          yarn openapi-typescript https://epoc-backend.herokuapp.com/docs --output prod.ts
+          export DEV="$(diff dev.ts lib/types/api.ts)"
+          DEV="${DEV//'%'/'%25'}"
+          DEV="${DEV//$'\n'/'%0A'}"
+          DEV="${DEV//$'\r'/'%0D'}"
+          echo "::set-output name=dev::$(echo "$DEV")"
+          export PROD="$(diff prod.ts lib/types/api.ts)"
+          PROD="${PROD//'%'/'%25'}"
+          PROD="${PROD//$'\n'/'%0A'}"
+          PROD="${PROD//$'\r'/'%0D'}"
+          echo "::set-output name=prod::$(echo "$PROD")"
+
+      - name: Comment results of dev type validations
+        uses: actions/github-script@v6
+        if: ${{ steps.validate_types.outputs.dev != '' }}
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `DEV: Type validation error in line: ${{ toJSON(steps.validate_types.outputs.dev) }}`
+            })
+
+      - name: Comment results of prod type validations
+        uses: actions/github-script@v6
+        if: ${{ steps.validate_types.outputs.prod != '' }}
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `PROD: Type validation error in line: ${{ toJSON(steps.validate_types.outputs.prod) }}`
+            })
