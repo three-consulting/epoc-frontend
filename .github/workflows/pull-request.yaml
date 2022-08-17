@@ -36,7 +36,7 @@ jobs:
           yarn validate-types-prod
 
       - name: echo types output
-        run: echo '{{ toJSON(steps.validate_types.outputs) }}'
+        run: echo '${{ toJSON(steps.validate_types) }}'
 
       - name: Comment results of typecheck to pullrequest
         uses: actions/github-script@v6
