@@ -19,6 +19,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "16"
+
+      - name: Install dependencies
+        run: |
+          yarn install
      
       - name: Check types
         uses: mathiasvr/command-output@v1
