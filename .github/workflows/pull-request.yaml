@@ -23,9 +23,10 @@ jobs:
       - name: Check types
         uses: mathiasvr/command-output@v1
         id: validate_types
-        run: |
-          yarn validate-types-dev
-          yarn validate-types-prod
+        with:
+          run: |
+            yarn validate-types-dev
+            yarn validate-types-prod
 
       - name: echo types output
         run: echo '${{ toJSON(steps.validate_types) }}'
