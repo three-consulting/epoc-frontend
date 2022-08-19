@@ -8,6 +8,7 @@ import {
 } from "@/lib/types/apiTypes"
 import { DeleteHookFunction } from "@/lib/types/hooks"
 import { Heading, Link, Select } from "@chakra-ui/react"
+import { sum } from "lodash"
 import React, { useContext, useState } from "react"
 import Calendar from "react-calendar"
 import {
@@ -177,6 +178,43 @@ const DayEditor = ({
     )
 }
 
+interface totalHoursProps {
+    entries: TimesheetEntry[]
+}
+
+function TotalHours({ entries }: totalHoursProps): JSX.Element {
+    const curr = new Date()
+    const first = curr.getDate() - curr.getDay() + 1
+    const firstToLast = 6
+    const last = first + firstToLast
+
+    const firstday = new Date(curr.setDate(first))
+        .toISOString()
+        .split("T")
+        .toString()
+    const lastday = new Date(curr.setDate(last))
+        .toISOString()
+        .split("T")
+        .toString()
+
+    const inThisWeek = (start: string, middle: string, end: string) =>
+        middle >= start && middle <= end
+
+    const filterEntriesByWeek = (timesheetEntries: TimesheetEntry[]) =>
+        timesheetEntries?.filter((entry) =>
+            inThisWeek(firstday, entry.date, lastday)
+        )
+    const totalHoursInWeek = sum(
+        filterEntriesByWeek(entries).map((item) => item.quantity)
+    )
+
+    return (
+        <p>
+            The total number of hours made this week: <b>{totalHoursInWeek}</b>
+        </p>
+    )
+}
+
 interface TimesheetEntryEditorProps {
     entries: TimesheetEntry[]
     timesheets: Timesheet[]
@@ -208,6 +246,8 @@ export function TimesheetEntryEditor({
                     }}
                 />
             </div>
+            <TotalHours entries={entries}></TotalHours>
+            <div style={{ marginBottom: "10px" }}></div>
             <DayEditor
                 timesheets={timesheets}
                 date={date}
