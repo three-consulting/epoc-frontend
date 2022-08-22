@@ -14,6 +14,8 @@ import {
 // eslint-disable-next-line id-match, id-length
 import _ from "lodash"
 import { User } from "firebase/auth"
+import { customerFieldMetadata } from "@/lib/types/typeMetadata"
+import { checkTestRequestBodyRequiredFields } from "../../util"
 
 const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/customer`
 const bodySpy = sinon.spy((body) => body)
@@ -50,15 +52,20 @@ const fillAndSubmitForm = async (customer: Customer) => {
     await waitFor(() => fireEvent.click(submitButton))
 }
 
+export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+
 test("a customer with the required fields only can be submitted", async () => {
     render(<CreateCustomerForm />)
     await fillAndSubmitForm(testCustomerRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(
-        testCustomerRequiredFields
-    )
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            customerFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual(testCustomerRequiredFields)
 })
 
 test("a customer with all fields can be submitted", async () => {
@@ -67,7 +74,12 @@ test("a customer with all fields can be submitted", async () => {
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(testCustomerAllFields)
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            customerFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual(testCustomerAllFields)
 })
 
 test("afterSubmit is invoked with the correct data", async () => {

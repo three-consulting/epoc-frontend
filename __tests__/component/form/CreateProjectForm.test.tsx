@@ -18,6 +18,8 @@ import {
 // eslint-disable-next-line id-match, id-length
 import _ from "lodash"
 import { User } from "firebase/auth"
+import { projectFieldMetadata } from "@/lib/types/typeMetadata"
+import { checkTestRequestBodyRequiredFields } from "../../util"
 
 const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/project`
 const bodySpy = sinon.spy((body) => body)
@@ -76,6 +78,8 @@ const fillAndSubmitForm = async (project: Project) => {
     await waitFor(() => fireEvent.click(submitButton))
 }
 
+const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+
 test("a project with the required fields only can be submitted", async () => {
     render(
         <CreateProjectForm
@@ -87,9 +91,12 @@ test("a project with the required fields only can be submitted", async () => {
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(
-        testProjectRequiredFields
-    )
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            projectFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual(testProjectRequiredFields)
 })
 
 test("a project with all fields can be submitted", async () => {
@@ -103,7 +110,12 @@ test("a project with all fields can be submitted", async () => {
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(testProjectAllFields)
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            projectFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual(testProjectAllFields)
 })
 
 test("afterSubmit is invoked with the correct data", async () => {

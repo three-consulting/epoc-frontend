@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
+import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
 
 type CreateTimesheetFormProps = FormBase<Timesheet> & {
     employees: Employee[]
@@ -125,7 +126,7 @@ function TimesheetForm({
                 }}
             >
                 <div style={{ padding: "20px" }}>
-                    <FormControl>
+                    <FormControl isRequired>
                         <FormLabel>User</FormLabel>
                         <Select
                             value={timesheetFields.employee?.id}
@@ -143,7 +144,9 @@ function TimesheetForm({
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControl>
+                    <FormControl
+                        isRequired={timesheetFieldMetadata.name.required}
+                    >
                         <FormLabel>Timesheet Name</FormLabel>
                         <Input
                             value={timesheetFields.name || ""}
@@ -157,7 +160,9 @@ function TimesheetForm({
                             data-testid="form-field-name"
                         />
                     </FormControl>
-                    <FormControl>
+                    <FormControl
+                        isRequired={timesheetFieldMetadata.description.required}
+                    >
                         <FormLabel>Description</FormLabel>
                         <Input
                             value={timesheetFields.description || ""}
@@ -171,7 +176,10 @@ function TimesheetForm({
                             data-testid="form-field-description"
                         />
                     </FormControl>
-                    <FormControl isInvalid={invalidAllocation}>
+                    <FormControl
+                        isInvalid={invalidAllocation}
+                        isRequired={timesheetFieldMetadata.allocation.required}
+                    >
                         <FormLabel>Allocation</FormLabel>
                         <Input
                             type={"number"}
@@ -199,6 +207,7 @@ function TimesheetForm({
                         isInvalid={
                             !rateIsValid && timesheetFields.rate !== undefined
                         }
+                        isRequired={timesheetFieldMetadata.rate.required}
                     >
                         <FormLabel>Rate</FormLabel>
                         <Input

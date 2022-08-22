@@ -2,6 +2,7 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateProjects } from "@/lib/hooks/useUpdate"
 import { Customer, Employee, Project } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
+import { projectFieldMetadata } from "@/lib/types/typeMetadata"
 import { Flex } from "@chakra-ui/layout"
 import {
     Button,
@@ -116,7 +117,7 @@ function ProjectForm({
                     }
                 }}
             >
-                <FormControl isRequired={true}>
+                <FormControl isRequired={projectFieldMetadata.name.required}>
                     <FormLabel>Project name</FormLabel>
                     <Input
                         value={projectFields.name || ""}
@@ -130,7 +131,9 @@ function ProjectForm({
                         data-testid={"form-field-name"}
                     />
                 </FormControl>
-                <FormControl>
+                <FormControl
+                    isRequired={projectFieldMetadata.description.required}
+                >
                     <FormLabel>Project description</FormLabel>
                     <Input
                         value={projectFields.description || ""}
@@ -144,7 +147,9 @@ function ProjectForm({
                         data-testid={"form-field-description"}
                     />
                 </FormControl>
-                <FormControl isRequired={true}>
+                <FormControl
+                    isRequired={projectFieldMetadata.startDate.required}
+                >
                     <FormLabel>Start date</FormLabel>
                     <Input
                         type="date"
@@ -159,7 +164,10 @@ function ProjectForm({
                         data-testid={"form-field-start-date"}
                     />
                 </FormControl>
-                <FormControl isInvalid={invalidEndDate}>
+                <FormControl
+                    isRequired={projectFieldMetadata.endDate.required}
+                    isInvalid={invalidEndDate}
+                >
                     <FormLabel>End date</FormLabel>
                     <Input
                         type="date"
@@ -178,7 +186,9 @@ function ProjectForm({
                     </FormErrorMessage>
                 </FormControl>
                 <Flex flexDirection="row" justifyContent="center">
-                    <FormControl isRequired={true}>
+                    <FormControl
+                        isRequired={projectFieldMetadata.customer.required}
+                    >
                         <FormLabel>Customer</FormLabel>
                         <Flex
                             flexDirection="row"
@@ -218,7 +228,9 @@ function ProjectForm({
                         </Flex>
                     </FormControl>
                 </Flex>
-                <FormControl isRequired={true}>
+                <FormControl
+                    isRequired={projectFieldMetadata.managingEmployee.required}
+                >
                     <FormLabel>Managing employee</FormLabel>
                     <Select
                         onChange={handleEmployeeChange}

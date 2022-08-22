@@ -2,15 +2,19 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
-import { Box } from "@chakra-ui/react"
+import {
+    Box,
+    Button,
+    ButtonGroup,
+    Flex,
+    FormControl,
+    FormLabel,
+    Input,
+} from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
-import {
-    CheckBoxField,
-    FormContainer,
-    FormInputField,
-    FromButtons,
-} from "../common/FormFields"
+import { CheckBoxField, FormContainer } from "../common/FormFields"
+import { taskFieldMetadata } from "@/lib/types/typeMetadata"
 
 type CreateTaskFormProps = FormBase<Task> & {
     project: Project
@@ -57,9 +61,11 @@ function TaskForm({
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const handleSubmit = (event: React.MouseEvent) => {
+    const abortSubmission = onCancel && onCancel
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
         try {
-            event.preventDefault()
             const updatedTask = validateTaskFields(taskFields, projectId)
             onSubmit(updatedTask)
         } catch (error) {
@@ -67,54 +73,77 @@ function TaskForm({
         }
     }
     return (
-        <form>
-            <FormContainer>
-                <FormInputField
-                    label={"Name"}
-                    value={taskFields?.name || ""}
-                    placeholder={"Task name"}
-                    isRequired={true}
-                    isInvalid={!taskFields.name}
-                    onChange={(event) =>
-                        setTaskFields({
-                            ...taskFields,
-                            name: event.target.value,
-                        })
-                    }
-                    testId={"form-field-name"}
-                />
-                <FormInputField
-                    label={"Description"}
-                    value={taskFields?.description || ""}
-                    placeholder={"Description"}
-                    onChange={(event) =>
-                        setTaskFields({
-                            ...taskFields,
-                            description: event.target.value,
-                        })
-                    }
-                    testId={"form-field-description"}
-                />
-                <CheckBoxField
-                    label={"Billable"}
-                    isChecked={taskFields.billable}
-                    onChange={(event) =>
-                        setTaskFields({
-                            ...taskFields,
-                            billable: event.target.checked,
-                        })
-                    }
-                    testId={"form-field-billable"}
-                />
-                <FromButtons onSubmit={handleSubmit} onCancel={onCancel} />
-                {errorMessage && (
-                    <>
-                        <ErrorAlert />
-                        <Box>{errorMessage}</Box>
-                    </>
-                )}
-            </FormContainer>
-        </form>
+        <Flex>
+            <form onSubmit={handleSubmit}>
+                <FormContainer>
+                    <FormControl isRequired={taskFieldMetadata.name.required}>
+                        <FormLabel>Name</FormLabel>
+                        <Input
+                            value={taskFields?.name || ""}
+                            placeholder={"Task name"}
+                            onChange={(event) =>
+                                setTaskFields({
+                                    ...taskFields,
+                                    name: event.target.value,
+                                })
+                            }
+                            data-testid={"form-field-name"}
+                        />
+                    </FormControl>
+                    <FormControl
+                        isRequired={taskFieldMetadata.description.required}
+                    >
+                        <FormLabel>Description</FormLabel>
+                        <Input
+                            value={taskFields?.description || ""}
+                            placeholder={"Description"}
+                            onChange={(event) =>
+                                setTaskFields({
+                                    ...taskFields,
+                                    description: event.target.value,
+                                })
+                            }
+                            data-testid={"form-field-description"}
+                        />
+                    </FormControl>
+                    <CheckBoxField
+                        label={"Billable"}
+                        isChecked={taskFields.billable}
+                        onChange={(event) =>
+                            setTaskFields({
+                                ...taskFields,
+                                billable: event.target.checked,
+                            })
+                        }
+                        testId={"form-field-billable"}
+                    />
+                    <ButtonGroup>
+                        <Button
+                            colorScheme="blue"
+                            mr={3}
+                            type="submit"
+                            data-testid="form-button-submit"
+                        >
+                            Submit
+                        </Button>
+                        <Button
+                            colorScheme={"gray"}
+                            variant="outline"
+                            onClick={abortSubmission}
+                            data-testid="form-button-cancel"
+                        >
+                            Cancel
+                        </Button>
+                    </ButtonGroup>
+                    {errorMessage && (
+                        <>
+                            <ErrorAlert />
+                            <Box>{errorMessage}</Box>
+                        </>
+                    )}
+                </FormContainer>
+            </form>
+        </Flex>
     )
 }
 

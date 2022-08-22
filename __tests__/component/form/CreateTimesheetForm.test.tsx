@@ -16,6 +16,8 @@ import {
 // eslint-disable-next-line id-match, id-length
 import _ from "lodash"
 import { User } from "firebase/auth"
+import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
+import { checkTestRequestBodyRequiredFields } from "../../util"
 
 const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/timesheet`
 const bodySpy = sinon.spy((body) => body)
@@ -34,6 +36,7 @@ afterEach(() => {
     bodySpy.resetHistory()
     pathSpy.resetHistory()
 })
+export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
 
 const fillAndSubmitForm = async (timesheet: Timesheet) => {
     const nameInput = screen.getByTestId("form-field-name")
@@ -83,9 +86,12 @@ test("a timesheet with the required fields only can be submitted", async () => {
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(
-        testTimesheetRequiredFields
-    )
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            timesheetFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual(testTimesheetRequiredFields)
 })
 
 test("a timesheet with all fields can be submitted", async () => {
@@ -100,7 +106,12 @@ test("a timesheet with all fields can be submitted", async () => {
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
     expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
-    expect(bodySpy.getCalls()[0].args[0]).toStrictEqual(testTimesheetAllFields)
+    expect(
+        checkTestRequestBodyRequiredFields(
+            testRequestBody(),
+            timesheetFieldMetadata
+        ) && bodySpy.getCalls()[0].args[0]
+    ).toStrictEqual(testTimesheetAllFields)
 })
 
 test("afterSubmit is invoked with the correct data", async () => {
