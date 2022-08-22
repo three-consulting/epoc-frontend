@@ -188,29 +188,22 @@ function TotalHours({ entries }: totalHoursProps): JSX.Element {
     const firstToLast = 6
     const last = first + firstToLast
 
-    const firstday = new Date(curr.setDate(first))
-        .toISOString()
-        .split("T")
-        .toString()
-    const lastday = new Date(curr.setDate(last))
-        .toISOString()
-        .split("T")
-        .toString()
+    const [firstDay] = new Date(curr.setDate(first)).toISOString().split("T")
+    const [lastDay] = new Date(curr.setDate(last)).toISOString().split("T")
 
     const inThisWeek = (start: string, middle: string, end: string) =>
         middle >= start && middle <= end
 
     const filterEntriesByWeek = (timesheetEntries: TimesheetEntry[]) =>
-        timesheetEntries?.filter((entry) =>
-            inThisWeek(firstday, entry.date, lastday)
+        timesheetEntries.filter((entry) =>
+            inThisWeek(firstDay, entry.date, lastDay)
         )
     const totalHoursInWeek = sum(
         filterEntriesByWeek(entries).map((item) => item.quantity)
     )
-
     return (
         <p>
-            The total number of hours made this week: <b>{totalHoursInWeek}</b>
+            Hours this week: <b>{totalHoursInWeek}</b>
         </p>
     )
 }
