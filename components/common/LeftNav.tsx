@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import { Text, Flex, Icon, HStack } from "@chakra-ui/react"
 import {
     BsBriefcase,
@@ -10,7 +10,8 @@ import {
 } from "react-icons/bs"
 import Link from "next/link"
 import { IconType } from "react-icons"
-import { User } from "firebase/auth"
+import { Role } from "@/lib/types/auth"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface LinkItemProps {
     name: string
@@ -18,14 +19,9 @@ interface LinkItemProps {
     href: string
 }
 
-interface LeftNavProps {
-    user: User | null
-    signInWithGoogle: () => Promise<void>
-    signOutAndClear: () => Promise<void>
-}
+const userLinkItem: LinkItemProps = { name: "Home", icon: BsHouse, href: "/" }
 
-const LinkItems: Array<LinkItemProps> = [
-    { name: "Home", icon: BsHouse, href: "/" },
+const adminLinkItems: LinkItemProps[] = [
     { name: "Projects", icon: BsBriefcase, href: "/project" },
     { name: "Customers", icon: BsPersonBadge, href: "/customer" },
     { name: "Reports", icon: BsFillFileTextFill, href: "/report" },
@@ -50,11 +46,13 @@ const NavItem = ({ name, icon, href }: LinkItemProps) => (
     </Flex>
 )
 
-function LeftNav({
-    user,
-    signInWithGoogle,
-    signOutAndClear,
-}: LeftNavProps): JSX.Element {
+function LeftNav(): JSX.Element {
+    const { user, role, signInWithGoogle, signOutAndClear } =
+        useContext(AuthContext)
+
+    const isAdmin = role === Role.ADMIN
+    const isLoggedIn = user !== null
+
     return (
         <Flex
             flexDirection="column"
@@ -65,10 +63,18 @@ function LeftNav({
             <Text color="black" fontWeight="black" fontSize="xl">
                 Navigation
             </Text>
-            {user &&
-                LinkItems.map((item, idx) => (
+            {isLoggedIn && (
+                <NavItem
+                    name={userLinkItem.name}
+                    icon={userLinkItem.icon}
+                    href={userLinkItem.href}
+                />
+            )}
+            {isAdmin &&
+                isLoggedIn &&
+                adminLinkItems.map((item, i) => (
                     <NavItem
-                        key={idx}
+                        key={i}
                         name={item.name}
                         icon={item.icon}
                         href={item.href}
