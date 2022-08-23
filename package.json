@@ -18,7 +18,8 @@
         "start-server": "docker compose -f epoc-compose.yaml up",
         "heroku-login": "docker login --username=_ --password=$(heroku auth:token) registry.heroku.com",
         "test": "jest --env=jsdom",
-        "validate-types": "yarn openapi-typescript https://epoc-backend-testing.herokuapp.com/docs --output tmp.ts && diff tmp.ts lib/types/api.ts && rm tmp.ts"
+        "validate-types-dev": "yarn openapi-typescript https://epoc-backend-testing.herokuapp.com/docs --output tmp.ts && diff tmp.ts lib/types/api.ts && rm tmp.ts",
+        "validate-types-prod": "yarn openapi-typescript https://epoc-backend.herokuapp.com/docs --output tmp.ts && diff tmp.ts lib/types/api.ts && rm tmp.ts"
     },
     "dependencies": {
         "@chakra-ui/icons": "^1.0.15",
