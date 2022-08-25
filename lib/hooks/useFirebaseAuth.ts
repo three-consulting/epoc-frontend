@@ -8,12 +8,13 @@ import {
     signInWithRedirect,
     GoogleAuthProvider,
 } from "firebase/auth"
-import { FirebaseAuthState } from "@/lib/types/auth"
+import { FirebaseAuthState, Role } from "@/lib/types/auth"
 
 export default function useFirebaseAuth(): FirebaseAuthState {
     const [user, setUser] = useState<FirebaseUser | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
     const [firebaseError, setFirebaseError] = useState<unknown | null>(null)
+    const [role, setRole] = useState<Role | undefined>(undefined)
 
     const app = createFirebaseApp()
     const auth = getAuth(app)
@@ -40,6 +41,9 @@ export default function useFirebaseAuth(): FirebaseAuthState {
             try {
                 if (authUser) {
                     setUser(authUser)
+                    authUser.getIdTokenResult(false).then((token) => {
+                        setRole(token.claims.role as Role)
+                    })
                 }
             } catch (error) {
                 setFirebaseError(error)
@@ -52,6 +56,7 @@ export default function useFirebaseAuth(): FirebaseAuthState {
 
     return {
         user,
+        role,
         loading,
         firebaseError,
         signOutAndClear,

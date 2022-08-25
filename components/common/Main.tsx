@@ -1,14 +1,14 @@
-import React, { ReactNode } from "react"
+import React, { ReactNode, useContext } from "react"
 import { Box, Flex } from "@chakra-ui/react"
 import LeftNav from "./LeftNav"
-import useFirebaseAuth from "@/lib/hooks/useFirebaseAuth"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface MainProps {
     children?: ReactNode
 }
 
 const Main = ({ children }: MainProps): JSX.Element => {
-    const { user, signInWithGoogle, signOutAndClear } = useFirebaseAuth()
+    const { user } = useContext(AuthContext)
 
     return (
         <Box
@@ -25,11 +25,7 @@ const Main = ({ children }: MainProps): JSX.Element => {
                 alignContent="center"
                 justifyContent="center"
             >
-                <LeftNav
-                    user={user}
-                    signInWithGoogle={signInWithGoogle}
-                    signOutAndClear={signOutAndClear}
-                />
+                <LeftNav />
                 <Box minWidth="40vw">
                     {user ? children : <p>Please log in to see stuff.</p>}
                 </Box>
