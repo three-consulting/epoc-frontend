@@ -180,16 +180,21 @@ const DayEditor = ({
 
 interface totalHoursProps {
     entries: TimesheetEntry[]
+    date: Date
 }
 
-function TotalHours({ entries }: totalHoursProps): JSX.Element {
-    const curr = new Date()
-    const first = curr.getDate() - curr.getDay() + 1
+function TotalHours({ entries, date }: totalHoursProps): JSX.Element {
+    const selectedDate = new Date(dateToString(date))
+    const first = selectedDate.getDate() - selectedDate.getDay() + 1
     const firstToLast = 6
     const last = first + firstToLast
 
-    const [firstDay] = new Date(curr.setDate(first)).toISOString().split("T")
-    const [lastDay] = new Date(curr.setDate(last)).toISOString().split("T")
+    const [firstDay] = new Date(selectedDate.setDate(first))
+        .toISOString()
+        .split("T")
+    const [lastDay] = new Date(selectedDate.setDate(last))
+        .toISOString()
+        .split("T")
 
     const inThisWeek = (start: string, middle: string, end: string) =>
         middle >= start && middle <= end
@@ -239,7 +244,7 @@ export function TimesheetEntryEditor({
                     }}
                 />
             </div>
-            <TotalHours entries={entries}></TotalHours>
+            <TotalHours entries={entries} date={date}></TotalHours>
             <div style={{ marginBottom: "10px" }}></div>
             <DayEditor
                 timesheets={timesheets}
