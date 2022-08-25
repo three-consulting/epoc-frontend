@@ -178,33 +178,28 @@ const DayEditor = ({
     )
 }
 
-interface totalHoursProps {
+interface WeeklyHoursProps {
     entries: TimesheetEntry[]
     date: Date
 }
 
-function TotalHours({ entries, date }: totalHoursProps): JSX.Element {
+function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
     const selectedDate = new Date(dateToString(date))
     const first = selectedDate.getDate() - selectedDate.getDay() + 1
     const firstToLast = 6
     const last = first + firstToLast
 
-    const [firstDay] = new Date(selectedDate.setDate(first))
-        .toISOString()
-        .split("T")
-    const [lastDay] = new Date(selectedDate.setDate(last))
-        .toISOString()
-        .split("T")
+    const firstDay = new Date(selectedDate.setDate(first))
+    const lastDay = new Date(selectedDate.setDate(last))
 
-    const inThisWeek = (start: string, middle: string, end: string) =>
-        middle >= start && middle <= end
-
-    const filterEntriesByWeek = (timesheetEntries: TimesheetEntry[]) =>
-        timesheetEntries.filter((entry) =>
-            inThisWeek(firstDay, entry.date, lastDay)
-        )
     const totalHoursInWeek = sum(
-        filterEntriesByWeek(entries).map((item) => item.quantity)
+        entries
+            .filter(
+                (entry) =>
+                    new Date(entry.date) >= firstDay &&
+                    new Date(entry.date) <= lastDay
+            )
+            .map((item) => item.quantity)
     )
     return (
         <p>
@@ -244,8 +239,8 @@ export function TimesheetEntryEditor({
                     }}
                 />
             </div>
-            <TotalHours entries={entries} date={date}></TotalHours>
-            <div style={{ marginBottom: "10px" }}></div>
+            <WeeklyHours entries={entries} date={date} />
+            <div style={{ marginBottom: "10px" }} />
             <DayEditor
                 timesheets={timesheets}
                 date={date}
