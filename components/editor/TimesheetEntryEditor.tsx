@@ -185,25 +185,32 @@ interface WeeklyHoursProps {
 
 function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
     const selectedDate = new Date(dateToString(date))
-    const first = selectedDate.getDate() - selectedDate.getDay() + 1
-    const firstToLast = 6
-    const last = first + firstToLast
 
-    const firstDay = new Date(selectedDate.setDate(first))
-    const lastDay = new Date(selectedDate.setDate(last))
+    const monday = new Date(
+        new Date(new Date().setHours(0, 0, 0)).setDate(
+            selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7)
+        )
+    )
 
-    const totalHoursInWeek = sum(
+    const nextMonday = new Date(
+        new Date(new Date().setHours(0, 0, 0)).setDate(
+            selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7) + 7
+        )
+    )
+
+    const total = sum(
         entries
             .filter(
                 (entry) =>
-                    new Date(entry.date) >= firstDay &&
-                    new Date(entry.date) <= lastDay
+                    new Date(entry.date) >= monday &&
+                    new Date(entry.date) <= nextMonday
             )
             .map((item) => item.quantity)
     )
+
     return (
         <p>
-            Hours this week: <b>{totalHoursInWeek}</b>
+            Hours this week: <b>{total}</b>
         </p>
     )
 }

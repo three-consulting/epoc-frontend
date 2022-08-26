@@ -1,0 +1,58 @@
+diff --git a/.eslintrc.js b/.eslintrc.js
+index 7e572ad..e6ad579 100644
+--- a/.eslintrc.js
++++ b/.eslintrc.js
+@@ -35,6 +35,7 @@ module.exports = {
+         "id-blacklist": 0,
+         "operator-linebreak": 0,
+         "no-mixed-operators": 0,
++        "no-magic-numbers": 0,
+     },
+     settings: {
+         react: {
+diff --git a/components/editor/TimesheetEntryEditor.tsx b/components/editor/TimesheetEntryEditor.tsx
+index 1455e2e..51b14b5 100644
+--- a/components/editor/TimesheetEntryEditor.tsx
++++ b/components/editor/TimesheetEntryEditor.tsx
+@@ -185,25 +185,32 @@ interface WeeklyHoursProps {
+ 
+ function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
+     const selectedDate = new Date(dateToString(date))
+-    const first = selectedDate.getDate() - selectedDate.getDay() + 1
+-    const firstToLast = 6
+-    const last = first + firstToLast
+ 
+-    const firstDay = new Date(selectedDate.setDate(first))
+-    const lastDay = new Date(selectedDate.setDate(last))
++    const monday = new Date(
++        new Date(new Date().setHours(0, 0, 0)).setDate(
++            selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7)
++        )
++    )
++
++    const nextMonday = new Date(
++        new Date(new Date().setHours(0, 0, 0)).setDate(
++            selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7) + 7
++        )
++    )
+ 
+-    const totalHoursInWeek = sum(
++    const total = sum(
+         entries
+             .filter(
+                 (entry) =>
+-                    new Date(entry.date) >= firstDay &&
+-                    new Date(entry.date) <= lastDay
++                    new Date(entry.date) >= monday &&
++                    new Date(entry.date) <= nextMonday
+             )
+             .map((item) => item.quantity)
+     )
++
+     return (
+         <p>
+-            Hours this week: <b>{totalHoursInWeek}</b>
++            Hours this week: <b>{total}</b>
+         </p>
+     )
+ }
