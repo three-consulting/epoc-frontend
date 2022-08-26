@@ -35,7 +35,9 @@ module.exports = {
         "id-blacklist": 0,
         "operator-linebreak": 0,
         "no-mixed-operators": 0,
-        "no-magic-numbers": 0,
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": ["error"],
+        "no-magic-numbers": 0
     },
     settings: {
         react: {
