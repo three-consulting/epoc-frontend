@@ -27,12 +27,12 @@ const bodySpy = sinon.spy((body) => body)
 const pathSpy = sinon.spy((path) => path)
 
 jest.mock("@/lib/utils/fetch", () => ({
-    // eslint-disable-next-line require-await
     put: async (
         path: string,
         _user: User,
         body: object
-    ): Promise<ApiUpdateResponse<Project>> => pathSpy(path) && bodySpy(body),
+    ): Promise<ApiUpdateResponse<Project>> =>
+        (await pathSpy(path)) && bodySpy(body),
 }))
 
 afterEach(() => {
@@ -41,42 +41,53 @@ afterEach(() => {
 })
 
 const fillAndSubmitForm = async (project: Project) => {
-    const nameInput = screen.getByTestId("form-field-name")
-    fireEvent.change(nameInput, { target: { value: project.name || "" } })
-
-    const descriptionInput = screen.getByTestId("form-field-description")
-    fireEvent.change(descriptionInput, {
-        target: { value: project.description || "" },
-    })
-
-    const startDateInput = screen.getByTestId("form-field-start-date")
-    fireEvent.change(startDateInput, {
-        target: { value: project.startDate || "" },
-    })
-
-    const endDateInput = screen.getByTestId("form-field-end-date")
-    fireEvent.change(endDateInput, {
-        target: { value: project.endDate || "" },
-    })
-
-    const customerInput = screen.getByTestId("form-field-customer")
-    if (project.customer) {
-        fireEvent.change(customerInput, {
-            target: { value: project.customer.id },
+    screen.getAllByTestId("form-field-name").forEach((nameInput) =>
+        fireEvent.change(nameInput, {
+            target: { value: project.name || "" },
         })
-    }
-
-    const managingEmployeeInput = screen.getByTestId(
-        "form-field-managing-employee"
     )
-    if (project.managingEmployee) {
-        fireEvent.change(managingEmployeeInput, {
-            target: { value: project.managingEmployee.id },
+
+    screen
+        .getAllByTestId("form-field-description")
+        .forEach((descriptionInput) =>
+            fireEvent.change(descriptionInput, {
+                target: { value: project.description || "" },
+            })
+        )
+
+    screen.getAllByTestId("form-field-start-date").forEach((startDateInput) =>
+        fireEvent.change(startDateInput, {
+            target: { value: project.startDate || "" },
         })
+    )
+
+    screen.getAllByTestId("form-field-end-date").forEach((endDateInput) =>
+        fireEvent.change(endDateInput, {
+            target: { value: project.endDate || "" },
+        })
+    )
+
+    if (project.customer) {
+        screen.getAllByTestId("form-field-customer").forEach((customerInput) =>
+            fireEvent.change(customerInput, {
+                target: { value: project.customer.id },
+            })
+        )
     }
 
-    const submitButton = screen.getByTestId("form-button-submit")
-    await waitFor(() => fireEvent.click(submitButton))
+    if (project.managingEmployee) {
+        screen
+            .getAllByTestId("form-field-managing-employee")
+            .forEach((managingEmployeeInput) =>
+                fireEvent.change(managingEmployeeInput, {
+                    target: { value: project.managingEmployee.id },
+                })
+            )
+    }
+
+    await waitFor(() =>
+        fireEvent.click(screen.getByTestId("form-button-submit"))
+    )
 }
 
 export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
@@ -184,33 +195,29 @@ test("onCancel is invoked", async () => {
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1))
 })
 
-test("a required field cannot be missing when editing a project", async () => {
-    const submitTimeout = 100
+test("a required field cannot be missing when editing a project", () => {
     expect(testProject.id).toBeDefined()
-    for (const field of Object.keys(testProjectRequiredFields).filter(
-        (key) => !["customer", "managingEmployee"].includes(key)
-    )) {
-        const form = render(
-            <>
-                {testProject.id && (
-                    <EditProjectForm
-                        employees={[testEmployee, anotherTestEmployee]}
-                        customers={[testCustomer, anotherTestCustomer]}
-                        project={testProject}
-                    />
-                )}
-            </>
-        )
-        const projectMissingRequired = _.omit(testProjectAllFields, field)
+    Object.keys(testProjectRequiredFields)
+        .filter((key) => !["customer", "managingEmployee"].includes(key))
+        .forEach((field) => {
+            const form = render(
+                <>
+                    {testProject.id && (
+                        <EditProjectForm
+                            employees={[testEmployee, anotherTestEmployee]}
+                            customers={[testCustomer, anotherTestCustomer]}
+                            project={testProject}
+                        />
+                    )}
+                </>
+            )
+            const projectMissingRequired = _.omit(testProjectAllFields, field)
 
-        /* eslint-disable no-await-in-loop */
-        await fillAndSubmitForm(projectMissingRequired as Project)
-        await new Promise((resolve) =>
-            setTimeout(() => resolve(null), submitTimeout)
-        )
-        /* eslint-enable */
-        expect(pathSpy.callCount).toEqual(0)
-        expect(bodySpy.callCount).toEqual(0)
-        form.unmount()
-    }
+            fillAndSubmitForm(projectMissingRequired as Project)
+                .then(() => {
+                    expect(pathSpy.callCount).toEqual(0)
+                    expect(bodySpy.callCount).toEqual(0)
+                })
+                .finally(() => form.unmount())
+        })
 })

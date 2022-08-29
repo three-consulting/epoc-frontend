@@ -24,12 +24,12 @@ const bodySpy = sinon.spy((body) => body)
 const pathSpy = sinon.spy((path) => path)
 
 jest.mock("@/lib/utils/fetch", () => ({
-    // eslint-disable-next-line require-await
     post: async (
         path: string,
         _user: User,
         body: object
-    ): Promise<ApiUpdateResponse<Timesheet>> => pathSpy(path) && bodySpy(body),
+    ): Promise<ApiUpdateResponse<Timesheet>> =>
+        (await pathSpy(path)) && bodySpy(body),
 }))
 
 afterEach(() => {
@@ -39,39 +39,53 @@ afterEach(() => {
 export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
 
 const fillAndSubmitForm = async (timesheet: Timesheet) => {
-    const nameInput = screen.getByTestId("form-field-name")
     if (timesheet.name) {
-        fireEvent.change(nameInput, { target: { value: timesheet.name } })
+        screen.getAllByTestId("form-field-name").forEach((nameInput) =>
+            fireEvent.change(nameInput, {
+                target: { value: timesheet.name },
+            })
+        )
     }
 
-    const descriptionInput = screen.getByTestId("form-field-description")
     if (timesheet.description) {
-        fireEvent.change(descriptionInput, {
-            target: { value: timesheet.description },
-        })
+        screen
+            .getAllByTestId("form-field-description")
+            .forEach((descriptionInput) =>
+                fireEvent.change(descriptionInput, {
+                    target: { value: timesheet.description },
+                })
+            )
     }
 
-    const rateInput = screen.getByTestId("form-field-rate")
-    fireEvent.change(rateInput, {
-        target: { value: timesheet.rate || "" },
-    })
+    screen.getAllByTestId("form-field-rate").forEach((rateInput) =>
+        fireEvent.change(rateInput, {
+            target: { value: timesheet.rate || "" },
+        })
+    )
 
-    const allocationInput = screen.getByTestId("form-field-allocation")
     if (timesheet.allocation) {
-        fireEvent.change(allocationInput, {
-            target: { value: timesheet.allocation },
-        })
+        screen
+            .getAllByTestId("form-field-allocation")
+            .forEach((allocationInput) =>
+                fireEvent.change(allocationInput, {
+                    target: { value: timesheet.allocation },
+                })
+            )
     }
 
-    const employeeInput = screen.getByTestId("form-field-employee")
     if (timesheet.employee) {
-        fireEvent.change(employeeInput, {
-            target: { value: timesheet.employee.id },
-        })
+        screen.getAllByTestId("form-field-employee").forEach((employeeInput) =>
+            fireEvent.change(employeeInput, {
+                target: { value: timesheet.employee.id },
+            })
+        )
     }
 
-    const submitButton = screen.getByTestId("form-button-submit")
-    await waitFor(() => fireEvent.click(submitButton))
+    await waitFor(() =>
+        screen
+            .getAllByTestId("form-button-submit")
+            .forEach((submit) => fireEvent.click(submit))
+    )
 }
 
 test("a timesheet with the required fields only can be submitted", async () => {
@@ -153,28 +167,29 @@ test("onCancel is invoked", async () => {
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1))
 })
 
-test("a required field cannot be missing", async () => {
-    const submitTimeout = 100
-    for (const field of Object.keys(testTimesheetRequiredFields).filter(
-        (key) => key !== "project"
-    )) {
-        const form = render(
-            <CreateTimesheetForm
-                employees={[testEmployee]}
-                project={testProject}
-                projectId={1}
-            />
-        )
-        const timesheetMissingRequired = _.omit(testTimesheetAllFields, field)
+test("a required field cannot be missing", () => {
+    Object.keys(testTimesheetRequiredFields)
+        .filter((key) => key !== "project")
+        .forEach((field) => {
+            const form = render(
+                <CreateTimesheetForm
+                    employees={[testEmployee]}
+                    project={testProject}
+                    projectId={1}
+                />
+            )
+            const reqBodySpy = sinon.spy((body) => body)
+            const reqPathSpy = sinon.spy((path) => path)
+            const timesheetMissingRequired = _.omit(
+                testTimesheetAllFields,
+                field
+            )
 
-        /* eslint-disable no-await-in-loop */
-        await fillAndSubmitForm(timesheetMissingRequired as Timesheet)
-        await new Promise((resolve) =>
-            setTimeout(() => resolve(null), submitTimeout)
-        )
-        /* eslint-enable */
-        expect(pathSpy.callCount).toEqual(0)
-        expect(bodySpy.callCount).toEqual(0)
-        form.unmount()
-    }
+            fillAndSubmitForm(timesheetMissingRequired as Timesheet)
+                .then(() => {
+                    expect(reqBodySpy.callCount).toEqual(0)
+                    expect(reqPathSpy.callCount).toEqual(0)
+                })
+                .finally(() => form.unmount())
+        })
 })

@@ -34,9 +34,6 @@ export interface paths {
     put: operations["updateEmployeeForId"];
     post: operations["createEmployee"];
   };
-  "/employee/update-role": {
-    put: operations["updateEmployeeRole"];
-  };
   "/customer": {
     get: operations["getAllCustomers"];
     put: operations["updateCustomerForId"];
@@ -434,17 +431,6 @@ export interface operations {
           "application/json": components["schemas"]["EmployeeDTO"];
         };
       };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["EmployeeDTO"];
-      };
-    };
-  };
-  updateEmployeeRole: {
-    responses: {
-      /** OK */
-      200: unknown;
     };
     requestBody: {
       content: {

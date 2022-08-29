@@ -49,7 +49,7 @@ function EditCustomerPage({ customerId }: Props): JSX.Element {
 
 const Edit: NextPage = () => {
     const router = useRouter()
-    const id = router.query.id as string | undefined
+    const { id } = router.query
     return id ? <EditCustomerPage customerId={Number(id)} /> : null
 }
 

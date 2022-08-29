@@ -60,7 +60,7 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
 
 const Edit: NextPage = () => {
     const router = useRouter()
-    const id = router.query.id as string | undefined
+    const { id } = router.query
     return id ? <EditProjectPage projectId={Number(id)} /> : null
 }
 

@@ -5,6 +5,7 @@ import {
     BsHouse,
     BsDoorOpen,
     BsDoorClosed,
+    BsPeopleFill,
     BsPersonBadge,
     BsFillFileTextFill,
 } from "react-icons/bs"
@@ -22,6 +23,7 @@ interface LinkItemProps {
 const userLinkItem: LinkItemProps = { name: "Home", icon: BsHouse, href: "/" }
 
 const adminLinkItems: LinkItemProps[] = [
+    { name: "Employees", icon: BsPeopleFill, href: "/employee" },
     { name: "Projects", icon: BsBriefcase, href: "/project" },
     { name: "Customers", icon: BsPersonBadge, href: "/customer" },
     { name: "Reports", icon: BsFillFileTextFill, href: "/report" },
@@ -65,6 +67,7 @@ function LeftNav(): JSX.Element {
             </Text>
             {isLoggedIn && (
                 <NavItem
+                    key={userLinkItem.name}
                     name={userLinkItem.name}
                     icon={userLinkItem.icon}
                     href={userLinkItem.href}
@@ -72,9 +75,9 @@ function LeftNav(): JSX.Element {
             )}
             {isAdmin &&
                 isLoggedIn &&
-                adminLinkItems.map((item, i) => (
+                adminLinkItems.map((item) => (
                     <NavItem
-                        key={i}
+                        key={item.name}
                         name={item.name}
                         icon={item.icon}
                         href={item.href}
