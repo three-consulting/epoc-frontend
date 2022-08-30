@@ -8,7 +8,7 @@ services:
             - SPRING_DATASOURCE_PASSWORD=password
             - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/epoc
             - SPRING_DATASOURCE_USERNAME=user
-            - GOOGLE_APPLICATION_CREDENTIALS=epoc-auth-firebase-adminsdk.json
+            - FIREBASE_SERVICE_ACCOUNT_JSON=${FIREBASE_SERVICE_ACCOUNT_JSON}
             - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI=${JWT_ISSUER}
             - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI=https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com
     postgres:
