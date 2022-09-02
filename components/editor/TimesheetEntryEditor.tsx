@@ -187,13 +187,13 @@ function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
     const selectedDate = new Date(dateToString(date))
 
     const monday = new Date(
-        new Date(new Date().setHours(0, 0, 0)).setDate(
+        new Date(new Date(dateToString(date)).setHours(0, 0, 0)).setDate(
             selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7)
         )
     )
 
     const nextMonday = new Date(
-        new Date(new Date().setHours(0, 0, 0)).setDate(
+        new Date(new Date(dateToString(date)).setHours(0, 0, 0)).setDate(
             selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7) + 7
         )
     )
