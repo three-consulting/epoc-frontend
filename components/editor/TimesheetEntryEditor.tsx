@@ -191,7 +191,6 @@ function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
             selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7)
         )
     )
-
     const nextMonday = new Date(
         new Date(new Date(dateToString(date)).setHours(0, 0, 0)).setDate(
             selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7) + 7
@@ -211,6 +210,33 @@ function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
     return (
         <p>
             Hours this week: <b>{total}</b>
+        </p>
+    )
+}
+
+interface monthlyHoursProps {
+    entries: TimesheetEntry[]
+    date: Date
+}
+
+function MonthlyHours({ entries, date }: monthlyHoursProps): JSX.Element {
+    const selectedDate = new Date(dateToString(date))
+
+    const firstDay = new Date(selectedDate.getFullYear(), date.getMonth(), 1)
+    const lastDay = new Date(selectedDate.getFullYear(), date.getMonth() + 1, 1)
+
+    const total = sum(
+        entries
+            .filter(
+                (entry) =>
+                    new Date(entry.date) >= firstDay &&
+                    new Date(entry.date) <= lastDay
+            )
+            .map((item) => item.quantity)
+    )
+    return (
+        <p>
+            Hours this month: <b>{total}</b>
         </p>
     )
 }
@@ -247,6 +273,8 @@ export function TimesheetEntryEditor({
                 />
             </div>
             <WeeklyHours entries={entries} date={date} />
+            <div style={{ marginBottom: "5px" }} />
+            <MonthlyHours entries={entries} date={date} />
             <div style={{ marginBottom: "10px" }} />
             <DayEditor
                 timesheets={timesheets}
