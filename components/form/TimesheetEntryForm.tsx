@@ -19,9 +19,10 @@ import React, { useContext, useEffect, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { FromButtons } from "../common/FormFields"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
+import { isError } from "lodash"
 
 type TimesheetEntryFormBaseProps = FormBase<TimesheetEntry> & {
-    entryOrNull?: TimesheetEntry
+    timesheetEntry?: TimesheetEntry
     timesheet: Timesheet
     date: string
     timeCategories: TimeCategory[]
@@ -55,23 +56,37 @@ const validateTimesheetEntryFields = (
     fields: TimesheetEntryFields
 ): TimesheetEntry => {
     const { timesheet, quantity, timeCategory, date, task } = fields
-    if (timesheet && quantity && date && timeCategory && task) {
-        return { ...fields, timesheet, quantity, date, timeCategory, task }
+    if (!timesheet) {
+        throw Error(
+            "Invalid timesheet entry form: missing required timesheet field"
+        )
+    } else if (quantity === undefined || quantity === null) {
+        throw Error(
+            "Invalid timesheet entry form: missing required quantity field"
+        )
+    } else if (!timeCategory) {
+        throw Error(
+            "Invalid timesheet entry form: missing required timeCategory field"
+        )
+    } else if (!date) {
+        throw Error("Invalid timesheet entry form: missing required date field")
+    } else if (!task) {
+        throw Error("Invalid timesheet entry form: missing required task field")
     }
-    throw Error("Invalid timesheet entry form: missing required fields")
+    return { ...fields, timesheet, quantity, date, timeCategory, task }
 }
 
-function TimesheetEntryForm({
-    entryOrNull,
+const TimesheetEntryForm = ({
+    timesheetEntry,
     timesheet,
     date,
     timeCategories,
     tasks,
     onSubmit,
     onCancel,
-}: TimesheetEntryFormBaseProps): JSX.Element {
+}: TimesheetEntryFormBaseProps): JSX.Element => {
     const [timesheetEntryFields, setTimesheetEntryFields] =
-        useState<TimesheetEntryFields>(entryOrNull || { timesheet, date })
+        useState<TimesheetEntryFields>(timesheetEntry || { timesheet, date })
 
     const resetForm = () => {
         setTimesheetEntryFields({
@@ -83,6 +98,9 @@ function TimesheetEntryForm({
     const [quantityString, setQuantityString] = useState<string>(
         timesheetEntryFields.quantity?.toString() || ""
     )
+
+    const [errorMessage, setErrorMessage] = useState<string>("")
+    const errorHandler = (error: Error) => setErrorMessage(error.toString())
 
     useEffect(
         () =>
@@ -122,12 +140,18 @@ function TimesheetEntryForm({
     }
 
     const handleSubmit = () => {
-        const entry = validateTimesheetEntryFields(timesheetEntryFields)
-        onSubmit(entry)
+        try {
+            const entry = validateTimesheetEntryFields(timesheetEntryFields)
+            onSubmit(entry)
+        } catch (error) {
+            if (isError(error)) {
+                errorHandler(error)
+            }
+        }
     }
 
     const taskSelectorKey = `entryEditorTaskSelector-${
-        entryOrNull?.id ? `edit-${entryOrNull.id}` : `create`
+        timesheetEntry?.id ? `edit-${timesheetEntry.id}` : `create`
     }`
 
     return (
@@ -217,6 +241,12 @@ function TimesheetEntryForm({
                 <div>
                     <FromButtons onSubmit={handleSubmit} onCancel={onCancel} />
                 </div>
+                {errorMessage && (
+                    <>
+                        <ErrorAlert />
+                        <Box>{errorMessage}</Box>
+                    </>
+                )}
             </Flex>
         </>
     )
@@ -244,7 +274,7 @@ export function EditTimesheetEntryForm(
         <>
             <TimesheetEntryForm
                 {...props}
-                entryOrNull={props.entry}
+                timesheetEntry={props.entry}
                 onSubmit={onSubmit}
             />
             {errorMessage && (
