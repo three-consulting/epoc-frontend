@@ -24,12 +24,12 @@ const bodySpy = sinon.spy((body) => body)
 const pathSpy = sinon.spy((path) => path)
 
 jest.mock("@/lib/utils/fetch", () => ({
-    // eslint-disable-next-line require-await
     put: async (
         path: string,
         _user: User,
         body: object
-    ): Promise<ApiUpdateResponse<Customer>> => pathSpy(path) && bodySpy(body),
+    ): Promise<ApiUpdateResponse<Customer>> =>
+        (await pathSpy(path)) && bodySpy(body),
 }))
 
 afterEach(() => {
@@ -38,18 +38,25 @@ afterEach(() => {
 })
 
 const fillAndSubmitForm = async (customer: Customer) => {
-    const nameInput = screen.getByTestId("form-field-name")
-    fireEvent.change(nameInput, { target: { value: customer.name || "" } })
-
-    const descriptionInput = screen.getByTestId("form-field-description")
-    if (customer.description) {
-        fireEvent.change(descriptionInput, {
-            target: { value: customer.description },
+    screen.getAllByTestId("form-field-name").forEach((nameInput) =>
+        fireEvent.change(nameInput, {
+            target: { value: customer.name || "" },
         })
+    )
+
+    if (customer.description) {
+        screen
+            .getAllByTestId("form-field-description")
+            .forEach((descriptionInput) =>
+                fireEvent.change(descriptionInput, {
+                    target: { value: customer.description },
+                })
+            )
     }
 
-    const submitButton = screen.getByTestId("form-button-submit")
-    await waitFor(() => fireEvent.click(submitButton))
+    await waitFor(() =>
+        fireEvent.click(screen.getByTestId("form-button-submit"))
+    )
 }
 
 export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
@@ -133,21 +140,16 @@ test("onCancel is invoked", async () => {
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1))
 })
 
-test("a required field cannot be missing", async () => {
-    const submitTimeout = 100
-    for (const field of Object.keys(testCustomerRequiredFields)) {
+test("a required field cannot be missing", () => {
+    Object.keys(testCustomerRequiredFields).forEach((field) => {
         const form = render(<EditCustomerForm customer={testCustomer} />)
         const customerMissingRequired = _.omit(testCustomerAllFields, field)
 
-        /* eslint-disable no-await-in-loop */
-        await fillAndSubmitForm(customerMissingRequired as Customer)
-        await new Promise((resolve) =>
-            setTimeout(() => resolve(null), submitTimeout)
-        )
-        /* eslint-enable */
-
-        expect(pathSpy.callCount).toEqual(0)
-        expect(bodySpy.callCount).toEqual(0)
-        form.unmount()
-    }
+        fillAndSubmitForm(customerMissingRequired as Customer)
+            .then(() => {
+                expect(bodySpy.callCount).toEqual(0)
+                expect(pathSpy.callCount).toEqual(0)
+            })
+            .finally(() => form.unmount())
+    })
 })

@@ -59,7 +59,7 @@ function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
 
 const Edit: NextPage = () => {
     const router = useRouter()
-    const id = router.query.id as string | undefined
+    const { id } = router.query
     return id ? <EditTimesheetPage timesheetId={Number(id)} /> : null
 }
 

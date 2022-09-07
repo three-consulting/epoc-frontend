@@ -24,6 +24,30 @@ export const anotherTestEmployee: Employee = {
     firebaseUid: "testUid2",
 }
 
+export const thirdTestEmployee: Employee = {
+    id: 1,
+    firstName: "testi",
+    lastName: "tekija",
+    email: "test@test.test",
+    role: "USER",
+}
+
+export const testEmployeeRequiredFields: Employee = {
+    firstName: "testi",
+    lastName: "tekija",
+    email: "test@test.test",
+    role: "USER",
+}
+
+export const testEmployeeAllFields: Employee = {
+    id: 1,
+    firstName: "testi",
+    lastName: "tekija",
+    email: "test@test.test",
+    role: "USER",
+    firebaseUid: "testUid1",
+}
+
 export const testCustomer: Customer = {
     id: 1,
     name: "Some test customer",

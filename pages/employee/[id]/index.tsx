@@ -4,36 +4,36 @@ import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
-import CustomerDetail from "@/components/detail/CustomerDetail"
+import EmployeeDetail from "@/components/detail/EmployeeDetail"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { Button } from "@chakra-ui/react"
 import Link from "next/link"
-import { useCustomerDetail } from "@/lib/hooks/useDetail"
+import { useEmployeeDetail } from "@/lib/hooks/useDetail"
 
 type Props = {
-    customerId: number
+    employeeId: number
 }
 
-function CustomerDetailPage({ customerId }: Props): JSX.Element {
+function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
     const { user } = useContext(UserContext)
-    const customerDetailResponse = useCustomerDetail(customerId, user)
+    const employeeDetailResponse = useEmployeeDetail(employeeId, user)
 
     return (
         <div>
-            {customerDetailResponse.isLoading && <Loading />}
-            {customerDetailResponse.isError && (
+            {employeeDetailResponse.isLoading && <Loading />}
+            {employeeDetailResponse.isError && (
                 <ErrorAlert title="Error" message="Error" />
             )}
-            {customerDetailResponse.isSuccess ? (
+            {employeeDetailResponse.isSuccess ? (
                 <>
-                    <CustomerDetail customer={customerDetailResponse.data} />
+                    <EmployeeDetail employee={employeeDetailResponse.data} />
                 </>
             ) : (
                 <Box>Not found</Box>
             )}
-            <Link key={`${customerId}`} href={`${customerId}/edit`}>
+            <Link key={`${employeeId}`} href={`${employeeId}/edit`}>
                 <Button colorScheme="blue" marginTop="1rem">
-                    Edit customer
+                    Edit employee
                 </Button>
             </Link>
         </div>
@@ -43,7 +43,7 @@ function CustomerDetailPage({ customerId }: Props): JSX.Element {
 const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <CustomerDetailPage customerId={Number(id)} /> : null
+    return id ? <EmployeeDetailPage employeeId={Number(id)} /> : null
 }
 
 export default Page

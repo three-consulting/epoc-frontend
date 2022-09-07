@@ -23,12 +23,12 @@ const bodySpy = sinon.spy((body) => body)
 const pathSpy = sinon.spy((path) => path)
 
 jest.mock("@/lib/utils/fetch", () => ({
-    // eslint-disable-next-line require-await
     put: async (
         path: string,
         _user: User,
         body: object
-    ): Promise<ApiUpdateResponse<Task>> => pathSpy(path) && bodySpy(body),
+    ): Promise<ApiUpdateResponse<Task>> =>
+        (await pathSpy(path)) && bodySpy(body),
 }))
 
 afterEach(() => {
@@ -37,22 +37,31 @@ afterEach(() => {
 })
 
 const fillAndSubmitForm = async (task: Task) => {
-    const nameInput = screen.getByTestId("form-field-name")
-    fireEvent.change(nameInput, { target: { value: task.name || "" } })
+    screen
+        .getAllByTestId("form-field-name")
+        .forEach((nameInput) =>
+            fireEvent.change(nameInput, { target: { value: task.name || "" } })
+        )
 
-    const descriptionInput = screen.getByTestId("form-field-description")
-    fireEvent.change(descriptionInput, {
-        target: { value: task.description || "" },
+    screen
+        .getAllByTestId("form-field-description")
+        .forEach((descriptionInput) =>
+            fireEvent.change(descriptionInput, {
+                target: { value: task.description || "" },
+            })
+        )
+
+    await waitFor(() =>
+        fireEvent.click(screen.getByTestId("form-button-submit"))
+    )
+
+    await waitFor(() =>
+        fireEvent.click(screen.getByTestId("form-button-cancel"))
+    )
+
+    fireEvent.change(screen.getByTestId("form-field-billable"), {
+        target: { value: task.billable || "" },
     })
-
-    const submitButton = screen.getByTestId("form-button-submit")
-    await waitFor(() => fireEvent.click(submitButton))
-
-    const cancelButton = screen.getByTestId("form-button-cancel")
-    await waitFor(() => fireEvent.click(cancelButton))
-
-    const billableInput = screen.getByTestId("form-field-billable")
-    fireEvent.change(billableInput, { target: { value: task.billable || "" } })
 }
 
 export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
@@ -160,34 +169,29 @@ test("onCancel is invoked", async () => {
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1))
 })
 
-test("a required field cannot be missing", async () => {
-    const submitTimeout = 100
+test("a required field cannot be missing", () => {
     expect(testProject.id).toBeDefined()
-    for (const field of Object.keys(testTaskRequiredFields).filter(
-        (key) => !["project", "billable"].includes(key)
-    )) {
-        const form = render(
-            <>
-                {testProject.id && (
-                    <EditTaskForm
-                        project={testProject}
-                        projectId={testProject.id}
-                        task={testTask}
-                    />
-                )}
-            </>
-        )
-        const taskMissingRequired = _.omit(testTaskAllFields, field)
+    Object.keys(testTaskRequiredFields)
+        .filter((key) => !["project", "billable"].includes(key))
+        .forEach((field) => {
+            const form = render(
+                <>
+                    {testProject.id && (
+                        <EditTaskForm
+                            project={testProject}
+                            projectId={testProject.id}
+                            task={testTask}
+                        />
+                    )}
+                </>
+            )
+            const taskMissingRequired = _.omit(testTaskAllFields, field)
 
-        /* eslint-disable no-await-in-loop */
-        await fillAndSubmitForm(taskMissingRequired as Task)
-        await new Promise((resolve) =>
-            setTimeout(() => resolve(null), submitTimeout)
-        )
-        /* eslint-enable */
-
-        expect(pathSpy.callCount).toEqual(0)
-        expect(bodySpy.callCount).toEqual(0)
-        form.unmount()
-    }
+            fillAndSubmitForm(taskMissingRequired as Task)
+                .then(() => {
+                    expect(pathSpy.callCount).toEqual(0)
+                    expect(bodySpy.callCount).toEqual(0)
+                })
+                .finally(() => form.unmount())
+        })
 })

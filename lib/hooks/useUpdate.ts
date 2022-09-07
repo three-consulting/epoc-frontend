@@ -1,5 +1,6 @@
 import {
     Customer,
+    Employee,
     Project,
     Task,
     Timesheet,
@@ -24,3 +25,6 @@ export const useUpdateTimesheets = (user: User): UpdateHook<Timesheet> =>
 export const useUpdateTimesheetEntries = (
     user: User
 ): UpdateHook<TimesheetEntry> => useUpdate("timesheet-entry", user)
+
+export const useUpdateEmployees = (user: User): UpdateHook<Employee> =>
+    useUpdate("employee", user)

@@ -15,6 +15,7 @@ import {
 import styled from "@emotion/styled"
 import ErrorAlert from "./ErrorAlert"
 import { CreateCustomerForm } from "../form/CustomerForm"
+import { CreateEmployeeForm } from "../form/EmployeeForm"
 
 type FormInputFieldProps = {
     label: string
@@ -156,6 +157,32 @@ export const NewCustomerModal = ({
             <CreateCustomerForm
                 afterSubmit={() => setDisplayCreateCustomerForm(false)}
                 onCancel={() => setDisplayCreateCustomerForm(false)}
+            />
+        </ModalContent>
+    </Modal>
+)
+
+interface INewEmployeeModal {
+    displayCreateEmployeeForm: boolean
+    setDisplayCreateEmployeeForm: (value: React.SetStateAction<boolean>) => void
+}
+
+export const NewEmployeeModal = ({
+    displayCreateEmployeeForm,
+    setDisplayCreateEmployeeForm,
+}: INewEmployeeModal): JSX.Element => (
+    <Modal
+        closeOnOverlayClick={false}
+        isOpen={displayCreateEmployeeForm}
+        onClose={() => setDisplayCreateEmployeeForm(false)}
+    >
+        <ModalOverlay />
+        <ModalContent>
+            <ModalHeader>Add New Employee</ModalHeader>
+            <ModalCloseButton />
+            <CreateEmployeeForm
+                afterSubmit={() => setDisplayCreateEmployeeForm(false)}
+                onCancel={() => setDisplayCreateEmployeeForm(false)}
             />
         </ModalContent>
     </Modal>

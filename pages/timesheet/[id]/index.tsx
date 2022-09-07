@@ -48,7 +48,7 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
 
 const Page: NextPage = () => {
     const router = useRouter()
-    const id = router.query.id as string | undefined
+    const { id } = router.query
     return id ? <TimesheetDetailPage timesheetId={Number(id)} /> : null
 }
 
