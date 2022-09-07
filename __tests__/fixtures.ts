@@ -3,7 +3,9 @@ import {
     Employee,
     Project,
     Task,
+    TimeCategory,
     Timesheet,
+    TimesheetEntry,
 } from "@/lib/types/apiTypes"
 
 export const testEmployee: Employee = {
@@ -138,4 +140,35 @@ export const testTask: Task = {
     project: testProject,
     billable: false,
     id: 1,
+}
+
+export const testTimeCategory: TimeCategory = {
+    id: 1,
+    name: "Test name",
+}
+
+export const testTimesheetEntry: TimesheetEntry = {
+    id: 1,
+    quantity: 1,
+    date: "2022-07-09",
+    timesheet: testTimesheet,
+    timeCategory: testTimeCategory,
+    task: testTask,
+}
+
+export const testTimesheetEntryRequiredFields: TimesheetEntry = {
+    quantity: 1,
+    date: "2022-07-09",
+    timesheet: testTimesheet,
+    timeCategory: testTimeCategory,
+    task: testTask,
+}
+
+export const testTimesheetEntryAllFields: TimesheetEntry = {
+    quantity: 1,
+    date: "2022-07-09",
+    description: "Test description",
+    timesheet: testTimesheet,
+    timeCategory: testTimeCategory,
+    task: testTask,
 }
