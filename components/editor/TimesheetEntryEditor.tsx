@@ -10,7 +10,7 @@ import { DeleteHookFunction } from "@/lib/types/hooks"
 import { Heading, Link, Select } from "@chakra-ui/react"
 import { sum } from "lodash"
 import React, { useContext, useState } from "react"
-import Calendar from "react-calendar"
+import Calendar, { ViewCallbackProperties } from "react-calendar"
 import {
     CreateTimesheetEntryForm,
     EditTimesheetEntryForm,
@@ -254,7 +254,13 @@ export function TimesheetEntryEditor({
     timeCategories,
     tasks,
 }: TimesheetEntryEditorProps): JSX.Element {
-    const [date, onDateChange] = useState(new Date())
+    const [date, setDate] = useState(new Date())
+
+    const onYearOrMonthChange = ({
+        activeStartDate,
+    }: ViewCallbackProperties) => {
+        setDate(activeStartDate)
+    }
 
     const entryDates = entries.map(({ date: entryDate }) => entryDate)
 
@@ -262,7 +268,8 @@ export function TimesheetEntryEditor({
         <>
             <div>
                 <Calendar
-                    onChange={onDateChange}
+                    onChange={setDate}
+                    onActiveStartDateChange={onYearOrMonthChange}
                     value={date}
                     tileClassName={({ date: thisDate }) => {
                         if (entryDates.includes(dateToString(thisDate))) {
