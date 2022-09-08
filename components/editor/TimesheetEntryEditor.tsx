@@ -32,14 +32,6 @@ interface DayEditorProps {
     tasks: Task[]
 }
 
-const dateToString = (date: Date): string => {
-    const sliceIndex = -2
-    const [day, month, year] = date.toLocaleDateString("fin").split(".")
-    return `${year}-${`0${month}`.slice(sliceIndex)}-${`0${day}`.slice(
-        sliceIndex
-    )}`
-}
-
 const taskByProject = (tasks: Task[], projectId: number) =>
     tasks.filter((task) => task.project.id === projectId)
 
@@ -104,8 +96,8 @@ const DayEditor = ({
     const { user } = useContext(UserContext)
     const { delete: del } = useUpdateTimesheetEntries(user)
 
-    const dateStr = dateToString(date)
-    const displayString = date.toLocaleDateString("fin")
+    const dateStr = date.toISOString().slice(0, 10)
+    const displayString = date.toLocaleDateString()
 
     const displayEntries = entries.filter((entry) => entry.date === dateStr)
     const [timesheet, setTimesheet] = useState<Timesheet>()
@@ -184,15 +176,17 @@ interface WeeklyHoursProps {
 }
 
 function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
-    const selectedDate = new Date(dateToString(date))
+    const dateString = date.toISOString().slice(0, 10)
+
+    const selectedDate = new Date(dateString)
 
     const monday = new Date(
-        new Date(new Date(dateToString(date)).setHours(0, 0, 0)).setDate(
+        new Date(new Date(dateString).setHours(0, 0, 0)).setDate(
             selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7)
         )
     )
     const nextMonday = new Date(
-        new Date(new Date(dateToString(date)).setHours(0, 0, 0)).setDate(
+        new Date(new Date(dateString).setHours(0, 0, 0)).setDate(
             selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7) + 7
         )
     )
@@ -220,7 +214,7 @@ interface monthlyHoursProps {
 }
 
 function MonthlyHours({ entries, date }: monthlyHoursProps): JSX.Element {
-    const selectedDate = new Date(dateToString(date))
+    const selectedDate = new Date(date.toISOString().slice(0, 10))
 
     const firstDay = new Date(selectedDate.getFullYear(), date.getMonth(), 1)
     const lastDay = new Date(selectedDate.getFullYear(), date.getMonth() + 1, 1)
@@ -265,7 +259,11 @@ export function TimesheetEntryEditor({
                     onChange={onDateChange}
                     value={date}
                     tileClassName={({ date: thisDate }) => {
-                        if (entryDates.includes(dateToString(thisDate))) {
+                        if (
+                            entryDates.includes(
+                                thisDate.toISOString().slice(0, 10)
+                            )
+                        ) {
                             return "react-calendar__tile--completed"
                         }
                         return ""
