@@ -18,6 +18,7 @@ import {
     FormErrorMessage,
     FormHelperText,
 } from "@chakra-ui/react"
+import { toLocalDisplayDate } from "@/lib/utils/date"
 
 interface DateInputProps {
     startDate: string
@@ -194,7 +195,8 @@ function Total({
     return totalQuantity > 0 ? (
         <p>
             The total number of hours {employeeName && `by ${employeeName}`}{" "}
-            between {startDate} and {endDate} is {totalQuantity}. The projected
+            between {toLocalDisplayDate(startDate)} and{" "}
+            {toLocalDisplayDate(endDate)} is {totalQuantity}. The projected
             income in this interval is {totalIncome(entries)}€.
         </p>
     ) : (
