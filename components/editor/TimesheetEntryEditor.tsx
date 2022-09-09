@@ -253,7 +253,9 @@ export function TimesheetEntryEditor({
                     tileClassName={({ date: thisDate }) => {
                         if (
                             entryDates.includes(
-                                thisDate.toISOString().slice(0, 10)
+                                DateTime.fromJSDate(thisDate)
+                                    .toISO()
+                                    .slice(0, 10)
                             )
                         ) {
                             return "react-calendar__tile--completed"
