@@ -6,7 +6,6 @@ import {
     Timesheet,
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
-import { DeleteHookFunction } from "@/lib/types/hooks"
 import { Heading, Link, Select } from "@chakra-ui/react"
 import { sum } from "lodash"
 import React, { useContext, useState } from "react"
@@ -15,6 +14,8 @@ import {
     CreateTimesheetEntryForm,
     EditTimesheetEntryForm,
 } from "../form/TimesheetEntryForm"
+import { DateTime } from "luxon"
+import { DeleteHookFunction } from "@/lib/types/hooks"
 
 interface TimesheetEntryRowProps {
     entry: TimesheetEntry
@@ -176,27 +177,14 @@ interface WeeklyHoursProps {
 }
 
 function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
-    const dateString = date.toISOString().slice(0, 10)
-
-    const selectedDate = new Date(dateString)
-
-    const monday = new Date(
-        new Date(new Date(dateString).setHours(0, 0, 0)).setDate(
-            selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7)
-        )
-    )
-    const nextMonday = new Date(
-        new Date(new Date(dateString).setHours(0, 0, 0)).setDate(
-            selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7) + 7
-        )
-    )
-
     const total = sum(
         entries
             .filter(
                 (entry) =>
-                    new Date(entry.date) >= monday &&
-                    new Date(entry.date) <= nextMonday
+                    DateTime.fromISO(entry.date) <=
+                        DateTime.fromJSDate(date).endOf("week") &&
+                    DateTime.fromISO(entry.date) >=
+                        DateTime.fromJSDate(date).startOf("week")
             )
             .map((item) => item.quantity)
     )
@@ -214,17 +202,14 @@ interface monthlyHoursProps {
 }
 
 function MonthlyHours({ entries, date }: monthlyHoursProps): JSX.Element {
-    const selectedDate = new Date(date.toISOString().slice(0, 10))
-
-    const firstDay = new Date(selectedDate.getFullYear(), date.getMonth(), 1)
-    const lastDay = new Date(selectedDate.getFullYear(), date.getMonth() + 1, 1)
-
     const total = sum(
         entries
             .filter(
                 (entry) =>
-                    new Date(entry.date) >= firstDay &&
-                    new Date(entry.date) <= lastDay
+                    DateTime.fromISO(entry.date) <=
+                        DateTime.fromJSDate(date).endOf("month") &&
+                    DateTime.fromISO(entry.date) >=
+                        DateTime.fromJSDate(date).startOf("month")
             )
             .map((item) => item.quantity)
     )
