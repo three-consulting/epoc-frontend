@@ -266,6 +266,7 @@ export function TimesheetEntryEditor({
 
     return (
         <>
+            <p>lol</p>
             <div>
                 <Calendar
                     onChange={setDate}
