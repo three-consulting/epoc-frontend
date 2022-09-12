@@ -1,4 +1,5 @@
 import { Project } from "@/lib/types/apiTypes"
+import { toLocalDisplayDate } from "@/lib/utils/date"
 import { Box, Flex, Heading } from "@chakra-ui/layout"
 import React from "react"
 
@@ -30,8 +31,8 @@ function ProjectDetail({ project }: ProjectDetailProps): JSX.Element {
             </Heading>
             <Flex>Description: {description}</Flex>
             <Flex>Customer: {customer?.name}</Flex>
-            <Flex>Start date: {startDate}</Flex>
-            <Flex>End date: {endDate}</Flex>
+            <Flex>Start date: {toLocalDisplayDate(startDate)}</Flex>
+            <Flex>End date: {endDate ? toLocalDisplayDate(endDate) : "-"}</Flex>
             <Flex>
                 Managing employee: {managingEmployee?.firstName}{" "}
                 {managingEmployee?.lastName}

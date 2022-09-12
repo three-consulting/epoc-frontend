@@ -6,7 +6,6 @@ import {
     Timesheet,
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
-import { DeleteHookFunction } from "@/lib/types/hooks"
 import { Heading, Link, Select } from "@chakra-ui/react"
 import { sum } from "lodash"
 import React, { useContext, useState } from "react"
@@ -15,6 +14,9 @@ import {
     CreateTimesheetEntryForm,
     EditTimesheetEntryForm,
 } from "../form/TimesheetEntryForm"
+import { DateTime } from "luxon"
+import { DeleteHookFunction } from "@/lib/types/hooks"
+import { jsDateToShortISODate, toLocalDisplayDate } from "@/lib/utils/date"
 
 interface TimesheetEntryRowProps {
     entry: TimesheetEntry
@@ -30,14 +32,6 @@ interface DayEditorProps {
     timeCategories: TimeCategory[]
     entries: TimesheetEntry[]
     tasks: Task[]
-}
-
-const dateToString = (date: Date): string => {
-    const sliceIndex = -2
-    const [day, month, year] = date.toLocaleDateString("fin").split(".")
-    return `${year}-${`0${month}`.slice(sliceIndex)}-${`0${day}`.slice(
-        sliceIndex
-    )}`
 }
 
 const taskByProject = (tasks: Task[], projectId: number) =>
@@ -104,8 +98,8 @@ const DayEditor = ({
     const { user } = useContext(UserContext)
     const { delete: del } = useUpdateTimesheetEntries(user)
 
-    const dateStr = dateToString(date)
-    const displayString = date.toLocaleDateString("fin")
+    const dateStr = jsDateToShortISODate(date)
+    const displayString = toLocalDisplayDate(dateStr)
 
     const displayEntries = entries.filter((entry) => entry.date === dateStr)
     const [timesheet, setTimesheet] = useState<Timesheet>()
@@ -184,25 +178,14 @@ interface WeeklyHoursProps {
 }
 
 function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
-    const selectedDate = new Date(dateToString(date))
-
-    const monday = new Date(
-        new Date(new Date(dateToString(date)).setHours(0, 0, 0)).setDate(
-            selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7)
-        )
-    )
-    const nextMonday = new Date(
-        new Date(new Date(dateToString(date)).setHours(0, 0, 0)).setDate(
-            selectedDate.getDate() - ((selectedDate.getDay() + 6) % 7) + 7
-        )
-    )
-
     const total = sum(
         entries
             .filter(
                 (entry) =>
-                    new Date(entry.date) >= monday &&
-                    new Date(entry.date) <= nextMonday
+                    DateTime.fromISO(entry.date) <=
+                        DateTime.fromJSDate(date).endOf("week") &&
+                    DateTime.fromISO(entry.date) >=
+                        DateTime.fromJSDate(date).startOf("week")
             )
             .map((item) => item.quantity)
     )
@@ -220,17 +203,14 @@ interface monthlyHoursProps {
 }
 
 function MonthlyHours({ entries, date }: monthlyHoursProps): JSX.Element {
-    const selectedDate = new Date(dateToString(date))
-
-    const firstDay = new Date(selectedDate.getFullYear(), date.getMonth(), 1)
-    const lastDay = new Date(selectedDate.getFullYear(), date.getMonth() + 1, 1)
-
     const total = sum(
         entries
             .filter(
                 (entry) =>
-                    new Date(entry.date) >= firstDay &&
-                    new Date(entry.date) <= lastDay
+                    DateTime.fromISO(entry.date) <=
+                        DateTime.fromJSDate(date).endOf("month") &&
+                    DateTime.fromISO(entry.date) >=
+                        DateTime.fromJSDate(date).startOf("month")
             )
             .map((item) => item.quantity)
     )
@@ -272,7 +252,9 @@ export function TimesheetEntryEditor({
                     onActiveStartDateChange={onYearOrMonthChange}
                     value={date}
                     tileClassName={({ date: thisDate }) => {
-                        if (entryDates.includes(dateToString(thisDate))) {
+                        if (
+                            entryDates.includes(jsDateToShortISODate(thisDate))
+                        ) {
                             return "react-calendar__tile--completed"
                         }
                         return ""
