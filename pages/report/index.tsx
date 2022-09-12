@@ -13,20 +13,17 @@ import {
     useTimesheetEntries,
     useTimesheets,
 } from "@/lib/hooks/useList"
+import { DateTime } from "luxon"
 
 const Report: NextPage = () => {
     const { user } = useContext(UserContext)
 
     const date = new Date()
-    const firstDay = new Date(date.getFullYear(), date.getMonth(), 2)
-        .toISOString()
-        .replace(/T.*/, "")
-    const lastday = new Date(date.getFullYear(), date.getMonth() + 1, 1)
-        .toISOString()
-        .replace(/T.*/, "")
+    const firstDay = DateTime.now().startOf("month").toISO().replace(/T.*/, "")
+    const lastDay = DateTime.now().endOf("month").toISO().replace(/T.*/, "")
 
     const [startDate, setStartDate] = useState<string>(firstDay)
-    const [endDate, setEndDate] = useState<string>(lastday)
+    const [endDate, setEndDate] = useState<string>(lastDay)
 
     const reportsResponse = useTimesheetEntries(user, startDate, endDate)
     const customersResponse = useCustomers(user)
