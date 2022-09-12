@@ -1,4 +1,5 @@
 import { Employee } from "@/lib/types/apiTypes"
+import { toLocalDisplayDate } from "@/lib/utils/date"
 import { Box, Flex, Heading } from "@chakra-ui/layout"
 import React from "react"
 
@@ -8,7 +9,6 @@ type EmployeeDetailProps = {
 
 const EmployeeDetail = ({ employee }: EmployeeDetailProps): JSX.Element => {
     const { firstName, lastName, email, role, updated, created } = employee
-    const getDisplayDate = (date: string) => new Date(date).toLocaleDateString()
     return (
         <Flex
             flexDirection="column"
@@ -23,8 +23,8 @@ const EmployeeDetail = ({ employee }: EmployeeDetailProps): JSX.Element => {
             </Heading>
             <Flex>Email: {email || "-"}</Flex>
             <Flex>Role: {role || "-"}</Flex>
-            {created && <Flex>Created: {getDisplayDate(created)}</Flex>}
-            {updated && <Flex>Updated: {getDisplayDate(updated)}</Flex>}
+            {created && <Flex>Created: {toLocalDisplayDate(created)}</Flex>}
+            {updated && <Flex>Updated: {toLocalDisplayDate(updated)}</Flex>}
         </Flex>
     )
 }
