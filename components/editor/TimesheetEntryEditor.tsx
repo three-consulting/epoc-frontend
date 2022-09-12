@@ -16,6 +16,7 @@ import {
 } from "../form/TimesheetEntryForm"
 import { DateTime } from "luxon"
 import { DeleteHookFunction } from "@/lib/types/hooks"
+import { jsDateToShortISODate, toLocalDisplayDate } from "@/lib/utils/date"
 
 interface TimesheetEntryRowProps {
     entry: TimesheetEntry
@@ -97,8 +98,8 @@ const DayEditor = ({
     const { user } = useContext(UserContext)
     const { delete: del } = useUpdateTimesheetEntries(user)
 
-    const dateStr = date.toISOString().slice(0, 10)
-    const displayString = date.toLocaleDateString()
+    const dateStr = jsDateToShortISODate(date)
+    const displayString = toLocalDisplayDate(dateStr)
 
     const displayEntries = entries.filter((entry) => entry.date === dateStr)
     const [timesheet, setTimesheet] = useState<Timesheet>()
@@ -252,11 +253,7 @@ export function TimesheetEntryEditor({
                     value={date}
                     tileClassName={({ date: thisDate }) => {
                         if (
-                            entryDates.includes(
-                                DateTime.fromJSDate(thisDate)
-                                    .toISO()
-                                    .slice(0, 10)
-                            )
+                            entryDates.includes(jsDateToShortISODate(thisDate))
                         ) {
                             return "react-calendar__tile--completed"
                         }

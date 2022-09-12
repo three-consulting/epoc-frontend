@@ -201,7 +201,8 @@ function Total({
         </p>
     ) : (
         <p>
-            No hours between {startDate} and {endDate}.
+            No hours between {toLocalDisplayDate(startDate)} and{" "}
+            {toLocalDisplayDate(startDate)}.
         </p>
     )
 }

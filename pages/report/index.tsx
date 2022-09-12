@@ -14,13 +14,13 @@ import {
     useTimesheets,
 } from "@/lib/hooks/useList"
 import { DateTime } from "luxon"
+import { dateTimeToShortISODate } from "@/lib/utils/date"
 
 const Report: NextPage = () => {
     const { user } = useContext(UserContext)
 
-    const date = new Date()
-    const firstDay = DateTime.now().startOf("month").toISO().replace(/T.*/, "")
-    const lastDay = DateTime.now().endOf("month").toISO().replace(/T.*/, "")
+    const firstDay = dateTimeToShortISODate(DateTime.now().startOf("month"))
+    const lastDay = dateTimeToShortISODate(DateTime.now().endOf("month"))
 
     const [startDate, setStartDate] = useState<string>(firstDay)
     const [endDate, setEndDate] = useState<string>(lastDay)
