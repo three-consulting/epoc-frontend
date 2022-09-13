@@ -4,12 +4,15 @@ import "@testing-library/jest-dom"
 import { spy } from "sinon"
 import { TimesheetEntry } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
-import { CreateTimesheetEntryForm } from "@/components/form/TimesheetEntryForm"
+import { EditTimesheetEntryForm } from "@/components/form/TimesheetEntryForm"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
+    testTimesheetEntry,
     testTimesheet,
     testTask,
+    testChangeTask,
     testTimeCategory,
+    testChangeTimeCategory,
     testTimesheetEntryAllFields,
     testTimesheetEntryRequiredFields,
 } from "../../fixtures"
@@ -23,7 +26,7 @@ const bodySpy = spy((body) => body)
 const pathSpy = spy((path) => path)
 
 jest.mock("@/lib/utils/fetch", () => ({
-    post: async (
+    put: async (
         path: string,
         _user: User,
         body: object
@@ -65,21 +68,21 @@ const timesheetEntryKeys = (
 
 const fillAndSubmitForm = async (timesheetEntry: Partial<TimesheetEntry>) => {
     fireEvent.change(screen.getByTestId("form-field-quantity"), {
-        target: { value: timesheetEntry.quantity },
+        target: { value: timesheetEntry.quantity || "" },
     })
 
     if (timesheetEntry.description) {
         fireEvent.change(screen.getByTestId("form-field-description"), {
-            target: { value: timesheetEntry.description },
+            target: { value: timesheetEntry.description || "" },
         })
     }
 
     fireEvent.change(screen.getByTestId("form-field-task"), {
-        target: { value: timesheetEntry.task?.id },
+        target: { value: timesheetEntry.task?.id || "" },
     })
 
     fireEvent.change(screen.getByTestId("form-field-time-category"), {
-        target: { value: timesheetEntry.timeCategory?.id },
+        target: { value: timesheetEntry.timeCategory?.id || "" },
     })
 
     await waitFor(() =>
@@ -88,14 +91,20 @@ const fillAndSubmitForm = async (timesheetEntry: Partial<TimesheetEntry>) => {
 }
 
 test("a timesheet with the required fields only can be submitted", async () => {
+    expect(testTimesheetEntry.id).toBeDefined()
     render(
-        <CreateTimesheetEntryForm
-            timesheet={testTimesheet}
-            projectId={1}
-            date={"2022-07-09"}
-            timeCategories={[testTimeCategory]}
-            tasks={[testTask]}
-        />
+        <>
+            {testTimesheetEntry.id && (
+                <EditTimesheetEntryForm
+                    entry={testTimesheetEntry}
+                    timesheet={testTimesheet}
+                    projectId={1}
+                    date={"2022-07-09"}
+                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
+                    tasks={[testTask, testChangeTask]}
+                />
+            )}
+        </>
     )
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
 
@@ -106,18 +115,27 @@ test("a timesheet with the required fields only can be submitted", async () => {
             testRequestBody(),
             timesheetEntryFieldMetadata
         ) && testRequestBody()
-    ).toStrictEqual(testTimesheetEntryRequiredFields)
+    ).toStrictEqual({
+        id: testTimesheetEntry.id,
+        ...testTimesheetEntryRequiredFields,
+    })
 })
 
 test("a timesheet with all fields can be submitted", async () => {
+    expect(testTimesheetEntry.id).toBeDefined()
     render(
-        <CreateTimesheetEntryForm
-            timesheet={testTimesheet}
-            projectId={1}
-            date={"2022-07-09"}
-            timeCategories={[testTimeCategory]}
-            tasks={[testTask]}
-        />
+        <>
+            {testTimesheetEntry.id && (
+                <EditTimesheetEntryForm
+                    entry={testTimesheetEntry}
+                    timesheet={testTimesheet}
+                    projectId={1}
+                    date={"2022-07-09"}
+                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
+                    tasks={[testTask, testChangeTask]}
+                />
+            )}
+        </>
     )
     await fillAndSubmitForm(testTimesheetEntryAllFields)
 
@@ -128,22 +146,31 @@ test("a timesheet with all fields can be submitted", async () => {
             testRequestBody(),
             timesheetEntryFieldMetadata
         ) && testRequestBody()
-    ).toStrictEqual(testTimesheetEntryAllFields)
+    ).toStrictEqual({
+        id: testTimesheetEntry.id,
+        ...testTimesheetEntryAllFields,
+    })
 })
 
 test("afterSubmit is invoked with the correct data", async () => {
     const afterSubmitSpy = spy(
         (createTimesheetEntryResponse) => createTimesheetEntryResponse
     )
+    expect(testTimesheetEntry.id).toBeDefined()
     render(
-        <CreateTimesheetEntryForm
-            timesheet={testTimesheet}
-            projectId={1}
-            date={"2022-07-09"}
-            timeCategories={[testTimeCategory]}
-            tasks={[testTask]}
-            afterSubmit={afterSubmitSpy}
-        />
+        <>
+            {testTimesheetEntry.id && (
+                <EditTimesheetEntryForm
+                    entry={testTimesheetEntry}
+                    timesheet={testTimesheet}
+                    projectId={1}
+                    date={"2022-07-09"}
+                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
+                    tasks={[testTask, testChangeTask]}
+                    afterSubmit={afterSubmitSpy}
+                />
+            )}
+        </>
     )
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
 
@@ -151,21 +178,30 @@ test("afterSubmit is invoked with the correct data", async () => {
     expect(afterSubmitSpy.getCalls()[0].args[0]).toStrictEqual({
         isSuccess: true,
         isError: false,
-        data: testTimesheetEntryRequiredFields,
+        data: {
+            id: testTimesheetEntry.id,
+            ...testTimesheetEntryRequiredFields,
+        },
     })
 })
 
 test("onCancel is invoked", async () => {
     const onCancelSpy = spy(() => null)
+    expect(testTimesheetEntry.id).toBeDefined()
     render(
-        <CreateTimesheetEntryForm
-            timesheet={testTimesheet}
-            projectId={1}
-            date={"2022-07-09"}
-            timeCategories={[testTimeCategory]}
-            tasks={[testTask]}
-            onCancel={onCancelSpy}
-        />
+        <>
+            {testTimesheetEntry.id && (
+                <EditTimesheetEntryForm
+                    entry={testTimesheetEntry}
+                    timesheet={testTimesheet}
+                    projectId={1}
+                    date={"2022-07-09"}
+                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
+                    tasks={[testTask, testChangeTask]}
+                    onCancel={onCancelSpy}
+                />
+            )}
+        </>
     )
     const cancelButton = screen.getByTestId("form-button-cancel")
     await waitFor(() => fireEvent.click(cancelButton))
@@ -175,13 +211,18 @@ test("onCancel is invoked", async () => {
 
 test("a required field cannot be missing", async () => {
     const form = render(
-        <CreateTimesheetEntryForm
-            timesheet={testTimesheet}
-            projectId={1}
-            date={"2022-07-09"}
-            timeCategories={[testTimeCategory]}
-            tasks={[testTask]}
-        />
+        <>
+            {testTimesheetEntry.id && (
+                <EditTimesheetEntryForm
+                    entry={testTimesheetEntry}
+                    timesheet={testTimesheet}
+                    projectId={1}
+                    date={"2022-07-09"}
+                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
+                    tasks={[testTask, testChangeTask]}
+                />
+            )}
+        </>
     )
     const timesheetMissingRequired = Object.assign(
         {},
@@ -196,7 +237,7 @@ test("a required field cannot be missing", async () => {
     )
 
     await fillAndSubmitForm(timesheetMissingRequired)
-    expect(bodySpy.callCount).toEqual(0)
-    expect(pathSpy.callCount).toEqual(0)
+    expect(bodySpy.callCount).toEqual(1)
+    expect(pathSpy.callCount).toEqual(1)
     form.unmount()
 })
