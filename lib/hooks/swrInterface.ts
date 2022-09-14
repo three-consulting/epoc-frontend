@@ -19,6 +19,7 @@ export type Endpoint =
     | `timesheet`
     | `timesheet-entry`
     | `time-category`
+    | `employee-sync`
 
 export const endpointRegex = (endpoint: Endpoint): RegExp =>
     new RegExp(`^/${endpoint}([/|?].+)?`)
@@ -31,15 +32,20 @@ export const detailEndpoint = (endpoint: Endpoint, id: number): string =>
     `${prefixEndpoint(endpoint)}/${id}`
 export const urlToCacheKey = (url: URL): string =>
     `${url.pathname}${url.search}`
+export const firebaseSyncEndpoint = (endpoint: Endpoint): string =>
+    `${prefixEndpoint(`employee`)}/${endpoint}`
 
 export const useGet = <T>(
     user: User,
-    endpoint: string,
+    endpoint: string | null,
     params?: Record<string, string | number>
 ): ApiGetResponse<T> => {
-    const key = urlToCacheKey(pathToUrl(endpoint, params))
+    const key = endpoint ? urlToCacheKey(pathToUrl(endpoint, params)) : null
     return swrToApiGetResponse(
-        useSWR<T, Error>(key, () => get(endpoint, user, params))
+        useSWR<T, Error>(
+            () => key,
+            () => get(endpoint ?? "", user, params)
+        )
     )
 }
 

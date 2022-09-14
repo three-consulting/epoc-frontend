@@ -237,33 +237,6 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
     )
 }
 
-export const CreateEmployeeForm = (
-    props: CreateEmployeeFormProps
-): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { post } = useUpdateEmployees(user)
-
-    const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
-    const onSubmit = async (employee: Employee) => {
-        const newEmployee = await post(employee, errorHandler)
-        return props.afterSubmit && props.afterSubmit(newEmployee)
-    }
-
-    return (
-        <>
-            <EmployeeForm {...props} onSubmit={onSubmit} />
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
-        </>
-    )
-}
-
 export const EditEmployeeForm = (props: EditEmployeeFormProps): JSX.Element => {
     const { user } = useContext(UserContext)
     const { put } = useUpdateEmployees(user)
