@@ -252,14 +252,14 @@ const TimesheetEntryForm = ({
     )
 }
 
-export function EditTimesheetEntryForm(
+export const EditTimesheetEntryForm = (
     props: EditTimesheetEntryFormProps
-): JSX.Element {
+): JSX.Element => {
     const { user } = useContext(UserContext)
     const { put } = useUpdateTimesheetEntries(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
+    const errorHandler = (error: Error) => setErrorMessage(error.toString())
 
     const onSubmit = async (entry: TimesheetEntry) => {
         try {
@@ -287,14 +287,14 @@ export function EditTimesheetEntryForm(
     )
 }
 
-export function CreateTimesheetEntryForm(
+export const CreateTimesheetEntryForm = (
     props: CreateTimesheetEntryFormProps
-): JSX.Element {
+): JSX.Element => {
     const { user } = useContext(UserContext)
     const { post } = useUpdateTimesheetEntries(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
+    const errorHandler = (error: Error) => setErrorMessage(error.toString())
 
     const onSubmit = async (entry: TimesheetEntry) => {
         try {

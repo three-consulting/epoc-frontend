@@ -63,6 +63,9 @@ export interface paths {
     get: operations["getEmployeeForId"];
     delete: operations["deleteEmployeeForId"];
   };
+  "/employee/employee-sync": {
+    get: operations["syncFirebaseUsers"];
+  };
   "/customer/{customerId}": {
     get: operations["getCustomerForId"];
     delete: operations["deleteCustomerForId"];
@@ -632,6 +635,16 @@ export interface operations {
     responses: {
       /** OK */
       200: unknown;
+    };
+  };
+  syncFirebaseUsers: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EmployeeDTO"][];
+        };
+      };
     };
   };
   getCustomerForId: {

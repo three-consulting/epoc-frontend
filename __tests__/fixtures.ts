@@ -142,18 +142,30 @@ export const testTask: Task = {
     id: 1,
 }
 
+export const testChangeTask: Task = {
+    name: "Another task name",
+    project: testProject,
+    billable: true,
+    id: 2,
+}
+
 export const testTimeCategory: TimeCategory = {
     id: 1,
     name: "Test name",
 }
 
+export const testChangeTimeCategory: TimeCategory = {
+    id: 2,
+    name: "Another test name",
+}
+
 export const testTimesheetEntry: TimesheetEntry = {
     id: 1,
-    quantity: 1,
-    date: "2022-07-09",
+    quantity: 2,
+    date: "2022-06-09",
     timesheet: testTimesheet,
-    timeCategory: testTimeCategory,
-    task: testTask,
+    timeCategory: testChangeTimeCategory,
+    task: testChangeTask,
 }
 
 export const testTimesheetEntryRequiredFields: TimesheetEntry = {
