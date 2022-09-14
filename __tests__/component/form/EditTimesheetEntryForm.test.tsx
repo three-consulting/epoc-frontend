@@ -43,7 +43,7 @@ export const testRequestPath = (): object => pathSpy.getCalls()[0].args[0]
 
 const isTimesheetEntryKeys = (
     keys: unknown
-): keys is Array<keyof TimesheetEntry> =>
+): keys is (keyof TimesheetEntry)[] =>
     Array.isArray(keys) &&
     keys.every((key) =>
         [
@@ -61,7 +61,7 @@ const isTimesheetEntryKeys = (
 
 const timesheetEntryKeys = (
     timesheetEntry: TimesheetEntry
-): Array<keyof TimesheetEntry> => {
+): (keyof TimesheetEntry)[] => {
     const keys = Object.keys(timesheetEntry)
     return isTimesheetEntryKeys(keys) ? keys : []
 }

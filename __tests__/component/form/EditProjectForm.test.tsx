@@ -16,8 +16,6 @@ import {
     testProjectRequiredFields,
 } from "../../fixtures"
 
-// eslint-disable-next-line id-match, id-length
-import _ from "lodash"
 import { User } from "firebase/auth"
 import { projectFieldMetadata } from "@/lib/types/typeMetadata"
 import { checkTestRequestBodyRequiredFields } from "../../util"
@@ -40,49 +38,55 @@ afterEach(() => {
     pathSpy.resetHistory()
 })
 
+const isProjectKeys = (keys: unknown): keys is (keyof Project)[] =>
+    Array.isArray(keys) &&
+    keys.every((key) =>
+        [
+            "id",
+            "name",
+            "description",
+            "startDate",
+            "endDate",
+            "customer",
+            "managingEmployee",
+            "status",
+            "created",
+            "updated",
+        ].includes(key)
+    )
+
+const projectKeys = (project: Project): (keyof Project)[] => {
+    const keys = Object.keys(project)
+    return isProjectKeys(keys) ? keys : []
+}
+
 const fillAndSubmitForm = async (project: Project) => {
-    screen.getAllByTestId("form-field-name").forEach((nameInput) =>
-        fireEvent.change(nameInput, {
-            target: { value: project.name || "" },
-        })
-    )
+    fireEvent.change(screen.getByTestId("form-field-name"), {
+        target: { value: project.name || "" },
+    })
 
-    screen
-        .getAllByTestId("form-field-description")
-        .forEach((descriptionInput) =>
-            fireEvent.change(descriptionInput, {
-                target: { value: project.description || "" },
-            })
-        )
+    fireEvent.change(screen.getByTestId("form-field-description"), {
+        target: { value: project.description || "" },
+    })
 
-    screen.getAllByTestId("form-field-start-date").forEach((startDateInput) =>
-        fireEvent.change(startDateInput, {
-            target: { value: project.startDate || "" },
-        })
-    )
+    fireEvent.change(screen.getByTestId("form-field-start-date"), {
+        target: { value: project.startDate || "" },
+    })
 
-    screen.getAllByTestId("form-field-end-date").forEach((endDateInput) =>
-        fireEvent.change(endDateInput, {
-            target: { value: project.endDate || "" },
-        })
-    )
+    fireEvent.change(screen.getByTestId("form-field-end-date"), {
+        target: { value: project.endDate || "" },
+    })
 
     if (project.customer) {
-        screen.getAllByTestId("form-field-customer").forEach((customerInput) =>
-            fireEvent.change(customerInput, {
-                target: { value: project.customer.id },
-            })
-        )
+        fireEvent.change(screen.getByTestId("form-field-customer"), {
+            target: { value: project.customer.id },
+        })
     }
 
     if (project.managingEmployee) {
-        screen
-            .getAllByTestId("form-field-managing-employee")
-            .forEach((managingEmployeeInput) =>
-                fireEvent.change(managingEmployeeInput, {
-                    target: { value: project.managingEmployee.id },
-                })
-            )
+        fireEvent.change(screen.getByTestId("form-field-managing-employee"), {
+            target: { value: project.managingEmployee.id },
+        })
     }
 
     await waitFor(() =>
@@ -90,7 +94,8 @@ const fillAndSubmitForm = async (project: Project) => {
     )
 }
 
-export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+const testRequestPath = (): object => pathSpy.getCalls()[0].args[0]
 
 test("a project can be edited with required fields", async () => {
     expect(testProject.id).toBeDefined()
@@ -108,12 +113,12 @@ test("a project can be edited with required fields", async () => {
     await fillAndSubmitForm(testProjectRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(projectEndpointURL)
+    expect(testRequestPath()).toStrictEqual(projectEndpointURL)
     expect(
         checkTestRequestBodyRequiredFields(
             testRequestBody(),
             projectFieldMetadata
-        ) && bodySpy.getCalls()[0].args[0]
+        ) && testRequestBody()
     ).toStrictEqual({
         id: testProject.id,
         ...testProjectRequiredFields,
@@ -136,12 +141,12 @@ test("a project can be edited with all fields", async () => {
     await fillAndSubmitForm(testProjectAllFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(projectEndpointURL)
+    expect(testRequestPath()).toStrictEqual(projectEndpointURL)
     expect(
         checkTestRequestBodyRequiredFields(
             testRequestBody(),
             projectFieldMetadata
-        ) && bodySpy.getCalls()[0].args[0]
+        ) && testRequestBody()
     ).toStrictEqual({
         id: testProject.id,
         ...testProjectAllFields,
@@ -195,29 +200,27 @@ test("onCancel is invoked", async () => {
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1))
 })
 
-test("a required field cannot be missing when editing a project", () => {
+test("a required field cannot be missing when editing a project", async () => {
     expect(testProject.id).toBeDefined()
-    Object.keys(testProjectRequiredFields)
-        .filter((key) => !["customer", "managingEmployee"].includes(key))
-        .forEach((field) => {
-            const form = render(
-                <>
-                    {testProject.id && (
-                        <EditProjectForm
-                            employees={[testEmployee, anotherTestEmployee]}
-                            customers={[testCustomer, anotherTestCustomer]}
-                            project={testProject}
-                        />
-                    )}
-                </>
-            )
-            const projectMissingRequired = _.omit(testProjectAllFields, field)
-
-            fillAndSubmitForm(projectMissingRequired as Project)
-                .then(() => {
-                    expect(pathSpy.callCount).toEqual(0)
-                    expect(bodySpy.callCount).toEqual(0)
-                })
-                .finally(() => form.unmount())
-        })
+    const form = render(
+        <>
+            {testProject.id && (
+                <EditProjectForm
+                    employees={[testEmployee, anotherTestEmployee]}
+                    customers={[testCustomer, anotherTestCustomer]}
+                    project={testProject}
+                />
+            )}
+        </>
+    )
+    const projectMissingRequired = Object.assign({}, testProjectAllFields)
+    projectKeys(testProjectRequiredFields).forEach((key: keyof Project) => {
+        if (projectMissingRequired[key]) {
+            delete projectMissingRequired[key]
+        }
+    })
+    await fillAndSubmitForm(projectMissingRequired)
+    expect(bodySpy.callCount).toEqual(0)
+    expect(pathSpy.callCount).toEqual(0)
+    form.unmount()
 })

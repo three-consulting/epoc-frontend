@@ -13,8 +13,7 @@ import {
 } from "../../fixtures"
 import { User } from "firebase/auth"
 import { EditTaskForm } from "@/components/form/TaskForm"
-// eslint-disable-next-line id-length, id-match
-import _ from "lodash"
+
 import { taskFieldMetadata } from "@/lib/types/typeMetadata"
 import { checkTestRequestBodyRequiredFields } from "../../util"
 
@@ -36,20 +35,33 @@ afterEach(() => {
     pathSpy.resetHistory()
 })
 
-const fillAndSubmitForm = async (task: Task) => {
-    screen
-        .getAllByTestId("form-field-name")
-        .forEach((nameInput) =>
-            fireEvent.change(nameInput, { target: { value: task.name || "" } })
-        )
+const isTaskKeys = (keys: unknown): keys is (keyof Task)[] =>
+    Array.isArray(keys) &&
+    keys.every((key) =>
+        [
+            "id",
+            "name",
+            "description",
+            "project",
+            "created",
+            "updated",
+            "billable",
+            "status",
+        ].includes(key)
+    )
 
-    screen
-        .getAllByTestId("form-field-description")
-        .forEach((descriptionInput) =>
-            fireEvent.change(descriptionInput, {
-                target: { value: task.description || "" },
-            })
-        )
+const taskKeys = (task: Task): (keyof Task)[] => {
+    const keys = Object.keys(task)
+    return isTaskKeys(keys) ? keys : []
+}
+const fillAndSubmitForm = async (task: Task) => {
+    fireEvent.change(screen.getByTestId("form-field-name"), {
+        target: { value: task.name || "" },
+    })
+
+    fireEvent.change(screen.getByTestId("form-field-description"), {
+        target: { value: task.description || "" },
+    })
 
     await waitFor(() =>
         fireEvent.click(screen.getByTestId("form-button-submit"))
@@ -64,7 +76,8 @@ const fillAndSubmitForm = async (task: Task) => {
     })
 }
 
-export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+const testRequestPath = (): object => pathSpy.getCalls()[0].args[0]
 
 test("a task can be edited with required fields", async () => {
     expect(testTaskRequiredFields).toBeDefined()
@@ -82,12 +95,12 @@ test("a task can be edited with required fields", async () => {
     await fillAndSubmitForm(testTaskRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(taskEndpointURL)
+    expect(testRequestPath()).toStrictEqual(taskEndpointURL)
     expect(
         checkTestRequestBodyRequiredFields(
             testRequestBody(),
             taskFieldMetadata
-        ) && bodySpy.getCalls()[0].args[0]
+        ) && testRequestBody()
     ).toStrictEqual({
         id: testTask.id,
         ...testTaskRequiredFields,
@@ -110,12 +123,12 @@ test("a task can be edited with all fields", async () => {
     await fillAndSubmitForm(testTaskAllFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(taskEndpointURL)
+    expect(testRequestPath()).toStrictEqual(taskEndpointURL)
     expect(
         checkTestRequestBodyRequiredFields(
             testRequestBody(),
             taskFieldMetadata
-        ) && bodySpy.getCalls()[0].args[0]
+        ) && testRequestBody()
     ).toStrictEqual({
         id: testTask.id,
         ...testTaskAllFields,
@@ -169,29 +182,27 @@ test("onCancel is invoked", async () => {
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1))
 })
 
-test("a required field cannot be missing", () => {
+test("a required field cannot be missing", async () => {
     expect(testProject.id).toBeDefined()
-    Object.keys(testTaskRequiredFields)
-        .filter((key) => !["project", "billable"].includes(key))
-        .forEach((field) => {
-            const form = render(
-                <>
-                    {testProject.id && (
-                        <EditTaskForm
-                            project={testProject}
-                            projectId={testProject.id}
-                            task={testTask}
-                        />
-                    )}
-                </>
-            )
-            const taskMissingRequired = _.omit(testTaskAllFields, field)
-
-            fillAndSubmitForm(taskMissingRequired as Task)
-                .then(() => {
-                    expect(pathSpy.callCount).toEqual(0)
-                    expect(bodySpy.callCount).toEqual(0)
-                })
-                .finally(() => form.unmount())
-        })
+    const form = render(
+        <>
+            {testProject.id && (
+                <EditTaskForm
+                    project={testProject}
+                    projectId={testProject.id}
+                    task={testTask}
+                />
+            )}
+        </>
+    )
+    const taskMissingRequired = Object.assign({}, testTaskAllFields)
+    taskKeys(testTaskRequiredFields).forEach((key: keyof Task) => {
+        if (taskMissingRequired[key]) {
+            delete taskMissingRequired[key]
+        }
+    })
+    await fillAndSubmitForm(taskMissingRequired)
+    expect(bodySpy.callCount).toEqual(0)
+    expect(pathSpy.callCount).toEqual(0)
+    form.unmount()
 })

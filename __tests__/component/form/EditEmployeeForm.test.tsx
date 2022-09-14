@@ -13,8 +13,6 @@ import {
     thirdTestEmployee,
 } from "../../fixtures"
 
-// eslint-disable-next-line id-match, id-length
-import _ from "lodash"
 import { User } from "firebase/auth"
 import { employeeFieldMetadata } from "@/lib/types/typeMetadata"
 import { checkTestRequestBodyRequiredFields } from "../../util"
@@ -37,48 +35,86 @@ afterEach(() => {
     pathSpy.resetHistory()
 })
 
+const isEmployeeKeys = (keys: unknown): keys is (keyof Employee)[] =>
+    Array.isArray(keys) &&
+    keys.every((key) =>
+        [
+            "id",
+            "firstName",
+            "lastName",
+            "email",
+            "startDate",
+            "created",
+            "updated",
+            "firebaseUid",
+            "role",
+        ].includes(key)
+    )
+
+const employeeKeys = (employee: Employee): (keyof Employee)[] => {
+    const keys = Object.keys(employee)
+    return isEmployeeKeys(keys) ? keys : []
+}
+
+const divWithChildrenMock = (children: JSX.Element, identifier: string) => (
+    <div data-testid={identifier}>{children}</div>
+)
+const divWithoutChildrenMock = (identifier: string) => (
+    <div data-testid={identifier} />
+)
+
+jest.mock("@chakra-ui/react", () => ({
+    ...jest.requireActual("@chakra-ui/react"),
+    PortalManager: jest.fn(({ children }) =>
+        divWithChildrenMock(children, "portal")
+    ),
+    Modal: jest.fn(({ children }) => divWithChildrenMock(children, "modal")),
+    ModalOverlay: jest.fn(({ children }) =>
+        divWithChildrenMock(children, "overlay")
+    ),
+    ModalContent: jest.fn(({ children }) =>
+        divWithChildrenMock(children, "content")
+    ),
+    ModalHeader: jest.fn(({ children }) =>
+        divWithChildrenMock(children, "header")
+    ),
+    ModalFooter: jest.fn(({ children }) =>
+        divWithChildrenMock(children, "footer")
+    ),
+    ModalBody: jest.fn(({ children }) => divWithChildrenMock(children, "body")),
+    ModalCloseButton: jest.fn(() => divWithoutChildrenMock("close")),
+}))
+
 const fillAndSubmitForm = async (employee: Employee) => {
     if (employee.firstName) {
-        screen.getAllByTestId("form-field-firstName").forEach((field) => {
-            fireEvent.change(field, {
-                target: { value: employee.firstName },
-            })
+        fireEvent.change(screen.getByTestId("form-field-firstName"), {
+            target: { value: employee.firstName },
         })
     }
     if (employee.lastName) {
-        screen.getAllByTestId("form-field-lastName").forEach((field) => {
-            fireEvent.change(field, {
-                target: { value: employee.lastName },
-            })
+        fireEvent.change(screen.getByTestId("form-field-lastName"), {
+            target: { value: employee.lastName },
         })
     }
     if (employee.email) {
-        screen.getAllByTestId("form-field-email").forEach((field) => {
-            fireEvent.change(field, {
-                target: { value: employee.email },
-            })
+        fireEvent.change(screen.getByTestId("form-field-email"), {
+            target: { value: employee.email },
         })
     }
     if (employee.role) {
-        screen.getAllByTestId("form-field-role").forEach((field) => {
-            fireEvent.change(field, {
-                target: { value: employee.role },
-            })
+        fireEvent.change(screen.getByTestId("form-field-role"), {
+            target: { value: employee.role },
         })
     }
 
+    await waitFor(() => fireEvent.click(screen.getByTestId("form-button-save")))
     await waitFor(() =>
-        screen
-            .getAllByTestId("form-button-save")
-            .forEach((save) => fireEvent.click(save))
-    ).then(() =>
-        screen
-            .getAllByTestId("form-button-confirm")
-            .forEach((confirm) => fireEvent.click(confirm))
+        fireEvent.click(screen.getByTestId("form-button-confirm"))
     )
 }
 
-export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+const testRequestPath = (): object => pathSpy.getCalls()[0].args[0]
 
 test("a employee can be edited with required fields", async () => {
     expect(testEmployee.id).toBeDefined()
@@ -92,12 +128,12 @@ test("a employee can be edited with required fields", async () => {
     await fillAndSubmitForm(testEmployeeRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(employeeEndpointURL)
+    expect(testRequestPath()).toStrictEqual(employeeEndpointURL)
     expect(
         checkTestRequestBodyRequiredFields(
             testRequestBody(),
             employeeFieldMetadata
-        ) && bodySpy.getCalls()[0].args[0]
+        ) && testRequestBody()
     ).toStrictEqual({
         id: testEmployee.id,
         ...testEmployeeRequiredFields,
@@ -139,18 +175,16 @@ test("onCancel is invoked", async () => {
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1))
 })
 
-test("a required field cannot be missing", () => {
-    Object.keys(testEmployeeRequiredFields).forEach((field) => {
-        const form = render(<EditEmployeeForm employee={testEmployee} />)
-        const reqBodySpy = sinon.spy((body) => body)
-        const reqPathSpy = sinon.spy((path) => path)
-        const employeeMissingRequired = _.omit(testEmployeeAllFields, field)
-
-        fillAndSubmitForm(employeeMissingRequired as Employee)
-            .then(() => {
-                expect(reqBodySpy.callCount).toEqual(0)
-                expect(reqPathSpy.callCount).toEqual(0)
-            })
-            .finally(() => form.unmount())
+test("a required field cannot be missing", async () => {
+    const form = render(<EditEmployeeForm employee={testEmployee} />)
+    const employeeMissingRequired = Object.assign({}, testEmployeeAllFields)
+    employeeKeys(testEmployeeRequiredFields).forEach((key: keyof Employee) => {
+        if (employeeMissingRequired[key]) {
+            delete employeeMissingRequired[key]
+        }
     })
+    await fillAndSubmitForm(employeeMissingRequired)
+    expect(bodySpy.callCount).toEqual(1)
+    expect(pathSpy.callCount).toEqual(1)
+    form.unmount()
 })
