@@ -11,8 +11,6 @@ import {
     testCustomerRequiredFields,
 } from "../../fixtures"
 
-// eslint-disable-next-line id-match, id-length
-import _ from "lodash"
 import { User } from "firebase/auth"
 import { customerFieldMetadata } from "@/lib/types/typeMetadata"
 import { checkTestRequestBodyRequiredFields } from "../../util"
@@ -35,23 +33,38 @@ afterEach(() => {
     pathSpy.resetHistory()
 })
 
+const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+const testRequestPath = (): object => pathSpy.getCalls()[0].args[0]
+
+const isCustomerKeys = (keys: unknown): keys is (keyof Customer)[] =>
+    Array.isArray(keys) &&
+    keys.every((key) =>
+        [
+            "id",
+            "name",
+            "description",
+            "createds",
+            "updated",
+            "enabled",
+        ].includes(key)
+    )
+
+const customerKeys = (customer: Customer): (keyof Customer)[] => {
+    const keys = Object.keys(customer)
+    return isCustomerKeys(keys) ? keys : []
+}
+
 const fillAndSubmitForm = async (customer: Customer) => {
     if (customer.name) {
-        screen.getAllByTestId("form-field-name").forEach((nameInput) =>
-            fireEvent.change(nameInput, {
-                target: { value: customer.name },
-            })
-        )
+        fireEvent.change(screen.getByTestId("form-field-name"), {
+            target: { value: customer.name },
+        })
     }
 
     if (customer.description) {
-        screen
-            .getAllByTestId("form-field-description")
-            .forEach((descriptionInput) =>
-                fireEvent.change(descriptionInput, {
-                    target: { value: customer.description },
-                })
-            )
+        fireEvent.change(screen.getByTestId("form-field-description"), {
+            target: { value: customer.description },
+        })
     }
 
     await waitFor(() =>
@@ -59,19 +72,17 @@ const fillAndSubmitForm = async (customer: Customer) => {
     )
 }
 
-export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
-
 test("a customer with the required fields only can be submitted", async () => {
     render(<CreateCustomerForm />)
     await fillAndSubmitForm(testCustomerRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
+    expect(testRequestPath()).toStrictEqual(customerEndpointURL)
     expect(
         checkTestRequestBodyRequiredFields(
             testRequestBody(),
             customerFieldMetadata
-        ) && bodySpy.getCalls()[0].args[0]
+        ) && testRequestBody()
     ).toStrictEqual(testCustomerRequiredFields)
 })
 
@@ -80,12 +91,12 @@ test("a customer with all fields can be submitted", async () => {
     await fillAndSubmitForm(testCustomerAllFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
+    expect(testRequestPath()).toStrictEqual(customerEndpointURL)
     expect(
         checkTestRequestBodyRequiredFields(
             testRequestBody(),
             customerFieldMetadata
-        ) && bodySpy.getCalls()[0].args[0]
+        ) && testRequestBody()
     ).toStrictEqual(testCustomerAllFields)
 })
 
@@ -114,16 +125,16 @@ test("onCancel is invoked", async () => {
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1))
 })
 
-test("a required field cannot be missing", () => {
-    Object.keys(testCustomerRequiredFields).forEach((field) => {
-        const form = render(<CreateCustomerForm />)
-        const customerMissingRequired = _.omit(testCustomerAllFields, field)
-
-        fillAndSubmitForm(customerMissingRequired as Customer)
-            .then(() => {
-                expect(bodySpy.callCount).toEqual(0)
-                expect(pathSpy.callCount).toEqual(0)
-            })
-            .finally(() => form.unmount())
+test("a required field cannot be missing", async () => {
+    const form = render(<CreateCustomerForm />)
+    const customerMissingRequired = Object.assign({}, testCustomerAllFields)
+    customerKeys(testCustomerRequiredFields).forEach((key: keyof Customer) => {
+        if (customerMissingRequired[key]) {
+            delete customerMissingRequired[key]
+        }
     })
+    await fillAndSubmitForm(customerMissingRequired)
+    expect(bodySpy.callCount).toEqual(0)
+    expect(pathSpy.callCount).toEqual(0)
+    form.unmount()
 })

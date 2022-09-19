@@ -14,8 +14,6 @@ import {
     testTimesheetRequiredFields,
 } from "../../fixtures"
 
-// eslint-disable-next-line id-match, id-length
-import _ from "lodash"
 import { User } from "firebase/auth"
 import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
 import { checkTestRequestBodyRequiredFields } from "../../util"
@@ -38,45 +36,55 @@ afterEach(() => {
     pathSpy.resetHistory()
 })
 
+const isTimesheetKeys = (keys: unknown): keys is (keyof Timesheet)[] =>
+    Array.isArray(keys) &&
+    keys.every((key) =>
+        [
+            "id",
+            "name",
+            "description",
+            "rate",
+            "allocation",
+            "project",
+            "employee",
+            "created",
+            "updated",
+            "status",
+        ].includes(key)
+    )
+
+const timesheetKeys = (timesheet: Timesheet): (keyof Timesheet)[] => {
+    const keys = Object.keys(timesheet)
+    return isTimesheetKeys(keys) ? keys : []
+}
 const fillAndSubmitForm = async (timesheet: Timesheet) => {
-    screen.getAllByTestId("form-field-name").forEach((nameInput) =>
-        fireEvent.change(nameInput, {
-            target: { value: timesheet.name || "" },
-        })
-    )
+    fireEvent.change(screen.getByTestId("form-field-name"), {
+        target: { value: timesheet.name || "" },
+    })
 
-    screen
-        .getAllByTestId("form-field-description")
-        .forEach((descriptionInput) =>
-            fireEvent.change(descriptionInput, {
-                target: { value: timesheet.description || "" },
-            })
-        )
+    fireEvent.change(screen.getByTestId("form-field-description"), {
+        target: { value: timesheet.description || "" },
+    })
 
-    screen.getAllByTestId("form-field-rate").forEach((rateInput) =>
-        fireEvent.change(rateInput, {
-            target: { value: timesheet.rate || "" },
-        })
-    )
+    fireEvent.change(screen.getByTestId("form-field-rate"), {
+        target: { value: timesheet.rate || "" },
+    })
 
-    screen.getAllByTestId("form-field-allocation").forEach((allocationInput) =>
-        fireEvent.change(allocationInput, {
-            target: { value: timesheet.allocation || "" },
-        })
-    )
+    fireEvent.change(screen.getByTestId("form-field-allocation"), {
+        target: { value: timesheet.allocation || "" },
+    })
 
-    screen.getAllByTestId("form-field-employee").forEach((employeeInput) =>
-        fireEvent.change(employeeInput, {
-            target: { value: timesheet.employee.id || "" },
-        })
-    )
+    fireEvent.change(screen.getByTestId("form-field-employee"), {
+        target: { value: timesheet.employee?.id || "" },
+    })
 
     await waitFor(() =>
         fireEvent.click(screen.getByTestId("form-button-submit"))
     )
 }
 
-export const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+const testRequestBody = (): object => bodySpy.getCalls()[0].args[0]
+const testRequestPath = (): object => pathSpy.getCalls()[0].args[0]
 
 test("a timesheet can be edited with required fields", async () => {
     expect(testProject.id).toBeDefined()
@@ -96,12 +104,12 @@ test("a timesheet can be edited with required fields", async () => {
     )
     await fillAndSubmitForm(testTimesheetRequiredFields)
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
+    expect(testRequestPath()).toStrictEqual(customerEndpointURL)
     expect(
         checkTestRequestBodyRequiredFields(
             testRequestBody(),
             timesheetFieldMetadata
-        ) && bodySpy.getCalls()[0].args[0]
+        ) && testRequestBody()
     ).toStrictEqual({
         id: testTimesheet.id,
         ...testTimesheetRequiredFields,
@@ -126,12 +134,12 @@ test("a timesheet can be edited with all fields", async () => {
     )
     await fillAndSubmitForm(testTimesheetAllFields)
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
-    expect(pathSpy.getCalls()[0].args[0]).toStrictEqual(customerEndpointURL)
+    expect(testRequestPath()).toStrictEqual(customerEndpointURL)
     expect(
         checkTestRequestBodyRequiredFields(
             testRequestBody(),
             timesheetFieldMetadata
-        ) && bodySpy.getCalls()[0].args[0]
+        ) && testRequestBody()
     ).toStrictEqual({
         id: testTimesheet.id,
         ...testTimesheetAllFields,
@@ -192,35 +200,33 @@ test("onCancel is invoked", async () => {
     await waitFor(() => expect(onCancelSpy.callCount).toEqual(1))
 })
 
-test("a required field cannot be missing when editing timesheet form", () => {
+test("a required field cannot be missing when editing timesheet form", async () => {
     expect(testProject.id).toBeDefined()
     expect(testTimesheet.id).toBeDefined()
-    Object.keys(testTimesheetRequiredFields)
-        .filter((key) => !["project", "employee"].includes(key))
-        .forEach((field) => {
-            const form = render(
-                <>
-                    {testProject.id && testTimesheet.id && (
-                        <EditTimesheetForm
-                            employees={[testEmployee]}
-                            project={testProject}
-                            projectId={testProject.id}
-                            timesheet={testTimesheet}
-                            timesheetId={testTimesheet.id}
-                        />
-                    )}
-                </>
-            )
-            const timesheetMissingRequired = _.omit(
-                testTimesheetAllFields,
-                field
-            )
+    const form = render(
+        <>
+            {testProject.id && testTimesheet.id && (
+                <EditTimesheetForm
+                    employees={[testEmployee]}
+                    project={testProject}
+                    projectId={testProject.id}
+                    timesheet={testTimesheet}
+                    timesheetId={testTimesheet.id}
+                />
+            )}
+        </>
+    )
+    const timesheetMissingRequired = Object.assign({}, testTimesheetAllFields)
+    timesheetKeys(testTimesheetRequiredFields).forEach(
+        (key: keyof Timesheet) => {
+            if (timesheetMissingRequired[key]) {
+                delete timesheetMissingRequired[key]
+            }
+        }
+    )
 
-            fillAndSubmitForm(timesheetMissingRequired as Timesheet)
-                .then(() => {
-                    expect(pathSpy.callCount).toEqual(0)
-                    expect(bodySpy.callCount).toEqual(0)
-                })
-                .finally(() => form.unmount())
-        })
+    await fillAndSubmitForm(timesheetMissingRequired)
+    expect(bodySpy.callCount).toEqual(0)
+    expect(pathSpy.callCount).toEqual(0)
+    form.unmount()
 })
