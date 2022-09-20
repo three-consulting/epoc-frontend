@@ -20,12 +20,14 @@ interface LinkItemProps {
     href: string
 }
 
-const userLinkItem: LinkItemProps = { name: "Home", icon: BsHouse, href: "/" }
+const userLinkItems: LinkItemProps[] = [
+    { name: "Home", icon: BsHouse, href: "/" },
+    { name: "Projects", icon: BsBriefcase, href: "/project" },
+    { name: "Customers", icon: BsPersonBadge, href: "/customer" },
+]
 
 const adminLinkItems: LinkItemProps[] = [
     { name: "Employees", icon: BsPeopleFill, href: "/employee" },
-    { name: "Projects", icon: BsBriefcase, href: "/project" },
-    { name: "Customers", icon: BsPersonBadge, href: "/customer" },
     { name: "Reports", icon: BsFillFileTextFill, href: "/report" },
 ]
 
@@ -65,14 +67,15 @@ function LeftNav(): JSX.Element {
             <Text color="black" fontWeight="black" fontSize="xl">
                 Navigation
             </Text>
-            {isLoggedIn && (
-                <NavItem
-                    key={userLinkItem.name}
-                    name={userLinkItem.name}
-                    icon={userLinkItem.icon}
-                    href={userLinkItem.href}
-                />
-            )}
+            {isLoggedIn &&
+                userLinkItems.map((item) => (
+                    <NavItem
+                        key={item.name}
+                        name={item.name}
+                        icon={item.icon}
+                        href={item.href}
+                    />
+                ))}
             {isAdmin &&
                 isLoggedIn &&
                 adminLinkItems.map((item) => (
