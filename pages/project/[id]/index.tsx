@@ -25,6 +25,8 @@ type Props = {
     projectId: number
 }
 
+type ProjectStatus = "ACTIVE" | "ARCHIVED"
+
 function ProjectDetailPage({ projectId }: Props): JSX.Element {
     const { user } = useContext(UserContext)
     const projectDetailResponse = useProjectDetail(projectId, user)
@@ -37,12 +39,14 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
     const [displayArchivedModal, setDisplayArchivedModal] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string>("")
 
-    const archiveProject = async (mouseEvent: React.MouseEvent) => {
+    const changeProjectStatus = async (
+        mouseEvent: React.MouseEvent,
+        status: ProjectStatus
+    ) => {
         mouseEvent.preventDefault()
         if (projectDetailResponse.isSuccess) {
-            await put(
-                { ...projectDetailResponse.data, status: "ARCHIVED" },
-                (error) => setErrorMessage(`${error}`)
+            await put({ ...projectDetailResponse.data, status }, (error) =>
+                setErrorMessage(`${error}`)
             )
             setDisplayArchivedModal(true)
         } else {
@@ -75,14 +79,27 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                             Edit Project
                         </Button>
                     </Link>
-                    {projectDetailResponse.data.status !== "ARCHIVED" && (
+                    {projectDetailResponse.data.status === "ACTIVE" ? (
+                        <Button
+                            colorScheme="pink"
+                            marginTop="1rem"
+                            marginLeft="0.5rem"
+                            onClick={(event: React.MouseEvent) =>
+                                changeProjectStatus(event, "ARCHIVED")
+                            }
+                        >
+                            Archive Project
+                        </Button>
+                    ) : (
                         <Button
                             colorScheme="teal"
                             marginTop="1rem"
                             marginLeft="0.5rem"
-                            onClick={archiveProject}
+                            onClick={(event: React.MouseEvent) =>
+                                changeProjectStatus(event, "ACTIVE")
+                            }
                         >
-                            Archive Project
+                            Rectivate Project
                         </Button>
                     )}
                     <Modal
@@ -92,10 +109,14 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                         <ModalOverlay />
                         <ModalContent>
                             <ModalBody marginTop="1rem">
-                                {projectDetailResponse.data.name} has been
-                                archived.
+                                {`${projectDetailResponse.data.name} has been 
+                                ${
+                                    projectDetailResponse.data.status ===
+                                    "ARCHIVED"
+                                        ? "archived"
+                                        : "reactivated"
+                                }.`}
                             </ModalBody>
-
                             <ModalFooter>
                                 <Button
                                     colorScheme="blue"
@@ -115,19 +136,23 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                             message={timesheetsResponse.errorMessage}
                         />
                     )}
-                    {timesheetsResponse.isSuccess &&
-                        employeesResponse.isSuccess && (
-                            <TimesheetTable
-                                project={projectDetailResponse.data}
-                                timesheets={timesheetsResponse.data}
-                                employees={employeesResponse.data}
-                            />
-                        )}
-                    {tasksResponse.isSuccess && (
-                        <TaskTable
-                            project={projectDetailResponse.data}
-                            tasks={tasksResponse.data}
-                        />
+                    {projectDetailResponse.data.status === "ACTIVE" && (
+                        <>
+                            {timesheetsResponse.isSuccess &&
+                                employeesResponse.isSuccess && (
+                                    <TimesheetTable
+                                        project={projectDetailResponse.data}
+                                        timesheets={timesheetsResponse.data}
+                                        employees={employeesResponse.data}
+                                    />
+                                )}
+                            {tasksResponse.isSuccess && (
+                                <TaskTable
+                                    project={projectDetailResponse.data}
+                                    tasks={tasksResponse.data}
+                                />
+                            )}
+                        </>
                     )}
                 </>
             ) : (

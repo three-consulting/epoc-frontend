@@ -113,7 +113,7 @@ export interface components {
       customer: components["schemas"]["CustomerDTO"];
       managingEmployee: components["schemas"]["EmployeeDTO"];
       /** @enum {string} */
-      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      status?: "ACTIVE" | "ARCHIVED";
       /** Format: date-time */
       created?: string;
       /** Format: date-time */
@@ -135,7 +135,7 @@ export interface components {
       /** Format: date-time */
       updated?: string;
       /** @enum {string} */
-      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      status?: "ACTIVE" | "ARCHIVED";
     };
     TaskDTO: {
       /** Format: int64 */
@@ -149,7 +149,7 @@ export interface components {
       updated?: string;
       billable: boolean;
       /** @enum {string} */
-      status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+      status?: "ACTIVE" | "ARCHIVED";
     };
     TimeCategoryDTO: {
       /** Format: int64 */
