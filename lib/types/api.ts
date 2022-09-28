@@ -12,7 +12,7 @@ export interface paths {
   "/timesheet-entry": {
     get: operations["getTimesheetEntries"];
     put: operations["updateTimesheetEntryForId"];
-    post: operations["createTimesheetEntry"];
+    post: operations["createTimesheetEntries"];
   };
   "/time-category": {
     get: operations["getAllTimeCategories"];
@@ -38,9 +38,6 @@ export interface paths {
     get: operations["getAllCustomers"];
     put: operations["updateCustomerForId"];
     post: operations["createCustomer"];
-  };
-  "/timesheet-entries": {
-    post: operations["createTimesheetEntries"];
   };
   "/timesheet/{timesheetId}": {
     get: operations["getTimesheetForId"];
@@ -267,18 +264,18 @@ export interface operations {
       };
     };
   };
-  createTimesheetEntry: {
+  createTimesheetEntries: {
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["TimesheetEntryDTO"];
+          "application/json": components["schemas"]["TimesheetEntryDTO"][];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["TimesheetEntryDTO"];
+        "application/json": components["schemas"]["TimesheetEntryDTO"][];
       };
     };
   };
@@ -487,21 +484,6 @@ export interface operations {
       };
     };
   };
-  createTimesheetEntries: {
-    responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TimesheetEntryDTO"][];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TimesheetEntryDTO"][];
-      };
-    };
-  };
   getTimesheetForId: {
     parameters: {
       path: {
@@ -557,6 +539,7 @@ export interface operations {
   exportTimesheetEntriesAsCsv: {
     parameters: {
       query: {
+        email?: string;
         startDate: string;
         endDate: string;
       };
