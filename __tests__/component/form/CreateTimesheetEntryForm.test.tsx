@@ -93,7 +93,7 @@ test("a timesheet with the required fields only can be submitted", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
         />
@@ -115,7 +115,7 @@ test("a timesheet with all fields can be submitted", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
         />
@@ -140,7 +140,7 @@ test("afterSubmit is invoked with the correct data", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
             afterSubmit={afterSubmitSpy}
@@ -162,7 +162,7 @@ test("onCancel is invoked", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
             onCancel={onCancelSpy}
@@ -179,7 +179,7 @@ test("a required field cannot be missing", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
         />

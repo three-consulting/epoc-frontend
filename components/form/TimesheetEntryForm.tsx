@@ -21,24 +21,25 @@ import { FromButtons } from "../common/FormFields"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 import { isError } from "lodash"
 
-type TimesheetEntryFormBaseProps = FormBase<TimesheetEntry> & {
+interface TimesheetEntryFormBaseProps extends FormBase<TimesheetEntry> {
     timesheetEntry?: TimesheetEntry
     timesheet: Timesheet
-    date: string
+    date?: string
+    dates?: Date[]
     timeCategories: TimeCategory[]
     tasks: Task[]
     onSubmit: (entry: TimesheetEntry) => void
 }
 
-type CreateTimesheetEntryFormProps = FormBase<TimesheetEntry> & {
+interface CreateTimesheetEntryFormProps extends FormBase<TimesheetEntry> {
     timesheet: Timesheet
     projectId: number
-    date: string
+    dates: Date[]
     timeCategories: TimeCategory[]
     tasks: Task[]
 }
 
-type EditTimesheetEntryFormProps = FormBase<TimesheetEntry> & {
+interface EditTimesheetEntryFormProps extends FormBase<TimesheetEntry> {
     entry: TimesheetEntry
     timesheet: Timesheet
     projectId: number
@@ -49,7 +50,6 @@ type EditTimesheetEntryFormProps = FormBase<TimesheetEntry> & {
 
 type TimesheetEntryFields = Partial<TimesheetEntry> & {
     timesheet: Timesheet
-    date: string
 }
 
 const validateTimesheetEntryFields = (
@@ -80,18 +80,18 @@ const TimesheetEntryForm = ({
     timesheetEntry,
     timesheet,
     date,
+    /* dates, */
     timeCategories,
     tasks,
     onSubmit,
     onCancel,
 }: TimesheetEntryFormBaseProps): JSX.Element => {
     const [timesheetEntryFields, setTimesheetEntryFields] =
-        useState<TimesheetEntryFields>(timesheetEntry || { timesheet, date })
+        useState<TimesheetEntryFields>(timesheetEntry || { timesheet })
 
     const resetForm = () => {
         setTimesheetEntryFields({
             ...timesheetEntryFields,
-            date,
         })
     }
 

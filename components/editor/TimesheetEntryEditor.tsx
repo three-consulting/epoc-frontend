@@ -28,7 +28,7 @@ interface TimesheetEntryRowProps {
 
 interface DayEditorProps {
     timesheets: Timesheet[]
-    date: Date
+    dateRange: [Date] | [Date, Date]
     timeCategories: TimeCategory[]
     entries: TimesheetEntry[]
     tasks: Task[]
@@ -89,9 +89,26 @@ const TimesheetEntryRow = ({
     )
 }
 
+const getDatesFromRange = (range: [Date] | [Date, Date]): Array<Date> => {
+    const [start, end] = range
+    if (!end) {
+        return [start]
+    }
+    const rangeLength = end.getDate() - start.getDate()
+    const dates: Array<Date> = []
+
+    for (let i = 0; i <= rangeLength; i++) {
+        const date = new Date(start)
+        date.setDate(start.getDate() + i)
+        dates.push(date)
+    }
+
+    return dates
+}
+
 const DayEditor = ({
     timesheets,
-    date,
+    dateRange,
     timeCategories,
     entries,
     tasks,
@@ -99,10 +116,13 @@ const DayEditor = ({
     const { user } = useContext(UserContext)
     const { delete: del } = useUpdateTimesheetEntries(user)
 
-    const dateStr = jsDateToShortISODate(date)
-    const displayString = toLocalDisplayDate(dateStr)
+    const dates = getDatesFromRange(dateRange)
+    const [start, end] = dateRange
+    const datesDisplayString = `
+        ${toLocalDisplayDate(jsDateToShortISODate(start))}
+        ${end ? ` - ${toLocalDisplayDate(jsDateToShortISODate(end))}` : ""}
+    `
 
-    const displayEntries = entries.filter((entry) => entry.date === dateStr)
     const [timesheet, setTimesheet] = useState<Timesheet>()
 
     const handleTimesheetChange = (
@@ -121,7 +141,7 @@ const DayEditor = ({
     return (
         <>
             <Heading as="h2" size="md">
-                Create a new entry on {displayString}
+                Create a new entry on {datesDisplayString}
             </Heading>
             <Select
                 onChange={handleTimesheetChange}
@@ -139,54 +159,66 @@ const DayEditor = ({
                 <CreateTimesheetEntryForm
                     timesheet={timesheet}
                     projectId={timesheet.project.id}
-                    date={dateStr}
+                    dates={dates}
                     timeCategories={timeCategories}
                     key={`createEntryEditor-${timesheet.id}`}
                     tasks={taskByProject(tasks, timesheet.project.id)}
                 />
             )}
-            <Heading as="h2" size="md">
-                Previous entries on {displayString}
-            </Heading>
-            <ul>
-                {displayEntries.map((entry) => (
-                    <li
-                        key={`timesheet-entry-${entry.id}-editor-container`}
-                        style={{ margin: "20px" }}
-                    >
-                        {entry.timesheet.project.id && (
-                            <TimesheetEntryRow
-                                entry={entry}
-                                deleteTimesheetEntry={del}
-                                dateStr={dateStr}
-                                timeCategories={timeCategories}
-                                tasks={taskByProject(
-                                    tasks,
-                                    entry.timesheet.project.id
-                                )}
-                            />
-                        )}
-                    </li>
-                ))}
-            </ul>
+            {dates.map((ddate) => {
+                const dateStr = jsDateToShortISODate(ddate)
+                const displayString = toLocalDisplayDate(dateStr)
+                const displayEntries = entries.filter(
+                    (entry) => entry.date === dateStr
+                )
+
+                return (
+                    <>
+                        <Heading as="h2" size="md">
+                            Previous entries on {displayString}
+                        </Heading>
+                        <ul>
+                            {displayEntries.map((entry) => (
+                                <li
+                                    key={`timesheet-entry-${entry.id}-editor-container`}
+                                    style={{ margin: "20px" }}
+                                >
+                                    {entry.timesheet.project.id && (
+                                        <TimesheetEntryRow
+                                            entry={entry}
+                                            deleteTimesheetEntry={del}
+                                            dateStr={dateStr}
+                                            timeCategories={timeCategories}
+                                            tasks={taskByProject(
+                                                tasks,
+                                                entry.timesheet.project.id
+                                            )}
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                )
+            })}
         </>
     )
 }
 
 interface WeeklyHoursProps {
     entries: TimesheetEntry[]
-    date: Date
+    dates: [Date] | [Date, Date]
 }
 
-function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
+function WeeklyHours({ entries, dates }: WeeklyHoursProps): JSX.Element {
     const total = sum(
         entries
             .filter(
                 (entry) =>
                     DateTime.fromISO(entry.date) <=
-                        DateTime.fromJSDate(date).endOf("week") &&
+                        DateTime.fromJSDate(dates[0]).endOf("week") &&
                     DateTime.fromISO(entry.date) >=
-                        DateTime.fromJSDate(date).startOf("week")
+                        DateTime.fromJSDate(dates[0]).startOf("week")
             )
             .map((item) => item.quantity)
     )
@@ -200,18 +232,18 @@ function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
 
 interface monthlyHoursProps {
     entries: TimesheetEntry[]
-    date: Date
+    dates: [Date] | [Date, Date]
 }
 
-function MonthlyHours({ entries, date }: monthlyHoursProps): JSX.Element {
+function MonthlyHours({ entries, dates }: monthlyHoursProps): JSX.Element {
     const total = sum(
         entries
             .filter(
                 (entry) =>
                     DateTime.fromISO(entry.date) <=
-                        DateTime.fromJSDate(date).endOf("month") &&
+                        DateTime.fromJSDate(dates[0]).endOf("month") &&
                     DateTime.fromISO(entry.date) >=
-                        DateTime.fromJSDate(date).startOf("month")
+                        DateTime.fromJSDate(dates[0]).startOf("month")
             )
             .map((item) => item.quantity)
     )
@@ -235,23 +267,33 @@ export function TimesheetEntryEditor({
     timeCategories,
     tasks,
 }: TimesheetEntryEditorProps): JSX.Element {
-    const [date, setDate] = useState(new Date())
+    const [dates, setDates] = useState<[Date] | [Date, Date]>([new Date()])
 
     const onYearOrMonthChange = ({
         activeStartDate,
     }: ViewCallbackProperties) => {
-        setDate(activeStartDate)
+        setDates([activeStartDate])
     }
 
     const entryDates = entries.map(({ date: entryDate }) => entryDate)
+
+    const datesValue = (): Date | [Date, Date] => {
+        if (dates.length === 1 || dates[1] === null) {
+            return dates[0]
+        }
+        return dates
+    }
 
     return (
         <>
             <div>
                 <Calendar
-                    onChange={setDate}
+                    onChange={setDates}
+                    returnValue={"range"}
+                    selectRange={true}
+                    allowPartialRange={true}
                     onActiveStartDateChange={onYearOrMonthChange}
-                    value={date}
+                    value={datesValue()}
                     tileClassName={({ date: thisDate }) => {
                         if (
                             entryDates.includes(jsDateToShortISODate(thisDate))
@@ -262,13 +304,13 @@ export function TimesheetEntryEditor({
                     }}
                 />
             </div>
-            <WeeklyHours entries={entries} date={date} />
+            <WeeklyHours entries={entries} dates={dates} />
             <div style={{ marginBottom: "5px" }} />
-            <MonthlyHours entries={entries} date={date} />
+            <MonthlyHours entries={entries} dates={dates} />
             <div style={{ marginBottom: "10px" }} />
             <DayEditor
                 timesheets={timesheets}
-                date={date}
+                dateRange={dates}
                 timeCategories={timeCategories}
                 entries={entries}
                 tasks={tasks}

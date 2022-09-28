@@ -49,6 +49,54 @@ export const useGet = <T>(
     )
 }
 
+export const usePost = (endpoint: Endpoint, user: User) => {
+    const matchMutate = useMatchMutate()
+    const refresh = () => matchMutate(endpointRegex(endpoint))
+
+    return {
+        post: async <T>(...[item, errorHandler]: UpdateHookArgs<T>) => {
+            const newItem = await post<T, T>(
+                listEndpoint(endpoint),
+                user,
+                item
+            ).catch(errorHandler)
+            refresh()
+
+            return updateToApiUpdateResponse(newItem || null)
+        },
+    }
+}
+
+export const usePut = (endpoint: Endpoint, user: User) => {
+    const matchMutate = useMatchMutate()
+    const refresh = () => matchMutate(endpointRegex(endpoint))
+
+    return {
+        put: async <T>(...[item, errorHandler]: UpdateHookArgs<T>) => {
+            const updatedItem = await put<T, T>(
+                listEndpoint(endpoint),
+                user,
+                item
+            ).catch(errorHandler)
+            refresh()
+
+            return updateToApiUpdateResponse(updatedItem || null)
+        },
+    }
+}
+
+export const useDelete = (endpoint: Endpoint, user: User) => {
+    const matchMutate = useMatchMutate()
+    const refresh = () => matchMutate(endpointRegex(endpoint))
+
+    return {
+        delete: async <T>(...[id, errorHandler]: DeleteHookArgs) => {
+            await del<T>(detailEndpoint(endpoint, id), user).catch(errorHandler)
+            refresh()
+        },
+    }
+}
+
 export const useUpdate = (endpoint: Endpoint, user: User) => {
     const matchMutate = useMatchMutate()
     const refresh = () => matchMutate(endpointRegex(endpoint))
