@@ -255,6 +255,30 @@ function MonthlyHours({ entries, dates }: monthlyHoursProps): JSX.Element {
     )
 }
 
+const isDates = (dates: unknown): dates is [Date, Date] =>
+    Array.isArray(dates) &&
+    dates.length === 2 &&
+    dates[0] !== null &&
+    dates[1] !== null
+
+const isDate = (dates: unknown): dates is [Date] | [Date, null] =>
+    Array.isArray(dates) &&
+    ((dates.length === 1 && dates[0] !== null) ||
+        (dates.length === 2 && dates[0] !== null && dates[1] === null))
+
+const datesValue = (dates: unknown): Date | [Date, Date] => {
+    if (isDates(dates)) {
+        return dates
+    }
+    if (isDate(dates)) {
+        return dates[0]
+    }
+    return new Date()
+}
+
+const datesRange = (dates: unknown): [Date] | [Date, Date] =>
+    isDates(dates) ? dates : [new Date()]
+
 interface TimesheetEntryEditorProps {
     entries: TimesheetEntry[]
     timesheets: Timesheet[]
@@ -268,7 +292,10 @@ export function TimesheetEntryEditor({
     timeCategories,
     tasks,
 }: TimesheetEntryEditorProps): JSX.Element {
-    const [dates, setDates] = useState<[Date] | [Date, Date]>([new Date()])
+    const [dates, setDates] = useState<[Date] | [Date | null, Date | null]>([
+        null,
+        null,
+    ])
 
     const onYearOrMonthChange = ({
         activeStartDate,
@@ -277,13 +304,6 @@ export function TimesheetEntryEditor({
     }
 
     const entryDates = entries.map(({ date: entryDate }) => entryDate)
-
-    const datesValue = (): Date | [Date, Date] => {
-        if (dates.length === 1 || dates[1] === null) {
-            return dates[0]
-        }
-        return dates
-    }
 
     return (
         <>
@@ -294,7 +314,7 @@ export function TimesheetEntryEditor({
                     selectRange={true}
                     allowPartialRange={true}
                     onActiveStartDateChange={onYearOrMonthChange}
-                    value={datesValue()}
+                    value={datesValue(dates)}
                     tileClassName={({ date: thisDate }) => {
                         if (
                             entryDates.includes(jsDateToShortISODate(thisDate))
@@ -305,13 +325,13 @@ export function TimesheetEntryEditor({
                     }}
                 />
             </div>
-            <WeeklyHours entries={entries} dates={dates} />
+            <WeeklyHours entries={entries} dates={datesRange(dates)} />
             <div style={{ marginBottom: "5px" }} />
-            <MonthlyHours entries={entries} dates={dates} />
+            <MonthlyHours entries={entries} dates={datesRange(dates)} />
             <div style={{ marginBottom: "10px" }} />
             <DayEditor
                 timesheets={timesheets}
-                dateRange={dates}
+                dateRange={datesRange(dates)}
                 timeCategories={timeCategories}
                 entries={entries}
                 tasks={tasks}
