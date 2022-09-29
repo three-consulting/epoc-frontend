@@ -159,6 +159,7 @@ const DayEditor = ({
                 <CreateTimesheetEntryForm
                     timesheet={timesheet}
                     projectId={timesheet.project.id}
+                    date={jsDateToShortISODate(dateRange[0])}
                     dates={dates}
                     timeCategories={timeCategories}
                     key={`createEntryEditor-${timesheet.id}`}
@@ -173,7 +174,7 @@ const DayEditor = ({
                 )
 
                 return (
-                    <>
+                    <React.Fragment key={`timesheet-entry-${ddate}`}>
                         <Heading as="h2" size="md">
                             Previous entries on {displayString}
                         </Heading>
@@ -198,7 +199,7 @@ const DayEditor = ({
                                 </li>
                             ))}
                         </ul>
-                    </>
+                    </React.Fragment>
                 )
             })}
         </>

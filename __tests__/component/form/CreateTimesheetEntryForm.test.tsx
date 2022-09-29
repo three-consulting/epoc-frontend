@@ -18,7 +18,7 @@ import { User } from "firebase/auth"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 import { checkTestRequestBodyRequiredFields } from "../../util"
 
-const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/timesheet-entry`
+const customerEndpointURL = `${NEXT_PUBLIC_API_URL}/timesheet-entries`
 const bodySpy = spy((body) => body)
 const pathSpy = spy((path) => path)
 
@@ -93,6 +93,7 @@ test("a timesheet with the required fields only can be submitted", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
+            date="2022-06-09"
             dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
@@ -115,6 +116,7 @@ test("a timesheet with all fields can be submitted", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
+            date="2022-06-09"
             dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
@@ -140,6 +142,7 @@ test("afterSubmit is invoked with the correct data", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
+            date="2022-06-09"
             dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
@@ -162,6 +165,7 @@ test("onCancel is invoked", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
+            date="2022-06-09"
             dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
@@ -179,6 +183,7 @@ test("a required field cannot be missing", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
+            date="2022-06-09"
             dates={[new Date("2022-07-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}

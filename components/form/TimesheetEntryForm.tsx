@@ -1,5 +1,4 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import {
     Task,
     TimeCategory,
@@ -20,6 +19,8 @@ import ErrorAlert from "../common/ErrorAlert"
 import { FromButtons } from "../common/FormFields"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 import { isError } from "lodash"
+import { usePost, usePut } from "@/lib/hooks/swrInterface"
+import { jsDateToShortISODate } from "@/lib/utils/date"
 
 interface TimesheetEntryFormBaseProps extends FormBase<TimesheetEntry> {
     timesheetEntry?: TimesheetEntry
@@ -31,9 +32,11 @@ interface TimesheetEntryFormBaseProps extends FormBase<TimesheetEntry> {
     onSubmit: (entry: TimesheetEntry) => void
 }
 
-interface CreateTimesheetEntryFormProps extends FormBase<TimesheetEntry> {
+interface CreateTimesheetEntryFormProps
+    extends FormBase<TimesheetEntry | TimesheetEntry[]> {
     timesheet: Timesheet
     projectId: number
+    date: string
     dates: Date[]
     timeCategories: TimeCategory[]
     tasks: Task[]
@@ -80,18 +83,18 @@ const TimesheetEntryForm = ({
     timesheetEntry,
     timesheet,
     date,
-    /* dates, */
     timeCategories,
     tasks,
     onSubmit,
     onCancel,
 }: TimesheetEntryFormBaseProps): JSX.Element => {
     const [timesheetEntryFields, setTimesheetEntryFields] =
-        useState<TimesheetEntryFields>(timesheetEntry || { timesheet })
+        useState<TimesheetEntryFields>(timesheetEntry || { timesheet, date })
 
     const resetForm = () => {
         setTimesheetEntryFields({
             ...timesheetEntryFields,
+            date,
         })
     }
 
@@ -257,7 +260,7 @@ export const EditTimesheetEntryForm = (
     props: EditTimesheetEntryFormProps
 ): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { put } = useUpdateTimesheetEntries(user)
+    const { put } = usePut("timesheet-entry", user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(error.toString())
@@ -292,15 +295,20 @@ export const CreateTimesheetEntryForm = (
     props: CreateTimesheetEntryFormProps
 ): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { post } = useUpdateTimesheetEntries(user)
+    const { post } = usePost("timesheet-entries", user)
+    const { dates } = props
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(error.toString())
 
     const onSubmit = async (entry: TimesheetEntry) => {
         try {
-            const newTimesheetEntry = await post(entry, errorHandler)
-            return props.afterSubmit && props.afterSubmit(newTimesheetEntry)
+            const newTimesheetEntries = dates.map((date) => ({
+                ...entry,
+                date: jsDateToShortISODate(date),
+            }))
+            const response = await post(newTimesheetEntries, errorHandler)
+            return props.afterSubmit && props.afterSubmit(response)
         } catch (error) {
             errorHandler(error as Error)
             return null
