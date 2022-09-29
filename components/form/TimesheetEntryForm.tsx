@@ -176,6 +176,7 @@ const TimesheetEntryForm = ({
                             setQuantityString(event.target.value)
                         }
                         data-testid={"form-field-quantity"}
+                        type="number"
                     />
                 </FormControl>
                 <FormControl

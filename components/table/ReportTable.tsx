@@ -19,6 +19,7 @@ import {
     FormHelperText,
 } from "@chakra-ui/react"
 import { toLocalDisplayDate } from "@/lib/utils/date"
+import { round } from "lodash"
 
 interface DateInputProps {
     startDate: string
@@ -76,13 +77,19 @@ interface ReportTableProps {
 }
 
 const entriesQuantitySum = (entries: TimesheetEntry[]) =>
-    entries.reduce((total, currentItem) => total + currentItem.quantity, 0)
+    round(
+        entries.reduce((total, currentItem) => total + currentItem.quantity, 0),
+        2
+    )
 
 const totalIncome = (entries: TimesheetEntry[]) =>
-    entries.reduce(
-        (total, currentItem) =>
-            total + currentItem.timesheet.rate * currentItem.quantity,
-        0
+    round(
+        entries.reduce(
+            (total, currentItem) =>
+                total + currentItem.timesheet.rate * currentItem.quantity,
+            0
+        ),
+        2
     )
 
 const entriesByProject = (entries: TimesheetEntry[], projectId: number) =>
@@ -196,8 +203,8 @@ function Total({
         <p>
             The total number of hours {employeeName && `by ${employeeName}`}{" "}
             between {toLocalDisplayDate(startDate)} and{" "}
-            {toLocalDisplayDate(endDate)} is {totalQuantity}. The projected
-            income in this interval is {totalIncome(entries)}€.
+            {toLocalDisplayDate(endDate)} is {round(totalQuantity, 2)}. The
+            projected income in this interval is {totalIncome(entries)}€.
         </p>
     ) : (
         <p>
