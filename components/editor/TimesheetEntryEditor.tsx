@@ -211,7 +211,7 @@ interface WeeklyHoursProps {
     dates: [Date] | [Date, Date]
 }
 
-function WeeklyHours({ entries, dates }: WeeklyHoursProps): JSX.Element {
+const WeeklyHours = ({ entries, dates }: WeeklyHoursProps): JSX.Element => {
     const total = sum(
         entries
             .filter(
@@ -236,7 +236,7 @@ interface monthlyHoursProps {
     dates: [Date] | [Date, Date]
 }
 
-function MonthlyHours({ entries, dates }: monthlyHoursProps): JSX.Element {
+const MonthlyHours = ({ entries, dates }: monthlyHoursProps): JSX.Element => {
     const total = sum(
         entries
             .filter(
@@ -261,13 +261,16 @@ const isDates = (dates: unknown): dates is [Date, Date] =>
     dates[0] !== null &&
     dates[1] !== null
 
+const isNullableDates = (dates: unknown): dates is [Date | null, Date | null] =>
+    Array.isArray(dates) && dates.length === 2
+
 const isDate = (dates: unknown): dates is [Date] | [Date, null] =>
     Array.isArray(dates) &&
     ((dates.length === 1 && dates[0] !== null) ||
         (dates.length === 2 && dates[0] !== null && dates[1] === null))
 
-const datesValue = (dates: unknown): Date | [Date, Date] => {
-    if (isDates(dates)) {
+const datesValue = (dates: unknown): Date | [Date | null, Date | null] => {
+    if (isNullableDates(dates)) {
         return dates
     }
     if (isDate(dates)) {
@@ -286,12 +289,12 @@ interface TimesheetEntryEditorProps {
     tasks: Task[]
 }
 
-export function TimesheetEntryEditor({
+export const TimesheetEntryEditor = ({
     entries,
     timesheets,
     timeCategories,
     tasks,
-}: TimesheetEntryEditorProps): JSX.Element {
+}: TimesheetEntryEditorProps): JSX.Element => {
     const [dates, setDates] = useState<[Date] | [Date | null, Date | null]>([
         null,
         null,
