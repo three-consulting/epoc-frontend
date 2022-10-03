@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { Flex, ListItem, UnorderedList } from "@chakra-ui/layout"
 import {
     Customer,
@@ -20,6 +20,10 @@ import {
 } from "@chakra-ui/react"
 import { toLocalDisplayDate } from "@/lib/utils/date"
 import { round } from "lodash"
+import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { getText } from "@/lib/utils/fetch"
+import { downloadFile } from "@/lib/utils/common"
 
 interface DateInputProps {
     startDate: string
@@ -142,13 +146,28 @@ function DateInput({ setStartDate, setEndDate }: DateInputProps): JSX.Element {
     const [errorMessage, setErrorMessage] = useState<string>("Invalid dates")
 
     const handleOnClick = () => {
-        if (newEndDate > newStartDate) {
+        if (isInvalid) {
+            setErrorMessage("Invalid dates")
+        } else {
             setStartDate(newStartDate)
             setEndDate(newEndDate)
-        } else {
-            setErrorMessage("Invalid dates")
-            throw Error(errorMessage)
         }
+    }
+
+    const { user } = useContext(UserContext)
+
+    const handleCsvExportClick = async () => {
+        const res = await getText(
+            `${NEXT_PUBLIC_API_URL}/timesheet-entry/csv-export`,
+            user,
+            {
+                startDate: newStartDate,
+                endDate: newEndDate,
+            }
+        )
+        const blob = new Blob([res], { type: "text/csv;charset=utf-8" })
+        const fileName = `entries_${newStartDate}_${newEndDate}.csv`
+        downloadFile(blob, fileName)
     }
 
     return (
@@ -181,13 +200,25 @@ function DateInput({ setStartDate, setEndDate }: DateInputProps): JSX.Element {
                 </FormControl>
             </InputGroup>
             <div style={{ marginBottom: "10px" }}></div>
-            <Button
-                colorScheme={"blue"}
-                alignSelf={"flex-start"}
-                onClick={handleOnClick}
-            >
-                Search
-            </Button>
+            <div>
+                <Button
+                    colorScheme={"blue"}
+                    alignSelf={"flex-start"}
+                    onClick={handleOnClick}
+                    disabled={isInvalid}
+                    style={{ marginRight: "10px" }}
+                >
+                    Search
+                </Button>
+                <Button
+                    colorScheme={"green"}
+                    alignSelf={"flex-start"}
+                    onClick={handleCsvExportClick}
+                    disabled={isInvalid}
+                >
+                    Export as .csv
+                </Button>
+            </div>
         </>
     )
 }

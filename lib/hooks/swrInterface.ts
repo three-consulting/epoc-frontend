@@ -8,7 +8,7 @@ import {
     UpdateHookArgs,
     updateToApiUpdateResponse,
 } from "../types/hooks"
-import { del, get, pathToUrl, post, put } from "../utils/fetch"
+import { del, pathToUrl, getJSON, post, put } from "../utils/fetch"
 import { useMatchMutate } from "../utils/matchMutate"
 
 export type Endpoint =
@@ -44,7 +44,7 @@ export const useGet = <T>(
     return swrToApiGetResponse(
         useSWR<T, Error>(
             () => key,
-            () => get(endpoint ?? "", user, params)
+            () => getJSON(endpoint ?? "", user, params)
         )
     )
 }
