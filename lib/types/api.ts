@@ -39,6 +39,9 @@ export interface paths {
     put: operations["updateCustomerForId"];
     post: operations["createCustomer"];
   };
+  "/timesheet-entries": {
+    post: operations["createTimesheetEntries"];
+  };
   "/timesheet/{timesheetId}": {
     get: operations["getTimesheetForId"];
     delete: operations["deleteTimesheetForId"];
@@ -478,6 +481,21 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["CustomerDTO"];
+      };
+    };
+  };
+  createTimesheetEntries: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TimesheetEntryDTO"][];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TimesheetEntryDTO"][];
       };
     };
   };

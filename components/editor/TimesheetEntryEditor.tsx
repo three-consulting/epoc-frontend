@@ -7,7 +7,7 @@ import {
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
 import { Heading, Link, Select } from "@chakra-ui/react"
-import { sum } from "lodash"
+import { round, sum } from "lodash"
 import React, { useContext, useState } from "react"
 import Calendar, { ViewCallbackProperties } from "react-calendar"
 import {
@@ -57,7 +57,8 @@ const TimesheetEntryRow = ({
                     fontWeight: "bold",
                 }}
             >
-                {entry.quantity} Hours on {entry.timesheet.project.name}
+                {round(entry.quantity, 2)} Hours on{" "}
+                {entry.timesheet.project.name}
             </Link>
             {edit && projectId && id && (
                 <>
@@ -192,7 +193,7 @@ function WeeklyHours({ entries, date }: WeeklyHoursProps): JSX.Element {
 
     return (
         <p>
-            Hours this week: <b>{total}</b>
+            Hours this week: <b>{round(total, 2)}</b>
         </p>
     )
 }
@@ -216,7 +217,7 @@ function MonthlyHours({ entries, date }: monthlyHoursProps): JSX.Element {
     )
     return (
         <p>
-            Hours this month: <b>{total}</b>
+            Hours this month: <b>{round(total, 2)}</b>
         </p>
     )
 }
