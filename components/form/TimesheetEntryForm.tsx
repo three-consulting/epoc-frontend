@@ -19,7 +19,7 @@ import ErrorAlert from "../common/ErrorAlert"
 import { FromButtons } from "../common/FormFields"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 import { isError } from "lodash"
-import { usePost, usePut } from "@/lib/hooks/swrInterface"
+import { useUpdate } from "@/lib/hooks/swrInterface"
 import { jsDateToShortISODate } from "@/lib/utils/date"
 
 interface TimesheetEntryFormBaseProps extends FormBase<TimesheetEntry> {
@@ -260,7 +260,7 @@ export const EditTimesheetEntryForm = (
     props: EditTimesheetEntryFormProps
 ): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { put } = usePut("timesheet-entry", user)
+    const { put } = useUpdate("timesheet-entry", user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(error.toString())
@@ -295,7 +295,7 @@ export const CreateTimesheetEntryForm = (
     props: CreateTimesheetEntryFormProps
 ): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { post } = usePost("timesheet-entries", user)
+    const { post } = useUpdate("timesheet-entries", user)
     const { dates } = props
 
     const [errorMessage, setErrorMessage] = useState<string>("")
