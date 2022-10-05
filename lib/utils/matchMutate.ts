@@ -9,13 +9,13 @@ export const useMatchMutate = () => {
             )
         }
 
-        const keys = []
+        const keys: string[] = []
 
-        for (const key in cache.keys()) {
-            if (matcher.test(key)) {
-                keys.push(key)
+        Array.from(cache.keys()).forEach((element: string) => {
+            if (matcher.test(element)) {
+                keys.push(element)
             }
-        }
+        })
 
         const mutations = keys.map((key) => mutate(key, ...args))
         return Promise.all(mutations)
