@@ -1,6 +1,18 @@
 import { User } from "firebase/auth"
 
-async function http<T>(
+async function httpText(path: string, user: User): Promise<string> {
+    const jwt = await user.getIdToken()
+    const request = new Request(path, {
+        headers: {
+            "Content-Type": "text/plain",
+            Authorization: `Bearer ${jwt}`,
+        },
+    })
+    const response = await fetch(request)
+    return response.text()
+}
+
+async function httpJSON<T>(
     path: string,
     user: User,
     config?: RequestInit
@@ -34,7 +46,16 @@ export const pathToUrl = (
     return url
 }
 
-export function get<T>(
+export function getText(
+    path: string,
+    user: User,
+    params?: Record<string, string | number>
+) {
+    const url = pathToUrl(path, params)
+    return httpText(url.href, user)
+}
+
+export function getJSON<T>(
     path: string,
     user: User,
     params?: Record<string, string | number>,
@@ -42,7 +63,7 @@ export function get<T>(
 ): Promise<T> {
     const url = pathToUrl(path, params)
     const init = { method: "get", ...config }
-    return http<T>(url.href, user, init)
+    return httpJSON<T>(url.href, user, init)
 }
 
 export function post<T, U>(
@@ -58,7 +79,7 @@ export function post<T, U>(
         ...config,
     }
     const url = pathToUrl(path, params)
-    return http<U>(url.href, user, init)
+    return httpJSON<U>(url.href, user, init)
 }
 
 export function put<T, U>(
@@ -73,7 +94,7 @@ export function put<T, U>(
         ...config,
     }
     const url = pathToUrl(path, {})
-    return http<U>(url.href, user, init)
+    return httpJSON<U>(url.href, user, init)
 }
 
 // delete is a reserved keyword
@@ -87,5 +108,5 @@ export function del<T>(
         ...config,
     }
     const url = pathToUrl(path, {})
-    return http<T>(url.href, user, init)
+    return httpJSON<T>(url.href, user, init)
 }

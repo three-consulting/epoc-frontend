@@ -50,6 +50,9 @@ export interface paths {
     get: operations["getTimesheetEntryForId"];
     delete: operations["deleteTimesheetEntryForId"];
   };
+  "/timesheet-entry/csv-export": {
+    get: operations["exportTimesheetEntriesAsCsv"];
+  };
   "/time-category/{timeCategoryId}": {
     get: operations["getTimeCategoryForId"];
     delete: operations["deleteTimeCategoryForId"];
@@ -544,6 +547,18 @@ export interface operations {
     parameters: {
       path: {
         timesheetEntryId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: unknown;
+    };
+  };
+  exportTimesheetEntriesAsCsv: {
+    parameters: {
+      query: {
+        startDate: string;
+        endDate: string;
       };
     };
     responses: {
