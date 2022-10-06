@@ -2,18 +2,20 @@ import { useSWRConfig } from "swr"
 
 export const useMatchMutate = () => {
     const { cache, mutate } = useSWRConfig()
-    return (matcher: RegExp, ...args: unknown[]) => {
+    return (endpoint: string, ...args: unknown[]) => {
         if (!(cache instanceof Map)) {
             throw new Error(
                 "matchMutate requires the cache provider to be a Map instance"
             )
         }
 
+        const matcher = new RegExp(`^/${endpoint}([/|?].+)?`)
+
         const keys: string[] = []
 
-        Array.from(cache.keys()).forEach((element: string) => {
-            if (matcher.test(element)) {
-                keys.push(element)
+        Array.from(cache.keys()).forEach((key: string) => {
+            if (matcher.test(key) || key === endpoint) {
+                keys.push(key)
             }
         })
 

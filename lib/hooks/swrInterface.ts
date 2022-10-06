@@ -22,9 +22,6 @@ export type Endpoint =
     | `time-category`
     | `employee-sync`
 
-export const endpointRegex = (endpoint: Endpoint): RegExp =>
-    new RegExp(`^/${endpoint}([/|?].+)?`)
-
 const prefixEndpoint = (endpoint: Endpoint) =>
     `${NEXT_PUBLIC_API_URL}/${endpoint}`
 export const listEndpoint = (endpoint: Endpoint): string =>
@@ -50,9 +47,14 @@ export const useGet = <T>(
     )
 }
 
-export const useUpdate = (endpoint: Endpoint, user: User) => {
+export const useUpdate = (
+    endpoint: Endpoint,
+    user: User,
+    refreshEndpoint?: string
+) => {
     const matchMutate = useMatchMutate()
-    const refresh = () => matchMutate(endpointRegex(endpoint))
+    const refresh = () =>
+        matchMutate(refreshEndpoint ? refreshEndpoint : endpoint)
 
     return {
         post: async <T>(...[item, errorHandler]: UpdateHookArgs<T>) => {

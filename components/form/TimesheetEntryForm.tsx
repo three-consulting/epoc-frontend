@@ -295,7 +295,12 @@ export const CreateTimesheetEntryForm = (
     props: CreateTimesheetEntryFormProps
 ): JSX.Element => {
     const { user } = useContext(UserContext)
-    const { post } = useUpdate("timesheet-entries", user)
+    const asciiEmail = user.email?.replace("@", "%40")
+    const start = "0000-01-01"
+    const end = "9999-01-01"
+    const refreshUrl = `/timesheet-entry?startDate=${start}&endDate=${end}&email=${asciiEmail}}`
+
+    const { post } = useUpdate("timesheet-entries", user, refreshUrl)
     const { dates } = props
 
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -314,6 +319,7 @@ export const CreateTimesheetEntryForm = (
             return null
         }
     }
+
     return (
         <>
             <TimesheetEntryForm {...props} onSubmit={onSubmit} />
