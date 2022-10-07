@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
@@ -10,22 +10,12 @@ import {
     useEmployees,
     useProjects,
     useTasks,
-    useTimesheetEntries,
     useTimesheets,
 } from "@/lib/hooks/useList"
-import { DateTime } from "luxon"
-import { dateTimeToShortISODate } from "@/lib/utils/date"
 
 const Report: NextPage = () => {
     const { user } = useContext(UserContext)
 
-    const firstDay = dateTimeToShortISODate(DateTime.now().startOf("month"))
-    const lastDay = dateTimeToShortISODate(DateTime.now().endOf("month"))
-
-    const [startDate, setStartDate] = useState<string>(firstDay)
-    const [endDate, setEndDate] = useState<string>(lastDay)
-
-    const reportsResponse = useTimesheetEntries(user, startDate, endDate)
     const customersResponse = useCustomers(user)
     const projectsResponse = useProjects(user)
     const employeeResponse = useEmployees(user)
@@ -33,7 +23,6 @@ const Report: NextPage = () => {
     const tasksResponse = useTasks(user)
 
     const isLoading =
-        reportsResponse.isLoading ||
         customersResponse.isLoading ||
         projectsResponse.isLoading ||
         employeeResponse.isLoading ||
@@ -45,12 +34,6 @@ const Report: NextPage = () => {
             <Heading fontWeight="black" margin="1rem 0rem">
                 Reports
             </Heading>
-            {reportsResponse.isError && (
-                <ErrorAlert
-                    title={reportsResponse.errorMessage}
-                    message={reportsResponse.errorMessage}
-                />
-            )}
             {customersResponse.isError && (
                 <ErrorAlert
                     title={customersResponse.errorMessage}
@@ -82,23 +65,17 @@ const Report: NextPage = () => {
                 />
             )}
             {isLoading && <Loading />}
-            {reportsResponse.isSuccess &&
-                customersResponse.isSuccess &&
+            {customersResponse.isSuccess &&
                 projectsResponse.isSuccess &&
                 employeeResponse.isSuccess &&
                 timesheetsResponse.isSuccess &&
                 tasksResponse.isSuccess && (
                     <ReportTable
-                        entries={reportsResponse.data}
-                        startDate={startDate}
-                        endDate={endDate}
                         customers={customersResponse.data}
                         projects={projectsResponse.data}
                         employees={employeeResponse.data}
                         timesheets={timesheetsResponse.data}
                         tasks={tasksResponse.data}
-                        setStartDate={setStartDate}
-                        setEndDate={setEndDate}
                     />
                 )}
         </div>
