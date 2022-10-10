@@ -18,12 +18,15 @@ import {
     FormErrorMessage,
     FormHelperText,
 } from "@chakra-ui/react"
-import { toLocalDisplayDate } from "@/lib/utils/date"
+import { dateTimeToShortISODate, toLocalDisplayDate } from "@/lib/utils/date"
 import { round } from "lodash"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { getText } from "@/lib/utils/fetch"
 import { downloadFile } from "@/lib/utils/common"
+import { useTimesheetEntries } from "@/lib/hooks/useList"
+import { DateTime } from "luxon"
+import ErrorAlert from "../common/ErrorAlert"
 
 interface DateInputProps {
     startDate: string
@@ -68,16 +71,11 @@ interface EmployeeHoursRowProps {
 }
 
 interface ReportTableProps {
-    entries: TimesheetEntry[]
     customers: Customer[]
     projects: Project[]
     employees: Employee[]
     timesheets: Timesheet[]
     tasks: Task[]
-    startDate: string
-    endDate: string
-    setStartDate: React.Dispatch<string>
-    setEndDate: React.Dispatch<string>
 }
 
 const entriesQuantitySum = (entries: TimesheetEntry[]) =>
@@ -132,23 +130,26 @@ const entriesByTask = (entries: TimesheetEntry[], taskId: number) =>
 const taskByProject = (tasks: Task[], projectId: number) =>
     tasks.filter((task) => task.project.id === projectId)
 
-function DateInput({ setStartDate, setEndDate }: DateInputProps): JSX.Element {
-    const [newStartDate, setNewStartDate] = useState<string>("")
+function DateInput({
+    setStartDate,
+    setEndDate,
+    startDate,
+    endDate,
+}: DateInputProps): JSX.Element {
+    const [newStartDate, setNewStartDate] = useState(startDate)
+    const [newEndDate, setNewEndDate] = useState(endDate)
+
     const handleStartDateChange = (event: React.FormEvent<HTMLInputElement>) =>
         setNewStartDate(event.currentTarget.value)
 
-    const [newEndDate, setNewEndDate] = useState<string>("")
     const handleEndDateChange = (event: React.FormEvent<HTMLInputElement>) =>
         setNewEndDate(event.currentTarget.value)
 
-    const isInvalid = newEndDate < newStartDate
-
-    const [errorMessage, setErrorMessage] = useState<string>("Invalid dates")
+    const isInvalid = newEndDate < newStartDate || !newEndDate || !newStartDate
+    const isUntouched = newEndDate === "" || newStartDate === ""
 
     const handleOnClick = () => {
-        if (isInvalid) {
-            setErrorMessage("Invalid dates")
-        } else {
+        if (!isInvalid) {
             setStartDate(newStartDate)
             setEndDate(newEndDate)
         }
@@ -161,12 +162,12 @@ function DateInput({ setStartDate, setEndDate }: DateInputProps): JSX.Element {
             `${NEXT_PUBLIC_API_URL}/timesheet-entry/csv-export`,
             user,
             {
-                startDate: newStartDate,
-                endDate: newEndDate,
+                startDate,
+                endDate,
             }
         )
         const blob = new Blob([res], { type: "text/csv;charset=utf-8" })
-        const fileName = `entries_${newStartDate}_${newEndDate}.csv`
+        const fileName = `entries_${startDate}_${endDate}.csv`
         downloadFile(blob, fileName)
     }
 
@@ -174,26 +175,26 @@ function DateInput({ setStartDate, setEndDate }: DateInputProps): JSX.Element {
         <>
             <b>Set time interval</b>
             <InputGroup>
-                <FormControl isInvalid={isInvalid}>
+                <FormControl isInvalid={isInvalid && !isUntouched}>
                     <Input
                         type={"date"}
                         value={newStartDate}
                         onChange={handleStartDateChange}
                     ></Input>
                     {isInvalid ? (
-                        <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                        <FormErrorMessage>Invalid dates</FormErrorMessage>
                     ) : (
                         <FormHelperText>Interval start</FormHelperText>
                     )}
                 </FormControl>
-                <FormControl isInvalid={isInvalid}>
+                <FormControl isInvalid={isInvalid && !isUntouched}>
                     <Input
                         type={"date"}
                         value={newEndDate}
                         onChange={handleEndDateChange}
                     ></Input>
                     {isInvalid ? (
-                        <FormErrorMessage>{errorMessage}</FormErrorMessage>
+                        <FormErrorMessage>Invalid dates</FormErrorMessage>
                     ) : (
                         <FormHelperText>Intrerval end</FormHelperText>
                     )}
@@ -344,17 +345,23 @@ const EmployeeHoursRow = ({
     )
 
 function ReportTable({
-    entries: allEntries,
     customers: allCustomers,
     projects: allProjects,
     employees,
     tasks,
     timesheets,
-    startDate,
-    endDate,
-    setStartDate,
-    setEndDate,
 }: ReportTableProps): JSX.Element {
+    const { user } = useContext(UserContext)
+
+    const firstDay = dateTimeToShortISODate(DateTime.now().startOf("month"))
+    const lastDay = dateTimeToShortISODate(DateTime.now().endOf("month"))
+
+    const [startDate, setStartDate] = useState<string>(firstDay)
+    const [endDate, setEndDate] = useState<string>(lastDay)
+
+    const reportsResponse = useTimesheetEntries(user, startDate, endDate)
+    const allEntries = reportsResponse.isSuccess ? reportsResponse.data : []
+
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>()
     const handleEmployeeChange = (
         event: React.FormEvent<HTMLSelectElement>
@@ -387,7 +394,12 @@ function ReportTable({
         ? entriesByEmployee(allEntries, selectedEmployee.id)
         : allEntries
 
-    return (
+    return reportsResponse.isError ? (
+        <ErrorAlert
+            title={reportsResponse.errorMessage}
+            message={reportsResponse.errorMessage}
+        />
+    ) : (
         <Flex
             flexDirection="column"
             backgroundColor="white"
