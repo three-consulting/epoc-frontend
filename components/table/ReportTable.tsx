@@ -33,6 +33,7 @@ interface DateInputProps {
     endDate: string
     setStartDate: React.Dispatch<string>
     setEndDate: React.Dispatch<string>
+    selectedEmployee?: Employee
 }
 
 interface TotalHoursProps {
@@ -135,6 +136,7 @@ function DateInput({
     setEndDate,
     startDate,
     endDate,
+    selectedEmployee,
 }: DateInputProps): JSX.Element {
     const [newStartDate, setNewStartDate] = useState(startDate)
     const [newEndDate, setNewEndDate] = useState(endDate)
@@ -162,8 +164,13 @@ function DateInput({
             `${NEXT_PUBLIC_API_URL}/timesheet-entry/csv-export`,
             user,
             {
-                startDate,
-                endDate,
+                ...(selectedEmployee?.email && {
+                    email: selectedEmployee?.email,
+                }),
+                ...{
+                    startDate,
+                    endDate,
+                },
             }
         )
         const blob = new Blob([res], { type: "text/csv;charset=utf-8" })
@@ -413,6 +420,7 @@ function ReportTable({
                 endDate={endDate}
                 setStartDate={setStartDate}
                 setEndDate={setEndDate}
+                selectedEmployee={selectedEmployee}
             ></DateInput>
             <div style={{ marginBottom: "20px" }}></div>
             <Select
