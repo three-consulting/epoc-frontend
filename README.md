@@ -13,4 +13,6 @@ Requirements:
 - docker installed (compose is included in latest versions)
     - OBS! Some (linux) users might have to add `docker` into user groups. [Docker post installation](https://docs.docker.com/engine/install/linux-postinstall/)
 
-To run the app with backend locally, run `yarn dev-local`.
+To run the app with containerized backend and db locally, run `yarn dev-local` (starts local frontend, backend and db)
+
+To run the app with local frontend and separate backend, run `yarn dev-local-frontend` (sarts only frontend)
