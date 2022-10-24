@@ -96,12 +96,14 @@ test("a timesheet with the required fields only can be submitted", async () => {
         <>
             {testTimesheetEntry.id && (
                 <EditTimesheetEntryForm
-                    entry={testTimesheetEntry}
+                    id={testTimesheetEntry.id}
+                    timesheetEntry={testTimesheetEntry}
                     timesheet={testTimesheet}
                     projectId={1}
-                    date={"2022-07-09"}
+                    date={"2022-06-09"}
                     timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
+                    setTimesheetEntries={(entries) => entries}
                 />
             )}
         </>
@@ -127,12 +129,14 @@ test("a timesheet with all fields can be submitted", async () => {
         <>
             {testTimesheetEntry.id && (
                 <EditTimesheetEntryForm
-                    entry={testTimesheetEntry}
+                    id={testTimesheetEntry.id}
+                    timesheetEntry={testTimesheetEntry}
                     timesheet={testTimesheet}
                     projectId={1}
-                    date={"2022-07-09"}
+                    date={"2022-06-09"}
                     timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
+                    setTimesheetEntries={(entries) => entries}
                 />
             )}
         </>
@@ -161,13 +165,15 @@ test("afterSubmit is invoked with the correct data", async () => {
         <>
             {testTimesheetEntry.id && (
                 <EditTimesheetEntryForm
-                    entry={testTimesheetEntry}
+                    id={testTimesheetEntry.id}
+                    timesheetEntry={testTimesheetEntry}
                     timesheet={testTimesheet}
                     projectId={1}
-                    date={"2022-07-09"}
+                    date={"2022-06-09"}
                     timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
                     afterSubmit={afterSubmitSpy}
+                    setTimesheetEntries={(entries) => entries}
                 />
             )}
         </>
@@ -192,13 +198,15 @@ test("onCancel is invoked", async () => {
         <>
             {testTimesheetEntry.id && (
                 <EditTimesheetEntryForm
-                    entry={testTimesheetEntry}
+                    id={testTimesheetEntry.id}
+                    timesheetEntry={testTimesheetEntry}
                     timesheet={testTimesheet}
                     projectId={1}
-                    date={"2022-07-09"}
+                    date={"2022-06-09"}
                     timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
                     onCancel={onCancelSpy}
+                    setTimesheetEntries={(entries) => entries}
                 />
             )}
         </>
@@ -214,12 +222,14 @@ test("a required field cannot be missing", async () => {
         <>
             {testTimesheetEntry.id && (
                 <EditTimesheetEntryForm
-                    entry={testTimesheetEntry}
+                    id={testTimesheetEntry.id}
+                    timesheetEntry={testTimesheetEntry}
                     timesheet={testTimesheet}
                     projectId={1}
-                    date={"2022-07-09"}
+                    date={"2022-06-09"}
                     timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
+                    setTimesheetEntries={(entries) => entries}
                 />
             )}
         </>
@@ -237,7 +247,7 @@ test("a required field cannot be missing", async () => {
     )
 
     await fillAndSubmitForm(timesheetMissingRequired)
-    expect(bodySpy.callCount).toEqual(1)
-    expect(pathSpy.callCount).toEqual(1)
+    expect(bodySpy.callCount).toEqual(0)
+    expect(pathSpy.callCount).toEqual(0)
     form.unmount()
 })

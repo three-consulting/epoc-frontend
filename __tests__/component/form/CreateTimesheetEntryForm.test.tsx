@@ -93,9 +93,11 @@ test("a timesheet with the required fields only can be submitted", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            date="2022-06-09"
+            dates={[new Date("2022-06-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
+            setTimesheetEntries={(entries) => entries}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
@@ -107,7 +109,7 @@ test("a timesheet with the required fields only can be submitted", async () => {
             testRequestBody(),
             timesheetEntryFieldMetadata
         ) && testRequestBody()
-    ).toStrictEqual(testTimesheetEntryRequiredFields)
+    ).toStrictEqual([testTimesheetEntryRequiredFields])
 })
 
 test("a timesheet with all fields can be submitted", async () => {
@@ -115,9 +117,11 @@ test("a timesheet with all fields can be submitted", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            date="2022-06-09"
+            dates={[new Date("2022-06-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
+            setTimesheetEntries={(entries) => entries}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryAllFields)
@@ -129,7 +133,7 @@ test("a timesheet with all fields can be submitted", async () => {
             testRequestBody(),
             timesheetEntryFieldMetadata
         ) && testRequestBody()
-    ).toStrictEqual(testTimesheetEntryAllFields)
+    ).toStrictEqual([testTimesheetEntryAllFields])
 })
 
 test("afterSubmit is invoked with the correct data", async () => {
@@ -140,10 +144,12 @@ test("afterSubmit is invoked with the correct data", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            date="2022-06-09"
+            dates={[new Date("2022-06-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
             afterSubmit={afterSubmitSpy}
+            setTimesheetEntries={(entries) => entries}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
@@ -152,7 +158,7 @@ test("afterSubmit is invoked with the correct data", async () => {
     expect(afterSubmitSpy.getCalls()[0].args[0]).toStrictEqual({
         isSuccess: true,
         isError: false,
-        data: testTimesheetEntryRequiredFields,
+        data: [testTimesheetEntryRequiredFields],
     })
 })
 
@@ -162,10 +168,12 @@ test("onCancel is invoked", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            date="2022-06-09"
+            dates={[new Date("2022-06-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
             onCancel={onCancelSpy}
+            setTimesheetEntries={(entries) => entries}
         />
     )
     const cancelButton = screen.getByTestId("form-button-cancel")
@@ -179,9 +187,11 @@ test("a required field cannot be missing", async () => {
         <CreateTimesheetEntryForm
             timesheet={testTimesheet}
             projectId={1}
-            date={"2022-07-09"}
+            date="2022-06-09"
+            dates={[new Date("2022-06-09")]}
             timeCategories={[testTimeCategory]}
             tasks={[testTask]}
+            setTimesheetEntries={(entries) => entries}
         />
     )
     const timesheetMissingRequired = Object.assign(

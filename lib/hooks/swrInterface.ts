@@ -18,6 +18,7 @@ export type Endpoint =
     | `task`
     | `timesheet`
     | `timesheet-entry`
+    | `timesheet-entries`
     | `time-category`
     | `employee-sync`
 
