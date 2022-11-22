@@ -1,14 +1,17 @@
 import React, { useContext } from "react"
-import { Box } from "@chakra-ui/layout"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import EmployeeDetail from "@/components/detail/EmployeeDetail"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { Button } from "@chakra-ui/react"
-import Link from "next/link"
 import { useEmployeeDetail } from "@/lib/hooks/useDetail"
+import {
+    useTimesheets,
+    useTimeCategories,
+    useTasks,
+    useTimesheetEntries,
+} from "@/lib/hooks/useList"
 
 type Props = {
     employeeId: number
@@ -17,25 +20,63 @@ type Props = {
 function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
     const { user } = useContext(UserContext)
     const employeeDetailResponse = useEmployeeDetail(employeeId, user)
+    const timeCategoriesResponse = useTimeCategories(user)
+    const tasksResponse = useTasks(user)
+    const timesheetsResponse = useTimesheets(
+        user,
+        undefined,
+        employeeDetailResponse.isSuccess
+            ? employeeDetailResponse.data.email
+            : ""
+    )
+
+    const startDate = "0000-01-01"
+    const endDate = "9999-01-01"
+
+    const timesheetEntriesResponse = useTimesheetEntries(
+        user,
+        startDate,
+        endDate,
+        employeeDetailResponse.isSuccess
+            ? employeeDetailResponse.data.email
+            : ""
+    )
+
+    const isLoading =
+        employeeDetailResponse.isLoading ||
+        timesheetsResponse.isLoading ||
+        timeCategoriesResponse.isLoading ||
+        tasksResponse.isLoading ||
+        timesheetEntriesResponse.isLoading
+
+    const isError =
+        employeeDetailResponse.isError ||
+        timesheetsResponse.isError ||
+        timeCategoriesResponse.isError ||
+        tasksResponse.isError ||
+        timesheetEntriesResponse.isError
+
+    const isSuccess =
+        employeeDetailResponse.isSuccess &&
+        timesheetsResponse.isSuccess &&
+        timeCategoriesResponse.isSuccess &&
+        tasksResponse.isSuccess &&
+        timesheetEntriesResponse.isSuccess
 
     return (
         <div>
-            {employeeDetailResponse.isLoading && <Loading />}
-            {employeeDetailResponse.isError && (
-                <ErrorAlert title="Error" message="Error" />
+            {isError && <ErrorAlert title="Error" message="Error" />}
+            {isLoading && <Loading />}
+            {isSuccess && (
+                <EmployeeDetail
+                    employee={employeeDetailResponse.data}
+                    employeeId={employeeId}
+                    entries={timesheetEntriesResponse.data}
+                    timesheets={timesheetsResponse.data}
+                    timeCategories={timeCategoriesResponse.data}
+                    tasks={tasksResponse.data}
+                />
             )}
-            {employeeDetailResponse.isSuccess ? (
-                <>
-                    <EmployeeDetail employee={employeeDetailResponse.data} />
-                </>
-            ) : (
-                <Box>Not found</Box>
-            )}
-            <Link key={`${employeeId}`} href={`${employeeId}/edit`}>
-                <Button colorScheme="blue" marginTop="1rem">
-                    Edit employee
-                </Button>
-            </Link>
         </div>
     )
 }
