@@ -9,6 +9,7 @@
         "dev": "next dev",
         "dev-local": "export JWT_ISSUER=$(gopass show --password 3/epoc/firebase/dev/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI) && export NEXT_PUBLIC_FIREBASE_API_KEY=$(gopass 3/epoc/firebase/dev/NEXT_PUBLIC_FIREBASE_API_KEY) && export NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$(gopass 3/epoc/firebase/dev/NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN) && export FIREBASE_SERVICE_ACCOUNT_JSON=$(gopass 3/epoc/firebase/dev/sa) && export NEXT_PUBLIC_API_URL=http://localhost:8080 && concurrently yarn:heroku-login yarn:start-server yarn:dev",
         "dev-local-frontend": "export NEXT_PUBLIC_FIREBASE_API_KEY=$(gopass 3/epoc/firebase/dev/NEXT_PUBLIC_FIREBASE_API_KEY) && export NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$(gopass 3/epoc/firebase/dev/NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN) && export NEXT_PUBLIC_API_URL=http://localhost:8080 && concurrently yarn:dev",
+        "dev-heroku": "export NEXT_PUBLIC_FIREBASE_API_KEY=$(gopass 3/epoc/firebase/dev/NEXT_PUBLIC_FIREBASE_API_KEY) && export NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=$(gopass 3/epoc/firebase/dev/NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN) && export NEXT_PUBLIC_API_URL=https://epoc-backend-testing.herokuapp.com && concurrently yarn:dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint && yarn prettier . --check",
