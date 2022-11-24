@@ -59,21 +59,12 @@ export const taskFieldMetadata: Record<string, FieldMetadata> = {
     status: { required: false },
 }
 
-export const timeCategoryFieldMetadata: Record<string, FieldMetadata> = {
-    id: { required: false },
-    name: { required: true },
-    description: { required: false },
-    created: { required: false },
-    updated: { required: false },
-}
-
 export const timesheetEntryFieldMetadata: Record<string, FieldMetadata> = {
     id: { required: false },
     quantity: { required: true },
     date: { required: true },
     description: { required: false },
     timesheet: { required: true },
-    timeCategory: { required: true },
     task: { required: true },
     created: { required: false },
     updated: { required: false },

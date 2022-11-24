@@ -1,9 +1,4 @@
-import {
-    Task,
-    TimeCategory,
-    Timesheet,
-    TimesheetEntry,
-} from "@/lib/types/apiTypes"
+import { Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
 import {
     Box,
@@ -38,7 +33,6 @@ type TimesheetEntryFields = Partial<TimesheetEntry> & {
 
 interface TimesheetEntryFormBaseProps extends FormBase<TimesheetEntry> {
     timesheetEntry?: TimesheetEntry
-    timeCategories: TimeCategory[]
     tasks: Task[]
     timesheetEntryFields: TimesheetEntryFields
     setTimesheetEntryFields: TSetState<TimesheetEntryFields>
@@ -50,7 +44,6 @@ interface CreateTimesheetEntryFormProps
     projectId: number
     date: string
     dates: Date[]
-    timeCategories: TimeCategory[]
     tasks: Task[]
     timesheet: Timesheet
     setTimesheetEntries: TSetState<TimesheetEntry[]>
@@ -61,7 +54,6 @@ interface EditTimesheetEntryFormProps extends FormBase<TimesheetEntry> {
     timesheetEntry: TimesheetEntry
     projectId: number
     date: string
-    timeCategories: TimeCategory[]
     tasks: Task[]
     timesheet: Timesheet
     setTimesheetEntries: TSetState<TimesheetEntry[]>
@@ -70,7 +62,7 @@ interface EditTimesheetEntryFormProps extends FormBase<TimesheetEntry> {
 const validateTimesheetEntryFields = (
     fields: TimesheetEntryFields
 ): TimesheetEntry => {
-    const { timesheet, quantity, timeCategory, date, task } = fields
+    const { timesheet, quantity, date, task } = fields
     if (!timesheet) {
         throw Error(
             "Invalid timesheet entry form: missing required timesheet field"
@@ -79,21 +71,16 @@ const validateTimesheetEntryFields = (
         throw Error(
             "Invalid timesheet entry form: missing required quantity field"
         )
-    } else if (!timeCategory) {
-        throw Error(
-            "Invalid timesheet entry form: missing required timeCategory field"
-        )
     } else if (!date) {
         throw Error("Invalid timesheet entry form: missing required date field")
     } else if (!task) {
         throw Error("Invalid timesheet entry form: missing required task field")
     }
-    return { ...fields, timesheet, quantity, date, timeCategory, task }
+    return { ...fields, timesheet, quantity, date, task }
 }
 
 const TimesheetEntryForm = ({
     timesheetEntry,
-    timeCategories,
     tasks,
     timesheetEntryFields,
     setTimesheetEntryFields,
@@ -129,19 +116,6 @@ const TimesheetEntryForm = ({
                 (taskIterator) => taskIterator.id === Number(id)
             )
             setTimesheetEntryFields((fields) => ({ ...fields, task }))
-        }
-    }
-
-    const handleTimeCategoryChange = (
-        event: React.FormEvent<HTMLSelectElement>
-    ) => {
-        event.preventDefault()
-        const id = event.currentTarget.value
-        if (id) {
-            const timeCategory = timeCategories.find(
-                (timeCategoryIterator) => timeCategoryIterator.id === Number(id)
-            )
-            setTimesheetEntryFields((fields) => ({ ...fields, timeCategory }))
         }
     }
 
@@ -206,29 +180,6 @@ const TimesheetEntryForm = ({
                         {tasks.map((task) => (
                             <option key={`${task.id}`} value={task.id}>
                                 {task.name}
-                            </option>
-                        ))}
-                    </Select>
-                </FormControl>
-                <FormControl
-                    isRequired={
-                        timesheetEntryFieldMetadata.timeCategory.required
-                    }
-                >
-                    <FormLabel>Time Category</FormLabel>
-                    <Select
-                        onChange={handleTimeCategoryChange}
-                        placeholder="Select time category"
-                        marginRight="0.3rem"
-                        value={timesheetEntryFields.timeCategory?.id}
-                        data-testid={"form-field-time-category"}
-                    >
-                        {timeCategories.map((timeCategory) => (
-                            <option
-                                key={`${timeCategory.id}`}
-                                value={timeCategory.id}
-                            >
-                                {timeCategory.name}
                             </option>
                         ))}
                     </Select>

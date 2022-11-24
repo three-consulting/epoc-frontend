@@ -3,7 +3,6 @@ import {
     Employee,
     Project,
     Task,
-    TimeCategory,
     Timesheet,
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
@@ -149,22 +148,11 @@ export const testChangeTask: Task = {
     id: 2,
 }
 
-export const testTimeCategory: TimeCategory = {
-    id: 1,
-    name: "Test name",
-}
-
-export const testChangeTimeCategory: TimeCategory = {
-    id: 2,
-    name: "Another test name",
-}
-
 export const testTimesheetEntry: TimesheetEntry = {
     id: 1,
     quantity: 2,
     date: "2022-06-09",
     timesheet: testTimesheet,
-    timeCategory: testChangeTimeCategory,
     task: testChangeTask,
 }
 
@@ -172,7 +160,6 @@ export const testTimesheetEntryRequiredFields: TimesheetEntry = {
     quantity: 1,
     date: "2022-06-09",
     timesheet: testTimesheet,
-    timeCategory: testTimeCategory,
     task: testTask,
 }
 
@@ -181,6 +168,5 @@ export const testTimesheetEntryAllFields: TimesheetEntry = {
     date: "2022-06-09",
     description: "Test description",
     timesheet: testTimesheet,
-    timeCategory: testTimeCategory,
     task: testTask,
 }

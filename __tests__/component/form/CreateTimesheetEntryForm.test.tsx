@@ -9,7 +9,6 @@ import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
     testTimesheet,
     testTask,
-    testTimeCategory,
     testTimesheetEntryAllFields,
     testTimesheetEntryRequiredFields,
 } from "../../fixtures"
@@ -50,7 +49,6 @@ const isTimesheetEntryKeys = (
             "date",
             "description",
             "timesheet",
-            "timeCategory",
             "task",
             "created",
             "updated",
@@ -79,10 +77,6 @@ const fillAndSubmitForm = async (timesheetEntry: Partial<TimesheetEntry>) => {
         target: { value: timesheetEntry.task?.id },
     })
 
-    fireEvent.change(screen.getByTestId("form-field-time-category"), {
-        target: { value: timesheetEntry.timeCategory?.id },
-    })
-
     await waitFor(() =>
         fireEvent.click(screen.getByTestId("form-button-submit"))
     )
@@ -95,7 +89,6 @@ test("a timesheet with the required fields only can be submitted", async () => {
             projectId={1}
             date="2022-06-09"
             dates={[new Date("2022-06-09")]}
-            timeCategories={[testTimeCategory]}
             tasks={[testTask]}
             setTimesheetEntries={(entries) => entries}
         />
@@ -119,7 +112,6 @@ test("a timesheet with all fields can be submitted", async () => {
             projectId={1}
             date="2022-06-09"
             dates={[new Date("2022-06-09")]}
-            timeCategories={[testTimeCategory]}
             tasks={[testTask]}
             setTimesheetEntries={(entries) => entries}
         />
@@ -146,7 +138,6 @@ test("afterSubmit is invoked with the correct data", async () => {
             projectId={1}
             date="2022-06-09"
             dates={[new Date("2022-06-09")]}
-            timeCategories={[testTimeCategory]}
             tasks={[testTask]}
             afterSubmit={afterSubmitSpy}
             setTimesheetEntries={(entries) => entries}
@@ -170,7 +161,6 @@ test("onCancel is invoked", async () => {
             projectId={1}
             date="2022-06-09"
             dates={[new Date("2022-06-09")]}
-            timeCategories={[testTimeCategory]}
             tasks={[testTask]}
             onCancel={onCancelSpy}
             setTimesheetEntries={(entries) => entries}
@@ -189,7 +179,6 @@ test("a required field cannot be missing", async () => {
             projectId={1}
             date="2022-06-09"
             dates={[new Date("2022-06-09")]}
-            timeCategories={[testTimeCategory]}
             tasks={[testTask]}
             setTimesheetEntries={(entries) => entries}
         />

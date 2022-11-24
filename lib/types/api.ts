@@ -14,11 +14,6 @@ export interface paths {
     put: operations["updateTimesheetEntryForId"];
     post: operations["createTimesheetEntries"];
   };
-  "/time-category": {
-    get: operations["getAllTimeCategories"];
-    put: operations["updateTimeCategoryForId"];
-    post: operations["createTimeCategory"];
-  };
   "/task": {
     get: operations["getTasks"];
     put: operations["updateTaskForId"];
@@ -49,10 +44,6 @@ export interface paths {
   };
   "/timesheet-entry/csv-export": {
     get: operations["exportTimesheetEntriesAsCsv"];
-  };
-  "/time-category/{timeCategoryId}": {
-    get: operations["getTimeCategoryForId"];
-    delete: operations["deleteTimeCategoryForId"];
   };
   "/task/{taskId}": {
     get: operations["getTaskForId"];
@@ -154,16 +145,6 @@ export interface components {
       /** @enum {string} */
       status?: "ACTIVE" | "ARCHIVED";
     };
-    TimeCategoryDTO: {
-      /** Format: int64 */
-      id?: number;
-      name: string;
-      description?: string;
-      /** Format: date-time */
-      created?: string;
-      /** Format: date-time */
-      updated?: string;
-    };
     TimesheetEntryDTO: {
       /** Format: int64 */
       id?: number;
@@ -173,7 +154,6 @@ export interface components {
       date: string;
       description?: string;
       timesheet: components["schemas"]["TimesheetDTO"];
-      timeCategory: components["schemas"]["TimeCategoryDTO"];
       task: components["schemas"]["TaskDTO"];
       /** Format: date-time */
       created?: string;
@@ -276,46 +256,6 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["TimesheetEntryDTO"][];
-      };
-    };
-  };
-  getAllTimeCategories: {
-    responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TimeCategoryDTO"][];
-        };
-      };
-    };
-  };
-  updateTimeCategoryForId: {
-    responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TimeCategoryDTO"];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TimeCategoryDTO"];
-      };
-    };
-  };
-  createTimeCategory: {
-    responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TimeCategoryDTO"];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["TimeCategoryDTO"];
       };
     };
   };
@@ -542,32 +482,6 @@ export interface operations {
         email?: string;
         startDate: string;
         endDate: string;
-      };
-    };
-    responses: {
-      /** OK */
-      200: unknown;
-    };
-  };
-  getTimeCategoryForId: {
-    parameters: {
-      path: {
-        timeCategoryId: number;
-      };
-    };
-    responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TimeCategoryDTO"];
-        };
-      };
-    };
-  };
-  deleteTimeCategoryForId: {
-    parameters: {
-      path: {
-        timeCategoryId: number;
       };
     };
     responses: {

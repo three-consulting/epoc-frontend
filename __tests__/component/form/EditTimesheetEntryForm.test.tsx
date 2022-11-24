@@ -11,8 +11,6 @@ import {
     testTimesheet,
     testTask,
     testChangeTask,
-    testTimeCategory,
-    testChangeTimeCategory,
     testTimesheetEntryAllFields,
     testTimesheetEntryRequiredFields,
 } from "../../fixtures"
@@ -52,7 +50,6 @@ const isTimesheetEntryKeys = (
             "date",
             "description",
             "timesheet",
-            "timeCategory",
             "task",
             "created",
             "updated",
@@ -81,10 +78,6 @@ const fillAndSubmitForm = async (timesheetEntry: Partial<TimesheetEntry>) => {
         target: { value: timesheetEntry.task?.id || "" },
     })
 
-    fireEvent.change(screen.getByTestId("form-field-time-category"), {
-        target: { value: timesheetEntry.timeCategory?.id || "" },
-    })
-
     await waitFor(() =>
         fireEvent.click(screen.getByTestId("form-button-submit"))
     )
@@ -101,7 +94,6 @@ test("a timesheet with the required fields only can be submitted", async () => {
                     timesheet={testTimesheet}
                     projectId={1}
                     date={"2022-06-09"}
-                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
                     setTimesheetEntries={(entries) => entries}
                 />
@@ -134,7 +126,6 @@ test("a timesheet with all fields can be submitted", async () => {
                     timesheet={testTimesheet}
                     projectId={1}
                     date={"2022-06-09"}
-                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
                     setTimesheetEntries={(entries) => entries}
                 />
@@ -170,7 +161,6 @@ test("afterSubmit is invoked with the correct data", async () => {
                     timesheet={testTimesheet}
                     projectId={1}
                     date={"2022-06-09"}
-                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
                     afterSubmit={afterSubmitSpy}
                     setTimesheetEntries={(entries) => entries}
@@ -203,7 +193,6 @@ test("onCancel is invoked", async () => {
                     timesheet={testTimesheet}
                     projectId={1}
                     date={"2022-06-09"}
-                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
                     onCancel={onCancelSpy}
                     setTimesheetEntries={(entries) => entries}
@@ -227,7 +216,6 @@ test("a required field cannot be missing", async () => {
                     timesheet={testTimesheet}
                     projectId={1}
                     date={"2022-06-09"}
-                    timeCategories={[testTimeCategory, testChangeTimeCategory]}
                     tasks={[testTask, testChangeTask]}
                     setTimesheetEntries={(entries) => entries}
                 />
