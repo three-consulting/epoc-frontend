@@ -1,10 +1,4 @@
-import {
-    Employee,
-    Task,
-    TimeCategory,
-    Timesheet,
-    TimesheetEntry,
-} from "@/lib/types/apiTypes"
+import { Employee, Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
 import { toLocalDisplayDate } from "@/lib/utils/date"
 import { Box, Flex, Heading } from "@chakra-ui/layout"
 import { Button } from "@chakra-ui/react"
@@ -17,7 +11,6 @@ type EmployeeDetailProps = {
     employeeId: number
     entries: TimesheetEntry[]
     timesheets: Timesheet[]
-    timeCategories: TimeCategory[]
     tasks: Task[]
 }
 
@@ -26,7 +19,6 @@ const EmployeeDetail = ({
     employeeId,
     entries,
     timesheets,
-    timeCategories,
     tasks,
 }: EmployeeDetailProps): JSX.Element => {
     const { firstName, lastName, email, role, updated, created } = employee
@@ -65,7 +57,6 @@ const EmployeeDetail = ({
                 <TimesheetEntryEditor
                     entries={entries}
                     timesheets={timesheets}
-                    timeCategories={timeCategories}
                     tasks={tasks}
                 ></TimesheetEntryEditor>
             </Flex>

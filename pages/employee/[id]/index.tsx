@@ -8,7 +8,6 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useEmployeeDetail } from "@/lib/hooks/useDetail"
 import {
     useTimesheets,
-    useTimeCategories,
     useTasks,
     useTimesheetEntries,
 } from "@/lib/hooks/useList"
@@ -20,7 +19,6 @@ type Props = {
 function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
     const { user } = useContext(UserContext)
     const employeeDetailResponse = useEmployeeDetail(employeeId, user)
-    const timeCategoriesResponse = useTimeCategories(user)
     const tasksResponse = useTasks(user)
     const timesheetsResponse = useTimesheets(
         user,
@@ -45,21 +43,18 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
     const isLoading =
         employeeDetailResponse.isLoading ||
         timesheetsResponse.isLoading ||
-        timeCategoriesResponse.isLoading ||
         tasksResponse.isLoading ||
         timesheetEntriesResponse.isLoading
 
     const isError =
         employeeDetailResponse.isError ||
         timesheetsResponse.isError ||
-        timeCategoriesResponse.isError ||
         tasksResponse.isError ||
         timesheetEntriesResponse.isError
 
     const isSuccess =
         employeeDetailResponse.isSuccess &&
         timesheetsResponse.isSuccess &&
-        timeCategoriesResponse.isSuccess &&
         tasksResponse.isSuccess &&
         timesheetEntriesResponse.isSuccess
 
@@ -73,7 +68,6 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
                     employeeId={employeeId}
                     entries={timesheetEntriesResponse.data}
                     timesheets={timesheetsResponse.data}
-                    timeCategories={timeCategoriesResponse.data}
                     tasks={tasksResponse.data}
                 />
             )}

@@ -4,7 +4,6 @@ import {
     Employee,
     Project,
     Task,
-    TimeCategory,
     Timesheet,
     TimesheetEntry,
 } from "../types/apiTypes"
@@ -33,9 +32,6 @@ export const useProjects = (user: User): ApiGetResponse<Project[]> =>
 
 export const useEmployees = (user: User): ApiGetResponse<Employee[]> =>
     useGet(user, listEndpoint("employee"))
-
-export const useTimeCategories = (user: User): ApiGetResponse<TimeCategory[]> =>
-    useGet(user, listEndpoint("time-category"))
 
 export const useTasks = (
     user: User,
