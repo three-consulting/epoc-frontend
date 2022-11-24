@@ -4,13 +4,16 @@ import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import EmployeeTable from "@/components/table/EmployeeTable"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useEmployees } from "@/lib/hooks/useList"
 import { ApiGetResponse } from "@/lib/types/hooks"
 import { Employee } from "@/lib/types/apiTypes"
+import { Role } from "@/lib/types/auth"
+import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 
 const Employees: NextPage = () => {
     const { user } = useContext(UserContext)
+    const { role } = useContext(AuthContext)
     const initialEmployeeResponse = useEmployees(user)
 
     const [employeesResponse, setEmployeesResponse] = useState<
@@ -27,6 +30,10 @@ const Employees: NextPage = () => {
             setEmployeesResponse(getLoadedEmployees())
         }
     }, [initialEmployeeResponse?.isSuccess])
+
+    if (role !== Role.ADMIN) {
+        return <AuthErrorAlert />
+    }
 
     return (
         <div>

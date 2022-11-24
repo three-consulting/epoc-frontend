@@ -1,7 +1,7 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import ReportTable from "@/components/table/ReportTable"
 import Loading from "@/components/common/Loading"
 import ErrorAlert from "@/components/common/ErrorAlert"
@@ -12,9 +12,12 @@ import {
     useTasks,
     useTimesheets,
 } from "@/lib/hooks/useList"
+import AuthErrorAlert from "@/components/common/AuthErrorAlert"
+import { Role } from "@/lib/types/auth"
 
 const Report: NextPage = () => {
     const { user } = useContext(UserContext)
+    const { role } = useContext(AuthContext)
 
     const customersResponse = useCustomers(user)
     const projectsResponse = useProjects(user)
@@ -28,6 +31,10 @@ const Report: NextPage = () => {
         employeeResponse.isLoading ||
         timesheetsResponse.isLoading ||
         tasksResponse.isLoading
+
+    if (role !== Role.ADMIN) {
+        return <AuthErrorAlert />
+    }
 
     return (
         <div>

@@ -21,12 +21,14 @@ import {
 import { dateTimeToShortISODate, toLocalDisplayDate } from "@/lib/utils/date"
 import { round } from "lodash"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { getText } from "@/lib/utils/fetch"
 import { downloadFile } from "@/lib/utils/common"
 import { useTimesheetEntries } from "@/lib/hooks/useList"
 import { DateTime } from "luxon"
 import ErrorAlert from "../common/ErrorAlert"
+import { Role } from "@/lib/types/auth"
+import AuthErrorAlert from "../common/AuthErrorAlert"
 
 interface DateInputProps {
     startDate: string
@@ -359,6 +361,7 @@ function ReportTable({
     timesheets,
 }: ReportTableProps): JSX.Element {
     const { user } = useContext(UserContext)
+    const { role } = useContext(AuthContext)
 
     const firstDay = dateTimeToShortISODate(DateTime.now().startOf("month"))
     const lastDay = dateTimeToShortISODate(DateTime.now().endOf("month"))
@@ -366,8 +369,11 @@ function ReportTable({
     const [startDate, setStartDate] = useState<string>(firstDay)
     const [endDate, setEndDate] = useState<string>(lastDay)
 
-    const reportsResponse = useTimesheetEntries(user, startDate, endDate)
-    const allEntries = reportsResponse.isSuccess ? reportsResponse.data : []
+    const reportsResponse =
+        role === Role.ADMIN
+            ? useTimesheetEntries(user, startDate, endDate)
+            : undefined
+    const allEntries = reportsResponse?.isSuccess ? reportsResponse.data : []
 
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>()
     const handleEmployeeChange = (
@@ -401,12 +407,15 @@ function ReportTable({
         ? entriesByEmployee(allEntries, selectedEmployee.id)
         : allEntries
 
-    return reportsResponse.isError ? (
-        <ErrorAlert
-            title={reportsResponse.errorMessage}
-            message={reportsResponse.errorMessage}
-        />
-    ) : (
+    if (!reportsResponse) {
+        return <AuthErrorAlert />
+    }
+
+    if (reportsResponse.isError) {
+        return <ErrorAlert message={reportsResponse.errorMessage} />
+    }
+
+    return (
         <Flex
             flexDirection="column"
             backgroundColor="white"
