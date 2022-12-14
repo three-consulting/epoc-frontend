@@ -27,9 +27,7 @@ import {
 import { isError } from "lodash"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
-type TimesheetEntryFields = Partial<TimesheetEntry> & {
-    timesheet: Timesheet
-}
+type TimesheetEntryFields = Partial<TimesheetEntry>
 
 interface TimesheetEntryFormBaseProps extends FormBase<TimesheetEntry> {
     timesheetEntry?: TimesheetEntry
@@ -59,7 +57,7 @@ interface EditTimesheetEntryFormProps extends FormBase<TimesheetEntry> {
     setTimesheetEntries: TSetState<TimesheetEntry[]>
 }
 
-const validateTimesheetEntryFields = (
+export const validateTimesheetEntryFields = (
     fields: TimesheetEntryFields
 ): TimesheetEntry => {
     const { timesheet, quantity, date, task } = fields

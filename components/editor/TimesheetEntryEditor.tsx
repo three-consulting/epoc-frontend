@@ -23,6 +23,7 @@ import {
     jsDateToShortISODate,
     toLocalDisplayDate,
 } from "@/lib/utils/date"
+import ImportFromCSVModal from "../modal/ImportFromCSVModal"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 
@@ -355,6 +356,8 @@ export const TimesheetEntryEditor = ({
                 tasks={tasks}
                 setTimesheetEntries={setTimesheetEntries}
             />
+            <div style={{ marginBottom: "2rem" }} />
+            <ImportFromCSVModal setTimesheetEntries={setTimesheetEntries} />
         </div>
     )
 }
