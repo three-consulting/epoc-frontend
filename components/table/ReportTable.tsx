@@ -29,6 +29,8 @@ import { DateTime } from "luxon"
 import ErrorAlert from "../common/ErrorAlert"
 import { Role } from "@/lib/types/auth"
 import AuthErrorAlert from "../common/AuthErrorAlert"
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
 
 interface DateInputProps {
     startDate: string
@@ -133,15 +135,27 @@ const entriesByTask = (entries: TimesheetEntry[], taskId: number) =>
 const taskByProject = (tasks: Task[], projectId: number) =>
     tasks.filter((task) => task.project.id === projectId)
 
-function DateInput({
+const formatDate = (date?: unknown) =>
+    typeof date === "string" ? date.split("-").reverse().join(".") : ""
+
+const DateInput = ({
     setStartDate,
     setEndDate,
     startDate,
     endDate,
     selectedEmployee,
-}: DateInputProps): JSX.Element {
+}: DateInputProps): JSX.Element => {
+    const { user } = useContext(UserContext)
+
     const [newStartDate, setNewStartDate] = useState(startDate)
     const [newEndDate, setNewEndDate] = useState(endDate)
+
+    const timesheetsEntries = useTimesheetEntries(
+        user,
+        startDate,
+        endDate,
+        selectedEmployee?.email
+    )
 
     const handleStartDateChange = (event: React.FormEvent<HTMLInputElement>) =>
         setNewStartDate(event.currentTarget.value)
@@ -158,8 +172,6 @@ function DateInput({
             setEndDate(newEndDate)
         }
     }
-
-    const { user } = useContext(UserContext)
 
     const handleCsvExportClick = async () => {
         const res = await getText(
@@ -178,6 +190,65 @@ function DateInput({
         const blob = new Blob([res], { type: "text/csv;charset=utf-8" })
         const fileName = `entries_${startDate}_${endDate}.csv`
         downloadFile(blob, fileName)
+    }
+
+    const handlePdfExportClick = () => {
+        const JsPDF = jsPDF
+        const doc = new JsPDF()
+
+        const totalHours = timesheetsEntries.isSuccess
+            ? timesheetsEntries.data.reduce((prv, crr) => prv + crr.quantity, 0)
+            : 0
+
+        const startX = 14
+
+        doc.setFontSize(24)
+        doc.text("Time Report", startX, 14)
+
+        doc.setFontSize(12)
+        doc.text(
+            `Timeframe: ${formatDate(startDate)} - ${formatDate(endDate)}`,
+            startX,
+            24
+        )
+        doc.text(
+            `Employee: ${selectedEmployee?.firstName ?? "-"} ${
+                selectedEmployee?.lastName ?? "-"
+            }`,
+            startX,
+            29
+        )
+        doc.text(`Email: ${selectedEmployee?.email ?? "-"}`, startX, 34)
+        doc.text(`Total hours: ${totalHours}`, startX, 39)
+
+        const headers = [
+            "Date",
+            "Client",
+            "Project",
+            "Task",
+            "Hours",
+            "Description",
+        ]
+        const data = timesheetsEntries.isSuccess
+            ? timesheetsEntries.data.map((entry) => [
+                  entry.date ? formatDate(entry.date) : "-",
+                  entry.timesheet.project.customer.name ?? "-",
+                  entry.timesheet.project.name ?? "-",
+                  entry.task.name ?? "-",
+                  entry.quantity.toString() ?? "-",
+                  entry.description ?? "-",
+              ])
+            : [headers.map(() => "-")]
+
+        autoTable(doc, {
+            head: [headers],
+            body: data,
+            startY: 50,
+        })
+
+        doc.save(
+            `timereport_${formatDate(startDate)}-${formatDate(endDate)}.pdf`
+        )
     }
 
     return (
@@ -225,8 +296,17 @@ function DateInput({
                     alignSelf={"flex-start"}
                     onClick={handleCsvExportClick}
                     disabled={isInvalid}
+                    style={{ marginRight: "10px" }}
                 >
                     Export as .csv
+                </Button>
+                <Button
+                    colorScheme={"green"}
+                    alignSelf={"flex-start"}
+                    onClick={handlePdfExportClick}
+                    disabled={isInvalid}
+                >
+                    Export as .pdf
                 </Button>
             </div>
         </>
