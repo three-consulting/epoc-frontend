@@ -121,7 +121,7 @@ export interface components {
       /** Format: float */
       rate: number;
       /** Format: int32 */
-      allocation?: number;
+      allocation: number;
       project: components["schemas"]["ProjectDTO"];
       employee: components["schemas"]["EmployeeDTO"];
       /** Format: date-time */

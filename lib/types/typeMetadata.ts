@@ -40,7 +40,7 @@ export const timesheetFieldMetadata: Record<string, FieldMetadata> = {
     name: { required: true },
     description: { required: false },
     rate: { required: true },
-    allocation: { required: false },
+    allocation: { required: true },
     project: { required: true },
     employee: { required: true },
     created: { required: false },
