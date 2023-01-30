@@ -12,7 +12,7 @@ services:
             - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI=${JWT_ISSUER}
             - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI=https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com
     postgres:
-        image: ghcr.io/three-consulting/epoc-db:latest
+        image: ghcr.io/three-consulting/epoc-mock-db:latest
         ports:
             - "5432:5432"
         environment:
