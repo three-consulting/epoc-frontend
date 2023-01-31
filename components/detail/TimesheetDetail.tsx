@@ -1,5 +1,5 @@
 import { Timesheet } from "@/lib/types/apiTypes"
-import { Box, Flex, Heading } from "@chakra-ui/layout"
+import { Flex } from "@chakra-ui/layout"
 import React from "react"
 
 type TimesheetDetailProps = {
@@ -8,7 +8,6 @@ type TimesheetDetailProps = {
 
 function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
     const {
-        name,
         description,
         allocation,
         rate,
@@ -19,17 +18,7 @@ function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
         status,
     } = timesheet
     return (
-        <Flex
-            flexDirection="column"
-            backgroundColor="white"
-            border="1px solid"
-            borderColor="gray.400"
-            borderRadius="0.2rem"
-            padding="1rem 1rem"
-        >
-            <Heading>
-                <Box>{name}</Box>
-            </Heading>
+        <>
             <Flex>Description: {description}</Flex>
             <Flex>Allocation: {allocation}</Flex>
             <Flex>Rate: {rate}€/h</Flex>
@@ -41,7 +30,7 @@ function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
                 Employee: {employee.firstName} {employee.lastName}
             </Flex>
             <Flex>Timesheet status: {status}</Flex>
-        </Flex>
+        </>
     )
 }
 

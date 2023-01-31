@@ -5,7 +5,6 @@ import { FormBase } from "@/lib/types/forms"
 import { projectFieldMetadata } from "@/lib/types/typeMetadata"
 import { Flex } from "@chakra-ui/layout"
 import {
-    Button,
     FormControl,
     FormErrorMessage,
     FormLabel,
@@ -15,7 +14,10 @@ import {
 } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
-import { FromButton, NewCustomerModal } from "../common/FormFields"
+import FormSection from "../common/FormSection"
+import { NewCustomerModal } from "../common/FormFields"
+import FormButtons from "../common/FormButtons"
+import { StyledButton } from "../common/Buttons"
 
 type CreateProjectFormProps = FormBase<Project> & {
     employees: Employee[]
@@ -89,6 +91,16 @@ function ProjectForm({
         }
     }
 
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        try {
+            const project = validateProjectFields(projectFields)
+            onSubmit(project)
+        } catch (error) {
+            errorHandler(error as Error)
+        }
+    }
+
     const invalidEndDate =
         (projectFields.startDate &&
             projectFields.endDate &&
@@ -98,178 +110,161 @@ function ProjectForm({
     const abortSubmission = onCancel && onCancel
 
     return (
-        <Flex
-            flexDirection="column"
-            backgroundColor="white"
-            border="1px solid"
-            borderColor="gray.400"
-            borderRadius="0.2rem"
-            padding="1rem 1rem"
+        <FormSection
+            header={projectFields.name || "-"}
+            errorMessage={errorMessage}
         >
-            <form
-                onSubmit={(event) => {
-                    event.preventDefault()
-                    try {
-                        const project = validateProjectFields(projectFields)
-                        onSubmit(project)
-                    } catch (error) {
-                        errorHandler(error as Error)
-                    }
-                }}
-            >
-                <FormControl isRequired={projectFieldMetadata.name.required}>
-                    <FormLabel>Project name</FormLabel>
-                    <Input
-                        value={projectFields.name || ""}
-                        placeholder="Project name"
-                        onChange={(event) =>
-                            setProjectFields({
-                                ...projectFields,
-                                name: event.target.value,
-                            })
-                        }
-                        data-testid={"form-field-name"}
-                    />
-                </FormControl>
-                <FormControl
-                    isRequired={projectFieldMetadata.description.required}
-                >
-                    <FormLabel>Project description</FormLabel>
-                    <Input
-                        value={projectFields.description || ""}
-                        placeholder="Project description"
-                        onChange={(event) =>
-                            setProjectFields({
-                                ...projectFields,
-                                description: event.target.value,
-                            })
-                        }
-                        data-testid={"form-field-description"}
-                    />
-                </FormControl>
-                <FormControl
-                    isRequired={projectFieldMetadata.startDate.required}
-                >
-                    <FormLabel>Start date</FormLabel>
-                    <Input
-                        type="date"
-                        value={projectFields.startDate || ""}
-                        placeholder="Project start date"
-                        onChange={(event) =>
-                            setProjectFields({
-                                ...projectFields,
-                                startDate: event.target.value,
-                            })
-                        }
-                        data-testid={"form-field-start-date"}
-                    />
-                </FormControl>
-                <FormControl
-                    isRequired={projectFieldMetadata.endDate.required}
-                    isInvalid={invalidEndDate}
-                >
-                    <FormLabel>End date</FormLabel>
-                    <Input
-                        type="date"
-                        value={projectFields.endDate || ""}
-                        placeholder="Project end date"
-                        onChange={(event) =>
-                            setProjectFields({
-                                ...projectFields,
-                                endDate: event.target.value,
-                            })
-                        }
-                        data-testid={"form-field-end-date"}
-                    />
-                    <FormErrorMessage>
-                        End date precedes start date
-                    </FormErrorMessage>
-                </FormControl>
-                <Flex flexDirection="row" justifyContent="center">
+            <Box>
+                <form onSubmit={handleSubmit}>
                     <FormControl
-                        isRequired={projectFieldMetadata.customer.required}
+                        isRequired={projectFieldMetadata.name.required}
                     >
-                        <FormLabel>Customer</FormLabel>
-                        <Flex
-                            flexDirection="row"
-                            justifyContent="space-between"
-                        >
-                            <Select
-                                onChange={handleCustomerChange}
-                                placeholder="Select customer"
-                                marginRight="0.3rem"
-                                value={projectFields.customer?.id}
-                                data-testid={"form-field-customer"}
-                            >
-                                {customers.map((customer) => (
-                                    <option
-                                        key={`${customer.id}`}
-                                        value={customer.id}
-                                    >
-                                        {customer.name}
-                                    </option>
-                                ))}
-                            </Select>
-
-                            <FromButton
-                                buttonName="Add Customer"
-                                onClick={() =>
-                                    setDisplayCreateCustomerForm(true)
-                                }
-                            />
-                            <NewCustomerModal
-                                displayCreateCustomerForm={
-                                    displayCreateCustomerForm
-                                }
-                                setDisplayCreateCustomerForm={
-                                    setDisplayCreateCustomerForm
-                                }
-                            />
-                        </Flex>
+                        <FormLabel>Project name</FormLabel>
+                        <Input
+                            value={projectFields.name || ""}
+                            placeholder="Project name"
+                            onChange={(event) =>
+                                setProjectFields({
+                                    ...projectFields,
+                                    name: event.target.value,
+                                })
+                            }
+                            data-testid={"form-field-name"}
+                        />
                     </FormControl>
-                </Flex>
-                <FormControl
-                    isRequired={projectFieldMetadata.managingEmployee.required}
-                >
-                    <FormLabel>Managing employee</FormLabel>
-                    <Select
-                        onChange={handleEmployeeChange}
-                        placeholder="Select employee"
-                        value={projectFields.managingEmployee?.id}
-                        data-testid={"form-field-managing-employee"}
+                    <FormControl
+                        isRequired={projectFieldMetadata.description.required}
                     >
-                        {employees.map((employee) => (
-                            <option key={employee.id} value={employee.id}>
-                                {`${employee.firstName} ${employee.lastName}`}
-                            </option>
-                        ))}
-                    </Select>
-                </FormControl>
-                <br />
-                <Button
-                    colorScheme="blue"
-                    type="submit"
-                    data-testid={"form-button-submit"}
-                >
-                    Submit
-                </Button>
-                <Button
-                    colorScheme="gray"
-                    type="button"
-                    marginLeft="0.5rem"
-                    onClick={abortSubmission}
-                    data-testid={"form-button-cancel"}
-                >
-                    Cancel
-                </Button>
-                {errorMessage && (
-                    <>
-                        <ErrorAlert />
-                        <Box>{errorMessage}</Box>
-                    </>
-                )}
-            </form>
-        </Flex>
+                        <FormLabel>Project description</FormLabel>
+                        <Input
+                            value={projectFields.description || ""}
+                            placeholder="Project description"
+                            onChange={(event) =>
+                                setProjectFields({
+                                    ...projectFields,
+                                    description: event.target.value,
+                                })
+                            }
+                            data-testid={"form-field-description"}
+                        />
+                    </FormControl>
+                    <FormControl
+                        isRequired={projectFieldMetadata.startDate.required}
+                    >
+                        <FormLabel>Start date</FormLabel>
+                        <Input
+                            type="date"
+                            value={projectFields.startDate || ""}
+                            placeholder="Project start date"
+                            onChange={(event) =>
+                                setProjectFields({
+                                    ...projectFields,
+                                    startDate: event.target.value,
+                                })
+                            }
+                            data-testid={"form-field-start-date"}
+                        />
+                    </FormControl>
+                    <FormControl
+                        isRequired={projectFieldMetadata.endDate.required}
+                        isInvalid={invalidEndDate}
+                    >
+                        <FormLabel>End date</FormLabel>
+                        <Input
+                            type="date"
+                            value={projectFields.endDate || ""}
+                            placeholder="Project end date"
+                            onChange={(event) =>
+                                setProjectFields({
+                                    ...projectFields,
+                                    endDate: event.target.value,
+                                })
+                            }
+                            data-testid={"form-field-end-date"}
+                        />
+                        <FormErrorMessage>
+                            End date precedes start date
+                        </FormErrorMessage>
+                    </FormControl>
+                    <Flex justifyContent="center">
+                        <FormControl
+                            isRequired={projectFieldMetadata.customer.required}
+                        >
+                            <FormLabel>Customer</FormLabel>
+                            <Flex
+                                flexDirection="row"
+                                justifyContent="space-between"
+                            >
+                                <Select
+                                    onChange={handleCustomerChange}
+                                    placeholder="Select customer"
+                                    marginRight="0.3rem"
+                                    value={projectFields.customer?.id}
+                                    data-testid={"form-field-customer"}
+                                >
+                                    {customers.map((customer) => (
+                                        <option
+                                            key={`${customer.id}`}
+                                            value={customer.id}
+                                        >
+                                            {customer.name}
+                                        </option>
+                                    ))}
+                                </Select>
+
+                                <StyledButton
+                                    buttontype="add"
+                                    name="Customer"
+                                    onClick={() =>
+                                        setDisplayCreateCustomerForm(true)
+                                    }
+                                />
+                                <NewCustomerModal
+                                    displayCreateCustomerForm={
+                                        displayCreateCustomerForm
+                                    }
+                                    setDisplayCreateCustomerForm={
+                                        setDisplayCreateCustomerForm
+                                    }
+                                />
+                            </Flex>
+                        </FormControl>
+                    </Flex>
+                    <FormControl
+                        isRequired={
+                            projectFieldMetadata.managingEmployee.required
+                        }
+                    >
+                        <FormLabel>Managing employee</FormLabel>
+                        <Select
+                            onChange={handleEmployeeChange}
+                            placeholder="Select employee"
+                            value={projectFields.managingEmployee?.id}
+                            data-testid={"form-field-managing-employee"}
+                        >
+                            {employees.map((employee) => (
+                                <option key={employee.id} value={employee.id}>
+                                    {`${employee.firstName} ${employee.lastName}`}
+                                </option>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormButtons>
+                        <StyledButton
+                            buttontype="submit"
+                            type="submit"
+                            data-testid={"form-button-submit"}
+                        />
+                        <StyledButton
+                            buttontype="cancel"
+                            type="button"
+                            onClick={abortSubmission}
+                            data-testid={"form-button-cancel"}
+                        />
+                    </FormButtons>
+                </form>
+            </Box>
+        </FormSection>
     )
 }
 

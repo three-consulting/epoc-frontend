@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react"
-import { Flex, ListItem, UnorderedList } from "@chakra-ui/layout"
+import { Box, ListItem, UnorderedList } from "@chakra-ui/layout"
 import {
     Customer,
     Employee,
@@ -13,10 +13,10 @@ import {
     Checkbox,
     InputGroup,
     Input,
-    Button,
     FormControl,
     FormErrorMessage,
     FormHelperText,
+    FormLabel,
 } from "@chakra-ui/react"
 import { dateTimeToShortISODate, toLocalDisplayDate } from "@/lib/utils/date"
 import { round } from "lodash"
@@ -31,6 +31,9 @@ import { Role } from "@/lib/types/auth"
 import AuthErrorAlert from "../common/AuthErrorAlert"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
+import FormButtons from "../common/FormButtons"
+import { CustomButton } from "../common/Buttons"
+import FormSection from "../common/FormSection"
 
 interface DateInputProps {
     startDate: string
@@ -252,8 +255,8 @@ const DateInput = ({
     }
 
     return (
-        <>
-            <b>Set time interval</b>
+        <Box paddingY="1rem">
+            <FormLabel fontWeight="bold">Set time interval: </FormLabel>
             <InputGroup>
                 <FormControl isInvalid={isInvalid && !isUntouched}>
                     <Input
@@ -280,36 +283,27 @@ const DateInput = ({
                     )}
                 </FormControl>
             </InputGroup>
-            <div style={{ marginBottom: "10px" }}></div>
-            <div>
-                <Button
-                    colorScheme={"blue"}
-                    alignSelf={"flex-start"}
+            <FormButtons>
+                <CustomButton
+                    text="Search"
+                    colorScheme="blue"
                     onClick={handleOnClick}
                     disabled={isInvalid}
-                    style={{ marginRight: "10px" }}
-                >
-                    Search
-                </Button>
-                <Button
-                    colorScheme={"green"}
-                    alignSelf={"flex-start"}
+                />
+                <CustomButton
+                    text="Export as .csv"
+                    colorScheme="green"
                     onClick={handleCsvExportClick}
                     disabled={isInvalid}
-                    style={{ marginRight: "10px" }}
-                >
-                    Export as .csv
-                </Button>
-                <Button
-                    colorScheme={"green"}
-                    alignSelf={"flex-start"}
+                />
+                <CustomButton
+                    text="Export as .pdf"
+                    colorScheme="green"
                     onClick={handlePdfExportClick}
                     disabled={isInvalid}
-                >
-                    Export as .pdf
-                </Button>
-            </div>
-        </>
+                />
+            </FormButtons>
+        </Box>
     )
 }
 
@@ -496,72 +490,68 @@ function ReportTable({
     }
 
     return (
-        <Flex
-            flexDirection="column"
-            backgroundColor="white"
-            border="1px solid"
-            borderColor="gray.400"
-            borderRadius="0.2rem"
-            padding="1rem 1rem"
-        >
-            <DateInput
-                startDate={startDate}
-                endDate={endDate}
-                setStartDate={setStartDate}
-                setEndDate={setEndDate}
-                selectedEmployee={selectedEmployee}
-            ></DateInput>
-            <div style={{ marginBottom: "20px" }}></div>
-            <Select
-                onChange={handleEmployeeChange}
-                placeholder="Filter by employee"
-                value={selectedEmployee?.id}
-                data-testid={"form-field-managing-employee"}
-            >
-                {employees.map((employee, idx) => (
-                    <option key={idx} value={employee.id}>
-                        {`${employee.firstName} ${employee.lastName}`}
-                    </option>
-                ))}
-            </Select>
-            <div style={{ marginBottom: "10px" }}></div>
-            <Checkbox onChange={handleHideNullChange} defaultChecked>
-                Hide empty
-            </Checkbox>
-            <div style={{ marginBottom: "20px" }}></div>
-            {
-                <div style={{ marginBottom: "20px" }}>
-                    <b>Grand total: </b>
-                    <Total
-                        startDate={startDate}
-                        endDate={endDate}
-                        totalQuantity={entriesQuantitySum(entries)}
-                        employeeName={selectedEmployee?.firstName}
-                        entries={entries}
-                    />
-                </div>
-            }
-            {!selectedEmployee && (
-                <div style={{ marginBottom: "20px" }}>
-                    <b>Total hours by employee: </b>
-                    <UnorderedList>
-                        {employees.map(
-                            (employee) =>
-                                employee.id && (
-                                    <EmployeeHoursRow
-                                        key={`employee-hours-row-${employee.id}`}
-                                        entries={entriesByEmployee(
-                                            entries,
-                                            employee.id
-                                        )}
-                                        employee={employee}
-                                        displayNull={hideNull}
-                                    />
-                                )
-                        )}
-                    </UnorderedList>
-                </div>
-            )}
+        <FormSection header="Reports">
+            <Box paddingY="bold">
+                <DateInput
+                    startDate={startDate}
+                    endDate={endDate}
+                    setStartDate={setStartDate}
+                    setEndDate={setEndDate}
+                    selectedEmployee={selectedEmployee}
+                />
+                <Select
+                    onChange={handleEmployeeChange}
+                    placeholder="Filter by employee"
+                    value={selectedEmployee?.id}
+                    data-testid={"form-field-managing-employee"}
+                >
+                    {employees.map((employee, idx) => (
+                        <option key={idx} value={employee.id}>
+                            {`${employee.firstName} ${employee.lastName}`}
+                        </option>
+                    ))}
+                </Select>
+            </Box>
+            <Box paddingY="1rem">
+                <Checkbox onChange={handleHideNullChange} defaultChecked>
+                    Hide empty
+                </Checkbox>
+            </Box>
+            <Box paddingY="1rem">
+                <FormLabel fontWeight="bold">Grand total: </FormLabel>
+                <Total
+                    startDate={startDate}
+                    endDate={endDate}
+                    totalQuantity={entriesQuantitySum(entries)}
+                    employeeName={selectedEmployee?.firstName}
+                    entries={entries}
+                />
+            </Box>
+            <>
+                {!selectedEmployee && (
+                    <Box paddingY="1rem">
+                        <FormLabel fontWeight="bold">
+                            Total hours by employee:{" "}
+                        </FormLabel>
+                        <UnorderedList>
+                            {employees.map(
+                                (employee) =>
+                                    employee.id && (
+                                        <EmployeeHoursRow
+                                            key={`employee-hours-row-${employee.id}`}
+                                            entries={entriesByEmployee(
+                                                entries,
+                                                employee.id
+                                            )}
+                                            employee={employee}
+                                            displayNull={hideNull}
+                                        />
+                                    )
+                            )}
+                        </UnorderedList>
+                    </Box>
+                )}
+            </>
             {
                 <div style={{ marginBottom: "20px" }}>
                     <b>Hours per customer: </b>
@@ -588,7 +578,7 @@ function ReportTable({
                     </UnorderedList>
                 </div>
             }
-        </Flex>
+        </FormSection>
     )
 }
 

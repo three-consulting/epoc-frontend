@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import type { NextPage } from "next"
-import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import EmployeeTable from "@/components/table/EmployeeTable"
@@ -10,6 +9,7 @@ import { ApiGetResponse } from "@/lib/types/hooks"
 import { Employee } from "@/lib/types/apiTypes"
 import { Role } from "@/lib/types/auth"
 import AuthErrorAlert from "@/components/common/AuthErrorAlert"
+import FormPage from "@/components/common/FormPage"
 
 const Employees: NextPage = () => {
     const { user } = useContext(UserContext)
@@ -36,10 +36,7 @@ const Employees: NextPage = () => {
     }
 
     return (
-        <div>
-            <Heading fontWeight="black" margin="1rem 0rem">
-                Employees
-            </Heading>
+        <FormPage header="Employees">
             {employeesResponse?.isLoading && <Loading />}
             {employeesResponse?.isError && (
                 <ErrorAlert
@@ -54,7 +51,7 @@ const Employees: NextPage = () => {
                     setEmployeesResponse={setEmployeesResponse}
                 />
             )}
-        </div>
+        </FormPage>
     )
 }
 

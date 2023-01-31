@@ -2,19 +2,13 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Flex,
-    FormControl,
-    FormLabel,
-    Input,
-} from "@chakra-ui/react"
+import { Box, Flex, FormControl, FormLabel, Input } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { CheckBoxField, FormContainer } from "../common/FormFields"
 import { taskFieldMetadata } from "@/lib/types/typeMetadata"
+import FormButtons from "../common/FormButtons"
+import { StyledButton } from "../common/Buttons"
 
 type CreateTaskFormProps = FormBase<Task> & {
     project: Project
@@ -72,8 +66,9 @@ function TaskForm({
             errorHandler(error as Error)
         }
     }
+
     return (
-        <Flex>
+        <Flex flexDirection="column">
             <form onSubmit={handleSubmit}>
                 <FormContainer>
                     <FormControl isRequired={taskFieldMetadata.name.required}>
@@ -117,24 +112,18 @@ function TaskForm({
                         }
                         testId={"form-field-billable"}
                     />
-                    <ButtonGroup>
-                        <Button
-                            colorScheme="blue"
-                            mr={3}
+                    <FormButtons>
+                        <StyledButton
+                            buttontype="submit"
                             type="submit"
                             data-testid="form-button-submit"
-                        >
-                            Submit
-                        </Button>
-                        <Button
-                            colorScheme={"gray"}
-                            variant="outline"
+                        />
+                        <StyledButton
+                            buttontype="cancel"
                             onClick={abortSubmission}
                             data-testid="form-button-cancel"
-                        >
-                            Cancel
-                        </Button>
-                    </ButtonGroup>
+                        />
+                    </FormButtons>
                     {errorMessage && (
                         <>
                             <ErrorAlert />

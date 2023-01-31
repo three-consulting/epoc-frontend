@@ -7,14 +7,15 @@ interface LayoutProps {
     children?: ReactNode
 }
 
-function Layout({ children }: LayoutProps): JSX.Element {
+const Layout = (props: LayoutProps): JSX.Element => {
+    const { children } = props
     return (
         <Flex
             flexDirection="column"
             minHeight="100vh"
-            backgroundColor="#efefef"
+            background="linear-gradient(#9f9f9f, #efefef)"
         >
-            <Header />
+            <Header type="top" />
             <Main>{children}</Main>
         </Flex>
     )

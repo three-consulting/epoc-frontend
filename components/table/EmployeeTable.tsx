@@ -1,12 +1,15 @@
 import { Employee } from "@/lib/types/apiTypes"
 import { Box } from "@chakra-ui/layout"
-import { Alert, AlertIcon, AlertTitle, Button, Tbody } from "@chakra-ui/react"
+import { Alert, AlertIcon, AlertTitle, Tbody } from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import Link from "next/link"
 import { User } from "firebase/auth"
 import { ApiGetResponse } from "@/lib/types/hooks"
 import { firebaseSyncEndpoint, useGet } from "@/lib/hooks/swrInterface"
+import FormSection from "../common/FormSection"
+import FormButtons from "../common/FormButtons"
+import { CustomButton } from "../common/Buttons"
 
 interface EmployeeRowProps {
     employee: Employee
@@ -57,12 +60,11 @@ export const SyncEmployeesButton = ({
                 )}
             </Box>
             <Box margin="1rem 0rem">
-                <Button
-                    colorScheme={"blue"}
+                <CustomButton
+                    text="Sync employees"
+                    colorScheme="blue"
                     onClick={() => setShouldSync(true)}
-                >
-                    {"Sync employees"}
-                </Button>
+                />
             </Box>
         </>
     )
@@ -78,14 +80,13 @@ const EmployeeTable = ({
     user,
     employeesResponse,
     setEmployeesResponse,
-}: EmployeeTableProps): JSX.Element => (
-    <>
-        <Box
-            backgroundColor="white"
-            border="solid 0.5px"
-            borderColor="gray.400"
-            borderRadius="0.2rem"
-        >
+}: EmployeeTableProps): JSX.Element => {
+    const getHeader = () =>
+        employeesResponse?.isSuccess && employeesResponse.data.length > 0
+            ? "All users"
+            : "No users found"
+    return (
+        <FormSection header={getHeader()}>
             {employeesResponse?.isSuccess && employeesResponse?.data?.length ? (
                 <Table variant="simple">
                     <Thead>
@@ -110,12 +111,14 @@ const EmployeeTable = ({
                     No employees have been added yet.
                 </Box>
             )}
-        </Box>
-        <SyncEmployeesButton
-            user={user}
-            setEmployeesResponse={setEmployeesResponse}
-        />
-    </>
-)
+            <FormButtons>
+                <SyncEmployeesButton
+                    user={user}
+                    setEmployeesResponse={setEmployeesResponse}
+                />
+            </FormButtons>
+        </FormSection>
+    )
+}
 
 export default EmployeeTable

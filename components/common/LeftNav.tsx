@@ -1,5 +1,14 @@
 import React, { useContext } from "react"
-import { Text, Flex, Icon, HStack } from "@chakra-ui/react"
+import {
+    Text,
+    Flex,
+    Icon,
+    HStack,
+    extendTheme,
+    ChakraProvider,
+    StyleConfig,
+    Container,
+} from "@chakra-ui/react"
 import {
     BsBriefcase,
     BsHouse,
@@ -31,23 +40,50 @@ const adminLinkItems: LinkItemProps[] = [
     { name: "Reports", icon: BsFillFileTextFill, href: "/report" },
 ]
 
+const primaryWhite = "whitesmoke"
+const secondaryGray = "black"
+
+const hoverStyle = { bg: "gray", cursor: "pointer" }
+
+const components: Record<string, StyleConfig> = {
+    Container: {
+        baseStyle: {
+            _hover: hoverStyle,
+            bg: secondaryGray,
+            fontSize: "md",
+            fontWeight: "bold",
+            color: primaryWhite,
+            paddingY: "1rem",
+            paddingX: "1.5rem",
+        },
+    },
+    Icon: {
+        baseStyle: {
+            boxSize: "2rem",
+            marginRight: "1rem",
+        },
+    },
+}
+
+const ThemedItem = ({ children }: { children: JSX.Element }) => (
+    <ChakraProvider theme={extendTheme({ components })}>
+        <Container>{children}</Container>
+    </ChakraProvider>
+)
+
 const NavItem = ({ name, icon, href }: LinkItemProps) => (
-    <Flex
-        _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}
-        color="black"
-        fontSize="md"
-        margin="0.5rem 0rem"
-        padding="0"
-    >
+    <ThemedItem>
         <Link href={href}>
-            <a>
-                <HStack>
-                    <Icon as={icon} />
-                    <Text>{name}</Text>
-                </HStack>
-            </a>
+            <Flex>
+                <a>
+                    <HStack>
+                        <Icon as={icon} />
+                        <Text>{name}</Text>
+                    </HStack>
+                </a>
+            </Flex>
         </Link>
-    </Flex>
+    </ThemedItem>
 )
 
 function LeftNav(): JSX.Element {
@@ -61,12 +97,10 @@ function LeftNav(): JSX.Element {
         <Flex
             flexDirection="column"
             justifyContent="left"
-            padding="0.5rem"
-            pr="3.5rem"
+            minHeight="100vh"
+            minWidth="16rem"
+            backgroundColor="black"
         >
-            <Text color="black" fontWeight="black" fontSize="xl">
-                Navigation
-            </Text>
             {isLoggedIn &&
                 userLinkItems.map((item) => (
                     <NavItem
@@ -86,25 +120,31 @@ function LeftNav(): JSX.Element {
                         href={item.href}
                     />
                 ))}
-
-            <Flex
-                _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}
-                color="black"
-                fontSize="md"
-                margin="0.5rem 0rem"
-            >
+            <ThemedItem>
                 {user ? (
-                    <HStack onClick={signOutAndClear}>
-                        <Icon as={BsDoorClosed} />
-                        <Text>Sign-out</Text>
-                    </HStack>
+                    <Flex onClick={signOutAndClear}>
+                        <HStack>
+                            <Icon
+                                as={BsDoorClosed}
+                                boxSize="2rem"
+                                marginRight="1rem"
+                            />
+                            <Text>Sign-out</Text>
+                        </HStack>
+                    </Flex>
                 ) : (
-                    <HStack onClick={signInWithGoogle}>
-                        <Icon as={BsDoorOpen} />
-                        <Text>Sign-in</Text>
-                    </HStack>
+                    <Flex onClick={signInWithGoogle}>
+                        <HStack>
+                            <Icon
+                                as={BsDoorOpen}
+                                boxSize="2rem"
+                                marginRight="1rem"
+                            />
+                            <Text>Sign-in</Text>
+                        </HStack>
+                    </Flex>
                 )}
-            </Flex>
+            </ThemedItem>
         </Flex>
     )
 }

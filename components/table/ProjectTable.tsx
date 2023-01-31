@@ -1,8 +1,12 @@
 import React from "react"
-import { Box, Heading } from "@chakra-ui/layout"
-import { Table, TableCaption, Thead, Tr, Td, Th, Tbody } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/layout"
+import { Table, Thead, Tr, Td, Th, Tbody } from "@chakra-ui/react"
 import Link from "next/link"
 import { Project } from "@/lib/types/apiTypes"
+import FormSection from "../common/FormSection"
+import { useRouter } from "next/router"
+import FormButtons from "../common/FormButtons"
+import { StyledButton } from "../common/Buttons"
 
 interface ProjectRowProps {
     project: Project
@@ -24,32 +28,37 @@ interface ProjectTableProps {
 }
 
 function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
-    return projects ? (
-        <Box
-            backgroundColor="white"
-            border="solid 0.5px"
-            borderColor="gray.400"
-            borderRadius="0.2rem"
-        >
-            <Table variant="simple">
-                <TableCaption>All projects</TableCaption>
-                <Thead>
-                    <Tr>
-                        <Th>Name</Th>
-                        <Th>Client</Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {projects.map((project) => (
-                        <ProjectRow project={project} key={`${project.id}`} />
-                    ))}
-                </Tbody>
-            </Table>
-        </Box>
-    ) : (
-        <Box>
-            <Heading>No projects found</Heading>
-        </Box>
+    const router = useRouter()
+    return (
+        <FormSection header={projects ? "All projects" : "No projects found"}>
+            {projects && (
+                <Box>
+                    <Table variant="simple">
+                        <Thead>
+                            <Tr>
+                                <Th>Name</Th>
+                                <Th>Client</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {projects.map((project) => (
+                                <ProjectRow
+                                    project={project}
+                                    key={`${project.id}`}
+                                />
+                            ))}
+                        </Tbody>
+                    </Table>
+                    <FormButtons>
+                        <StyledButton
+                            buttontype="add"
+                            onClick={() => router.push("/project/new")}
+                            name="project"
+                        />
+                    </FormButtons>
+                </Box>
+            )}
+        </FormSection>
     )
 }
 
