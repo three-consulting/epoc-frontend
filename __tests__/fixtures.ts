@@ -95,6 +95,7 @@ export const testTimesheetRequiredFields: Timesheet = {
     rate: 100,
     project: testProject,
     employee: testEmployee,
+    allocation: 100,
 }
 
 export const testTimesheetAllFields: Timesheet = {
@@ -119,6 +120,7 @@ export const testTimesheet: Timesheet = {
     name: "Test timesheet",
     project: testProject,
     employee: testEmployee,
+    allocation: 100,
 }
 
 export const testTaskAllFields: Task = {

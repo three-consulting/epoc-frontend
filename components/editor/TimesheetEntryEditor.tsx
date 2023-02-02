@@ -24,6 +24,7 @@ import {
     toLocalDisplayDate,
 } from "@/lib/utils/date"
 import ImportFromCSVModal from "../modal/ImportFromCSVModal"
+import useHoliday from "@/lib/hooks/useHoliday"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 
@@ -271,6 +272,12 @@ const WeeklyHours = ({ entries, dates }: WeeklyHoursProps): JSX.Element => {
     )
 }
 
+const formatDate = (date: string) => {
+    const parts = date.split("-")
+    const rearrangedParts = [parts[2], parts[1], parts[0]]
+    return rearrangedParts.join("-")
+}
+
 interface monthlyHoursProps {
     entries: TimesheetEntry[]
     dates: [Date] | [Date, Date]
@@ -308,11 +315,27 @@ export const TimesheetEntryEditor = ({
         useState<TimesheetEntry[]>(entries)
 
     const [range, setRange] = useState(true)
+    const holidaysObject = useHoliday()
 
     const onYearOrMonthChange = ({
         activeStartDate,
     }: ViewCallbackProperties) => {
         setDates([activeStartDate])
+    }
+
+    const matchDates = (thisDate: Date) => {
+        if (holidaysObject.isSuccess) {
+            if (
+                holidaysObject.data.some(
+                    (item) =>
+                        item.date === jsDateToShortISODate(thisDate) &&
+                        item.description === "Yleinen vapaapäivä"
+                )
+            ) {
+                return true
+            }
+        }
+        return false
     }
 
     const ref = useRef(null)
@@ -325,7 +348,6 @@ export const TimesheetEntryEditor = ({
             }
         },
     })
-
     const entryDates = timesheetEntries.map(({ date: entryDate }) => entryDate)
 
     return (
@@ -339,12 +361,31 @@ export const TimesheetEntryEditor = ({
                 onActiveStartDateChange={onYearOrMonthChange}
                 value={datesValue(dates)}
                 tileClassName={({ date: thisDate }) => {
-                    if (entryDates.includes(jsDateToShortISODate(thisDate))) {
-                        return "react-calendar__tile--completed"
+                    const classNames = []
+                    if (matchDates(thisDate)) {
+                        classNames.push(
+                            "react-calendar__month-view__public_holidays"
+                        )
                     }
-                    return ""
+                    if (entryDates.includes(jsDateToShortISODate(thisDate))) {
+                        classNames.push("react-calendar__tile--completed")
+                    }
+                    return classNames.join(" ")
                 }}
             />
+            {dates && holidaysObject.isSuccess ? (
+                <b className="holiday-summary">
+                    {
+                        holidaysObject.data.find((item) =>
+                            dates[0]
+                                ? item.date === jsDateToShortISODate(dates[0])
+                                : false
+                        )?.summary
+                    }
+                </b>
+            ) : (
+                ""
+            )}
             <WeeklyHours entries={entries} dates={datesRange(dates)} />
             <div style={{ marginBottom: "5px" }} />
             <MonthlyHours entries={entries} dates={datesRange(dates)} />
