@@ -8,6 +8,9 @@ import {
     ChakraProvider,
     StyleConfig,
     Container,
+    LinkBox,
+    LinkOverlay,
+    Box,
 } from "@chakra-ui/react"
 import {
     BsBriefcase,
@@ -18,7 +21,6 @@ import {
     BsPersonBadge,
     BsFillFileTextFill,
 } from "react-icons/bs"
-import Link from "next/link"
 import { IconType } from "react-icons"
 import { Role } from "@/lib/types/auth"
 import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
@@ -72,18 +74,18 @@ const ThemedItem = ({ children }: { children: JSX.Element }) => (
 )
 
 const NavItem = ({ name, icon, href }: LinkItemProps) => (
-    <ThemedItem>
-        <Link href={href}>
-            <Flex>
-                <a>
+    <LinkBox as="div">
+        <ThemedItem>
+            <LinkOverlay href={href}>
+                <Flex>
                     <HStack>
                         <Icon as={icon} />
                         <Text>{name}</Text>
                     </HStack>
-                </a>
-            </Flex>
-        </Link>
-    </ThemedItem>
+                </Flex>
+            </LinkOverlay>
+        </ThemedItem>
+    </LinkBox>
 )
 
 function LeftNav(): JSX.Element {
@@ -120,31 +122,37 @@ function LeftNav(): JSX.Element {
                         href={item.href}
                     />
                 ))}
-            <ThemedItem>
-                {user ? (
-                    <Flex onClick={signOutAndClear}>
-                        <HStack>
-                            <Icon
-                                as={BsDoorClosed}
-                                boxSize="2rem"
-                                marginRight="1rem"
-                            />
-                            <Text>Sign-out</Text>
-                        </HStack>
-                    </Flex>
-                ) : (
-                    <Flex onClick={signInWithGoogle}>
-                        <HStack>
-                            <Icon
-                                as={BsDoorOpen}
-                                boxSize="2rem"
-                                marginRight="1rem"
-                            />
-                            <Text>Sign-in</Text>
-                        </HStack>
-                    </Flex>
-                )}
-            </ThemedItem>
+            {user ? (
+                <Box onClick={signOutAndClear}>
+                    <ThemedItem>
+                        <Flex>
+                            <HStack>
+                                <Icon
+                                    as={BsDoorClosed}
+                                    boxSize="2rem"
+                                    marginRight="1rem"
+                                />
+                                <Text>Sign-out</Text>
+                            </HStack>
+                        </Flex>
+                    </ThemedItem>
+                </Box>
+            ) : (
+                <Box onClick={signInWithGoogle}>
+                    <ThemedItem>
+                        <Flex>
+                            <HStack>
+                                <Icon
+                                    as={BsDoorOpen}
+                                    boxSize="2rem"
+                                    marginRight="1rem"
+                                />
+                                <Text>Sign-in</Text>
+                            </HStack>
+                        </Flex>
+                    </ThemedItem>
+                </Box>
+            )}
         </Flex>
     )
 }
