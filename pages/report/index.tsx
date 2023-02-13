@@ -1,6 +1,5 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
-import { Heading } from "@chakra-ui/layout"
 import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import ReportTable from "@/components/table/ReportTable"
 import Loading from "@/components/common/Loading"
@@ -14,6 +13,7 @@ import {
 } from "@/lib/hooks/useList"
 import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 import { Role } from "@/lib/types/auth"
+import FormPage from "@/components/common/FormPage"
 
 const Report: NextPage = () => {
     const { user } = useContext(UserContext)
@@ -37,10 +37,7 @@ const Report: NextPage = () => {
     }
 
     return (
-        <div>
-            <Heading fontWeight="black" margin="1rem 0rem">
-                Reports
-            </Heading>
+        <FormPage header="Reports">
             {customersResponse.isError && (
                 <ErrorAlert
                     title={customersResponse.errorMessage}
@@ -85,7 +82,7 @@ const Report: NextPage = () => {
                         tasks={tasksResponse.data}
                     />
                 )}
-        </div>
+        </FormPage>
     )
 }
 

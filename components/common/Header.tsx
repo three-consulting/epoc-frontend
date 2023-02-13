@@ -1,19 +1,108 @@
 import React from "react"
-import { Flex } from "@chakra-ui/react"
+import {
+    Box,
+    ChakraProvider,
+    extendTheme,
+    Flex,
+    Heading,
+    StyleConfig,
+} from "@chakra-ui/react"
 
-function Header(): JSX.Element {
+const components: Record<string, StyleConfig> = {
+    Heading: {
+        baseStyle: {
+            paddingX: "2rem",
+            paddingY: "1rem",
+            color: "whitesmoke",
+        },
+        variants: {
+            topHeader: {
+                paddingY: "1.5rem",
+                color: "black",
+                bg: "whitesmoke",
+            },
+            mainHeader: {
+                bg: "black",
+            },
+            subHeader: {
+                bg: "#6f6f6f",
+            },
+            elementHeader: {
+                bg: "#6f6f6f",
+                paddingX: "1.5rem",
+            },
+            tableHeader: {
+                bg: "#6f6f6f",
+                paddingX: "1.5rem",
+            },
+        },
+        defaultProps: {
+            size: "md",
+        },
+    },
+}
+
+const StyledItems = ({ children }: { children: JSX.Element }) => (
+    <ChakraProvider theme={extendTheme({ components })}>
+        {children}
+    </ChakraProvider>
+)
+
+type TContent = JSX.Element | Array<JSX.Element> | string
+type THeaderType = "top" | "main" | "sub" | "element"
+
+interface IHeader {
+    type: THeaderType
+    children?: TContent
+}
+
+const Header = ({ children, type }: IHeader) => {
+    let variant: THeaderType = "top"
+    let size = "3xl"
+    switch (type) {
+        case "main": {
+            variant = type
+            size = "xl"
+            break
+        }
+        case "sub": {
+            variant = type
+            size = "md"
+            break
+        }
+        case "element": {
+            variant = type
+            size = "sm"
+            break
+        }
+        default: {
+            break
+        }
+    }
     return (
-        <Flex
-            paddingTop="1rem"
-            borderBottom="1px"
-            borderColor="gray.400"
-            paddingBottom="1rem"
-            textAlign="center"
-            justifyContent="center"
-            paddingRight="1rem"
-            backgroundColor="white"
-        />
+        <StyledItems>
+            <Heading variant={`${variant}Header`} size={size}>
+                {children ?? "[...] - Epoc"}
+            </Heading>
+        </StyledItems>
     )
 }
+
+export const TableHeader = ({
+    text,
+    button,
+}: {
+    text: string
+    button?: JSX.Element
+}) => (
+    <StyledItems>
+        <Heading as="h4" variant="tableHeader" size="sm">
+            <Flex justifyContent="space-between" alignItems="center">
+                <Box>{text}</Box>
+                <Box>{button}</Box>
+            </Flex>
+        </Heading>
+    </StyledItems>
+)
 
 export default Header

@@ -8,7 +8,6 @@ import React, {
 } from "react"
 import { isError, isNull } from "lodash"
 import {
-    Button,
     FormControl,
     FormHelperText,
     FormLabel,
@@ -34,6 +33,8 @@ import FromCsvTable from "../table/FromCsvTable"
 import { parseCsv, parseQuantity } from "@/lib/utils/common"
 import FileDropper from "../common/FileDropper"
 import FromCsvForm from "../form/FromCsvForm"
+import { CustomButton, StyledButton } from "../common/Buttons"
+import FormButtons from "../common/FormButtons"
 
 export type Timesheets = Array<Timesheet>
 export type Tasks = Array<Task>
@@ -196,7 +197,11 @@ const ImportFromCSVModal = ({
 
     return (
         <div>
-            <Button onClick={onOpen}>{"Import CSV"}</Button>
+            <CustomButton
+                colorScheme="green"
+                text="Import CSV"
+                onClick={onOpen}
+            />
 
             <Modal isOpen={isOpen} onClose={onCancel} size="6xl">
                 <ModalOverlay />
@@ -303,36 +308,33 @@ const ImportFromCSVModal = ({
                     </ModalBody>
 
                     <ModalFooter>
-                        {confirm ? (
-                            <>
-                                <Button
-                                    mr={3}
-                                    onClick={onSave}
-                                    isDisabled={shouldDisable()}
-                                >
-                                    Save
-                                </Button>
-                                <Button
-                                    mr={3}
-                                    onClick={() => setConfirm(false)}
-                                >
-                                    Cancel
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <Button
-                                    mr={3}
-                                    onClick={() => setConfirm(true)}
-                                    isDisabled={shouldDisable()}
-                                >
-                                    Confirm
-                                </Button>
-                                <Button mr={3} onClick={onCancel}>
-                                    Cancel
-                                </Button>
-                            </>
-                        )}
+                        <FormButtons>
+                            {confirm ? (
+                                <>
+                                    <StyledButton
+                                        buttontype="save"
+                                        onClick={onSave}
+                                        isDisabled={shouldDisable()}
+                                    />
+                                    <StyledButton
+                                        buttontype="cancel"
+                                        onClick={() => setConfirm(false)}
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <StyledButton
+                                        buttontype="confirm"
+                                        onClick={() => setConfirm(true)}
+                                        isDisabled={shouldDisable()}
+                                    />
+                                    <StyledButton
+                                        buttontype="cancel"
+                                        onClick={onCancel}
+                                    />
+                                </>
+                            )}
+                        </FormButtons>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

@@ -1,15 +1,15 @@
 import React, { useContext, useState } from "react"
-import { Box, Flex } from "@chakra-ui/layout"
+import { Box } from "@chakra-ui/layout"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import {
-    Button,
+    Center,
+    Flex,
     Modal,
     ModalBody,
     ModalContent,
-    ModalFooter,
     ModalOverlay,
 } from "@chakra-ui/react"
 import Link from "next/link"
@@ -20,6 +20,14 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useProjectDetail } from "@/lib/hooks/useDetail"
 import { useTimesheets, useEmployees, useTasks } from "@/lib/hooks/useList"
 import { useUpdateProjects } from "@/lib/hooks/useUpdate"
+import FormSection from "@/components/common/FormSection"
+import FormPage from "@/components/common/FormPage"
+import FormButtons from "@/components/common/FormButtons"
+import {
+    CustomButton,
+    StyledButton,
+    RemoveIconButton,
+} from "@/components/common/Buttons"
 
 type Props = {
     projectId: number
@@ -54,111 +62,142 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
         }
     }
 
+    const onArchive = (event: React.MouseEvent) =>
+        changeProjectStatus(event, "ARCHIVED")
+    const onActivate = (event: React.MouseEvent) =>
+        changeProjectStatus(event, "ACTIVE")
+    const onClose = () => setDisplayArchivedModal(false)
+
+    const getName = () =>
+        projectDetailResponse.isSuccess ? projectDetailResponse.data.name : ""
+    const getStatus = () =>
+        projectDetailResponse.isSuccess ? projectDetailResponse.data.status : ""
+    const getStatusString = () => {
+        switch (getStatus()) {
+            case "ACTIVE": {
+                return "reactivated"
+            }
+            case "ARCHIVED": {
+                return "archived"
+            }
+            default: {
+                return ""
+            }
+        }
+    }
+    const getCustomButtonProps = () => {
+        switch (getStatus()) {
+            case "ACTIVE": {
+                return {
+                    text: "Archive Project",
+                    colorScheme: "pink",
+                    variant: "outline",
+                    onClick: onArchive,
+                }
+            }
+            case "ARCHIVED": {
+                return {
+                    text: "Rectivate Project",
+                    colorScheme: "teal",
+                    onClick: onActivate,
+                }
+            }
+            default: {
+                return {}
+            }
+        }
+    }
+
     return (
-        <div>
-            {errorMessage ? (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            ) : null}
-            {projectDetailResponse.isLoading && <Loading />}
-            {projectDetailResponse.isError && (
-                <ErrorAlert
-                    title={projectDetailResponse.errorMessage}
-                    message={projectDetailResponse.errorMessage}
-                />
-            )}
-            {projectDetailResponse.isSuccess ? (
-                <>
-                    <Flex flexDirection="column">
-                        <ProjectDetail project={projectDetailResponse.data} />
-                    </Flex>
-                    <Link key={`${projectId}`} href={`${projectId}/edit`}>
-                        <Button colorScheme="blue" marginTop="1rem">
-                            Edit Project
-                        </Button>
-                    </Link>
-                    {projectDetailResponse.data.status === "ACTIVE" ? (
-                        <Button
-                            colorScheme="pink"
-                            marginTop="1rem"
-                            marginLeft="0.5rem"
-                            onClick={(event: React.MouseEvent) =>
-                                changeProjectStatus(event, "ARCHIVED")
-                            }
-                        >
-                            Archive Project
-                        </Button>
-                    ) : (
-                        <Button
-                            colorScheme="teal"
-                            marginTop="1rem"
-                            marginLeft="0.5rem"
-                            onClick={(event: React.MouseEvent) =>
-                                changeProjectStatus(event, "ACTIVE")
-                            }
-                        >
-                            Rectivate Project
-                        </Button>
-                    )}
-                    <Modal
-                        isOpen={displayArchivedModal}
-                        onClose={() => setDisplayArchivedModal(false)}
-                    >
-                        <ModalOverlay />
-                        <ModalContent>
-                            <ModalBody marginTop="1rem">
-                                {`${projectDetailResponse.data.name} has been 
-                                ${
-                                    projectDetailResponse.data.status ===
-                                    "ARCHIVED"
-                                        ? "archived"
-                                        : "reactivated"
-                                }.`}
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button
-                                    colorScheme="blue"
-                                    onClick={() =>
-                                        setDisplayArchivedModal(false)
-                                    }
+        <FormPage
+            header={
+                projectDetailResponse.isSuccess
+                    ? projectDetailResponse.data.name ?? "-"
+                    : "-"
+            }
+        >
+            <Box>
+                {errorMessage ? (
+                    <>
+                        <ErrorAlert />
+                        <Box>{errorMessage}</Box>
+                    </>
+                ) : null}
+                {projectDetailResponse.isLoading && <Loading />}
+                {projectDetailResponse.isError && (
+                    <ErrorAlert
+                        title={projectDetailResponse.errorMessage}
+                        message={projectDetailResponse.errorMessage}
+                    />
+                )}
+                {projectDetailResponse.isSuccess ? (
+                    <>
+                        <FormSection header="Project details">
+                            <ProjectDetail
+                                project={projectDetailResponse.data}
+                            />
+                            <FormButtons>
+                                <Link
+                                    key={`${projectId}`}
+                                    href={`${projectId}/edit`}
                                 >
-                                    Close
-                                </Button>
-                            </ModalFooter>
-                        </ModalContent>
-                    </Modal>
-                    {timesheetsResponse.isLoading && <Loading />}
-                    {timesheetsResponse.isError && (
-                        <ErrorAlert
-                            title={timesheetsResponse.errorMessage}
-                            message={timesheetsResponse.errorMessage}
-                        />
-                    )}
-                    {projectDetailResponse.data.status === "ACTIVE" && (
-                        <>
-                            {timesheetsResponse.isSuccess &&
-                                employeesResponse.isSuccess && (
-                                    <TimesheetTable
+                                    <StyledButton buttontype="edit" />
+                                </Link>
+                                <CustomButton {...getCustomButtonProps()} />
+                            </FormButtons>
+                        </FormSection>
+
+                        <Modal
+                            isOpen={displayArchivedModal}
+                            onClose={() => setDisplayArchivedModal(false)}
+                        >
+                            <ModalOverlay />
+                            <ModalContent borderRadius="0">
+                                <ModalBody paddingY="1rem" paddingX="1rem">
+                                    <Flex justifyContent="end">
+                                        <RemoveIconButton
+                                            aria-label="Close"
+                                            onClick={onClose}
+                                        />
+                                    </Flex>
+                                    <Center paddingY="2rem">
+                                        {`${getName()} has been ${getStatusString()}.`}
+                                    </Center>
+                                </ModalBody>
+                            </ModalContent>
+                        </Modal>
+
+                        {timesheetsResponse.isLoading && <Loading />}
+                        {timesheetsResponse.isError && (
+                            <ErrorAlert
+                                title={timesheetsResponse.errorMessage}
+                                message={timesheetsResponse.errorMessage}
+                            />
+                        )}
+                        {projectDetailResponse.data.status === "ACTIVE" && (
+                            <>
+                                {timesheetsResponse.isSuccess &&
+                                    employeesResponse.isSuccess && (
+                                        <TimesheetTable
+                                            project={projectDetailResponse.data}
+                                            timesheets={timesheetsResponse.data}
+                                            employees={employeesResponse.data}
+                                        />
+                                    )}
+                                {tasksResponse.isSuccess && (
+                                    <TaskTable
                                         project={projectDetailResponse.data}
-                                        timesheets={timesheetsResponse.data}
-                                        employees={employeesResponse.data}
+                                        tasks={tasksResponse.data}
                                     />
                                 )}
-                            {tasksResponse.isSuccess && (
-                                <TaskTable
-                                    project={projectDetailResponse.data}
-                                    tasks={tasksResponse.data}
-                                />
-                            )}
-                        </>
-                    )}
-                </>
-            ) : (
-                <Box>Not found</Box>
-            )}
-        </div>
+                            </>
+                        )}
+                    </>
+                ) : (
+                    <Box>Not found</Box>
+                )}
+            </Box>
+        </FormPage>
     )
 }
 

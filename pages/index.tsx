@@ -9,6 +9,8 @@ import {
     useTimesheetEntries,
     useTimesheets,
 } from "@/lib/hooks/useList"
+import FormPage from "@/components/common/FormPage"
+import { Box } from "@chakra-ui/react"
 
 interface IndexPageProps {
     email: string
@@ -35,36 +37,38 @@ const IndexPage = ({ email }: IndexPageProps) => {
         tasksResponse.isLoading
 
     return (
-        <>
-            {timesheetsResponse.isError && (
-                <ErrorAlert
-                    title={timesheetsResponse.errorMessage}
-                    message={timesheetsResponse.errorMessage}
-                />
-            )}
-            {timesheetEntriesResponse.isError && (
-                <ErrorAlert
-                    title={timesheetEntriesResponse.errorMessage}
-                    message={timesheetEntriesResponse.errorMessage}
-                />
-            )}
-            {tasksResponse.isError && (
-                <ErrorAlert
-                    title={tasksResponse.errorMessage}
-                    message={tasksResponse.errorMessage}
-                />
-            )}
-            {isLoading && <Loading />}
-            {timesheetsResponse.isSuccess &&
-                timesheetEntriesResponse.isSuccess &&
-                tasksResponse.isSuccess && (
-                    <TimesheetEntryEditor
-                        timesheets={timesheetsResponse.data}
-                        entries={timesheetEntriesResponse.data}
-                        tasks={tasksResponse.data}
+        <FormPage header="Home">
+            <Box>
+                {timesheetsResponse.isError && (
+                    <ErrorAlert
+                        title={timesheetsResponse.errorMessage}
+                        message={timesheetsResponse.errorMessage}
                     />
                 )}
-        </>
+                {timesheetEntriesResponse.isError && (
+                    <ErrorAlert
+                        title={timesheetEntriesResponse.errorMessage}
+                        message={timesheetEntriesResponse.errorMessage}
+                    />
+                )}
+                {tasksResponse.isError && (
+                    <ErrorAlert
+                        title={tasksResponse.errorMessage}
+                        message={tasksResponse.errorMessage}
+                    />
+                )}
+                {isLoading && <Loading />}
+                {timesheetsResponse.isSuccess &&
+                    timesheetEntriesResponse.isSuccess &&
+                    tasksResponse.isSuccess && (
+                        <TimesheetEntryEditor
+                            timesheets={timesheetsResponse.data}
+                            entries={timesheetEntriesResponse.data}
+                            tasks={tasksResponse.data}
+                        />
+                    )}
+            </Box>
+        </FormPage>
     )
 }
 

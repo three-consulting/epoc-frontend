@@ -123,14 +123,7 @@ const TimesheetEntryForm = ({
 
     return (
         <>
-            <Flex
-                flexDirection="column"
-                backgroundColor="white"
-                border="1px solid"
-                borderColor="gray.400"
-                borderRadius="0.2rem"
-                padding="1rem 1rem"
-            >
+            <Flex flexDirection="column" padding="1rem">
                 <FormControl
                     isRequired={timesheetEntryFieldMetadata.quantity.required}
                 >
@@ -182,7 +175,7 @@ const TimesheetEntryForm = ({
                         ))}
                     </Select>
                 </FormControl>
-                <div style={{ padding: "1rem 0rem 0rem 0rem" }}>{buttons}</div>
+                {buttons}
             </Flex>
         </>
     )
@@ -300,7 +293,7 @@ export const CreateTimesheetEntryForm = ({
         }
     }
 
-    const Buttons = (
+    const buttons = (
         <FromButtons onSubmit={() => handlePost()} onCancel={onCancel} />
     )
 
@@ -310,7 +303,7 @@ export const CreateTimesheetEntryForm = ({
                 {...props}
                 timesheetEntryFields={timesheetEntryFields}
                 setTimesheetEntryFields={setTimesheetEntryFields}
-                buttons={Buttons}
+                buttons={buttons}
             />
             {errorMessage && (
                 <>

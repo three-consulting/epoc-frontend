@@ -1,5 +1,4 @@
-import { Button } from "@chakra-ui/button"
-import { Box, Flex, Heading } from "@chakra-ui/layout"
+import { Box } from "@chakra-ui/layout"
 import {
     Modal,
     ModalCloseButton,
@@ -15,6 +14,9 @@ import { CreateTimesheetForm } from "../form/TimesheetForm"
 import { useRouter } from "next/router"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
+import FormSection from "../common/FormSection"
+import FormButtons from "../common/FormButtons"
+import { RemoveIconButton, StyledButton } from "../common/Buttons"
 
 interface TimesheetRowProps {
     timesheet: Timesheet
@@ -47,7 +49,13 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
 
     return (
         <>
-            <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
+            <Tr
+                _hover={{
+                    backgroundColor: "#6f6f6f",
+                    color: "whitesmoke",
+                    cursor: "pointer",
+                }}
+            >
                 <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
                     {timesheet.employee?.firstName}{" "}
                     {timesheet.employee?.lastName}
@@ -55,12 +63,11 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
                 <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
                     {timesheet.allocation} %
                 </Td>
-                <Td>
-                    <Button
+                <Td display="flex" justifyContent="end">
+                    <RemoveIconButton
+                        aria-label="Remove"
                         onClick={(event) => archiveTimesheet(timesheet, event)}
-                    >
-                        x
-                    </Button>
+                    />
                 </Td>
             </Tr>
             {errorMessage && (
@@ -88,80 +95,77 @@ function TimesheetTable({
         useState(false)
 
     return (
-        <Flex
-            flexDirection="column"
-            backgroundColor="white"
-            border="1px solid"
-            borderColor="gray.400"
-            borderRadius="0.2rem"
-            padding="1rem 1rem"
-            marginTop="1.5rem"
-        >
-            <Heading as="h2" size="md">
-                Users
-            </Heading>
-            {timesheets.filter((timesheet) => timesheet.status !== "ARCHIVED")
-                .length ? (
-                <Box borderWidth="1px" padding="1rem" margin="1rem">
-                    <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <Th>Name</Th>
-                                <Th>Allocation</Th>
-                                <Th />
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {timesheets.map(
-                                (timesheet, idx) =>
-                                    timesheet.status !== "ARCHIVED" && (
-                                        <TimesheetRow
-                                            timesheet={timesheet}
-                                            key={idx}
-                                        />
-                                    )
-                            )}
-                        </Tbody>
-                    </Table>
-                </Box>
-            ) : (
-                <Box borderWidth="1px" padding="1rem" margin="1rem">
-                    No users in this project.
-                    <br />
-                    To add a user click the button below.
-                </Box>
-            )}
-            <Flex flexDirection="row-reverse">
-                <Button
-                    colorScheme="blue"
-                    onClick={() => setDisplayNewTimesheetForm(true)}
-                >
-                    Add User
-                </Button>
-            </Flex>
-            {project.id && (
-                <Modal
-                    isOpen={displayNewTimesheetForm}
-                    onClose={() => setDisplayNewTimesheetForm(false)}
-                >
-                    <ModalOverlay />
-                    <ModalContent px="0.5rem">
-                        <ModalHeader>Add user to project</ModalHeader>
-                        <CreateTimesheetForm
-                            project={project}
-                            projectId={project.id}
-                            employees={employees}
-                            afterSubmit={(timesheetUpdate) =>
-                                timesheetUpdate.isSuccess &&
-                                setDisplayNewTimesheetForm(false)
-                            }
-                            onCancel={() => setDisplayNewTimesheetForm(false)}
-                        />
-                        <ModalCloseButton />
-                    </ModalContent>
-                </Modal>
-            )}
-        </Flex>
+        <FormSection header="Users">
+            <>
+                {timesheets.filter(
+                    (timesheet) => timesheet.status !== "ARCHIVED"
+                ).length ? (
+                    <Box borderWidth="1px" padding="1rem" marginBottom="1rem">
+                        <Table variant="simple">
+                            <Thead>
+                                <Tr>
+                                    <Th>Name</Th>
+                                    <Th>Allocation</Th>
+                                    <Th />
+                                </Tr>
+                            </Thead>
+                            <Tbody>
+                                {timesheets.map(
+                                    (timesheet, idx) =>
+                                        timesheet.status !== "ARCHIVED" && (
+                                            <TimesheetRow
+                                                timesheet={timesheet}
+                                                key={idx}
+                                            />
+                                        )
+                                )}
+                            </Tbody>
+                        </Table>
+                    </Box>
+                ) : (
+                    <Box borderWidth="1px" padding="1rem" marginBottom="1rem">
+                        No users in this project.
+                        <br />
+                        To add a user click the button below.
+                    </Box>
+                )}
+                <FormButtons>
+                    <StyledButton
+                        buttontype="add"
+                        name="User"
+                        onClick={() => setDisplayNewTimesheetForm(true)}
+                    />
+                </FormButtons>
+                {project.id && (
+                    <Modal
+                        isOpen={displayNewTimesheetForm}
+                        onClose={() => setDisplayNewTimesheetForm(false)}
+                    >
+                        <ModalOverlay />
+                        <ModalContent
+                            paddingX="1rem"
+                            paddingBottom="1rem"
+                            backgroundColor="whitesmoke"
+                        >
+                            <ModalHeader>Add user to project</ModalHeader>
+                            <CreateTimesheetForm
+                                project={project}
+                                projectId={project.id}
+                                employees={employees}
+                                afterSubmit={(timesheetUpdate) =>
+                                    timesheetUpdate.isSuccess &&
+                                    setDisplayNewTimesheetForm(false)
+                                }
+                                onCancel={() =>
+                                    setDisplayNewTimesheetForm(false)
+                                }
+                            />
+                            <ModalCloseButton />
+                        </ModalContent>
+                    </Modal>
+                )}
+            </>
+        </FormSection>
     )
 }
 

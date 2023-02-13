@@ -1,8 +1,26 @@
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import { Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
-import { round, sum } from "lodash"
-import { Heading, Link, Select, useOutsideClick } from "@chakra-ui/react"
+import { isDate, round, sum } from "lodash"
+import {
+    Box,
+    Flex,
+    FormControl,
+    FormLabel,
+    Icon,
+    Link,
+    Select,
+    SimpleGrid,
+    Switch,
+    Table,
+    TableContainer,
+    Tbody,
+    Td,
+    Text,
+    Tooltip,
+    Tr,
+    useOutsideClick,
+} from "@chakra-ui/react"
 import React, {
     Dispatch,
     SetStateAction,
@@ -10,7 +28,10 @@ import React, {
     useRef,
     useState,
 } from "react"
-import Calendar, { ViewCallbackProperties } from "react-calendar"
+import Calendar, {
+    CalendarTileProperties,
+    ViewCallbackProperties,
+} from "react-calendar"
 import {
     CreateTimesheetEntryForm,
     EditTimesheetEntryForm,
@@ -25,6 +46,8 @@ import {
 } from "@/lib/utils/date"
 import ImportFromCSVModal from "../modal/ImportFromCSVModal"
 import useHoliday from "@/lib/hooks/useHoliday"
+import Header, { TableHeader } from "../common/Header"
+import { BsCaretDown, BsCaretLeft, BsSunglasses, BsTrash } from "react-icons/bs"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 
@@ -65,53 +88,58 @@ const TimesheetEntryRow = ({
     const [edit, setEdit] = useState<boolean>(false)
 
     return (
-        <div>
-            <Link
-                onClick={() => setEdit(!edit)}
-                style={{
-                    marginRight: ".5rem",
-                    fontWeight: "bold",
-                }}
-            >
-                {round(entry.quantity, 2)} Hours on{" "}
-                {entry.timesheet.project.name}
-            </Link>
-            {edit && projectId && id && (
+        <>
+            {projectId && id && (
                 <>
-                    <EditTimesheetEntryForm
-                        id={id}
-                        timesheetEntry={entry}
-                        timesheet={entry.timesheet}
-                        projectId={projectId}
-                        date={date}
-                        onCancel={() => setEdit(!edit)}
-                        afterSubmit={() => setEdit(!edit)}
-                        tasks={tasks}
-                        setTimesheetEntries={setTimesheetEntries}
-                    />
-                    <Link
-                        onClick={() => {
-                            setTimesheetEntries((entries) => {
-                                const indx = entries.findIndex(
-                                    (ent) => ent.id === id
-                                )
-                                if (indx !== -1) {
-                                    entries.splice(indx, 1)
-                                }
-                                return entries
-                            })
-                            deleteTimesheetEntry(id, () => undefined)
-                        }}
-                        style={{
-                            marginLeft: ".5rem",
-                            fontWeight: "bold",
-                        }}
-                    >
-                        Delete
-                    </Link>
+                    <Td paddingX="1.5rem">
+                        {!edit && (
+                            <Link
+                                onClick={() => setEdit(!edit)}
+                                style={{
+                                    fontWeight: "bold",
+                                }}
+                            >
+                                {round(entry.quantity, 2)} Hours on{" "}
+                                {entry.timesheet.project.name}
+                            </Link>
+                        )}
+                        {edit && (
+                            <Box border="#6f6f6f solid 1px">
+                                <EditTimesheetEntryForm
+                                    id={id}
+                                    timesheetEntry={entry}
+                                    timesheet={entry.timesheet}
+                                    projectId={projectId}
+                                    date={date}
+                                    onCancel={() => setEdit(!edit)}
+                                    afterSubmit={() => setEdit(!edit)}
+                                    tasks={tasks}
+                                    setTimesheetEntries={setTimesheetEntries}
+                                />
+                            </Box>
+                        )}
+                    </Td>
+                    <Td display="flex" justifyContent="end">
+                        <Link
+                            onClick={() => {
+                                setTimesheetEntries((entries) => {
+                                    const indx = entries.findIndex(
+                                        (ent) => ent.id === id
+                                    )
+                                    if (indx !== -1) {
+                                        entries.splice(indx, 1)
+                                    }
+                                    return entries
+                                })
+                                deleteTimesheetEntry(id, () => undefined)
+                            }}
+                        >
+                            <Icon as={BsTrash} boxSize="1.5rem" />
+                        </Link>
+                    </Td>
                 </>
             )}
-        </div>
+        </>
     )
 }
 
@@ -130,6 +158,70 @@ const getDatesFromRange = (range: [Date] | [Date, Date]): Array<Date> => {
     }
 
     return dates
+}
+
+const EntryTable = ({
+    dateStr,
+    displayEntries,
+    del,
+    tasks,
+    setTimesheetEntries,
+}: {
+    dateStr: string
+    displayEntries: Array<TimesheetEntry>
+    del: DeleteHookFunction
+    tasks: Array<Task>
+    setTimesheetEntries: Dispatch<SetStateAction<Array<TimesheetEntry>>>
+}) => {
+    const [open, setOpen] = useState<boolean>(false)
+    const header = ` - ${displayEntries
+        .map((ent) => ent.quantity ?? 0)
+        .join(" + ")} hours`
+
+    return (
+        <TableContainer
+            marginY="1rem"
+            marginX="2rem"
+            border="#6f6f6f solid 3px"
+        >
+            <TableHeader
+                text={dateStr + (open ? "" : header)}
+                button={
+                    <Link onClick={() => setOpen((opn) => !opn)}>
+                        <Icon
+                            as={open ? BsCaretDown : BsCaretLeft}
+                            boxSize="1.5rem"
+                        />
+                    </Link>
+                }
+            />
+            <Table variant="simple">
+                {open && (
+                    <Tbody>
+                        {displayEntries.map(
+                            (entry) =>
+                                entry.timesheet.project.id && (
+                                    <Tr key={`${entry.id}`}>
+                                        <TimesheetEntryRow
+                                            entry={entry}
+                                            deleteTimesheetEntry={del}
+                                            date={dateStr}
+                                            tasks={taskByProject(
+                                                tasks,
+                                                entry.timesheet.project.id
+                                            )}
+                                            setTimesheetEntries={
+                                                setTimesheetEntries
+                                            }
+                                        />
+                                    </Tr>
+                                )
+                        )}
+                    </Tbody>
+                )}
+            </Table>
+        </TableContainer>
+    )
 }
 
 const DayEditor = ({
@@ -172,77 +264,91 @@ const DayEditor = ({
 
     return (
         <>
-            <Heading as="h2" size="md">
-                Create a new entry on {datesDisplayString}
-            </Heading>
-            <Select onChange={handleTimesheetChange} marginRight="0.3rem">
-                {[
-                    <option key={""} value={""}>
-                        {"Select project"}
-                    </option>,
-                ].concat(
-                    timesheets.map((tms) => (
-                        <option key={`${tms.id}`} value={tms.id}>
-                            {tms.project.name}
-                        </option>
-                    ))
-                )}
-            </Select>
-            {timesheet && timesheet.project.id && (
-                <CreateTimesheetEntryForm
-                    onCancel={onCancel}
-                    timesheet={timesheet}
-                    projectId={timesheet.project.id}
-                    date={jsDateToShortISODate(dateRange[0])}
-                    dates={dates}
-                    key={`createEntryEditor-${timesheet.id}`}
-                    tasks={taskByProject(tasks, timesheet.project.id)}
-                    setTimesheetEntries={setTimesheetEntries}
-                />
-            )}
-            {dates.map((ddate) => {
-                const dateStr = jsDateToShortISODate(ddate)
-                const displayString = toLocalDisplayDate(dateStr)
-                const displayEntries = entries.filter(
-                    (entry) => entry.date === dateStr
-                )
-
-                return (
-                    <React.Fragment key={`timesheet-entry-${ddate}`}>
-                        {displayEntries.length > 0 && (
-                            <>
-                                <Heading as="h2" size="md">
-                                    Previous entries on {displayString}
-                                </Heading>
-                                <ul>
-                                    {displayEntries.map((entry) => (
-                                        <li
-                                            key={`timesheet-entry-${entry.id}-editor-container`}
-                                            style={{ margin: "20px" }}
+            <Header type="sub">{`Create a new entry on ${datesDisplayString}`}</Header>
+            <Box paddingX="2rem" paddingY="1rem">
+                <Box border="#6f6f6f solid 3px">
+                    <Header type="element">
+                        <Flex justifyContent="space-evenly" alignItems="center">
+                            <FormControl display="flex" justifyContent="start">
+                                <FormLabel
+                                    htmlFor="select-multiple-dates"
+                                    fontWeight="bold"
+                                    color="whitesmoke"
+                                >
+                                    {"Select project: "}
+                                </FormLabel>
+                                <Select
+                                    onChange={handleTimesheetChange}
+                                    placeholder=" - "
+                                    backgroundColor="whitesmoke"
+                                    color="black"
+                                >
+                                    {timesheets.map((tms) => (
+                                        <option
+                                            key={`${tms.id}`}
+                                            value={tms.id}
                                         >
-                                            {entry.timesheet.project.id && (
-                                                <TimesheetEntryRow
-                                                    entry={entry}
-                                                    deleteTimesheetEntry={del}
-                                                    date={dateStr}
-                                                    tasks={taskByProject(
-                                                        tasks,
-                                                        entry.timesheet.project
-                                                            .id
-                                                    )}
-                                                    setTimesheetEntries={
-                                                        setTimesheetEntries
-                                                    }
-                                                />
-                                            )}
-                                        </li>
+                                            {tms.project.name}
+                                        </option>
                                     ))}
-                                </ul>
-                            </>
+                                </Select>
+                            </FormControl>
+                            <Text
+                                style={{ padding: "1rem", color: "whitesmoke" }}
+                            >
+                                {" or "}
+                            </Text>
+                            <ImportFromCSVModal
+                                setTimesheetEntries={setTimesheetEntries}
+                            />
+                        </Flex>
+                    </Header>
+                    <Box paddingX="0.5rem">
+                        {timesheet && timesheet.project.id && (
+                            <CreateTimesheetEntryForm
+                                onCancel={onCancel}
+                                timesheet={timesheet}
+                                projectId={timesheet.project.id}
+                                date={jsDateToShortISODate(dateRange[0])}
+                                dates={dates}
+                                key={`createEntryEditor-${timesheet.id}`}
+                                tasks={taskByProject(
+                                    tasks,
+                                    timesheet.project.id
+                                )}
+                                setTimesheetEntries={setTimesheetEntries}
+                            />
                         )}
-                    </React.Fragment>
-                )
-            })}
+                    </Box>
+                </Box>
+            </Box>
+            {entries.length > 0 && (
+                <Box>
+                    <Header type="sub">{`Previous entries`}</Header>
+                    {dates.map((ddate) => {
+                        const dateStr = jsDateToShortISODate(ddate)
+                        const displayEntries = entries.filter(
+                            (entry) => entry.date === dateStr
+                        )
+
+                        return (
+                            <Box key={`timesheet-entry-${ddate}`}>
+                                {displayEntries.length > 0 && (
+                                    <EntryTable
+                                        dateStr={dateStr}
+                                        displayEntries={displayEntries}
+                                        del={del}
+                                        tasks={tasks}
+                                        setTimesheetEntries={
+                                            setTimesheetEntries
+                                        }
+                                    />
+                                )}
+                            </Box>
+                        )
+                    })}
+                </Box>
+            )}
         </>
     )
 }
@@ -270,12 +376,6 @@ const WeeklyHours = ({ entries, dates }: WeeklyHoursProps): JSX.Element => {
             Hours this week: <b>{round(total, 2)}</b>
         </p>
     )
-}
-
-const formatDate = (date: string) => {
-    const parts = date.split("-")
-    const rearrangedParts = [parts[2], parts[1], parts[0]]
-    return rearrangedParts.join("-")
 }
 
 interface monthlyHoursProps {
@@ -307,6 +407,7 @@ export const TimesheetEntryEditor = ({
     timesheets,
     tasks,
 }: TimesheetEntryEditorProps): JSX.Element => {
+    const [selectInterval, setSelectInterval] = useState<boolean>(false)
     const [dates, setDates] = useState<[Date] | [Date | null, Date | null]>([
         null,
         null,
@@ -314,7 +415,6 @@ export const TimesheetEntryEditor = ({
     const [timesheetEntries, setTimesheetEntries] =
         useState<TimesheetEntry[]>(entries)
 
-    const [range, setRange] = useState(true)
     const holidaysObject = useHoliday()
 
     const onYearOrMonthChange = ({
@@ -338,67 +438,177 @@ export const TimesheetEntryEditor = ({
         return false
     }
 
+    const onDatesChange = (
+        newDates: Date | [Date] | [Date | null, Date | null]
+    ) => {
+        if (Array.isArray(newDates)) {
+            setDates(newDates)
+        }
+        if (isDate(newDates)) {
+            setDates([newDates])
+        }
+    }
+
     const ref = useRef(null)
 
     useOutsideClick({
         ref,
         handler: () => {
-            if (range) {
-                setRange(false)
-            }
+            setDates([null, null])
         },
     })
     const entryDates = timesheetEntries.map(({ date: entryDate }) => entryDate)
 
     return (
-        <div ref={ref}>
-            <Calendar
-                onClickDay={() => setRange(true)}
-                onChange={setDates}
-                returnValue={"range"}
-                selectRange={range}
-                allowPartialRange={true}
-                onActiveStartDateChange={onYearOrMonthChange}
-                value={datesValue(dates)}
-                tileClassName={({ date: thisDate }) => {
-                    const classNames = []
-                    if (matchDates(thisDate)) {
-                        classNames.push(
-                            "react-calendar__month-view__public_holidays"
-                        )
-                    }
-                    if (entryDates.includes(jsDateToShortISODate(thisDate))) {
-                        classNames.push("react-calendar__tile--completed")
-                    }
-                    return classNames.join(" ")
-                }}
-            />
-            {dates && holidaysObject.isSuccess ? (
-                <b className="holiday-summary">
-                    {
-                        holidaysObject.data.find((item) =>
-                            dates[0]
-                                ? item.date === jsDateToShortISODate(dates[0])
-                                : false
-                        )?.summary
-                    }
-                </b>
-            ) : (
-                ""
-            )}
-            <WeeklyHours entries={entries} dates={datesRange(dates)} />
-            <div style={{ marginBottom: "5px" }} />
-            <MonthlyHours entries={entries} dates={datesRange(dates)} />
-            <div style={{ marginBottom: "10px" }} />
-            <DayEditor
-                timesheets={timesheets}
-                dateRange={datesRange(dates)}
-                entries={timesheetEntries}
-                tasks={tasks}
-                setTimesheetEntries={setTimesheetEntries}
-            />
-            <div style={{ marginBottom: "2rem" }} />
-            <ImportFromCSVModal setTimesheetEntries={setTimesheetEntries} />
-        </div>
+        <>
+            <>
+                <Flex ref={ref} flexDirection="column">
+                    <Flex
+                        flexDirection="row"
+                        paddingX="2rem"
+                        paddingY="1rem"
+                        justifyContent="center"
+                    >
+                        <Flex
+                            flexDirection="column"
+                            alignItems="center"
+                            paddingY="1rem"
+                            paddingX="1rem"
+                            width="100%"
+                            backgroundColor="#cfcfcf"
+                        >
+                            <Box>
+                                <Calendar
+                                    onChange={onDatesChange}
+                                    returnValue={
+                                        selectInterval ? "range" : "start"
+                                    }
+                                    selectRange={selectInterval}
+                                    allowPartialRange={true}
+                                    onActiveStartDateChange={
+                                        onYearOrMonthChange
+                                    }
+                                    value={datesValue(dates)}
+                                    tileClassName={({ date: thisDate }) => {
+                                        const classNames = []
+                                        if (matchDates(thisDate)) {
+                                            classNames.push(
+                                                "react-calendar__month-view__public_holidays"
+                                            )
+                                        }
+                                        if (
+                                            entryDates.includes(
+                                                jsDateToShortISODate(thisDate)
+                                            )
+                                        ) {
+                                            classNames.push(
+                                                "react-calendar__tile--completed"
+                                            )
+                                        }
+                                        return classNames.join(" ")
+                                    }}
+                                    tileContent={({
+                                        date,
+                                        view,
+                                    }: CalendarTileProperties) => {
+                                        if (view === "month") {
+                                            let content = ""
+                                            if (holidaysObject.isSuccess) {
+                                                content =
+                                                    holidaysObject.data
+                                                        .find(
+                                                            (item) =>
+                                                                item.date ===
+                                                                jsDateToShortISODate(
+                                                                    date
+                                                                )
+                                                        )
+                                                        ?.summary.toString() ??
+                                                    ""
+                                            }
+                                            return (
+                                                <Tooltip
+                                                    hasArrow
+                                                    label={content}
+                                                >
+                                                    {content.length > 0 ? (
+                                                        <span>
+                                                            <Icon
+                                                                as={
+                                                                    BsSunglasses
+                                                                }
+                                                                boxSize="2rem"
+                                                                position="absolute"
+                                                                marginY="-0.6rem"
+                                                                marginX="0.1rem"
+                                                                zIndex="overlay"
+                                                            />
+                                                        </span>
+                                                    ) : (
+                                                        ""
+                                                    )}
+                                                </Tooltip>
+                                            )
+                                        }
+                                        return <></>
+                                    }}
+                                />
+                                <SimpleGrid
+                                    paddingY="1rem"
+                                    backgroundColor={"#efefef"}
+                                    columns={1}
+                                >
+                                    <Flex justifyContent="space-around">
+                                        <FormControl
+                                            display="flex"
+                                            alignItems="center"
+                                            maxWidth="15rem"
+                                        >
+                                            <FormLabel
+                                                htmlFor="select-multiple-dates"
+                                                mb="0"
+                                                fontWeight="bold"
+                                            >
+                                                {"Select multiple dates: "}
+                                            </FormLabel>
+                                            <Switch
+                                                id="select-multiple-dates"
+                                                isChecked={selectInterval}
+                                                onChange={() =>
+                                                    setSelectInterval(
+                                                        (val) => !val
+                                                    )
+                                                }
+                                                variant="boxy"
+                                                colorScheme="gray"
+                                            />
+                                        </FormControl>
+                                        <Flex flexDirection="column">
+                                            <WeeklyHours
+                                                entries={entries}
+                                                dates={datesRange(dates)}
+                                            />
+                                            <MonthlyHours
+                                                entries={entries}
+                                                dates={datesRange(dates)}
+                                            />
+                                        </Flex>
+                                    </Flex>
+                                </SimpleGrid>
+                            </Box>
+                        </Flex>
+                    </Flex>
+                    <Box>
+                        <DayEditor
+                            timesheets={timesheets}
+                            dateRange={datesRange(dates)}
+                            entries={timesheetEntries}
+                            tasks={tasks}
+                            setTimesheetEntries={setTimesheetEntries}
+                        />
+                    </Box>
+                </Flex>
+            </>
+        </>
     )
 }

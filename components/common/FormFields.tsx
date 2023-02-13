@@ -1,12 +1,13 @@
 import React, { ChangeEventHandler } from "react"
 import {
-    Button,
+    Box,
     Flex,
     FormControl,
     FormErrorMessage,
     FormLabel,
     Input,
     Modal,
+    ModalBody,
     ModalCloseButton,
     ModalContent,
     ModalHeader,
@@ -14,7 +15,9 @@ import {
 } from "@chakra-ui/react"
 import styled from "@emotion/styled"
 import ErrorAlert from "./ErrorAlert"
-import { CreateCustomerForm } from "../form/CustomerForm"
+import { AddCustomerForm } from "../form/CustomerForm"
+import FormButtons from "./FormButtons"
+import { CustomButton, StyledButton } from "./Buttons"
 
 type FormInputFieldProps = {
     label: string
@@ -86,19 +89,18 @@ export const FromButtons = ({
     onSubmit,
     onCancel,
 }: FormButtonsProps): JSX.Element => (
-    <>
-        <Button
-            colorScheme="blue"
-            mr={3}
+    <FormButtons>
+        <StyledButton
+            buttontype="submit"
             onClick={onSubmit}
             data-testid={"form-button-submit"}
-        >
-            Submit
-        </Button>
-        <Button onClick={onCancel} data-testid={"form-button-cancel"}>
-            Cancel
-        </Button>
-    </>
+        />
+        <StyledButton
+            buttontype="cancel"
+            onClick={onCancel}
+            data-testid={"form-button-cancel"}
+        />
+    </FormButtons>
 )
 
 type FormButtonProps = {
@@ -112,11 +114,11 @@ export const FromButton = ({
     buttonColor,
     onClick,
 }: FormButtonProps): JSX.Element => (
-    <>
-        <Button colorScheme={buttonColor} onClick={onClick}>
+    <FormButtons>
+        <CustomButton colorScheme={buttonColor} onClick={onClick}>
             {buttonName}
-        </Button>
-    </>
+        </CustomButton>
+    </FormButtons>
 )
 
 export const FormContainer = styled.div`
@@ -153,10 +155,14 @@ export const NewCustomerModal = ({
         <ModalContent>
             <ModalHeader>Add New Customer</ModalHeader>
             <ModalCloseButton />
-            <CreateCustomerForm
-                afterSubmit={() => setDisplayCreateCustomerForm(false)}
-                onCancel={() => setDisplayCreateCustomerForm(false)}
-            />
+            <ModalBody>
+                <Box paddingBottom="1rem">
+                    <AddCustomerForm
+                        afterSubmit={() => setDisplayCreateCustomerForm(false)}
+                        onCancel={() => setDisplayCreateCustomerForm(false)}
+                    />
+                </Box>
+            </ModalBody>
         </ModalContent>
     </Modal>
 )

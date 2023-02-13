@@ -4,7 +4,6 @@ import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
 import {
     Box,
-    Button,
     Flex,
     FormControl,
     FormErrorMessage,
@@ -15,6 +14,8 @@ import {
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
+import FormButtons from "../common/FormButtons"
+import { StyledButton } from "../common/Buttons"
 
 type CreateTimesheetFormProps = FormBase<Timesheet> & {
     employees: Employee[]
@@ -90,6 +91,19 @@ function TimesheetForm({
         }
     }
 
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        try {
+            const timesheet = validateTimesheetFields(
+                timesheetFields,
+                projectId
+            )
+            onSubmit(timesheet)
+        } catch (error) {
+            errorHandler(error as Error)
+        }
+    }
+
     const maximumAllocation = 100
 
     const invalidAllocation =
@@ -104,29 +118,9 @@ function TimesheetForm({
     const abortSubmission = onCancel && onCancel
 
     return (
-        <Flex
-            flexDirection="column"
-            backgroundColor="white"
-            border="1px solid"
-            borderColor="gray.400"
-            borderRadius="0.2rem"
-            padding="1rem 1rem"
-        >
-            <form
-                onSubmit={(event) => {
-                    event.preventDefault()
-                    try {
-                        const timesheet = validateTimesheetFields(
-                            timesheetFields,
-                            projectId
-                        )
-                        onSubmit(timesheet)
-                    } catch (error) {
-                        errorHandler(error as Error)
-                    }
-                }}
-            >
-                <div style={{ padding: "20px" }}>
+        <Flex flexDirection="column">
+            <form onSubmit={handleSubmit}>
+                <Box paddingX="1.5rem" paddingY="1rem">
                     <FormControl isRequired>
                         <FormLabel>User</FormLabel>
                         <Select
@@ -235,25 +229,20 @@ function TimesheetForm({
                             Rate must be a non-negative number.
                         </FormErrorMessage>
                     </FormControl>
-                </div>
-                <div style={{ textAlign: "right", padding: "20px" }}>
-                    <Button
-                        isDisabled={!rateIsValid || invalidAllocation}
-                        colorScheme="blue"
-                        mr={3}
-                        type="submit"
-                        data-testid="form-button-submit"
-                    >
-                        Submit
-                    </Button>
-                    <Button
-                        colorScheme="gray"
-                        onClick={abortSubmission}
-                        data-testid="form-button-cancel"
-                    >
-                        Cancel
-                    </Button>
-                </div>
+                    <FormButtons>
+                        <StyledButton
+                            buttontype="submit"
+                            isDisabled={!rateIsValid || invalidAllocation}
+                            type="submit"
+                            data-testid="form-button-submit"
+                        />
+                        <StyledButton
+                            buttontype="cancel"
+                            onClick={abortSubmission}
+                            data-testid="form-button-cancel"
+                        />
+                    </FormButtons>
+                </Box>
                 {errorMessage && (
                     <>
                         <ErrorAlert />

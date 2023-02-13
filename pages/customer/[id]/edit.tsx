@@ -1,12 +1,13 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
-import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { EditCustomerForm } from "@/components/form/CustomerForm"
 import { useCustomerDetail } from "@/lib/hooks/useDetail"
+import FormPage from "@/components/common/FormPage"
+import { Box } from "@chakra-ui/react"
 
 type Props = {
     customerId: number
@@ -27,23 +28,22 @@ function EditCustomerPage({ customerId }: Props): JSX.Element {
         router.push(`/customer/${customerId}`)
 
     return (
-        <div>
-            <Heading fontWeight="black" margin="1rem 0rem">
-                Edit customer
-            </Heading>
-            {customerDetailResponse.isLoading && <Loading />}
-            {customerDetailResponse.isError && (
-                <ErrorAlert title={errorMessage} message={errorMessage} />
-            )}
-            {customerDetailResponse.isSuccess &&
-                customerDetailResponse.data.id && (
-                    <EditCustomerForm
-                        customer={customerDetailResponse.data}
-                        afterSubmit={redirectToCustomerDetail}
-                        onCancel={redirectToCustomerDetail}
-                    />
+        <FormPage header="Edit customer">
+            <Box>
+                {customerDetailResponse.isLoading && <Loading />}
+                {customerDetailResponse.isError && (
+                    <ErrorAlert title={errorMessage} message={errorMessage} />
                 )}
-        </div>
+                {customerDetailResponse.isSuccess &&
+                    customerDetailResponse.data.id && (
+                        <EditCustomerForm
+                            customer={customerDetailResponse.data}
+                            afterSubmit={redirectToCustomerDetail}
+                            onCancel={redirectToCustomerDetail}
+                        />
+                    )}
+            </Box>
+        </FormPage>
     )
 }
 

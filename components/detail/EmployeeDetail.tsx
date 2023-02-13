@@ -1,9 +1,10 @@
 import { Employee, Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
 import { toLocalDisplayDate } from "@/lib/utils/date"
 import { Box, Flex, Heading } from "@chakra-ui/layout"
-import { Button } from "@chakra-ui/react"
 import Link from "next/link"
 import React from "react"
+import { StyledButton } from "../common/Buttons"
+import FormButtons from "../common/FormButtons"
 import { TimesheetEntryEditor } from "../editor/TimesheetEntryEditor"
 
 type EmployeeDetailProps = {
@@ -40,11 +41,11 @@ const EmployeeDetail = ({
                 {created && <Flex>Created: {toLocalDisplayDate(created)}</Flex>}
                 {updated && <Flex>Updated: {toLocalDisplayDate(updated)}</Flex>}
             </Flex>
-            <Link key={`${employeeId}`} href={`${employeeId}/edit`}>
-                <Button colorScheme="blue" marginTop="1rem">
-                    Edit employee
-                </Button>
-            </Link>
+            <FormButtons>
+                <Link key={`${employeeId}`} href={`${employeeId}/edit`}>
+                    <StyledButton buttontype="edit" name="employee" />
+                </Link>
+            </FormButtons>
             <Flex
                 flexDirection="column"
                 backgroundColor="white"

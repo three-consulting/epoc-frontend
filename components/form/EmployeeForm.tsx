@@ -2,7 +2,6 @@ import {
     FormControl,
     FormLabel,
     Input,
-    Button,
     Box,
     Flex,
     Select,
@@ -15,6 +14,9 @@ import ErrorAlert from "../common/ErrorAlert"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { employeeFieldMetadata } from "@/lib/types/typeMetadata"
 import WarningModal from "../common/WarningModal"
+import FormButtons from "../common/FormButtons"
+import { StyledButton } from "../common/Buttons"
+import { isError } from "lodash"
 
 type CreateEmployeeFormProps = FormBase<Employee>
 
@@ -67,6 +69,44 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
         }
     }, [employeeFields])
 
+    const onConfirm = (event: React.MouseEvent) => {
+        event.preventDefault()
+        try {
+            onSubmit(validateEmployeeFields(employeeFields))
+        } catch (error) {
+            if (isError(error)) {
+                errorHandler(error)
+            }
+        }
+    }
+
+    const onFirstNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+        setEmployeeFields({
+            ...employeeFields,
+            firstName: event.target.value,
+        })
+
+    const onLastNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+        setEmployeeFields({
+            ...employeeFields,
+            lastName: event.target.value,
+        })
+
+    const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+        setEmployeeFields({
+            ...employeeFields,
+            email: event.target.value,
+        })
+
+    const onRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) =>
+        setEmployeeFields({
+            ...employeeFields,
+            role:
+                event.target.value === "ADMIN" || event.target.value === "USER"
+                    ? event.target.value
+                    : "USER",
+        })
+
     return (
         <Flex
             flexDirection="column"
@@ -94,12 +134,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                         <Input
                             placeholder="Employee First Name"
                             value={employeeFields.firstName || ""}
-                            onChange={(event) =>
-                                setEmployeeFields({
-                                    ...employeeFields,
-                                    firstName: event.target.value,
-                                })
-                            }
+                            onChange={onFirstNameChange}
                             data-testid={"form-field-firstName"}
                         />
                     </FormControl>
@@ -112,12 +147,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                         <Input
                             placeholder="Employee Last Name"
                             value={employeeFields.lastName || ""}
-                            onChange={(event) =>
-                                setEmployeeFields({
-                                    ...employeeFields,
-                                    lastName: event.target.value,
-                                })
-                            }
+                            onChange={onLastNameChange}
                             data-testid={"form-field-lastName"}
                         />
                     </FormControl>
@@ -130,12 +160,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                         <Input
                             placeholder="Employee Email"
                             value={employeeFields.email || ""}
-                            onChange={(event) =>
-                                setEmployeeFields({
-                                    ...employeeFields,
-                                    email: event.target.value,
-                                })
-                            }
+                            onChange={onEmailChange}
                             data-testid={"form-field-email"}
                         />
                     </FormControl>
@@ -148,16 +173,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                         <Select
                             placeholder="Employee Role"
                             value={employeeFields.role || ""}
-                            onChange={(event) =>
-                                setEmployeeFields({
-                                    ...employeeFields,
-                                    role:
-                                        event.target.value === "ADMIN" ||
-                                        event.target.value === "USER"
-                                            ? event.target.value
-                                            : "USER",
-                                })
-                            }
+                            onChange={onRoleChange}
                             data-testid={"form-field-role"}
                         >
                             <option value={"USER"}>User</option>
@@ -165,25 +181,19 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                         </Select>
                     </FormControl>
                 </div>
-                <div style={{ textAlign: "right", padding: "20px" }}>
-                    <Button
-                        colorScheme="blue"
-                        mr={3}
+                <FormButtons>
+                    <StyledButton
+                        buttontype="save"
                         onClick={() => setShowWarningModal(true)}
                         disabled={disableSave}
                         data-testid="form-button-save"
-                    >
-                        Save
-                    </Button>
-                    <Button
-                        colorScheme="grey"
-                        variant="outline"
+                    />
+                    <StyledButton
+                        buttontype="cancel"
                         onClick={onCancel}
                         data-testid="form-button-cancel"
-                    >
-                        Cancel
-                    </Button>
-                </div>
+                    />
+                </FormButtons>
                 {errorMessage && (
                     <>
                         <ErrorAlert />
@@ -193,41 +203,20 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                 <WarningModal
                     header={"Are you sure?"}
                     content={
-                        <>
-                            {
-                                "Changes in this form will overwrite data in firebase"
-                            }
-                        </>
+                        "Changes in this form will overwrite data in firebase"
                     }
                     buttons={
-                        <div style={{ textAlign: "right", padding: "20px" }}>
-                            <Button
-                                colorScheme="blue"
-                                mr={3}
-                                onClick={(event) => {
-                                    event.preventDefault()
-                                    try {
-                                        onSubmit(
-                                            validateEmployeeFields(
-                                                employeeFields
-                                            )
-                                        )
-                                    } catch (error) {
-                                        errorHandler(error as Error)
-                                    }
-                                }}
+                        <FormButtons>
+                            <StyledButton
+                                buttontype="confirm"
+                                onClick={onConfirm}
                                 data-testid="form-button-confirm"
-                            >
-                                Confirm
-                            </Button>
-                            <Button
-                                colorScheme="grey"
-                                variant="outline"
+                            />
+                            <StyledButton
+                                buttontype="cancel"
                                 onClick={() => setShowWarningModal(false)}
-                            >
-                                Cancel
-                            </Button>
-                        </div>
+                            />
+                        </FormButtons>
                     }
                     isOpen={showWarningModal}
                     onClose={() => setShowWarningModal(false)}

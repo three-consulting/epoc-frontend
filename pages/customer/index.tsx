@@ -1,21 +1,18 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
-import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import CustomerTable from "@/components/table/CustomerTable"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useCustomers } from "@/lib/hooks/useList"
+import FormPage from "@/components/common/FormPage"
 
 const Customers: NextPage = () => {
     const { user } = useContext(UserContext)
     const customersResponse = useCustomers(user)
 
     return (
-        <div>
-            <Heading fontWeight="black" margin="1rem 0rem">
-                Customers
-            </Heading>
+        <FormPage header="Customers">
             {customersResponse.isLoading && <Loading />}
             {customersResponse.isError && (
                 <ErrorAlert
@@ -26,7 +23,7 @@ const Customers: NextPage = () => {
             {customersResponse.isSuccess && (
                 <CustomerTable customers={customersResponse.data} />
             )}
-        </div>
+        </FormPage>
     )
 }
 

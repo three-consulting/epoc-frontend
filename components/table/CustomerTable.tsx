@@ -2,9 +2,12 @@ import { Customer } from "@/lib/types/apiTypes"
 import { Box } from "@chakra-ui/layout"
 import { Tbody } from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
-import React, { useState } from "react"
-import { FromButton, NewCustomerModal } from "../common/FormFields"
+import React from "react"
 import Link from "next/link"
+import FormSection from "../common/FormSection"
+import FormButtons from "../common/FormButtons"
+import { StyledButton } from "../common/Buttons"
+import { useRouter } from "next/router"
 
 interface CustomerRowProps {
     customer: Customer
@@ -25,50 +28,40 @@ interface CustomerTableProps {
 }
 
 function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
-    const [displayCreateCustomerForm, setDisplayCreateCustomerForm] =
-        useState(false)
+    const router = useRouter()
     return (
-        <>
-            <Box
-                backgroundColor="white"
-                border="solid 0.5px"
-                borderColor="gray.400"
-                borderRadius="0.2rem"
-            >
-                {customers.length ? (
-                    <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <Th>Name</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {customers.map((customer) => (
-                                <CustomerRow
-                                    customer={customer}
-                                    key={`${customer.id}`}
-                                />
-                            ))}
-                        </Tbody>
-                    </Table>
-                ) : (
-                    <Box borderWidth="1px" padding="1rem" margin="1rem">
-                        No customers have been added yet.
-                    </Box>
-                )}
-            </Box>
-            <Box margin="1rem 0rem">
-                <FromButton
-                    buttonName="Add Customer"
-                    buttonColor="blue"
-                    onClick={() => setDisplayCreateCustomerForm(true)}
+        <FormSection
+            header={customers ? "All customers" : "No customers found"}
+        >
+            {customers.length ? (
+                <Table variant="simple">
+                    <Thead>
+                        <Tr>
+                            <Th>Name</Th>
+                        </Tr>
+                    </Thead>
+                    <Tbody>
+                        {customers.map((customer) => (
+                            <CustomerRow
+                                customer={customer}
+                                key={`${customer.id}`}
+                            />
+                        ))}
+                    </Tbody>
+                </Table>
+            ) : (
+                <Box borderWidth="1px" padding="1rem" margin="1rem">
+                    No customers have been added yet.
+                </Box>
+            )}
+            <FormButtons>
+                <StyledButton
+                    buttontype="add"
+                    name="customer"
+                    onClick={() => router.push("/customer/new")}
                 />
-                <NewCustomerModal
-                    displayCreateCustomerForm={displayCreateCustomerForm}
-                    setDisplayCreateCustomerForm={setDisplayCreateCustomerForm}
-                />
-            </Box>
-        </>
+            </FormButtons>
+        </FormSection>
     )
 }
 

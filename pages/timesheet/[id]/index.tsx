@@ -6,9 +6,12 @@ import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import TimesheetDetail from "@/components/detail/TimesheetDetail"
 import Link from "next/link"
-import { Button } from "@chakra-ui/react"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useTimesheetDetail } from "@/lib/hooks/useDetail"
+import { StyledButton } from "@/components/common/Buttons"
+import FormButtons from "@/components/common/FormButtons"
+import FormSection from "@/components/common/FormSection"
+import FormPage from "@/components/common/FormPage"
 
 type Props = {
     timesheetId: number
@@ -19,7 +22,7 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
     const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
 
     return (
-        <div>
+        <FormPage header="moi">
             {timesheetDetailResponse.isLoading && <Loading />}
             {timesheetDetailResponse.isError && (
                 <ErrorAlert
@@ -28,21 +31,21 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
                 />
             )}
             {timesheetDetailResponse.isSuccess ? (
-                <>
+                <FormSection header="-">
                     <TimesheetDetail timesheet={timesheetDetailResponse.data} />
-                    <Link
-                        key={`${timesheetDetailResponse.data.id}`}
-                        href={`${timesheetDetailResponse.data.id}/edit`}
-                    >
-                        <Button colorScheme="blue" marginTop="1rem">
-                            Edit Timesheet
-                        </Button>
-                    </Link>
-                </>
+                    <FormButtons>
+                        <Link
+                            key={`${timesheetDetailResponse.data.id}`}
+                            href={`${timesheetDetailResponse.data.id}/edit`}
+                        >
+                            <StyledButton buttontype="edit" />
+                        </Link>
+                    </FormButtons>
+                </FormSection>
             ) : (
                 <Box>Not found</Box>
             )}
-        </div>
+        </FormPage>
     )
 }
 

@@ -1,6 +1,5 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
-import { Heading } from "@chakra-ui/layout"
 import { EditProjectForm } from "@/components/form/ProjectForm"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
@@ -8,6 +7,8 @@ import { useRouter } from "next/dist/client/router"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useProjectDetail } from "@/lib/hooks/useDetail"
 import { useCustomers, useEmployees } from "@/lib/hooks/useList"
+import { Box } from "@chakra-ui/react"
+import FormPage from "@/components/common/FormPage"
 
 type Props = {
     projectId: number
@@ -30,31 +31,30 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
     const redirectToProjectDetail = () => router.push(`/project/${projectId}`)
 
     return (
-        <div>
-            <Heading fontWeight="black" margin="1rem 0rem">
-                Edit project
-            </Heading>
-            {(customersResponse.isLoading ||
-                employeesResponse.isLoading ||
-                projectDetailResponse.isLoading) && <Loading />}
-            {(customersResponse.isError ||
-                employeesResponse.isError ||
-                projectDetailResponse.isError) && (
-                <ErrorAlert title={errorMessage} message={errorMessage} />
-            )}
-            {customersResponse.isSuccess &&
-                employeesResponse.isSuccess &&
-                projectDetailResponse.isSuccess &&
-                projectDetailResponse.data.id && (
-                    <EditProjectForm
-                        customers={customersResponse.data}
-                        employees={employeesResponse.data}
-                        project={projectDetailResponse.data}
-                        afterSubmit={redirectToProjectDetail}
-                        onCancel={redirectToProjectDetail}
-                    />
+        <FormPage header="Edit project">
+            <Box>
+                {(customersResponse.isLoading ||
+                    employeesResponse.isLoading ||
+                    projectDetailResponse.isLoading) && <Loading />}
+                {(customersResponse.isError ||
+                    employeesResponse.isError ||
+                    projectDetailResponse.isError) && (
+                    <ErrorAlert title={errorMessage} message={errorMessage} />
                 )}
-        </div>
+                {customersResponse.isSuccess &&
+                    employeesResponse.isSuccess &&
+                    projectDetailResponse.isSuccess &&
+                    projectDetailResponse.data.id && (
+                        <EditProjectForm
+                            customers={customersResponse.data}
+                            employees={employeesResponse.data}
+                            project={projectDetailResponse.data}
+                            afterSubmit={redirectToProjectDetail}
+                            onCancel={redirectToProjectDetail}
+                        />
+                    )}
+            </Box>
+        </FormPage>
     )
 }
 

@@ -1,6 +1,5 @@
 import * as React from "react"
 import {
-    Button,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -8,10 +7,11 @@ import {
     ModalBody,
     ModalFooter,
 } from "@chakra-ui/react"
+import { CustomButton } from "./Buttons"
 
 interface IWarningModal {
     header: string
-    content: JSX.Element
+    content: JSX.Element | string
     buttons?: JSX.Element
     isOpen: boolean
     onClose: () => void
@@ -31,7 +31,9 @@ const WarningModal = ({
                 <ModalHeader>{header}</ModalHeader>
                 <ModalBody>{content}</ModalBody>
                 <ModalFooter>
-                    {buttons ?? <Button onClick={onClose}>Close</Button>}
+                    {buttons ?? (
+                        <CustomButton onClick={onClose}>Close</CustomButton>
+                    )}
                 </ModalFooter>
             </ModalContent>
         </Modal>
