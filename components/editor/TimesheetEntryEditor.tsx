@@ -25,6 +25,7 @@ import React, {
     Dispatch,
     SetStateAction,
     useContext,
+    useEffect,
     useRef,
     useState,
 } from "react"
@@ -48,6 +49,7 @@ import ImportFromCSVModal from "../modal/ImportFromCSVModal"
 import useHoliday from "@/lib/hooks/useHoliday"
 import Header, { TableHeader } from "../common/Header"
 import { BsCaretDown, BsCaretLeft, BsSunglasses, BsTrash } from "react-icons/bs"
+import { SortingOrderIconButton } from "../common/Buttons"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 
@@ -166,17 +168,27 @@ const EntryTable = ({
     del,
     tasks,
     setTimesheetEntries,
+    idx,
 }: {
     dateStr: string
     displayEntries: Array<TimesheetEntry>
     del: DeleteHookFunction
     tasks: Array<Task>
     setTimesheetEntries: Dispatch<SetStateAction<Array<TimesheetEntry>>>
+    idx: number
 }) => {
     const [open, setOpen] = useState<boolean>(false)
     const header = ` - ${displayEntries
         .map((ent) => ent.quantity ?? 0)
         .join(" + ")} hours`
+
+    useEffect(() => {
+        if (idx === 0) {
+            setOpen(() => true)
+        } else {
+            setOpen(() => false)
+        }
+    }, [idx])
 
     return (
         <TableContainer
@@ -185,15 +197,14 @@ const EntryTable = ({
             border="#6f6f6f solid 3px"
         >
             <TableHeader
-                text={dateStr + (open ? "" : header)}
-                button={
-                    <Link onClick={() => setOpen((opn) => !opn)}>
-                        <Icon
-                            as={open ? BsCaretDown : BsCaretLeft}
-                            boxSize="1.5rem"
-                        />
-                    </Link>
+                text={toLocalDisplayDate(dateStr) + (open ? "" : header)}
+                icon={
+                    <Icon
+                        as={open ? BsCaretDown : BsCaretLeft}
+                        boxSize="1.5rem"
+                    />
                 }
+                onClick={() => setOpen((opn) => !opn)}
             />
             <Table variant="simple">
                 {open && (
@@ -243,6 +254,8 @@ const DayEditor = ({
         ${end ? ` - ${toLocalDisplayDate(jsDateToShortISODate(end))}` : ""}
     `
 
+    const [oldestEntryFirst, setOldestEntryFirst] = useState<boolean>(false)
+
     const handleTimesheetChange = (
         event: React.FormEvent<HTMLSelectElement>
     ) => {
@@ -261,6 +274,10 @@ const DayEditor = ({
     const onCancel = () => {
         setTimesheet(undefined)
     }
+
+    const entryDates = dates.filter((dat) =>
+        entries.find((ent) => ent.date === jsDateToShortISODate(dat))
+    )
 
     return (
         <>
@@ -322,31 +339,66 @@ const DayEditor = ({
                     </Box>
                 </Box>
             </Box>
-            {entries.length > 0 && (
+            {entryDates.length > 0 && (
                 <Box>
-                    <Header type="sub">{`Previous entries`}</Header>
-                    {dates.map((ddate) => {
-                        const dateStr = jsDateToShortISODate(ddate)
-                        const displayEntries = entries.filter(
-                            (entry) => entry.date === dateStr
-                        )
-
-                        return (
-                            <Box key={`timesheet-entry-${ddate}`}>
-                                {displayEntries.length > 0 && (
-                                    <EntryTable
-                                        dateStr={dateStr}
-                                        displayEntries={displayEntries}
-                                        del={del}
-                                        tasks={tasks}
-                                        setTimesheetEntries={
-                                            setTimesheetEntries
+                    <Header type="sub">
+                        <Flex
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
+                            {"Previous entries: "}
+                            {entryDates.length > 1 && (
+                                <Flex
+                                    justifyContent="right"
+                                    alignItems="center"
+                                    fontSize="md"
+                                >
+                                    <Box fontWeight="bold" color="whitesmoke">
+                                        {"Sort entries: "}
+                                    </Box>
+                                    <SortingOrderIconButton
+                                        marginX="2rem"
+                                        aria-label="sortEntries"
+                                        onClick={() =>
+                                            setOldestEntryFirst((ent) => !ent)
                                         }
+                                        oldestFirst={oldestEntryFirst}
                                     />
-                                )}
-                            </Box>
-                        )
-                    })}
+                                    <Box fontWeight="bold" color="whitesmoke">
+                                        {`latest entries ${
+                                            oldestEntryFirst ? "last" : "first"
+                                        }`}
+                                    </Box>
+                                </Flex>
+                            )}
+                        </Flex>
+                    </Header>
+
+                    {(oldestEntryFirst ? dates : dates.reverse()).map(
+                        (ddate, i) => {
+                            const dateStr = jsDateToShortISODate(ddate)
+                            const displayEntries = entries.filter(
+                                (entry) => entry.date === dateStr
+                            )
+
+                            return (
+                                <Box key={`timesheet-entry-${dateStr}`}>
+                                    {displayEntries.length > 0 && (
+                                        <EntryTable
+                                            idx={i}
+                                            dateStr={dateStr}
+                                            displayEntries={displayEntries}
+                                            del={del}
+                                            tasks={tasks}
+                                            setTimesheetEntries={
+                                                setTimesheetEntries
+                                            }
+                                        />
+                                    )}
+                                </Box>
+                            )
+                        }
+                    )}
                 </Box>
             )}
         </>

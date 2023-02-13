@@ -34,6 +34,7 @@ const components: Record<string, StyleConfig> = {
             tableHeader: {
                 bg: "#6f6f6f",
                 paddingX: "1.5rem",
+                _hover: { cursor: "pointer" },
             },
         },
         defaultProps: {
@@ -90,16 +91,18 @@ const Header = ({ children, type }: IHeader) => {
 
 export const TableHeader = ({
     text,
-    button,
+    icon,
+    onClick,
 }: {
     text: string
-    button?: JSX.Element
+    icon?: JSX.Element
+    onClick?: () => void
 }) => (
     <StyledItems>
-        <Heading as="h4" variant="tableHeader" size="sm">
+        <Heading as="h4" variant="tableHeader" size="sm" onClick={onClick}>
             <Flex justifyContent="space-between" alignItems="center">
                 <Box>{text}</Box>
-                <Box>{button}</Box>
+                <Box>{icon}</Box>
             </Flex>
         </Heading>
     </StyledItems>
