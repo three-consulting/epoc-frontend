@@ -150,9 +150,6 @@ const DateInput = ({
 }: DateInputProps): JSX.Element => {
     const { user } = useContext(UserContext)
 
-    const [newStartDate, setNewStartDate] = useState(startDate)
-    const [newEndDate, setNewEndDate] = useState(endDate)
-
     const timesheetsEntries = useTimesheetEntries(
         user,
         startDate,
@@ -160,21 +157,31 @@ const DateInput = ({
         selectedEmployee?.email
     )
 
-    const handleStartDateChange = (event: React.FormEvent<HTMLInputElement>) =>
-        setNewStartDate(event.currentTarget.value)
+    const isInvalid = endDate < startDate || !endDate || !startDate
 
-    const handleEndDateChange = (event: React.FormEvent<HTMLInputElement>) =>
-        setNewEndDate(event.currentTarget.value)
-
-    const isInvalid = newEndDate < newStartDate || !newEndDate || !newStartDate
-    const isUntouched = newEndDate === "" || newStartDate === ""
-
-    const handleOnClick = () => {
-        if (!isInvalid) {
-            setStartDate(newStartDate)
-            setEndDate(newEndDate)
+    const handleStartDateChange = (
+        event: React.FormEvent<HTMLInputElement>
+    ) => {
+        if (
+            endDate >= event.currentTarget.value &&
+            endDate &&
+            event.currentTarget.value
+        ) {
+            setStartDate(event.currentTarget.value)
         }
     }
+
+    const handleEndDateChange = (event: React.FormEvent<HTMLInputElement>) => {
+        if (
+            event.currentTarget.value >= startDate &&
+            event.currentTarget.value &&
+            startDate
+        ) {
+            setEndDate(event.currentTarget.value)
+        }
+    }
+
+    const isUntouched = endDate === "" || startDate === ""
 
     const handleCsvExportClick = async () => {
         const res = await getText(
@@ -261,7 +268,7 @@ const DateInput = ({
                 <FormControl isInvalid={isInvalid && !isUntouched}>
                     <Input
                         type={"date"}
-                        value={newStartDate}
+                        value={startDate}
                         onChange={handleStartDateChange}
                     ></Input>
                     {isInvalid ? (
@@ -273,7 +280,7 @@ const DateInput = ({
                 <FormControl isInvalid={isInvalid && !isUntouched}>
                     <Input
                         type={"date"}
-                        value={newEndDate}
+                        value={endDate}
                         onChange={handleEndDateChange}
                     ></Input>
                     {isInvalid ? (
@@ -284,12 +291,6 @@ const DateInput = ({
                 </FormControl>
             </InputGroup>
             <FormButtons>
-                <CustomButton
-                    text="Search"
-                    colorScheme="blue"
-                    onClick={handleOnClick}
-                    disabled={isInvalid}
-                />
                 <CustomButton
                     text="Export as .csv"
                     colorScheme="green"
