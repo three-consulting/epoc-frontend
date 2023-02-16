@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import React from "react"
 import { IconType } from "react-icons"
-import { BsX } from "react-icons/bs"
+import { BsSortNumericDown, BsSortNumericDownAlt, BsX } from "react-icons/bs"
 
 const capitalize = (input: string): string =>
     input.charAt(0).toUpperCase() + input.slice(1)
@@ -116,6 +116,22 @@ export const RemoveIconButton = (props: IconButtonProps): JSX.Element => (
     <StyledIconButton
         {...props}
         iconType={BsX}
+        color="whitesmoke"
+        backgroundColor="#6f6f6f"
+        hover={true}
+    />
+)
+
+interface ISortingOrderIconButton extends IconButtonProps {
+    oldestFirst: boolean
+}
+
+export const SortingOrderIconButton = (
+    props: ISortingOrderIconButton
+): JSX.Element => (
+    <StyledIconButton
+        {...props}
+        iconType={props.oldestFirst ? BsSortNumericDown : BsSortNumericDownAlt}
         color="whitesmoke"
         backgroundColor="#6f6f6f"
         hover={true}
