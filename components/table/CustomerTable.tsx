@@ -30,8 +30,8 @@ interface CustomerTableProps {
 function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
     const router = useRouter()
 
-    const activeCustomers = customers.filter((cst) => cst.enabled)
-    const archivedCustomers = customers.filter((cst) => !cst.enabled)
+    const activeCustomers = customers ?? []
+    const archivedCustomers = customers ?? []
 
     const [showArchived, setShowArchived] = useState<boolean>(false)
 
@@ -39,7 +39,7 @@ function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
         <>
             <FormSection
                 header={
-                    activeCustomers
+                    activeCustomers.length > 0
                         ? "Active customers"
                         : "No active customers found"
                 }
@@ -73,7 +73,7 @@ function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
                     />
                 </FormButtons>
             </FormSection>
-            {archivedCustomers && archivedCustomers.length > 0 && (
+            {archivedCustomers.length > 0 && (
                 <>
                     {showArchived && (
                         <FormSection header={"Archived customers"}>

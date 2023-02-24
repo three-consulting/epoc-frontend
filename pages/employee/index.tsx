@@ -47,7 +47,7 @@ const Employees: NextPage = () => {
             {employeesResponse?.isSuccess && (
                 <EmployeeTable
                     user={user}
-                    employeesResponse={employeesResponse}
+                    employees={employeesResponse.data}
                     setEmployeesResponse={setEmployeesResponse}
                 />
             )}
