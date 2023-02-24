@@ -16,7 +16,6 @@ import Link from "next/link"
 import TimesheetTable from "@/components/table/TimesheetTable"
 import TaskTable from "@/components/table/TaskTable"
 import ProjectDetail from "@/components/detail/ProjectDetail"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useProjectDetail } from "@/lib/hooks/useDetail"
 import { useTimesheets, useEmployees, useTasks } from "@/lib/hooks/useList"
 import { useUpdateProjects } from "@/lib/hooks/useUpdate"
@@ -28,15 +27,20 @@ import {
     StyledButton,
     RemoveIconButton,
 } from "@/components/common/Buttons"
+import { User } from "firebase/auth"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
-type Props = {
+interface IProjectDetailPage {
     projectId: number
+    user: User
 }
 
 type ProjectStatus = "ACTIVE" | "ARCHIVED"
 
-function ProjectDetailPage({ projectId }: Props): JSX.Element {
-    const { user } = useContext(UserContext)
+const ProjectDetailPage = ({
+    projectId,
+    user,
+}: IProjectDetailPage): JSX.Element => {
     const projectDetailResponse = useProjectDetail(projectId, user)
     const timesheetsResponse = useTimesheets(user, projectId)
     const employeesResponse = useEmployees(user)
@@ -109,13 +113,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
     }
 
     return (
-        <FormPage
-            header={
-                projectDetailResponse.isSuccess
-                    ? projectDetailResponse.data.name ?? "-"
-                    : "-"
-            }
-        >
+        <FormPage header={"Projects"}>
             <Box>
                 {errorMessage ? (
                     <>
@@ -132,7 +130,13 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                 )}
                 {projectDetailResponse.isSuccess ? (
                     <>
-                        <FormSection header="Project details">
+                        <FormSection
+                            header={
+                                projectDetailResponse.isSuccess
+                                    ? projectDetailResponse.data.name ?? "-"
+                                    : "-"
+                            }
+                        >
                             <ProjectDetail
                                 project={projectDetailResponse.data}
                             />
@@ -182,6 +186,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                                             project={projectDetailResponse.data}
                                             timesheets={timesheetsResponse.data}
                                             employees={employeesResponse.data}
+                                            user={user}
                                         />
                                     )}
                                 {tasksResponse.isSuccess && (
@@ -204,7 +209,8 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
 const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <ProjectDetailPage projectId={Number(id)} /> : null
+    const { user } = useContext(UserContext)
+    return id ? <ProjectDetailPage projectId={Number(id)} user={user} /> : null
 }
 
 export default Page

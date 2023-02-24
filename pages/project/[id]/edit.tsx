@@ -51,6 +51,7 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
                             project={projectDetailResponse.data}
                             afterSubmit={redirectToProjectDetail}
                             onCancel={redirectToProjectDetail}
+                            user={user}
                         />
                     )}
             </Box>

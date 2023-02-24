@@ -8,14 +8,18 @@ import { EditTimesheetForm } from "@/components/form/TimesheetForm"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useTimesheetDetail } from "@/lib/hooks/useDetail"
 import { useEmployees } from "@/lib/hooks/useList"
+import { User } from "firebase/auth"
 
-type Props = {
+interface IEditTimesheetPage {
     timesheetId: number
+    user: User
 }
 
-function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
+const EditTimesheetPage = ({
+    timesheetId,
+    user,
+}: IEditTimesheetPage): JSX.Element => {
     const router = useRouter()
-    const { user } = useContext(UserContext)
 
     const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
     const employeesResponse = useEmployees(user)
@@ -51,6 +55,7 @@ function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
                         employees={employeesResponse.data}
                         afterSubmit={redirectToTimesheetDetail}
                         onCancel={redirectToTimesheetDetail}
+                        user={user}
                     />
                 )}
         </div>
@@ -60,7 +65,10 @@ function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
 const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <EditTimesheetPage timesheetId={Number(id)} /> : null
+    const { user } = useContext(UserContext)
+    return id ? (
+        <EditTimesheetPage timesheetId={Number(id)} user={user} />
+    ) : null
 }
 
 export default Edit

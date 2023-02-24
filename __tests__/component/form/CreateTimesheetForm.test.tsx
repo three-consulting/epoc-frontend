@@ -7,6 +7,7 @@ import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { CreateTimesheetForm } from "@/components/form/TimesheetForm"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
+    testAdminUser,
     testEmployee,
     testProject,
     testTimesheetAllFields,
@@ -100,6 +101,7 @@ test("a timesheet with the required fields only can be submitted", async () => {
             employees={[testEmployee]}
             project={testProject}
             projectId={1}
+            user={testAdminUser}
         />
     )
     await fillAndSubmitForm(testTimesheetRequiredFields)
@@ -120,6 +122,7 @@ test("a timesheet with all fields can be submitted", async () => {
             employees={[testEmployee]}
             project={testProject}
             projectId={1}
+            user={testAdminUser}
         />
     )
     await fillAndSubmitForm(testTimesheetAllFields)
@@ -144,6 +147,7 @@ test("afterSubmit is invoked with the correct data", async () => {
             project={testProject}
             projectId={1}
             afterSubmit={afterSubmitSpy}
+            user={testAdminUser}
         />
     )
     await fillAndSubmitForm(testTimesheetRequiredFields)
@@ -164,6 +168,7 @@ test("onCancel is invoked", async () => {
             project={testProject}
             projectId={1}
             onCancel={onCancelSpy}
+            user={testAdminUser}
         />
     )
 
@@ -180,6 +185,7 @@ test("a required field cannot be missing", async () => {
             employees={[testEmployee]}
             project={testProject}
             projectId={1}
+            user={testAdminUser}
         />
     )
     const timesheetMissingRequired = Object.assign({}, testTimesheetAllFields)

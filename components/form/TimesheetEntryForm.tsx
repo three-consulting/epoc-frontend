@@ -25,6 +25,7 @@ import {
     useUpdateTimesheetEntry,
 } from "@/lib/hooks/useUpdate"
 import { isError } from "lodash"
+import { User } from "firebase/auth"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 type TimesheetEntryFields = Partial<TimesheetEntry>
@@ -45,6 +46,7 @@ interface CreateTimesheetEntryFormProps
     tasks: Task[]
     timesheet: Timesheet
     setTimesheetEntries: TSetState<TimesheetEntry[]>
+    user: User
 }
 
 interface EditTimesheetEntryFormProps extends FormBase<TimesheetEntry> {
@@ -248,9 +250,9 @@ export const CreateTimesheetEntryForm = ({
     timesheet,
     setTimesheetEntries,
     afterSubmit,
+    user,
     ...props
 }: CreateTimesheetEntryFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
     const { post } = useUpdateTimesheetEntries(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")

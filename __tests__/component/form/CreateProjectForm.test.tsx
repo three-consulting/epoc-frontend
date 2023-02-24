@@ -9,6 +9,7 @@ import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
     anotherTestCustomer,
     anotherTestEmployee,
+    testAdminUser,
     testCustomer,
     testEmployee,
     testProjectAllFields,
@@ -101,6 +102,7 @@ test("a project with the required fields only can be submitted", async () => {
         <CreateProjectForm
             employees={[testEmployee, anotherTestEmployee]}
             customers={[testCustomer, anotherTestCustomer]}
+            user={testAdminUser}
         />
     )
     await fillAndSubmitForm(testProjectRequiredFields)
@@ -120,6 +122,7 @@ test("a project with all fields can be submitted", async () => {
         <CreateProjectForm
             employees={[testEmployee, anotherTestEmployee]}
             customers={[testCustomer, anotherTestCustomer]}
+            user={testAdminUser}
         />
     )
     await fillAndSubmitForm(testProjectAllFields)
@@ -141,6 +144,7 @@ test("afterSubmit is invoked with the correct data", async () => {
             employees={[testEmployee, anotherTestEmployee]}
             customers={[testCustomer, anotherTestCustomer]}
             afterSubmit={afterSubmitSpy}
+            user={testAdminUser}
         />
     )
     await fillAndSubmitForm(testProjectRequiredFields)
@@ -160,6 +164,7 @@ test("onCancel is invoked", async () => {
             employees={[testEmployee, anotherTestEmployee]}
             customers={[testCustomer, anotherTestCustomer]}
             onCancel={onCancelSpy}
+            user={testAdminUser}
         />
     )
 
@@ -174,6 +179,7 @@ test("a required field cannot be missing", async () => {
         <CreateProjectForm
             employees={[testEmployee, anotherTestEmployee]}
             customers={[testCustomer, anotherTestCustomer]}
+            user={testAdminUser}
         />
     )
     const projectMissingRequired = Object.assign({}, testProjectAllFields)

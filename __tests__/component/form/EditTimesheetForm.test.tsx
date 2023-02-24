@@ -7,6 +7,7 @@ import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { EditTimesheetForm } from "@/components/form/TimesheetForm"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
+    testAdminUser,
     testEmployee,
     testProject,
     testTimesheet,
@@ -98,6 +99,7 @@ test("a timesheet can be edited with required fields", async () => {
                     projectId={testProject.id}
                     timesheet={testTimesheet}
                     timesheetId={testTimesheet.id}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -128,6 +130,7 @@ test("a timesheet can be edited with all fields", async () => {
                     projectId={testProject.id}
                     timesheet={testTimesheet}
                     timesheetId={testTimesheet.id}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -162,6 +165,7 @@ test("afterSubmit is invoked with the correct data", async () => {
                     timesheet={testTimesheet}
                     timesheetId={testTimesheet.id}
                     afterSubmit={afterSubmitSpy}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -190,6 +194,7 @@ test("onCancel is invoked", async () => {
                     timesheet={testTimesheet}
                     timesheetId={testTimesheet.id}
                     onCancel={onCancelSpy}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -212,6 +217,7 @@ test("a required field cannot be missing when editing timesheet form", async () 
                     projectId={testProject.id}
                     timesheet={testTimesheet}
                     timesheetId={testTimesheet.id}
+                    user={testAdminUser}
                 />
             )}
         </>

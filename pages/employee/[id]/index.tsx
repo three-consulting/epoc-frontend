@@ -69,6 +69,7 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
                     entries={timesheetEntriesResponse.data}
                     timesheets={timesheetsResponse.data}
                     tasks={tasksResponse.data}
+                    user={user}
                 />
             )}
         </div>

@@ -11,13 +11,14 @@ import {
 } from "@/lib/hooks/useList"
 import FormPage from "@/components/common/FormPage"
 import { Box } from "@chakra-ui/react"
+import { User } from "firebase/auth"
 
-interface IndexPageProps {
+interface IIndexPageProps {
     email: string
+    user: User
 }
 
-const IndexPage = ({ email }: IndexPageProps) => {
-    const { user } = useContext(UserContext)
+const IndexPage = ({ email, user }: IIndexPageProps) => {
     const timesheetsResponse = useTimesheets(user, undefined, email)
     const tasksResponse = useTasks(user)
 
@@ -65,6 +66,7 @@ const IndexPage = ({ email }: IndexPageProps) => {
                             timesheets={timesheetsResponse.data}
                             entries={timesheetEntriesResponse.data}
                             tasks={tasksResponse.data}
+                            user={user}
                         />
                     )}
             </Box>
@@ -74,7 +76,9 @@ const IndexPage = ({ email }: IndexPageProps) => {
 
 const Home: NextPage = () => {
     const { user } = useContext(UserContext)
-    return user && user.email ? <IndexPage email={user.email} /> : null
+    return user && user.email ? (
+        <IndexPage email={user.email} user={user} />
+    ) : null
 }
 
 export default Home

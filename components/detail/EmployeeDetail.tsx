@@ -1,6 +1,7 @@
 import { Employee, Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
 import { toLocalDisplayDate } from "@/lib/utils/date"
 import { Box, Flex, Heading } from "@chakra-ui/layout"
+import { User } from "firebase/auth"
 import Link from "next/link"
 import React from "react"
 import { StyledButton } from "../common/Buttons"
@@ -13,6 +14,7 @@ type EmployeeDetailProps = {
     entries: TimesheetEntry[]
     timesheets: Timesheet[]
     tasks: Task[]
+    user: User
 }
 
 const EmployeeDetail = ({
@@ -21,6 +23,7 @@ const EmployeeDetail = ({
     entries,
     timesheets,
     tasks,
+    user,
 }: EmployeeDetailProps): JSX.Element => {
     const { firstName, lastName, email, role, updated, created } = employee
     return (
@@ -59,6 +62,7 @@ const EmployeeDetail = ({
                     entries={entries}
                     timesheets={timesheets}
                     tasks={tasks}
+                    user={user}
                 ></TimesheetEntryEditor>
             </Flex>
         </>

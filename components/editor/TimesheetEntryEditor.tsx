@@ -1,4 +1,3 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import { Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
 import { isDate, round, sum } from "lodash"
@@ -21,13 +20,7 @@ import {
     Tr,
     useOutsideClick,
 } from "@chakra-ui/react"
-import React, {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useRef,
-    useState,
-} from "react"
+import React, { Dispatch, SetStateAction, useRef, useState } from "react"
 import Calendar, {
     CalendarTileProperties,
     ViewCallbackProperties,
@@ -48,6 +41,7 @@ import ImportFromCSVModal from "../modal/ImportFromCSVModal"
 import useHoliday from "@/lib/hooks/useHoliday"
 import Header, { TableHeader } from "../common/Header"
 import { BsCaretDown, BsCaretLeft, BsSunglasses, BsTrash } from "react-icons/bs"
+import { User } from "firebase/auth"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 
@@ -55,6 +49,7 @@ interface TimesheetEntryEditorProps {
     entries: TimesheetEntry[]
     timesheets: Timesheet[]
     tasks: Task[]
+    user: User
 }
 
 interface TimesheetEntryRowProps {
@@ -71,6 +66,7 @@ interface DayEditorProps {
     entries: TimesheetEntry[]
     tasks: Task[]
     setTimesheetEntries: TSetState<TimesheetEntry[]>
+    user: User
 }
 
 const taskByProject = (tasks: Task[], projectId: number) =>
@@ -230,8 +226,8 @@ const DayEditor = ({
     entries,
     tasks,
     setTimesheetEntries,
+    user,
 }: DayEditorProps): JSX.Element => {
-    const { user } = useContext(UserContext)
     const { delete: del } = useUpdateTimesheetEntries(user)
 
     const [timesheet, setTimesheet] = useState<Timesheet | undefined>(undefined)
@@ -317,6 +313,7 @@ const DayEditor = ({
                                     timesheet.project.id
                                 )}
                                 setTimesheetEntries={setTimesheetEntries}
+                                user={user}
                             />
                         )}
                     </Box>
@@ -406,6 +403,7 @@ export const TimesheetEntryEditor = ({
     entries,
     timesheets,
     tasks,
+    user,
 }: TimesheetEntryEditorProps): JSX.Element => {
     const [selectInterval, setSelectInterval] = useState<boolean>(false)
     const [dates, setDates] = useState<[Date] | [Date | null, Date | null]>([
@@ -605,6 +603,7 @@ export const TimesheetEntryEditor = ({
                             entries={timesheetEntries}
                             tasks={tasks}
                             setTimesheetEntries={setTimesheetEntries}
+                            user={user}
                         />
                     </Box>
                 </Flex>

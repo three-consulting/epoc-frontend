@@ -6,6 +6,7 @@ import {
     Timesheet,
     TimesheetEntry,
 } from "@/lib/types/apiTypes"
+import { IdTokenResult, User } from "firebase/auth"
 
 export const testEmployee: Employee = {
     id: 1,
@@ -171,4 +172,34 @@ export const testTimesheetEntryAllFields: TimesheetEntry = {
     description: "Test description",
     timesheet: testTimesheet,
     task: testTask,
+}
+
+const mockIdTokenResult: IdTokenResult = {
+    authTime: "",
+    expirationTime: "",
+    issuedAtTime: "",
+    signInProvider: null,
+    signInSecondFactor: null,
+    token: "",
+    claims: {},
+}
+
+export const testAdminUser: User = {
+    emailVerified: false,
+    isAnonymous: false,
+    metadata: {},
+    providerData: [],
+    refreshToken: "testToken",
+    tenantId: null,
+    displayName: null,
+    email: null,
+    phoneNumber: null,
+    photoURL: null,
+    providerId: "testId",
+    uid: "testUid",
+    delete: () => Promise.resolve(),
+    getIdToken: () => Promise.resolve(""),
+    getIdTokenResult: () => Promise.resolve(mockIdTokenResult),
+    reload: () => Promise.resolve(),
+    toJSON: () => ({}),
 }

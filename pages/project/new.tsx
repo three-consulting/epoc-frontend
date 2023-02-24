@@ -44,6 +44,7 @@ const New: NextPage = () => {
                         employees={employeesResponse.data}
                         afterSubmit={redirectToProjectDetails}
                         onCancel={redirectToProjectList}
+                        user={user}
                     />
                 )}
             </Box>

@@ -9,6 +9,7 @@ import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
     anotherTestCustomer,
     anotherTestEmployee,
+    testAdminUser,
     testCustomer,
     testEmployee,
     testProject,
@@ -106,6 +107,7 @@ test("a project can be edited with required fields", async () => {
                     employees={[testEmployee, anotherTestEmployee]}
                     customers={[testCustomer, anotherTestCustomer]}
                     project={testProject}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -134,6 +136,7 @@ test("a project can be edited with all fields", async () => {
                     employees={[testEmployee, anotherTestEmployee]}
                     customers={[testCustomer, anotherTestCustomer]}
                     project={testProject}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -164,6 +167,7 @@ test("afterSubmit is invoked with the correct data", async () => {
                     customers={[testCustomer, anotherTestCustomer]}
                     project={testProject}
                     afterSubmit={afterSubmitSpy}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -189,6 +193,7 @@ test("onCancel is invoked", async () => {
                     customers={[testCustomer, anotherTestCustomer]}
                     project={testProject}
                     onCancel={onCancelSpy}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -209,6 +214,7 @@ test("a required field cannot be missing when editing a project", async () => {
                     employees={[testEmployee, anotherTestEmployee]}
                     customers={[testCustomer, anotherTestCustomer]}
                     project={testProject}
+                    user={testAdminUser}
                 />
             )}
         </>

@@ -1,4 +1,3 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateProjects } from "@/lib/hooks/useUpdate"
 import { Customer, Employee, Project } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
@@ -12,23 +11,26 @@ import {
     Select,
     Box,
 } from "@chakra-ui/react"
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import FormSection from "../common/FormSection"
 import { NewCustomerModal } from "../common/FormFields"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
+import { User } from "firebase/auth"
 
-type CreateProjectFormProps = FormBase<Project> & {
+interface ICreateProjectFormProps extends FormBase<Project> {
     employees: Employee[]
     customers: Customer[]
+    user: User
 }
 
-type EditProjectFormProps = CreateProjectFormProps & {
+interface IEditProjectFormProps extends ICreateProjectFormProps {
     project: Project
+    user: User
 }
 
-type ProjectFormProps = CreateProjectFormProps & {
+interface IProjectFormProps extends ICreateProjectFormProps {
     project?: Project
     onSubmit: (project: Project) => void
 }
@@ -49,13 +51,13 @@ const validateProjectFields = (form: ProjectFields): Project => {
     throw Error("Invalid project form: missing required fields")
 }
 
-function ProjectForm({
+const ProjectForm = ({
     project: projectOrNull,
     customers,
     employees,
     onSubmit,
     onCancel,
-}: ProjectFormProps) {
+}: IProjectFormProps) => {
     const [projectFields, setProjectFields] = useState<ProjectFields>(
         projectOrNull || {}
     )
@@ -269,10 +271,9 @@ function ProjectForm({
 }
 
 export const CreateProjectForm = (
-    props: CreateProjectFormProps
+    props: ICreateProjectFormProps
 ): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { post } = useUpdateProjects(user)
+    const { post } = useUpdateProjects(props.user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -295,9 +296,8 @@ export const CreateProjectForm = (
     )
 }
 
-export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { put } = useUpdateProjects(user)
+export const EditProjectForm = (props: IEditProjectFormProps): JSX.Element => {
+    const { put } = useUpdateProjects(props.user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

@@ -1,4 +1,3 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
 import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
@@ -11,24 +10,27 @@ import {
     Input,
     Select,
 } from "@chakra-ui/react"
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
+import { User } from "firebase/auth"
 
-type CreateTimesheetFormProps = FormBase<Timesheet> & {
+interface ICreateTimesheetForm extends FormBase<Timesheet> {
     employees: Employee[]
     project: Project
     projectId: number
+    user: User
 }
 
-type EditTimesheetFormProps = CreateTimesheetFormProps & {
+interface IEditTimesheetForm extends ICreateTimesheetForm {
     timesheet: Timesheet
     timesheetId: number
+    user: User
 }
 
-type TimesheetFormProps = CreateTimesheetFormProps & {
+interface ITimesheetForm extends ICreateTimesheetForm {
     timesheet?: Timesheet
     timesheetId?: number
     onSubmit: (timesheet: Timesheet) => void
@@ -63,7 +65,7 @@ function TimesheetForm({
     employees,
     onSubmit,
     onCancel,
-}: TimesheetFormProps): JSX.Element {
+}: ITimesheetForm): JSX.Element {
     const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>(
         timesheetOrNull || { project }
     )
@@ -255,10 +257,9 @@ function TimesheetForm({
 }
 
 export const CreateTimesheetForm = (
-    props: CreateTimesheetFormProps
+    props: ICreateTimesheetForm
 ): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { post } = useUpdateTimesheets(user)
+    const { post } = useUpdateTimesheets(props.user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -281,11 +282,8 @@ export const CreateTimesheetForm = (
     )
 }
 
-export const EditTimesheetForm = (
-    props: EditTimesheetFormProps
-): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { put } = useUpdateTimesheets(user)
+export const EditTimesheetForm = (props: IEditTimesheetForm): JSX.Element => {
+    const { put } = useUpdateTimesheets(props.user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

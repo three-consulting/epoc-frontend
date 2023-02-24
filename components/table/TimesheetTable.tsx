@@ -17,6 +17,7 @@ import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
 import FormSection from "../common/FormSection"
 import FormButtons from "../common/FormButtons"
 import { RemoveIconButton, StyledButton } from "../common/Buttons"
+import { User } from "firebase/auth"
 
 interface TimesheetRowProps {
     timesheet: Timesheet
@@ -84,12 +85,14 @@ interface TimesheetTableProps {
     project: Project
     timesheets: Timesheet[]
     employees: Employee[]
+    user: User
 }
 
 function TimesheetTable({
     project,
     timesheets,
     employees,
+    user,
 }: TimesheetTableProps): JSX.Element {
     const [displayNewTimesheetForm, setDisplayNewTimesheetForm] =
         useState(false)
@@ -159,6 +162,7 @@ function TimesheetTable({
                                 onCancel={() =>
                                     setDisplayNewTimesheetForm(false)
                                 }
+                                user={user}
                             />
                             <ModalCloseButton />
                         </ModalContent>

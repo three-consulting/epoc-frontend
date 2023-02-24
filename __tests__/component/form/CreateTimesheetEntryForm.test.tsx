@@ -11,6 +11,7 @@ import {
     testTask,
     testTimesheetEntryAllFields,
     testTimesheetEntryRequiredFields,
+    testAdminUser,
 } from "../../fixtures"
 
 import { User } from "firebase/auth"
@@ -91,6 +92,7 @@ test("a timesheet with the required fields only can be submitted", async () => {
             dates={[new Date("2022-06-09")]}
             tasks={[testTask]}
             setTimesheetEntries={(entries) => entries}
+            user={testAdminUser}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
@@ -114,6 +116,7 @@ test("a timesheet with all fields can be submitted", async () => {
             dates={[new Date("2022-06-09")]}
             tasks={[testTask]}
             setTimesheetEntries={(entries) => entries}
+            user={testAdminUser}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryAllFields)
@@ -141,6 +144,7 @@ test("afterSubmit is invoked with the correct data", async () => {
             tasks={[testTask]}
             afterSubmit={afterSubmitSpy}
             setTimesheetEntries={(entries) => entries}
+            user={testAdminUser}
         />
     )
     await fillAndSubmitForm(testTimesheetEntryRequiredFields)
@@ -164,6 +168,7 @@ test("onCancel is invoked", async () => {
             tasks={[testTask]}
             onCancel={onCancelSpy}
             setTimesheetEntries={(entries) => entries}
+            user={testAdminUser}
         />
     )
     const cancelButton = screen.getByTestId("form-button-cancel")
@@ -181,6 +186,7 @@ test("a required field cannot be missing", async () => {
             dates={[new Date("2022-06-09")]}
             tasks={[testTask]}
             setTimesheetEntries={(entries) => entries}
+            user={testAdminUser}
         />
     )
     const timesheetMissingRequired = Object.assign(
