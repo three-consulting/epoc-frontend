@@ -49,3 +49,22 @@ export const parseQuantity = (
     }
     throw new Error("Quantity can't be parsed")
 }
+
+/**
+ * Split array into two array of two arrays with some function logic
+ */
+export const split = <T = unknown>(
+    arr: Array<T>,
+    fun: (itm: T) => boolean
+): [Array<T>, Array<T>] =>
+    arr.reduce(
+        (prev: [Array<T>, Array<T>], curr: T) => {
+            if (fun(curr)) {
+                prev[0].push(curr)
+            } else {
+                prev[1].push(curr)
+            }
+            return prev
+        },
+        [[], []]
+    )

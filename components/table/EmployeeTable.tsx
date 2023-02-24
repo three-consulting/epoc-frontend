@@ -18,6 +18,7 @@ import { firebaseSyncEndpoint, useGet } from "@/lib/hooks/swrInterface"
 import FormSection from "../common/FormSection"
 import FormButtons from "../common/FormButtons"
 import { CustomButton } from "../common/Buttons"
+import { split } from "@/lib/utils/common"
 
 interface EmployeeRowProps {
     employee: Employee
@@ -80,18 +81,40 @@ export const SyncEmployeesButton = ({
 
 interface EmployeeTableProps {
     user: User
-    employees?: Employee[]
+    employees: Employee[]
     setEmployeesResponse: Dispatch<SetStateAction<ApiGetResponse<Employee[]>>>
 }
+
+interface ITableComponent {
+    employees: Array<Employee>
+}
+
+const TableComponent = ({ employees }: ITableComponent): JSX.Element => (
+    <Table variant="simple">
+        <Thead>
+            <Tr>
+                <Th>First name</Th>
+                <Th>Last name</Th>
+                <Th>Email</Th>
+                <Th>Role</Th>
+            </Tr>
+        </Thead>
+        <Tbody>
+            {employees.map((employee) => (
+                <EmployeeRow employee={employee} key={`${employee.id}`} />
+            ))}
+        </Tbody>
+    </Table>
+)
+
+const isArchived = (emp: Employee): boolean => emp.status === "ARCHIVED"
 
 const EmployeeTable = ({
     user,
     employees,
     setEmployeesResponse,
 }: EmployeeTableProps): JSX.Element => {
-    const activeEmployees = employees ?? []
-    const archivedEmployees = employees ?? []
-
+    const [archivedEmployees, activeEmployees] = split(employees, isArchived)
     const [showArchived, setShowArchived] = useState<boolean>(false)
 
     return (
@@ -104,24 +127,7 @@ const EmployeeTable = ({
                 }
             >
                 {activeEmployees.length > 0 ? (
-                    <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <Th>First name</Th>
-                                <Th>Last name</Th>
-                                <Th>Email</Th>
-                                <Th>Role</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {activeEmployees.map((employee) => (
-                                <EmployeeRow
-                                    employee={employee}
-                                    key={`${employee.id}`}
-                                />
-                            ))}
-                        </Tbody>
-                    </Table>
+                    <TableComponent employees={activeEmployees} />
                 ) : (
                     <Box borderWidth="1px" padding="1rem" margin="1rem">
                         No employees have been added yet.
@@ -138,24 +144,7 @@ const EmployeeTable = ({
                 <>
                     {showArchived && (
                         <FormSection header={"Archived employees"}>
-                            <Table variant="simple">
-                                <Thead>
-                                    <Tr>
-                                        <Th>First name</Th>
-                                        <Th>Last name</Th>
-                                        <Th>Email</Th>
-                                        <Th>Role</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {archivedEmployees.map((employee) => (
-                                        <EmployeeRow
-                                            employee={employee}
-                                            key={`${employee.id}`}
-                                        />
-                                    ))}
-                                </Tbody>
-                            </Table>
+                            <TableComponent employees={archivedEmployees} />
                         </FormSection>
                     )}
                     <FormControl display="flex" alignItems="center">

@@ -73,6 +73,8 @@ export interface components {
       id?: number;
       name: string;
       description?: string;
+      /** @enum {string} */
+      status?: "ACTIVE" | "ARCHIVED";
       /** Format: date-time */
       created?: string;
       /** Format: date-time */
@@ -87,6 +89,8 @@ export interface components {
       email: string;
       /** Format: date */
       startDate?: string;
+      /** @enum {string} */
+      status?: "ACTIVE" | "ARCHIVED";
       /** Format: date-time */
       created?: string;
       /** Format: date-time */

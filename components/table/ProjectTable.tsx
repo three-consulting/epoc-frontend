@@ -17,6 +17,7 @@ import FormSection from "../common/FormSection"
 import { useRouter } from "next/router"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
+import { split } from "@/lib/utils/common"
 
 interface ProjectRowProps {
     project: Project
@@ -37,12 +38,32 @@ interface ProjectTableProps {
     projects: Project[]
 }
 
+interface ITableComponent {
+    projects: Array<Project>
+}
+
+const TableComponent = ({ projects }: ITableComponent): JSX.Element => (
+    <Table variant="simple">
+        <Thead>
+            <Tr>
+                <Th>Name</Th>
+                <Th>Client</Th>
+            </Tr>
+        </Thead>
+        <Tbody>
+            {projects.map((project) => (
+                <ProjectRow project={project} key={`${project.id}`} />
+            ))}
+        </Tbody>
+    </Table>
+)
+
+const isArchived = (prj: Project): boolean => prj.status === "ARCHIVED"
+
 function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
     const router = useRouter()
 
-    const activePropjects = projects.filter((prj) => prj.status === "ACTIVE")
-    const archivedProjects = projects.filter((prj) => prj.status === "ARCHIVED")
-
+    const [archivedProjects, activePropjects] = split(projects, isArchived)
     const [showArchived, setShowArchived] = useState<boolean>(false)
 
     return (
@@ -57,22 +78,7 @@ function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
                 <>
                     {activePropjects.length > 0 && (
                         <Box>
-                            <Table variant="simple">
-                                <Thead>
-                                    <Tr>
-                                        <Th>Name</Th>
-                                        <Th>Client</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {activePropjects.map((project) => (
-                                        <ProjectRow
-                                            project={project}
-                                            key={`${project.id}`}
-                                        />
-                                    ))}
-                                </Tbody>
-                            </Table>
+                            <TableComponent projects={activePropjects} />
                             <FormButtons>
                                 <StyledButton
                                     buttontype="add"
@@ -95,22 +101,7 @@ function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
                             }
                         >
                             {archivedProjects && (
-                                <Table variant="simple">
-                                    <Thead>
-                                        <Tr>
-                                            <Th>Name</Th>
-                                            <Th>Client</Th>
-                                        </Tr>
-                                    </Thead>
-                                    <Tbody>
-                                        {archivedProjects.map((project) => (
-                                            <ProjectRow
-                                                project={project}
-                                                key={`${project.id}`}
-                                            />
-                                        ))}
-                                    </Tbody>
-                                </Table>
+                                <TableComponent projects={archivedProjects} />
                             )}
                         </FormSection>
                     )}

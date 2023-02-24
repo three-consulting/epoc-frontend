@@ -8,6 +8,7 @@ import FormSection from "../common/FormSection"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
 import { useRouter } from "next/router"
+import { split } from "@/lib/utils/common"
 
 interface CustomerRowProps {
     customer: Customer
@@ -27,12 +28,31 @@ interface CustomerTableProps {
     customers: Customer[]
 }
 
+const isArchived = (cst: Customer): boolean => cst.status === "ARCHIVED"
+
+interface ITableComponent {
+    customers: Array<Customer>
+}
+
+const TableComponent = ({ customers }: ITableComponent): JSX.Element => (
+    <Table variant="simple">
+        <Thead>
+            <Tr>
+                <Th>Name</Th>
+            </Tr>
+        </Thead>
+        <Tbody>
+            {customers.map((customer) => (
+                <CustomerRow customer={customer} key={`${customer.id}`} />
+            ))}
+        </Tbody>
+    </Table>
+)
+
 function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
     const router = useRouter()
 
-    const activeCustomers = customers ?? []
-    const archivedCustomers = customers ?? []
-
+    const [archivedCustomers, activeCustomers] = split(customers, isArchived)
     const [showArchived, setShowArchived] = useState<boolean>(false)
 
     return (
@@ -45,21 +65,7 @@ function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
                 }
             >
                 {activeCustomers.length ? (
-                    <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <Th>Name</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {activeCustomers.map((customer) => (
-                                <CustomerRow
-                                    customer={customer}
-                                    key={`${customer.id}`}
-                                />
-                            ))}
-                        </Tbody>
-                    </Table>
+                    <TableComponent customers={activeCustomers} />
                 ) : (
                     <Box borderWidth="1px" padding="1rem" margin="1rem">
                         No customers have been added yet.
@@ -77,21 +83,7 @@ function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
                 <>
                     {showArchived && (
                         <FormSection header={"Archived customers"}>
-                            <Table variant="simple">
-                                <Thead>
-                                    <Tr>
-                                        <Th>Name</Th>
-                                    </Tr>
-                                </Thead>
-                                <Tbody>
-                                    {archivedCustomers.map((customer) => (
-                                        <CustomerRow
-                                            customer={customer}
-                                            key={`${customer.id}`}
-                                        />
-                                    ))}
-                                </Tbody>
-                            </Table>
+                            <TableComponent customers={archivedCustomers} />
                         </FormSection>
                     )}
                     <FormControl display="flex" alignItems="center">
