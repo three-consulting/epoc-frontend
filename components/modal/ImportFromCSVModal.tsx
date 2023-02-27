@@ -2,7 +2,6 @@ import React, {
     Dispatch,
     SetStateAction,
     useCallback,
-    useContext,
     useEffect,
     useState,
 } from "react"
@@ -26,7 +25,6 @@ import {
 import { validateTimesheetEntryFields } from "../form/TimesheetEntryForm"
 import ErrorAlert from "../common/ErrorAlert"
 import { Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import { useTasks, useTimesheets } from "@/lib/hooks/useList"
 import FromCsvTable from "../table/FromCsvTable"
@@ -35,6 +33,7 @@ import FileDropper from "../common/FileDropper"
 import FromCsvForm from "../form/FromCsvForm"
 import { CustomButton, StyledButton } from "../common/Buttons"
 import FormButtons from "../common/FormButtons"
+import { User } from "firebase/auth"
 
 export type Timesheets = Array<Timesheet>
 export type Tasks = Array<Task>
@@ -46,12 +45,13 @@ export type TSetState<T> = Dispatch<SetStateAction<T>>
 
 interface IImportCsvDialog {
     setTimesheetEntries: Dispatch<SetStateAction<Array<TimesheetEntry>>>
+    user: User
 }
 
 const ImportFromCSVModal = ({
     setTimesheetEntries,
+    user,
 }: IImportCsvDialog): JSX.Element => {
-    const { user } = useContext(UserContext)
     const { post } = useUpdateTimesheetEntries(user)
 
     const timesheets = useTimesheets(user)

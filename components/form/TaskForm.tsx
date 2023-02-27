@@ -1,25 +1,27 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
 import { Box, Flex, FormControl, FormLabel, Input } from "@chakra-ui/react"
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { CheckBoxField, FormContainer } from "../common/FormFields"
 import { taskFieldMetadata } from "@/lib/types/typeMetadata"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
+import { User } from "firebase/auth"
 
-type CreateTaskFormProps = FormBase<Task> & {
+interface ICreateTaskForm extends FormBase<Task> {
     project: Project
     projectId: number
+    user: User
 }
 
-type EditTaskFormProps = CreateTaskFormProps & {
+interface IEditTaskForm extends ICreateTaskForm {
     task: Task
+    user: User
 }
 
-type TaskFormProps = CreateTaskFormProps & {
+interface ITaskForm extends ICreateTaskForm {
     task?: Task
     onSubmit: (task: Task) => void
 }
@@ -47,7 +49,7 @@ function TaskForm({
     onCancel,
     project,
     projectId,
-}: TaskFormProps): JSX.Element {
+}: ITaskForm): JSX.Element {
     const [taskFields, setTaskFields] = useState<TaskFields>(
         taskOrNull || { project, billable: true }
     )
@@ -136,9 +138,8 @@ function TaskForm({
     )
 }
 
-export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { post } = useUpdateTasks(user)
+export const CreateTaskForm = (props: ICreateTaskForm): JSX.Element => {
+    const { post } = useUpdateTasks(props.user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -161,9 +162,8 @@ export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
     )
 }
 
-export const EditTaskForm = (props: EditTaskFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { put } = useUpdateTasks(user)
+export const EditTaskForm = (props: IEditTaskForm): JSX.Element => {
+    const { put } = useUpdateTasks(props.user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

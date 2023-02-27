@@ -18,6 +18,7 @@ import ErrorAlert from "./ErrorAlert"
 import { AddCustomerForm } from "../form/CustomerForm"
 import FormButtons from "./FormButtons"
 import { CustomButton, StyledButton } from "./Buttons"
+import { User } from "firebase/auth"
 
 type FormInputFieldProps = {
     label: string
@@ -137,15 +138,17 @@ export const FormAlerts = ({ errorMessage }: FormAlertProps): JSX.Element => (
     </>
 )
 
-type NewCustomerModalProps = {
+interface INewCustomerModal {
     displayCreateCustomerForm: boolean
     setDisplayCreateCustomerForm: (value: React.SetStateAction<boolean>) => void
+    user: User
 }
 
 export const NewCustomerModal = ({
     displayCreateCustomerForm,
     setDisplayCreateCustomerForm,
-}: NewCustomerModalProps): JSX.Element => (
+    user,
+}: INewCustomerModal): JSX.Element => (
     <Modal
         closeOnOverlayClick={false}
         isOpen={displayCreateCustomerForm}
@@ -160,6 +163,7 @@ export const NewCustomerModal = ({
                     <AddCustomerForm
                         afterSubmit={() => setDisplayCreateCustomerForm(false)}
                         onCancel={() => setDisplayCreateCustomerForm(false)}
+                        user={user}
                     />
                 </Box>
             </ModalBody>

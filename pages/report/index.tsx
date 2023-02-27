@@ -80,6 +80,7 @@ const Report: NextPage = () => {
                         employees={employeeResponse.data}
                         timesheets={timesheetsResponse.data}
                         tasks={tasksResponse.data}
+                        user={user}
                     />
                 )}
         </FormPage>

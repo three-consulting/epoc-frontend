@@ -6,22 +6,23 @@ import {
     Flex,
     Select,
 } from "@chakra-ui/react"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Employee } from "@/lib/types/apiTypes"
 import { useUpdateEmployees } from "@/lib/hooks/useUpdate"
 import { FormBase } from "@/lib/types/forms"
 import ErrorAlert from "../common/ErrorAlert"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { employeeFieldMetadata } from "@/lib/types/typeMetadata"
 import WarningModal from "../common/WarningModal"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
 import { isError } from "lodash"
+import { User } from "firebase/auth"
 
 type CreateEmployeeFormProps = FormBase<Employee>
 
 type EditEmployeeFormProps = CreateEmployeeFormProps & {
     employee: Employee
+    user: User
 }
 
 type EmployeeFormProps = CreateEmployeeFormProps & {
@@ -227,8 +228,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
 }
 
 export const EditEmployeeForm = (props: EditEmployeeFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { put } = useUpdateEmployees(user)
+    const { put } = useUpdateEmployees(props.user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

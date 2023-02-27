@@ -12,13 +12,17 @@ import { StyledButton } from "@/components/common/Buttons"
 import FormButtons from "@/components/common/FormButtons"
 import FormPage from "@/components/common/FormPage"
 import FormSection from "@/components/common/FormSection"
+import { User } from "firebase/auth"
 
-type Props = {
+interface ICustomerDetailPage {
     customerId: number
+    user: User
 }
 
-function CustomerDetailPage({ customerId }: Props): JSX.Element {
-    const { user } = useContext(UserContext)
+const CustomerDetailPage = ({
+    customerId,
+    user,
+}: ICustomerDetailPage): JSX.Element => {
     const customerDetailResponse = useCustomerDetail(customerId, user)
 
     const getHeader = () =>
@@ -51,7 +55,10 @@ function CustomerDetailPage({ customerId }: Props): JSX.Element {
 const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <CustomerDetailPage customerId={Number(id)} /> : null
+    const { user } = useContext(UserContext)
+    return id ? (
+        <CustomerDetailPage customerId={Number(id)} user={user} />
+    ) : null
 }
 
 export default Page

@@ -7,6 +7,7 @@ import { Employee } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
+    testAdminUser,
     testEmployee,
     testEmployeeAllFields,
     testEmployeeRequiredFields,
@@ -121,7 +122,10 @@ test("a employee can be edited with required fields", async () => {
     render(
         <>
             {testEmployee.id && (
-                <EditEmployeeForm employee={thirdTestEmployee} />
+                <EditEmployeeForm
+                    employee={thirdTestEmployee}
+                    user={testAdminUser}
+                />
             )}
         </>
     )
@@ -151,6 +155,7 @@ test("afterSubmit is invoked with the correct data", async () => {
                 <EditEmployeeForm
                     afterSubmit={afterSubmitSpy}
                     employee={thirdTestEmployee}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -167,7 +172,13 @@ test("afterSubmit is invoked with the correct data", async () => {
 
 test("onCancel is invoked", async () => {
     const onCancelSpy = spy(() => null)
-    render(<EditEmployeeForm onCancel={onCancelSpy} employee={testEmployee} />)
+    render(
+        <EditEmployeeForm
+            onCancel={onCancelSpy}
+            employee={testEmployee}
+            user={testAdminUser}
+        />
+    )
 
     const cancelButton = screen.getByTestId("form-button-cancel")
     await waitFor(() => fireEvent.click(cancelButton))
@@ -176,7 +187,9 @@ test("onCancel is invoked", async () => {
 })
 
 test("a required field cannot be missing", async () => {
-    const form = render(<EditEmployeeForm employee={testEmployee} />)
+    const form = render(
+        <EditEmployeeForm employee={testEmployee} user={testAdminUser} />
+    )
     const employeeMissingRequired = Object.assign({}, testEmployeeAllFields)
     employeeKeys(testEmployeeRequiredFields).forEach((key: keyof Employee) => {
         if (employeeMissingRequired[key]) {

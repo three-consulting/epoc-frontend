@@ -6,6 +6,7 @@ import { Task } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
+    testAdminUser,
     testProject,
     testTask,
     testTaskAllFields,
@@ -88,6 +89,7 @@ test("a task can be edited with required fields", async () => {
                     project={testProject}
                     task={testTask}
                     projectId={1}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -116,6 +118,7 @@ test("a task can be edited with all fields", async () => {
                     project={testProject}
                     task={testTask}
                     projectId={1}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -146,6 +149,7 @@ test("afterSubmit is invoked with the correct data", async () => {
                     task={testTask}
                     projectId={1}
                     afterSubmit={afterSubmitSpy}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -171,6 +175,7 @@ test("onCancel is invoked", async () => {
                     task={testTask}
                     projectId={1}
                     onCancel={onCancelSpy}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -191,6 +196,7 @@ test("a required field cannot be missing", async () => {
                     project={testProject}
                     projectId={testProject.id}
                     task={testTask}
+                    user={testAdminUser}
                 />
             )}
         </>

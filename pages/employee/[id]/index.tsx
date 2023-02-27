@@ -11,13 +11,17 @@ import {
     useTasks,
     useTimesheetEntries,
 } from "@/lib/hooks/useList"
+import { User } from "firebase/auth"
 
-type Props = {
+interface IEmployeeDetailPage {
     employeeId: number
+    user: User
 }
 
-function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
-    const { user } = useContext(UserContext)
+function EmployeeDetailPage({
+    employeeId,
+    user,
+}: IEmployeeDetailPage): JSX.Element {
     const employeeDetailResponse = useEmployeeDetail(employeeId, user)
     const tasksResponse = useTasks(user)
     const timesheetsResponse = useTimesheets(
@@ -79,7 +83,10 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
 const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <EmployeeDetailPage employeeId={Number(id)} /> : null
+    const { user } = useContext(UserContext)
+    return id ? (
+        <EmployeeDetailPage employeeId={Number(id)} user={user} />
+    ) : null
 }
 
 export default Page

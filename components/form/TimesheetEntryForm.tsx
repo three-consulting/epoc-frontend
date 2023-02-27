@@ -8,18 +8,11 @@ import {
     Input,
     Select,
 } from "@chakra-ui/react"
-import React, {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useRef,
-    useState,
-} from "react"
+import React, { Dispatch, SetStateAction, useRef, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { FromButtons } from "../common/FormFields"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 import { datesRange, jsDateToShortISODate } from "@/lib/utils/date"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import {
     useUpdateTimesheetEntries,
     useUpdateTimesheetEntry,
@@ -57,6 +50,7 @@ interface EditTimesheetEntryFormProps extends FormBase<TimesheetEntry> {
     tasks: Task[]
     timesheet: Timesheet
     setTimesheetEntries: TSetState<TimesheetEntry[]>
+    user: User
 }
 
 export const validateTimesheetEntryFields = (
@@ -189,9 +183,9 @@ export const EditTimesheetEntryForm = ({
     timesheetEntry,
     setTimesheetEntries,
     afterSubmit,
+    user,
     ...props
 }: EditTimesheetEntryFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
     const { put } = useUpdateTimesheetEntry(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")

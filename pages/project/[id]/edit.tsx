@@ -9,14 +9,18 @@ import { useProjectDetail } from "@/lib/hooks/useDetail"
 import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 import { Box } from "@chakra-ui/react"
 import FormPage from "@/components/common/FormPage"
+import { User } from "firebase/auth"
 
-type Props = {
+interface IEditProjectPage {
     projectId: number
+    user: User
 }
 
-function EditProjectPage({ projectId }: Props): JSX.Element {
+const EditProjectPage = ({
+    projectId,
+    user,
+}: IEditProjectPage): JSX.Element => {
     const router = useRouter()
-    const { user } = useContext(UserContext)
 
     const customersResponse = useCustomers(user)
     const employeesResponse = useEmployees(user)
@@ -62,7 +66,8 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
 const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <EditProjectPage projectId={Number(id)} /> : null
+    const { user } = useContext(UserContext)
+    return id ? <EditProjectPage projectId={Number(id)} user={user} /> : null
 }
 
 export default Edit

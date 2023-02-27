@@ -58,6 +58,7 @@ interface TimesheetEntryRowProps {
     date: string
     tasks: Task[]
     setTimesheetEntries: TSetState<TimesheetEntry[]>
+    user: User
 }
 
 interface DayEditorProps {
@@ -78,6 +79,7 @@ const TimesheetEntryRow = ({
     date,
     tasks,
     setTimesheetEntries,
+    user,
 }: TimesheetEntryRowProps): JSX.Element => {
     const { id } = entry
     const projectId = entry.timesheet.project.id
@@ -111,6 +113,7 @@ const TimesheetEntryRow = ({
                                     afterSubmit={() => setEdit(!edit)}
                                     tasks={tasks}
                                     setTimesheetEntries={setTimesheetEntries}
+                                    user={user}
                                 />
                             </Box>
                         )}
@@ -162,12 +165,14 @@ const EntryTable = ({
     del,
     tasks,
     setTimesheetEntries,
+    user,
 }: {
     dateStr: string
     displayEntries: Array<TimesheetEntry>
     del: DeleteHookFunction
     tasks: Array<Task>
     setTimesheetEntries: Dispatch<SetStateAction<Array<TimesheetEntry>>>
+    user: User
 }) => {
     const [open, setOpen] = useState<boolean>(false)
     const header = ` - ${displayEntries
@@ -209,6 +214,7 @@ const EntryTable = ({
                                             setTimesheetEntries={
                                                 setTimesheetEntries
                                             }
+                                            user={user}
                                         />
                                     </Tr>
                                 )
@@ -296,6 +302,7 @@ const DayEditor = ({
                             </Text>
                             <ImportFromCSVModal
                                 setTimesheetEntries={setTimesheetEntries}
+                                user={user}
                             />
                         </Flex>
                     </Header>
@@ -339,6 +346,7 @@ const DayEditor = ({
                                         setTimesheetEntries={
                                             setTimesheetEntries
                                         }
+                                        user={user}
                                     />
                                 )}
                             </Box>

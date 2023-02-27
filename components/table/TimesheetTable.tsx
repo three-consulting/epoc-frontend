@@ -7,12 +7,11 @@ import {
     ModalOverlay,
 } from "@chakra-ui/react"
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table"
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { CreateTimesheetForm } from "../form/TimesheetForm"
 import { useRouter } from "next/router"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
 import FormSection from "../common/FormSection"
 import FormButtons from "../common/FormButtons"
@@ -21,10 +20,10 @@ import { User } from "firebase/auth"
 
 interface TimesheetRowProps {
     timesheet: Timesheet
+    user: User
 }
-function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
+function TimesheetRow({ timesheet, user }: TimesheetRowProps): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(UserContext)
     const { put } = useUpdateTimesheets(user)
 
     const [errorMessage, setErrorMessage] = useState<string>()
@@ -119,6 +118,7 @@ function TimesheetTable({
                                             <TimesheetRow
                                                 timesheet={timesheet}
                                                 key={idx}
+                                                user={user}
                                             />
                                         )
                                 )}

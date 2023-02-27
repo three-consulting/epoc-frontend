@@ -193,6 +193,7 @@ const ProjectDetailPage = ({
                                     <TaskTable
                                         project={projectDetailResponse.data}
                                         tasks={tasksResponse.data}
+                                        user={user}
                                     />
                                 )}
                             </>

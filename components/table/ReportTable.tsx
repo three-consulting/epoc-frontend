@@ -21,7 +21,7 @@ import {
 import { dateTimeToShortISODate, toLocalDisplayDate } from "@/lib/utils/date"
 import { round } from "lodash"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
-import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import { getText } from "@/lib/utils/fetch"
 import { downloadFile } from "@/lib/utils/common"
 import { useTimesheetEntries } from "@/lib/hooks/useList"
@@ -34,6 +34,7 @@ import autoTable from "jspdf-autotable"
 import FormButtons from "../common/FormButtons"
 import { CustomButton } from "../common/Buttons"
 import FormSection from "../common/FormSection"
+import { User } from "firebase/auth"
 
 interface DateInputProps {
     startDate: string
@@ -41,6 +42,7 @@ interface DateInputProps {
     setStartDate: React.Dispatch<string>
     setEndDate: React.Dispatch<string>
     selectedEmployee?: Employee
+    user: User
 }
 
 interface TotalHoursProps {
@@ -84,6 +86,7 @@ interface ReportTableProps {
     employees: Employee[]
     timesheets: Timesheet[]
     tasks: Task[]
+    user: User
 }
 
 const entriesQuantitySum = (entries: TimesheetEntry[]) =>
@@ -147,9 +150,8 @@ const DateInput = ({
     startDate,
     endDate,
     selectedEmployee,
+    user,
 }: DateInputProps): JSX.Element => {
-    const { user } = useContext(UserContext)
-
     const timesheetsEntries = useTimesheetEntries(
         user,
         startDate,
@@ -434,8 +436,8 @@ function ReportTable({
     employees,
     tasks,
     timesheets,
+    user,
 }: ReportTableProps): JSX.Element {
-    const { user } = useContext(UserContext)
     const { role } = useContext(AuthContext)
 
     const firstDay = dateTimeToShortISODate(DateTime.now().startOf("month"))
@@ -499,6 +501,7 @@ function ReportTable({
                     setStartDate={setStartDate}
                     setEndDate={setEndDate}
                     selectedEmployee={selectedEmployee}
+                    user={user}
                 />
                 <Select
                     onChange={handleEmployeeChange}

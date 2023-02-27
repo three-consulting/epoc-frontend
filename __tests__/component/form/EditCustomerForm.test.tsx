@@ -7,6 +7,7 @@ import { Customer } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
+    testAdminUser,
     testCustomer,
     testCustomerAllFields,
     testCustomerRequiredFields,
@@ -77,7 +78,10 @@ test("a customer can be edited with required fields", async () => {
     render(
         <>
             {testCustomer.id && (
-                <EditCustomerForm customer={thirdTestCustomer} />
+                <EditCustomerForm
+                    customer={thirdTestCustomer}
+                    user={testAdminUser}
+                />
             )}
         </>
     )
@@ -99,7 +103,14 @@ test("a customer can be edited with required fields", async () => {
 test("a customer can be edited with all fields", async () => {
     expect(testCustomer.id).toBeDefined()
     render(
-        <>{testCustomer.id && <EditCustomerForm customer={testCustomer} />}</>
+        <>
+            {testCustomer.id && (
+                <EditCustomerForm
+                    customer={testCustomer}
+                    user={testAdminUser}
+                />
+            )}
+        </>
     )
     await fillAndSubmitForm(testCustomerAllFields)
 
@@ -127,6 +138,7 @@ test("afterSubmit is invoked with the correct data", async () => {
                 <EditCustomerForm
                     afterSubmit={afterSubmitSpy}
                     customer={testCustomer}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -143,7 +155,13 @@ test("afterSubmit is invoked with the correct data", async () => {
 
 test("onCancel is invoked", async () => {
     const onCancelSpy = spy(() => null)
-    render(<EditCustomerForm onCancel={onCancelSpy} customer={testCustomer} />)
+    render(
+        <EditCustomerForm
+            onCancel={onCancelSpy}
+            customer={testCustomer}
+            user={testAdminUser}
+        />
+    )
 
     const cancelButton = screen.getByTestId("form-button-cancel")
     await waitFor(() => fireEvent.click(cancelButton))
@@ -152,7 +170,9 @@ test("onCancel is invoked", async () => {
 })
 
 test("a required field cannot be missing", async () => {
-    const form = render(<EditCustomerForm customer={testCustomer} />)
+    const form = render(
+        <EditCustomerForm customer={testCustomer} user={testAdminUser} />
+    )
     const customerMissingRequired = Object.assign({}, testCustomerAllFields)
     customerKeys(testCustomerRequiredFields).forEach((key: keyof Customer) => {
         if (customerMissingRequired[key]) {

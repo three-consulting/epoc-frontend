@@ -12,13 +12,17 @@ import { StyledButton } from "@/components/common/Buttons"
 import FormButtons from "@/components/common/FormButtons"
 import FormSection from "@/components/common/FormSection"
 import FormPage from "@/components/common/FormPage"
+import { User } from "firebase/auth"
 
-type Props = {
+interface ITimesheetDetailPage {
     timesheetId: number
+    user: User
 }
 
-function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
-    const { user } = useContext(UserContext)
+const TimesheetDetailPage = ({
+    timesheetId,
+    user,
+}: ITimesheetDetailPage): JSX.Element => {
     const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
 
     return (
@@ -52,7 +56,10 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
 const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <TimesheetDetailPage timesheetId={Number(id)} /> : null
+    const { user } = useContext(UserContext)
+    return id ? (
+        <TimesheetDetailPage timesheetId={Number(id)} user={user} />
+    ) : null
 }
 
 export default Page

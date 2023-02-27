@@ -13,6 +13,7 @@ import {
     testChangeTask,
     testTimesheetEntryAllFields,
     testTimesheetEntryRequiredFields,
+    testAdminUser,
 } from "../../fixtures"
 
 import { User } from "firebase/auth"
@@ -96,6 +97,7 @@ test("a timesheet with the required fields only can be submitted", async () => {
                     date={"2022-06-09"}
                     tasks={[testTask, testChangeTask]}
                     setTimesheetEntries={(entries) => entries}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -128,6 +130,7 @@ test("a timesheet with all fields can be submitted", async () => {
                     date={"2022-06-09"}
                     tasks={[testTask, testChangeTask]}
                     setTimesheetEntries={(entries) => entries}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -164,6 +167,7 @@ test("afterSubmit is invoked with the correct data", async () => {
                     tasks={[testTask, testChangeTask]}
                     afterSubmit={afterSubmitSpy}
                     setTimesheetEntries={(entries) => entries}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -196,6 +200,7 @@ test("onCancel is invoked", async () => {
                     tasks={[testTask, testChangeTask]}
                     onCancel={onCancelSpy}
                     setTimesheetEntries={(entries) => entries}
+                    user={testAdminUser}
                 />
             )}
         </>
@@ -218,6 +223,7 @@ test("a required field cannot be missing", async () => {
                     date={"2022-06-09"}
                     tasks={[testTask, testChangeTask]}
                     setTimesheetEntries={(entries) => entries}
+                    user={testAdminUser}
                 />
             )}
         </>

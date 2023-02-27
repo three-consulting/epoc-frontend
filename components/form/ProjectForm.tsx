@@ -33,6 +33,7 @@ interface IEditProjectFormProps extends ICreateProjectFormProps {
 interface IProjectFormProps extends ICreateProjectFormProps {
     project?: Project
     onSubmit: (project: Project) => void
+    user: User
 }
 
 type ProjectFields = Partial<Project>
@@ -57,6 +58,7 @@ const ProjectForm = ({
     employees,
     onSubmit,
     onCancel,
+    user,
 }: IProjectFormProps) => {
     const [projectFields, setProjectFields] = useState<ProjectFields>(
         projectOrNull || {}
@@ -228,6 +230,7 @@ const ProjectForm = ({
                                     setDisplayCreateCustomerForm={
                                         setDisplayCreateCustomerForm
                                     }
+                                    user={user}
                                 />
                             </Flex>
                         </FormControl>
@@ -273,7 +276,8 @@ const ProjectForm = ({
 export const CreateProjectForm = (
     props: ICreateProjectFormProps
 ): JSX.Element => {
-    const { post } = useUpdateProjects(props.user)
+    const { user } = props
+    const { post } = useUpdateProjects(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -285,7 +289,7 @@ export const CreateProjectForm = (
 
     return (
         <>
-            <ProjectForm {...props} onSubmit={onSubmit} />
+            <ProjectForm {...props} onSubmit={onSubmit} user={user} />
             {errorMessage && (
                 <>
                     <ErrorAlert />

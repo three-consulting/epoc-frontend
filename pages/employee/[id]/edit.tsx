@@ -7,14 +7,15 @@ import { useRouter } from "next/dist/client/router"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { EditEmployeeForm } from "@/components/form/EmployeeForm"
 import { useEmployeeDetail } from "@/lib/hooks/useDetail"
+import { User } from "firebase/auth"
 
 type Props = {
     employeeId: number
+    user: User
 }
 
-function EditEmployeePage({ employeeId }: Props): JSX.Element {
+function EditEmployeePage({ employeeId, user }: Props): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(UserContext)
 
     const employeeDetailResponse = useEmployeeDetail(employeeId, user)
 
@@ -41,6 +42,7 @@ function EditEmployeePage({ employeeId }: Props): JSX.Element {
                         employee={employeeDetailResponse.data}
                         afterSubmit={redirectToEmployeeDetail}
                         onCancel={redirectToEmployeeDetail}
+                        user={user}
                     />
                 )}
         </div>
@@ -50,7 +52,8 @@ function EditEmployeePage({ employeeId }: Props): JSX.Element {
 const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <EditEmployeePage employeeId={Number(id)} /> : null
+    const { user } = useContext(UserContext)
+    return id ? <EditEmployeePage employeeId={Number(id)} user={user} /> : null
 }
 
 export default Edit

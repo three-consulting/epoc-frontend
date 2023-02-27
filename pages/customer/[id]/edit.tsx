@@ -8,14 +8,15 @@ import { EditCustomerForm } from "@/components/form/CustomerForm"
 import { useCustomerDetail } from "@/lib/hooks/useDetail"
 import FormPage from "@/components/common/FormPage"
 import { Box } from "@chakra-ui/react"
+import { User } from "firebase/auth"
 
 type Props = {
     customerId: number
+    user: User
 }
 
-function EditCustomerPage({ customerId }: Props): JSX.Element {
+function EditCustomerPage({ customerId, user }: Props): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(UserContext)
 
     const customerDetailResponse = useCustomerDetail(customerId, user)
 
@@ -40,6 +41,7 @@ function EditCustomerPage({ customerId }: Props): JSX.Element {
                             customer={customerDetailResponse.data}
                             afterSubmit={redirectToCustomerDetail}
                             onCancel={redirectToCustomerDetail}
+                            user={user}
                         />
                     )}
             </Box>
@@ -50,7 +52,8 @@ function EditCustomerPage({ customerId }: Props): JSX.Element {
 const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <EditCustomerPage customerId={Number(id)} /> : null
+    const { user } = useContext(UserContext)
+    return id ? <EditCustomerPage customerId={Number(id)} user={user} /> : null
 }
 
 export default Edit

@@ -1,24 +1,26 @@
 import { FormControl, FormLabel, Input, Box } from "@chakra-ui/react"
-import React, { Dispatch, SetStateAction, useContext, useState } from "react"
+import React, { Dispatch, SetStateAction, useState } from "react"
 import { Customer } from "@/lib/types/apiTypes"
 import { useUpdateCustomers } from "@/lib/hooks/useUpdate"
 import { FormBase } from "@/lib/types/forms"
 import ErrorAlert from "../common/ErrorAlert"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { customerFieldMetadata } from "@/lib/types/typeMetadata"
 import FormSection from "../common/FormSection"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
+import { User } from "firebase/auth"
 
 type CustomerFormPropsBase = FormBase<Customer>
 type CustomerFields = Partial<Customer>
 
 interface CreateCustomerFormProps extends CustomerFormPropsBase {
     customer?: Customer | null
+    user: User
 }
 
 interface EditCustomerFormProps extends CustomerFormPropsBase {
     customer: Customer | null
+    user: User
 }
 
 type CustomerFormProps = CreateCustomerFormProps & {
@@ -110,8 +112,7 @@ function CustomerForm({
 export const CreateCustomerForm = (
     props: CreateCustomerFormProps
 ): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { post } = useUpdateCustomers(user)
+    const { post } = useUpdateCustomers(props.user)
 
     const { customer } = props
 
@@ -152,8 +153,7 @@ export const CreateCustomerForm = (
 }
 
 export const EditCustomerForm = (props: EditCustomerFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { put } = useUpdateCustomers(user)
+    const { put } = useUpdateCustomers(props.user)
 
     const { customer } = props
 
@@ -196,8 +196,7 @@ export const EditCustomerForm = (props: EditCustomerFormProps): JSX.Element => {
 export const AddCustomerForm = (
     props: CreateCustomerFormProps
 ): JSX.Element => {
-    const { user } = useContext(UserContext)
-    const { post } = useUpdateCustomers(user)
+    const { post } = useUpdateCustomers(props.user)
 
     const { customer } = props
 

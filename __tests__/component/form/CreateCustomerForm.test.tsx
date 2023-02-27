@@ -7,6 +7,7 @@ import { Customer } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
 import {
+    testAdminUser,
     testCustomerAllFields,
     testCustomerRequiredFields,
 } from "../../fixtures"
@@ -73,7 +74,7 @@ const fillAndSubmitForm = async (customer: Customer) => {
 }
 
 test("a customer with the required fields only can be submitted", async () => {
-    render(<CreateCustomerForm />)
+    render(<CreateCustomerForm user={testAdminUser} />)
     await fillAndSubmitForm(testCustomerRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
@@ -87,7 +88,7 @@ test("a customer with the required fields only can be submitted", async () => {
 })
 
 test("a customer with all fields can be submitted", async () => {
-    render(<CreateCustomerForm />)
+    render(<CreateCustomerForm user={testAdminUser} />)
     await fillAndSubmitForm(testCustomerAllFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
@@ -104,7 +105,9 @@ test("afterSubmit is invoked with the correct data", async () => {
     const afterSubmitSpy = spy(
         (createCustomerResponse) => createCustomerResponse
     )
-    render(<CreateCustomerForm afterSubmit={afterSubmitSpy} />)
+    render(
+        <CreateCustomerForm afterSubmit={afterSubmitSpy} user={testAdminUser} />
+    )
     await fillAndSubmitForm(testCustomerRequiredFields)
 
     await waitFor(() => expect(afterSubmitSpy.callCount).toEqual(1))
@@ -117,7 +120,7 @@ test("afterSubmit is invoked with the correct data", async () => {
 
 test("onCancel is invoked", async () => {
     const onCancelSpy = spy(() => null)
-    render(<CreateCustomerForm onCancel={onCancelSpy} />)
+    render(<CreateCustomerForm onCancel={onCancelSpy} user={testAdminUser} />)
 
     const cancelButton = screen.getByTestId("form-button-cancel")
     await waitFor(() => fireEvent.click(cancelButton))
@@ -126,7 +129,7 @@ test("onCancel is invoked", async () => {
 })
 
 test("a required field cannot be missing", async () => {
-    const form = render(<CreateCustomerForm />)
+    const form = render(<CreateCustomerForm user={testAdminUser} />)
     const customerMissingRequired = Object.assign({}, testCustomerAllFields)
     customerKeys(testCustomerRequiredFields).forEach((key: keyof Customer) => {
         if (customerMissingRequired[key]) {

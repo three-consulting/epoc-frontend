@@ -1,4 +1,3 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { Box } from "@chakra-ui/layout"
@@ -11,7 +10,8 @@ import {
     Tbody,
 } from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
-import React, { useContext, useState } from "react"
+import { User } from "firebase/auth"
+import React, { useState } from "react"
 import { StyledButton, RemoveIconButton } from "../common/Buttons"
 import ErrorAlert from "../common/ErrorAlert"
 import FormButtons from "../common/FormButtons"
@@ -21,10 +21,10 @@ import { CreateTaskForm, EditTaskForm } from "../form/TaskForm"
 interface TaskRowProps {
     task: Task
     onClick?: () => void
+    user: User
 }
 
-function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
-    const { user } = useContext(UserContext)
+function TaskRow({ task, onClick, user }: TaskRowProps): JSX.Element {
     const { put } = useUpdateTasks(user)
 
     const [errorMessage, setErrorMessage] = useState<string>()
@@ -64,9 +64,10 @@ function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
 interface TaskTableProps {
     project: Project
     tasks: Task[]
+    user: User
 }
 
-function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
+function TaskTable({ project, tasks, user }: TaskTableProps): JSX.Element {
     const [displayNewTaskForm, setDisplayNewTaskForm] = useState(false)
     const [taskToEdit, setTaskToEdit] = useState<Task>()
 
@@ -92,6 +93,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                                                 onClick={() =>
                                                     setTaskToEdit(task)
                                                 }
+                                                user={user}
                                             />
                                         )
                                 )}
@@ -136,6 +138,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                                     onCancel={() =>
                                         setDisplayNewTaskForm(false)
                                     }
+                                    user={user}
                                 />
                             </ModalContent>
                         </Modal>
@@ -163,6 +166,7 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                                         onCancel={() =>
                                             setTaskToEdit(undefined)
                                         }
+                                        user={user}
                                     />
                                 )}
                             </ModalContent>
