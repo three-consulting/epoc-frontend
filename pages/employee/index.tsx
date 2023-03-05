@@ -10,9 +10,13 @@ import { Employee } from "@/lib/types/apiTypes"
 import { Role } from "@/lib/types/auth"
 import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 import FormPage from "@/components/common/FormPage"
+import { User } from "firebase/auth"
 
-const Employees: NextPage = () => {
-    const { user } = useContext(UserContext)
+interface IEmployeesForm {
+    user: User
+}
+
+const EmployeesForm = ({ user }: IEmployeesForm) => {
     const { role } = useContext(AuthContext)
     const initialEmployeeResponse = useEmployees(user)
 
@@ -54,5 +58,11 @@ const Employees: NextPage = () => {
         </FormPage>
     )
 }
+
+const Employees: NextPage = () => (
+    <UserContext.Consumer>
+        {({ user }) => <EmployeesForm user={user} />}
+    </UserContext.Consumer>
+)
 
 export default Employees

@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import { Box } from "@chakra-ui/layout"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
@@ -56,10 +56,15 @@ const TimesheetDetailPage = ({
 const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    const { user } = useContext(UserContext)
-    return id ? (
-        <TimesheetDetailPage timesheetId={Number(id)} user={user} />
-    ) : null
+    return (
+        <UserContext.Consumer>
+            {({ user }) =>
+                id ? (
+                    <TimesheetDetailPage timesheetId={Number(id)} user={user} />
+                ) : null
+            }
+        </UserContext.Consumer>
+    )
 }
 
 export default Page

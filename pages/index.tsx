@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { TimesheetEntryEditor } from "@/components/editor/TimesheetEntryEditor"
@@ -66,7 +66,6 @@ const IndexPage = ({ email, user }: IIndexPageProps) => {
                             timesheets={timesheetsResponse.data}
                             entries={timesheetEntriesResponse.data}
                             tasks={tasksResponse.data}
-                            user={user}
                         />
                     )}
             </Box>
@@ -74,11 +73,12 @@ const IndexPage = ({ email, user }: IIndexPageProps) => {
     )
 }
 
-const Home: NextPage = () => {
-    const { user } = useContext(UserContext)
-    return user && user.email ? (
-        <IndexPage email={user.email} user={user} />
-    ) : null
-}
+const Home: NextPage = () => (
+    <UserContext.Consumer>
+        {({ user }) =>
+            user?.email && <IndexPage email={user.email} user={user} />
+        }
+    </UserContext.Consumer>
+)
 
 export default Home

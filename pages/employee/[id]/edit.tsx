@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
@@ -52,8 +52,15 @@ function EditEmployeePage({ employeeId, user }: Props): JSX.Element {
 const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    const { user } = useContext(UserContext)
-    return id ? <EditEmployeePage employeeId={Number(id)} user={user} /> : null
+    return (
+        <UserContext.Consumer>
+            {({ user }) =>
+                id ? (
+                    <EditEmployeePage employeeId={Number(id)} user={user} />
+                ) : null
+            }
+        </UserContext.Consumer>
+    )
 }
 
 export default Edit

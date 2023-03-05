@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import ProjectTable from "@/components/table/ProjectTable"
 import ErrorAlert from "@/components/common/ErrorAlert"
@@ -6,9 +6,13 @@ import Loading from "@/components/common/Loading"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useProjects } from "@/lib/hooks/useList"
 import FormPage from "@/components/common/FormPage"
+import { User } from "firebase/auth"
 
-const Projects: NextPage = () => {
-    const { user } = useContext(UserContext)
+interface IProjectsForm {
+    user: User
+}
+
+const ProjectsForm = ({ user }: IProjectsForm) => {
     const projectsResponse = useProjects(user)
 
     return (
@@ -26,5 +30,11 @@ const Projects: NextPage = () => {
         </FormPage>
     )
 }
+
+const Projects: NextPage = () => (
+    <UserContext.Consumer>
+        {({ user }) => <ProjectsForm user={user} />}
+    </UserContext.Consumer>
+)
 
 export default Projects

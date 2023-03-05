@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
@@ -52,8 +52,15 @@ function EditCustomerPage({ customerId, user }: Props): JSX.Element {
 const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    const { user } = useContext(UserContext)
-    return id ? <EditCustomerPage customerId={Number(id)} user={user} /> : null
+    return (
+        <UserContext.Consumer>
+            {({ user }) =>
+                id ? (
+                    <EditCustomerPage customerId={Number(id)} user={user} />
+                ) : null
+            }
+        </UserContext.Consumer>
+    )
 }
 
 export default Edit

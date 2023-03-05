@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
@@ -10,10 +10,14 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 import { Box } from "@chakra-ui/react"
 import FormPage from "@/components/common/FormPage"
+import { User } from "firebase/auth"
 
-const New: NextPage = () => {
+interface INewProjectForm {
+    user: User
+}
+
+const NewProjectForm = ({ user }: INewProjectForm) => {
     const router = useRouter()
-    const { user } = useContext(UserContext)
     const customersResponse = useCustomers(user)
     const employeesResponse = useEmployees(user)
 
@@ -51,5 +55,11 @@ const New: NextPage = () => {
         </FormPage>
     )
 }
+
+const New: NextPage = () => (
+    <UserContext.Consumer>
+        {({ user }) => <NewProjectForm user={user} />}
+    </UserContext.Consumer>
+)
 
 export default New

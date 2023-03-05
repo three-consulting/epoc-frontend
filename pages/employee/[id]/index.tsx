@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
@@ -73,7 +73,6 @@ function EmployeeDetailPage({
                     entries={timesheetEntriesResponse.data}
                     timesheets={timesheetsResponse.data}
                     tasks={tasksResponse.data}
-                    user={user}
                 />
             )}
         </div>
@@ -83,9 +82,12 @@ function EmployeeDetailPage({
 const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    const { user } = useContext(UserContext)
     return id ? (
-        <EmployeeDetailPage employeeId={Number(id)} user={user} />
+        <UserContext.Consumer>
+            {({ user }) => (
+                <EmployeeDetailPage employeeId={Number(id)} user={user} />
+            )}
+        </UserContext.Consumer>
     ) : null
 }
 

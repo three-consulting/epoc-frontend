@@ -14,9 +14,13 @@ import {
 import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 import { Role } from "@/lib/types/auth"
 import FormPage from "@/components/common/FormPage"
+import { User } from "firebase/auth"
 
-const Report: NextPage = () => {
-    const { user } = useContext(UserContext)
+interface IReportForm {
+    user: User
+}
+
+const ReportForm = ({ user }: IReportForm) => {
     const { role } = useContext(AuthContext)
 
     const customersResponse = useCustomers(user)
@@ -86,5 +90,11 @@ const Report: NextPage = () => {
         </FormPage>
     )
 }
+
+const Report: NextPage = () => (
+    <UserContext.Consumer>
+        {({ user }) => <ReportForm user={user} />}
+    </UserContext.Consumer>
+)
 
 export default Report

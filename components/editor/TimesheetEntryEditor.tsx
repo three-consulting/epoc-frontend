@@ -42,32 +42,39 @@ import useHoliday from "@/lib/hooks/useHoliday"
 import Header, { TableHeader } from "../common/Header"
 import { BsCaretDown, BsCaretLeft, BsSunglasses, BsTrash } from "react-icons/bs"
 import { User } from "firebase/auth"
+import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 
-interface TimesheetEntryEditorProps {
+interface ITimesheetEntryEditor {
     entries: TimesheetEntry[]
     timesheets: Timesheet[]
     tasks: Task[]
-    user: User
 }
 
-interface TimesheetEntryRowProps {
+interface ITimesheetEntryRow {
     entry: TimesheetEntry
     deleteTimesheetEntry: DeleteHookFunction
     date: string
     tasks: Task[]
     setTimesheetEntries: TSetState<TimesheetEntry[]>
-    user: User
 }
 
-interface DayEditorProps {
+interface IDayEditor {
     timesheets: Timesheet[]
     dateRange: [Date] | [Date, Date]
     entries: TimesheetEntry[]
     tasks: Task[]
     setTimesheetEntries: TSetState<TimesheetEntry[]>
     user: User
+}
+
+interface IEntryTable {
+    dateStr: string
+    displayEntries: Array<TimesheetEntry>
+    del: DeleteHookFunction
+    tasks: Array<Task>
+    setTimesheetEntries: Dispatch<SetStateAction<Array<TimesheetEntry>>>
 }
 
 const taskByProject = (tasks: Task[], projectId: number) =>
@@ -79,8 +86,7 @@ const TimesheetEntryRow = ({
     date,
     tasks,
     setTimesheetEntries,
-    user,
-}: TimesheetEntryRowProps): JSX.Element => {
+}: ITimesheetEntryRow): JSX.Element => {
     const { id } = entry
     const projectId = entry.timesheet.project.id
     const [edit, setEdit] = useState<boolean>(false)
@@ -103,18 +109,24 @@ const TimesheetEntryRow = ({
                         )}
                         {edit && (
                             <Box border="#6f6f6f solid 1px">
-                                <EditTimesheetEntryForm
-                                    id={id}
-                                    timesheetEntry={entry}
-                                    timesheet={entry.timesheet}
-                                    projectId={projectId}
-                                    date={date}
-                                    onCancel={() => setEdit(!edit)}
-                                    afterSubmit={() => setEdit(!edit)}
-                                    tasks={tasks}
-                                    setTimesheetEntries={setTimesheetEntries}
-                                    user={user}
-                                />
+                                <UserContext.Consumer>
+                                    {({ user }) => (
+                                        <EditTimesheetEntryForm
+                                            id={id}
+                                            timesheetEntry={entry}
+                                            timesheet={entry.timesheet}
+                                            projectId={projectId}
+                                            date={date}
+                                            onCancel={() => setEdit(!edit)}
+                                            afterSubmit={() => setEdit(!edit)}
+                                            tasks={tasks}
+                                            setTimesheetEntries={
+                                                setTimesheetEntries
+                                            }
+                                            user={user}
+                                        />
+                                    )}
+                                </UserContext.Consumer>
                             </Box>
                         )}
                     </Td>
@@ -165,15 +177,7 @@ const EntryTable = ({
     del,
     tasks,
     setTimesheetEntries,
-    user,
-}: {
-    dateStr: string
-    displayEntries: Array<TimesheetEntry>
-    del: DeleteHookFunction
-    tasks: Array<Task>
-    setTimesheetEntries: Dispatch<SetStateAction<Array<TimesheetEntry>>>
-    user: User
-}) => {
+}: IEntryTable) => {
     const [open, setOpen] = useState<boolean>(false)
     const header = ` - ${displayEntries
         .map((ent) => ent.quantity ?? 0)
@@ -214,7 +218,6 @@ const EntryTable = ({
                                             setTimesheetEntries={
                                                 setTimesheetEntries
                                             }
-                                            user={user}
                                         />
                                     </Tr>
                                 )
@@ -233,7 +236,7 @@ const DayEditor = ({
     tasks,
     setTimesheetEntries,
     user,
-}: DayEditorProps): JSX.Element => {
+}: IDayEditor): JSX.Element => {
     const { delete: del } = useUpdateTimesheetEntries(user)
 
     const [timesheet, setTimesheet] = useState<Timesheet | undefined>(undefined)
@@ -346,7 +349,6 @@ const DayEditor = ({
                                         setTimesheetEntries={
                                             setTimesheetEntries
                                         }
-                                        user={user}
                                     />
                                 )}
                             </Box>
@@ -411,8 +413,7 @@ export const TimesheetEntryEditor = ({
     entries,
     timesheets,
     tasks,
-    user,
-}: TimesheetEntryEditorProps): JSX.Element => {
+}: ITimesheetEntryEditor): JSX.Element => {
     const [selectInterval, setSelectInterval] = useState<boolean>(false)
     const [dates, setDates] = useState<[Date] | [Date | null, Date | null]>([
         null,
@@ -605,14 +606,18 @@ export const TimesheetEntryEditor = ({
                         </Flex>
                     </Flex>
                     <Box>
-                        <DayEditor
-                            timesheets={timesheets}
-                            dateRange={datesRange(dates)}
-                            entries={timesheetEntries}
-                            tasks={tasks}
-                            setTimesheetEntries={setTimesheetEntries}
-                            user={user}
-                        />
+                        <UserContext.Consumer>
+                            {({ user }) => (
+                                <DayEditor
+                                    timesheets={timesheets}
+                                    dateRange={datesRange(dates)}
+                                    entries={timesheetEntries}
+                                    tasks={tasks}
+                                    setTimesheetEntries={setTimesheetEntries}
+                                    user={user}
+                                />
+                            )}
+                        </UserContext.Consumer>
                     </Box>
                 </Flex>
             </>
