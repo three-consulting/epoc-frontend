@@ -4,7 +4,6 @@ import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import EmployeeDetail from "@/components/detail/EmployeeDetail"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useEmployeeDetail } from "@/lib/hooks/useDetail"
 import {
     useTimesheets,
@@ -12,6 +11,7 @@ import {
     useTimesheetEntries,
 } from "@/lib/hooks/useList"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface IEmployeeDetailPage {
     employeeId: number
@@ -83,11 +83,13 @@ const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
     return id ? (
-        <UserContext.Consumer>
-            {({ user }) => (
-                <EmployeeDetailPage employeeId={Number(id)} user={user} />
-            )}
-        </UserContext.Consumer>
+        <FirebaseContext.Consumer>
+            {({ user }) =>
+                user && (
+                    <EmployeeDetailPage employeeId={Number(id)} user={user} />
+                )
+            }
+        </FirebaseContext.Consumer>
     ) : null
 }
 

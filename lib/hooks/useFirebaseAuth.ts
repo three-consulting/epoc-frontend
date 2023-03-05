@@ -36,23 +36,22 @@ export default function useFirebaseAuth(): FirebaseAuthState {
         await signInWithRedirect(auth, provider)
     }
 
-    useEffect(() => {
-        const unsubscriber = onAuthStateChanged(auth, (authUser) => {
-            try {
-                if (authUser) {
-                    setUser(authUser)
-                    authUser.getIdTokenResult(false).then((token) => {
-                        setRole(token.claims.role as Role)
-                    })
-                }
-            } catch (error) {
-                setFirebaseError(error)
-            } finally {
-                setLoading(false)
+    const unsubscriber = onAuthStateChanged(auth, (authUser) => {
+        try {
+            if (authUser) {
+                setUser(authUser)
+                authUser.getIdTokenResult(false).then((token) => {
+                    setRole(token.claims.role as Role)
+                })
             }
-        })
-        return () => unsubscriber()
-    }, [])
+        } catch (error) {
+            setFirebaseError(error)
+        } finally {
+            setLoading(false)
+        }
+    })
+
+    useEffect(() => () => unsubscriber(), [])
 
     return {
         user,

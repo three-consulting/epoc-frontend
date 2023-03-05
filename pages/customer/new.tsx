@@ -6,7 +6,7 @@ import { ApiUpdateResponse } from "@/lib/types/hooks"
 import FormPage from "@/components/common/FormPage"
 import { CreateCustomerForm } from "@/components/form/CustomerForm"
 import { User } from "firebase/auth"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface INewCustomerForm {
     user: User
@@ -35,8 +35,8 @@ const NewCustomerForm = ({ user }: INewCustomerForm) => {
 }
 
 const New: NextPage = () => (
-    <UserContext.Consumer>
-        {({ user }) => <NewCustomerForm user={user} />}
-    </UserContext.Consumer>
+    <FirebaseContext.Consumer>
+        {({ user }) => user && <NewCustomerForm user={user} />}
+    </FirebaseContext.Consumer>
 )
 export default New

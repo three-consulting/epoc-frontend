@@ -3,12 +3,12 @@ import type { NextPage } from "next"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { EditCustomerForm } from "@/components/form/CustomerForm"
 import { useCustomerDetail } from "@/lib/hooks/useDetail"
 import FormPage from "@/components/common/FormPage"
 import { Box } from "@chakra-ui/react"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     customerId: number
@@ -53,13 +53,13 @@ const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
     return (
-        <UserContext.Consumer>
+        <FirebaseContext.Consumer>
             {({ user }) =>
-                id ? (
+                id && user ? (
                     <EditCustomerPage customerId={Number(id)} user={user} />
                 ) : null
             }
-        </UserContext.Consumer>
+        </FirebaseContext.Consumer>
     )
 }
 

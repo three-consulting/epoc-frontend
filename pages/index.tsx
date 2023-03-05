@@ -1,6 +1,5 @@
 import React from "react"
 import type { NextPage } from "next"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { TimesheetEntryEditor } from "@/components/editor/TimesheetEntryEditor"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
@@ -12,6 +11,7 @@ import {
 import FormPage from "@/components/common/FormPage"
 import { Box } from "@chakra-ui/react"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface IIndexPageProps {
     email: string
@@ -74,11 +74,11 @@ const IndexPage = ({ email, user }: IIndexPageProps) => {
 }
 
 const Home: NextPage = () => (
-    <UserContext.Consumer>
+    <FirebaseContext.Consumer>
         {({ user }) =>
             user?.email && <IndexPage email={user.email} user={user} />
         }
-    </UserContext.Consumer>
+    </FirebaseContext.Consumer>
 )
 
 export default Home

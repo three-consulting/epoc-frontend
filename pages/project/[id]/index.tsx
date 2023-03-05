@@ -28,7 +28,7 @@ import {
     RemoveIconButton,
 } from "@/components/common/Buttons"
 import { User } from "firebase/auth"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface IProjectDetailPage {
     projectId: number
@@ -211,13 +211,13 @@ const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
     return (
-        <UserContext.Consumer>
+        <FirebaseContext.Consumer>
             {({ user }) =>
-                id ? (
+                id && user ? (
                     <ProjectDetailPage projectId={Number(id)} user={user} />
                 ) : null
             }
-        </UserContext.Consumer>
+        </FirebaseContext.Consumer>
     )
 }
 

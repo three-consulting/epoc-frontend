@@ -6,13 +6,13 @@ import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import TimesheetDetail from "@/components/detail/TimesheetDetail"
 import Link from "next/link"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useTimesheetDetail } from "@/lib/hooks/useDetail"
 import { StyledButton } from "@/components/common/Buttons"
 import FormButtons from "@/components/common/FormButtons"
 import FormSection from "@/components/common/FormSection"
 import FormPage from "@/components/common/FormPage"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface ITimesheetDetailPage {
     timesheetId: number
@@ -57,13 +57,13 @@ const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
     return (
-        <UserContext.Consumer>
+        <FirebaseContext.Consumer>
             {({ user }) =>
-                id ? (
+                id && user ? (
                     <TimesheetDetailPage timesheetId={Number(id)} user={user} />
                 ) : null
             }
-        </UserContext.Consumer>
+        </FirebaseContext.Consumer>
     )
 }
 

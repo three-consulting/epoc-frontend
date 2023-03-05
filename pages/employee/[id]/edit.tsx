@@ -4,10 +4,10 @@ import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { EditEmployeeForm } from "@/components/form/EmployeeForm"
 import { useEmployeeDetail } from "@/lib/hooks/useDetail"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     employeeId: number
@@ -53,13 +53,13 @@ const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
     return (
-        <UserContext.Consumer>
+        <FirebaseContext.Consumer>
             {({ user }) =>
-                id ? (
+                id && user ? (
                     <EditEmployeePage employeeId={Number(id)} user={user} />
                 ) : null
             }
-        </UserContext.Consumer>
+        </FirebaseContext.Consumer>
     )
 }
 

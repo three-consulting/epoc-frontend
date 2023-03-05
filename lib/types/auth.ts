@@ -9,11 +9,7 @@ export interface FirebaseAuthState {
     user: FirebaseUser | null
     role?: Role
     loading: boolean
-    firebaseError: unknown
-    signOutAndClear: () => Promise<void>
-    signInWithGoogle: () => Promise<void>
-}
-
-export interface UserState {
-    user: FirebaseUser
+    firebaseError?: unknown
+    signOutAndClear?: () => Promise<void>
+    signInWithGoogle?: () => Promise<void>
 }

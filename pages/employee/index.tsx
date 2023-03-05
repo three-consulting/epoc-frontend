@@ -1,9 +1,8 @@
-import React, { useCallback, useContext, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import type { NextPage } from "next"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import EmployeeTable from "@/components/table/EmployeeTable"
-import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useEmployees } from "@/lib/hooks/useList"
 import { ApiGetResponse } from "@/lib/types/hooks"
 import { Employee } from "@/lib/types/apiTypes"
@@ -11,13 +10,14 @@ import { Role } from "@/lib/types/auth"
 import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 import FormPage from "@/components/common/FormPage"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface IEmployeesForm {
     user: User
+    role: Role
 }
 
-const EmployeesForm = ({ user }: IEmployeesForm) => {
-    const { role } = useContext(AuthContext)
+const EmployeesForm = ({ user, role }: IEmployeesForm) => {
     const initialEmployeeResponse = useEmployees(user)
 
     const [employeesResponse, setEmployeesResponse] = useState<
@@ -60,9 +60,11 @@ const EmployeesForm = ({ user }: IEmployeesForm) => {
 }
 
 const Employees: NextPage = () => (
-    <UserContext.Consumer>
-        {({ user }) => <EmployeesForm user={user} />}
-    </UserContext.Consumer>
+    <FirebaseContext.Consumer>
+        {({ user, role }) =>
+            user && role && <EmployeesForm user={user} role={role} />
+        }
+    </FirebaseContext.Consumer>
 )
 
 export default Employees

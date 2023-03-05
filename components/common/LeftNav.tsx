@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import {
     Text,
     Flex,
@@ -23,7 +23,7 @@ import {
 } from "react-icons/bs"
 import { IconType } from "react-icons"
 import { Role } from "@/lib/types/auth"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
+import { User } from "firebase/auth"
 
 interface LinkItemProps {
     name: string
@@ -88,10 +88,19 @@ const NavItem = ({ name, icon, href }: LinkItemProps) => (
     </LinkBox>
 )
 
-function LeftNav(): JSX.Element {
-    const { user, role, signInWithGoogle, signOutAndClear } =
-        useContext(AuthContext)
+interface ILeftNav {
+    user: User | null
+    role?: Role
+    signInWithGoogle?: () => void
+    signOutAndClear?: () => void
+}
 
+const LeftNav = ({
+    user,
+    role,
+    signInWithGoogle,
+    signOutAndClear,
+}: ILeftNav): JSX.Element => {
     const isAdmin = role === Role.ADMIN
     const isLoggedIn = user !== null
 

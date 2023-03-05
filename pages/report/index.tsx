@@ -1,6 +1,5 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
-import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import ReportTable from "@/components/table/ReportTable"
 import Loading from "@/components/common/Loading"
 import ErrorAlert from "@/components/common/ErrorAlert"
@@ -15,14 +14,14 @@ import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 import { Role } from "@/lib/types/auth"
 import FormPage from "@/components/common/FormPage"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface IReportForm {
     user: User
+    role: Role
 }
 
-const ReportForm = ({ user }: IReportForm) => {
-    const { role } = useContext(AuthContext)
-
+const ReportForm = ({ user, role }: IReportForm) => {
     const customersResponse = useCustomers(user)
     const projectsResponse = useProjects(user)
     const employeeResponse = useEmployees(user)
@@ -85,6 +84,7 @@ const ReportForm = ({ user }: IReportForm) => {
                         timesheets={timesheetsResponse.data}
                         tasks={tasksResponse.data}
                         user={user}
+                        role={role}
                     />
                 )}
         </FormPage>
@@ -92,9 +92,11 @@ const ReportForm = ({ user }: IReportForm) => {
 }
 
 const Report: NextPage = () => (
-    <UserContext.Consumer>
-        {({ user }) => <ReportForm user={user} />}
-    </UserContext.Consumer>
+    <FirebaseContext.Consumer>
+        {({ user, role }) =>
+            user && role && <ReportForm user={user} role={role} />
+        }
+    </FirebaseContext.Consumer>
 )
 
 export default Report

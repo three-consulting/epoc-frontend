@@ -1,7 +1,7 @@
-import React, { ReactNode, useContext } from "react"
+import React, { ReactNode } from "react"
 import { Box, Flex } from "@chakra-ui/react"
 import LeftNav from "./LeftNav"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 import FormPage from "./FormPage"
 import Header from "./Header"
 
@@ -15,20 +15,27 @@ const PleaseLogInPage = () => (
     </FormPage>
 )
 
-const Main = ({ children }: MainProps): JSX.Element => {
-    const { user } = useContext(AuthContext)
-
-    return (
-        <Flex
-            flexDirection="row"
-            alignContent="center"
-            justifyContent="center"
-            minHeight="100vh"
-        >
-            <LeftNav />
-            <Box minWidth="40vw">{user ? children : <PleaseLogInPage />}</Box>
-        </Flex>
-    )
-}
+const Main = ({ children }: MainProps): JSX.Element => (
+    <FirebaseContext.Consumer>
+        {({ user, role, signInWithGoogle, signOutAndClear }) => (
+            <Flex
+                flexDirection="row"
+                alignContent="center"
+                justifyContent="center"
+                minHeight="100vh"
+            >
+                <LeftNav
+                    user={user}
+                    role={role}
+                    signInWithGoogle={signInWithGoogle}
+                    signOutAndClear={signOutAndClear}
+                />
+                <Box minWidth="40vw">
+                    {user ? children : <PleaseLogInPage />}
+                </Box>
+            </Flex>
+        )}
+    </FirebaseContext.Consumer>
+)
 
 export default Main

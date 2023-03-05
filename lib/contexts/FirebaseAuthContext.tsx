@@ -1,31 +1,32 @@
 import React, { createContext, ReactNode } from "react"
-import { FirebaseAuthState, UserState } from "@/lib/types/auth"
+import { FirebaseAuthState } from "@/lib/types/auth"
 import useFirebaseAuth from "@/lib/hooks/useFirebaseAuth"
 
-export const AuthContext = createContext<FirebaseAuthState>(
-    {} as FirebaseAuthState
+const defaultFirebaseContext: FirebaseAuthState = {
+    user: null,
+    loading: false,
+}
+
+export const FirebaseContext = createContext<FirebaseAuthState>(
+    defaultFirebaseContext
 )
 
-export const UserContext = createContext<UserState>({} as UserState)
-
-interface AuthProps {
+interface IFirebaseProvider {
     children: ReactNode
 }
 
-export const AuthProvider = ({ children }: AuthProps): JSX.Element => {
+const FirebaseProvider = ({
+    children,
+}: IFirebaseProvider): JSX.Element | null => {
     const auth = useFirebaseAuth()
 
-    return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
-}
-
-export const UserProvider = ({ children }: AuthProps): JSX.Element | null => {
-    const { user } = useFirebaseAuth()
-
     return (
-        user && (
-            <UserContext.Provider value={{ user }}>
+        auth.user && (
+            <FirebaseContext.Provider value={auth}>
                 {children}
-            </UserContext.Provider>
+            </FirebaseContext.Provider>
         )
     )
 }
+
+export default FirebaseProvider

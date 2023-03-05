@@ -42,7 +42,7 @@ import useHoliday from "@/lib/hooks/useHoliday"
 import Header, { TableHeader } from "../common/Header"
 import { BsCaretDown, BsCaretLeft, BsSunglasses, BsTrash } from "react-icons/bs"
 import { User } from "firebase/auth"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 
@@ -109,24 +109,28 @@ const TimesheetEntryRow = ({
                         )}
                         {edit && (
                             <Box border="#6f6f6f solid 1px">
-                                <UserContext.Consumer>
-                                    {({ user }) => (
-                                        <EditTimesheetEntryForm
-                                            id={id}
-                                            timesheetEntry={entry}
-                                            timesheet={entry.timesheet}
-                                            projectId={projectId}
-                                            date={date}
-                                            onCancel={() => setEdit(!edit)}
-                                            afterSubmit={() => setEdit(!edit)}
-                                            tasks={tasks}
-                                            setTimesheetEntries={
-                                                setTimesheetEntries
-                                            }
-                                            user={user}
-                                        />
-                                    )}
-                                </UserContext.Consumer>
+                                <FirebaseContext.Consumer>
+                                    {({ user }) =>
+                                        user && (
+                                            <EditTimesheetEntryForm
+                                                id={id}
+                                                timesheetEntry={entry}
+                                                timesheet={entry.timesheet}
+                                                projectId={projectId}
+                                                date={date}
+                                                onCancel={() => setEdit(!edit)}
+                                                afterSubmit={() =>
+                                                    setEdit(!edit)
+                                                }
+                                                tasks={tasks}
+                                                setTimesheetEntries={
+                                                    setTimesheetEntries
+                                                }
+                                                user={user}
+                                            />
+                                        )
+                                    }
+                                </FirebaseContext.Consumer>
                             </Box>
                         )}
                     </Td>
@@ -606,18 +610,22 @@ export const TimesheetEntryEditor = ({
                         </Flex>
                     </Flex>
                     <Box>
-                        <UserContext.Consumer>
-                            {({ user }) => (
-                                <DayEditor
-                                    timesheets={timesheets}
-                                    dateRange={datesRange(dates)}
-                                    entries={timesheetEntries}
-                                    tasks={tasks}
-                                    setTimesheetEntries={setTimesheetEntries}
-                                    user={user}
-                                />
-                            )}
-                        </UserContext.Consumer>
+                        <FirebaseContext.Consumer>
+                            {({ user }) =>
+                                user && (
+                                    <DayEditor
+                                        timesheets={timesheets}
+                                        dateRange={datesRange(dates)}
+                                        entries={timesheetEntries}
+                                        tasks={tasks}
+                                        setTimesheetEntries={
+                                            setTimesheetEntries
+                                        }
+                                        user={user}
+                                    />
+                                )
+                            }
+                        </FirebaseContext.Consumer>
                     </Box>
                 </Flex>
             </>

@@ -4,12 +4,12 @@ import { EditProjectForm } from "@/components/form/ProjectForm"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useProjectDetail } from "@/lib/hooks/useDetail"
 import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 import { Box } from "@chakra-ui/react"
 import FormPage from "@/components/common/FormPage"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface IEditProjectPage {
     projectId: number
@@ -67,13 +67,13 @@ const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
     return (
-        <UserContext.Consumer>
+        <FirebaseContext.Consumer>
             {({ user }) =>
-                id ? (
+                id && user ? (
                     <EditProjectPage projectId={Number(id)} user={user} />
                 ) : null
             }
-        </UserContext.Consumer>
+        </FirebaseContext.Consumer>
     )
 }
 

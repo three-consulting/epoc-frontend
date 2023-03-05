@@ -6,11 +6,11 @@ import { CreateProjectForm } from "@/components/form/ProjectForm"
 import { useRouter } from "next/router"
 import { Project } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 import { Box } from "@chakra-ui/react"
 import FormPage from "@/components/common/FormPage"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface INewProjectForm {
     user: User
@@ -57,9 +57,9 @@ const NewProjectForm = ({ user }: INewProjectForm) => {
 }
 
 const New: NextPage = () => (
-    <UserContext.Consumer>
-        {({ user }) => <NewProjectForm user={user} />}
-    </UserContext.Consumer>
+    <FirebaseContext.Consumer>
+        {({ user }) => user && <NewProjectForm user={user} />}
+    </FirebaseContext.Consumer>
 )
 
 export default New

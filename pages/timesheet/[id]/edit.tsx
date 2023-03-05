@@ -5,10 +5,10 @@ import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
 import { EditTimesheetForm } from "@/components/form/TimesheetForm"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useTimesheetDetail } from "@/lib/hooks/useDetail"
 import { useEmployees } from "@/lib/hooks/useList"
 import { User } from "firebase/auth"
+import { FirebaseContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface IEditTimesheetPage {
     timesheetId: number
@@ -66,13 +66,13 @@ const Edit: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
     return (
-        <UserContext.Consumer>
+        <FirebaseContext.Consumer>
             {({ user }) =>
-                id ? (
+                id && user ? (
                     <EditTimesheetPage timesheetId={Number(id)} user={user} />
                 ) : null
             }
-        </UserContext.Consumer>
+        </FirebaseContext.Consumer>
     )
 }
 

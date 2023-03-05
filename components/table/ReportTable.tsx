@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import { Box, ListItem, UnorderedList } from "@chakra-ui/layout"
 import {
     Customer,
@@ -21,7 +21,6 @@ import {
 import { dateTimeToShortISODate, toLocalDisplayDate } from "@/lib/utils/date"
 import { round } from "lodash"
 import { NEXT_PUBLIC_API_URL } from "@/lib/conf"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import { getText } from "@/lib/utils/fetch"
 import { downloadFile } from "@/lib/utils/common"
 import { useTimesheetEntries } from "@/lib/hooks/useList"
@@ -87,6 +86,7 @@ interface ReportTableProps {
     timesheets: Timesheet[]
     tasks: Task[]
     user: User
+    role: Role
 }
 
 const entriesQuantitySum = (entries: TimesheetEntry[]) =>
@@ -430,16 +430,15 @@ const EmployeeHoursRow = ({
         <> </>
     )
 
-function ReportTable({
+const ReportTable = ({
     customers: allCustomers,
     projects: allProjects,
     employees,
     tasks,
     timesheets,
     user,
-}: ReportTableProps): JSX.Element {
-    const { role } = useContext(AuthContext)
-
+    role,
+}: ReportTableProps): JSX.Element => {
     const firstDay = dateTimeToShortISODate(DateTime.now().startOf("month"))
     const lastDay = dateTimeToShortISODate(DateTime.now().endOf("month"))
 
