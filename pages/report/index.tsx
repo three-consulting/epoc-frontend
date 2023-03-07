@@ -1,7 +1,6 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
 import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import ReportTable from "@/components/table/ReportTable"
 import Loading from "@/components/common/Loading"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import {
@@ -14,6 +13,7 @@ import {
 import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 import { Role } from "@/lib/types/auth"
 import FormPage from "@/components/common/FormPage"
+import ReportTable from "@/components/table/ReportTable"
 
 const Report: NextPage = () => {
     const { user } = useContext(UserContext)
@@ -80,6 +80,7 @@ const Report: NextPage = () => {
                         employees={employeeResponse.data}
                         timesheets={timesheetsResponse.data}
                         tasks={tasksResponse.data}
+                        user={user}
                     />
                 )}
         </FormPage>
