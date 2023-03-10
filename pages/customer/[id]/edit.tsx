@@ -28,7 +28,7 @@ function EditCustomerPage({ customerId }: Props): JSX.Element {
         router.push(`/customer/${customerId}`)
 
     return (
-        <FormPage header="Edit customer">
+        <FormPage header="Customers">
             <Box>
                 {customerDetailResponse.isLoading && <Loading />}
                 {customerDetailResponse.isError && (

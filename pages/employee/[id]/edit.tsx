@@ -1,12 +1,13 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
-import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { EditEmployeeForm } from "@/components/form/EmployeeForm"
 import { useEmployeeDetail } from "@/lib/hooks/useDetail"
+import FormPage from "@/components/common/FormPage"
+import { Box } from "@chakra-ui/react"
 
 type Props = {
     employeeId: number
@@ -27,23 +28,22 @@ function EditEmployeePage({ employeeId }: Props): JSX.Element {
         router.push(`/employee/${employeeId}`)
 
     return (
-        <div>
-            <Heading fontWeight="black" margin="1rem 0rem">
-                Edit employee
-            </Heading>
-            {employeeDetailResponse.isLoading && <Loading />}
-            {employeeDetailResponse.isError && (
-                <ErrorAlert title={errorMessage} message={errorMessage} />
-            )}
-            {employeeDetailResponse.isSuccess &&
-                employeeDetailResponse.data.id && (
-                    <EditEmployeeForm
-                        employee={employeeDetailResponse.data}
-                        afterSubmit={redirectToEmployeeDetail}
-                        onCancel={redirectToEmployeeDetail}
-                    />
+        <FormPage header="Employees">
+            <Box>
+                {employeeDetailResponse.isLoading && <Loading />}
+                {employeeDetailResponse.isError && (
+                    <ErrorAlert title={errorMessage} message={errorMessage} />
                 )}
-        </div>
+                {employeeDetailResponse.isSuccess &&
+                    employeeDetailResponse.data.id && (
+                        <EditEmployeeForm
+                            employee={employeeDetailResponse.data}
+                            afterSubmit={redirectToEmployeeDetail}
+                            onCancel={redirectToEmployeeDetail}
+                        />
+                    )}
+            </Box>
+        </FormPage>
     )
 }
 

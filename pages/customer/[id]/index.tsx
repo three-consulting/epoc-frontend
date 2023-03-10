@@ -27,12 +27,12 @@ function CustomerDetailPage({ customerId }: Props): JSX.Element {
             : "-"
 
     return (
-        <FormPage header={getHeader()}>
+        <FormPage header="Customers">
             {customerDetailResponse.isLoading && <Loading />}
             {customerDetailResponse.isError && (
                 <ErrorAlert title="Error" message="Error" />
             )}
-            <FormSection header="Customer details">
+            <FormSection header={getHeader()}>
                 {customerDetailResponse.isSuccess ? (
                     <CustomerDetail customer={customerDetailResponse.data} />
                 ) : (
