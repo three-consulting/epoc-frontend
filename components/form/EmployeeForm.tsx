@@ -1,11 +1,4 @@
-import {
-    FormControl,
-    FormLabel,
-    Input,
-    Box,
-    Flex,
-    Select,
-} from "@chakra-ui/react"
+import { FormControl, FormLabel, Input, Box, Select } from "@chakra-ui/react"
 import React, { useContext, useEffect, useState } from "react"
 import { Employee } from "@/lib/types/apiTypes"
 import { useUpdateEmployees } from "@/lib/hooks/useUpdate"
@@ -17,6 +10,7 @@ import WarningModal from "../common/WarningModal"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
 import { isError } from "lodash"
+import FormSection from "../common/FormSection"
 
 type CreateEmployeeFormProps = FormBase<Employee>
 
@@ -108,121 +102,110 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
         })
 
     return (
-        <Flex
-            flexDirection="column"
-            backgroundColor="white"
-            border="1px solid"
-            borderColor="gray.400"
-            borderRadius="0.2rem"
-            padding="1rem 1rem"
+        <form
+            onSubmit={(event) => {
+                event.preventDefault()
+                try {
+                    onSubmit(validateEmployeeFields(employeeFields))
+                } catch (error) {
+                    errorHandler(error as Error)
+                }
+            }}
         >
-            <form
-                onSubmit={(event) => {
-                    event.preventDefault()
-                    try {
-                        onSubmit(validateEmployeeFields(employeeFields))
-                    } catch (error) {
-                        errorHandler(error as Error)
-                    }
-                }}
-            >
-                <div style={{ padding: "20px" }}>
-                    <FormControl
-                        isRequired={employeeFieldMetadata.firstName.required}
-                    >
-                        <FormLabel>Employee First Name</FormLabel>
-                        <Input
-                            placeholder="Employee First Name"
-                            value={employeeFields.firstName || ""}
-                            onChange={onFirstNameChange}
-                            data-testid={"form-field-firstName"}
-                        />
-                    </FormControl>
-
-                    <FormControl
-                        mt={4}
-                        isRequired={employeeFieldMetadata.lastName.required}
-                    >
-                        <FormLabel>Employee Last Name</FormLabel>
-                        <Input
-                            placeholder="Employee Last Name"
-                            value={employeeFields.lastName || ""}
-                            onChange={onLastNameChange}
-                            data-testid={"form-field-lastName"}
-                        />
-                    </FormControl>
-
-                    <FormControl
-                        mt={4}
-                        isRequired={employeeFieldMetadata.email.required}
-                    >
-                        <FormLabel>Employee Email</FormLabel>
-                        <Input
-                            placeholder="Employee Email"
-                            value={employeeFields.email || ""}
-                            onChange={onEmailChange}
-                            data-testid={"form-field-email"}
-                        />
-                    </FormControl>
-
-                    <FormControl
-                        mt={4}
-                        isRequired={employeeFieldMetadata.role.required}
-                    >
-                        <FormLabel>Employee Role</FormLabel>
-                        <Select
-                            placeholder="Employee Role"
-                            value={employeeFields.role || ""}
-                            onChange={onRoleChange}
-                            data-testid={"form-field-role"}
-                        >
-                            <option value={"USER"}>User</option>
-                            <option value={"ADMIN"}>Admin</option>
-                        </Select>
-                    </FormControl>
-                </div>
-                <FormButtons>
-                    <StyledButton
-                        buttontype="save"
-                        onClick={() => setShowWarningModal(true)}
-                        disabled={disableSave}
-                        data-testid="form-button-save"
+            <div style={{ padding: "20px" }}>
+                <FormControl
+                    isRequired={employeeFieldMetadata.firstName.required}
+                >
+                    <FormLabel>Employee First Name</FormLabel>
+                    <Input
+                        placeholder="Employee First Name"
+                        value={employeeFields.firstName || ""}
+                        onChange={onFirstNameChange}
+                        data-testid={"form-field-firstName"}
                     />
-                    <StyledButton
-                        buttontype="cancel"
-                        onClick={onCancel}
-                        data-testid="form-button-cancel"
+                </FormControl>
+
+                <FormControl
+                    mt={4}
+                    isRequired={employeeFieldMetadata.lastName.required}
+                >
+                    <FormLabel>Employee Last Name</FormLabel>
+                    <Input
+                        placeholder="Employee Last Name"
+                        value={employeeFields.lastName || ""}
+                        onChange={onLastNameChange}
+                        data-testid={"form-field-lastName"}
                     />
-                </FormButtons>
-                {errorMessage && (
-                    <>
-                        <ErrorAlert />
-                        <Box>{errorMessage}</Box>
-                    </>
-                )}
-                <WarningModal
-                    header={"Are you sure?"}
-                    content={
-                        "Changes in this form will overwrite data in firebase"
-                    }
-                    buttons={
-                        <FormButtons>
-                            <StyledButton
-                                buttontype="confirm"
-                                onClick={onConfirm}
-                                data-testid="form-button-confirm"
-                            />
-                            <StyledButton
-                                buttontype="cancel"
-                                onClick={() => setShowWarningModal(false)}
-                            />
-                        </FormButtons>
-                    }
-                    isOpen={showWarningModal}
-                    onClose={() => setShowWarningModal(false)}
+                </FormControl>
+
+                <FormControl
+                    mt={4}
+                    isRequired={employeeFieldMetadata.email.required}
+                >
+                    <FormLabel>Employee Email</FormLabel>
+                    <Input
+                        placeholder="Employee Email"
+                        value={employeeFields.email || ""}
+                        onChange={onEmailChange}
+                        data-testid={"form-field-email"}
+                    />
+                </FormControl>
+
+                <FormControl
+                    mt={4}
+                    isRequired={employeeFieldMetadata.role.required}
+                >
+                    <FormLabel>Employee Role</FormLabel>
+                    <Select
+                        placeholder="Employee Role"
+                        value={employeeFields.role || ""}
+                        onChange={onRoleChange}
+                        data-testid={"form-field-role"}
+                    >
+                        <option value={"USER"}>User</option>
+                        <option value={"ADMIN"}>Admin</option>
+                    </Select>
+                </FormControl>
+            </div>
+            <FormButtons>
+                <StyledButton
+                    buttontype="save"
+                    onClick={() => setShowWarningModal(true)}
+                    disabled={disableSave}
+                    data-testid="form-button-save"
                 />
-            </form>
-        </Flex>
+                <StyledButton
+                    buttontype="cancel"
+                    onClick={onCancel}
+                    data-testid="form-button-cancel"
+                />
+            </FormButtons>
+            {errorMessage && (
+                <>
+                    <ErrorAlert />
+                    <Box>{errorMessage}</Box>
+                </>
+            )}
+            <WarningModal
+                header={"Are you sure?"}
+                content={"Changes in this form will overwrite data in firebase"}
+                buttons={
+                    <FormButtons>
+                        <StyledButton
+                            buttontype="confirm"
+                            onClick={onConfirm}
+                            data-testid="form-button-confirm"
+                        />
+                        <StyledButton
+                            buttontype="cancel"
+                            onClick={() => setShowWarningModal(false)}
+                        />
+                    </FormButtons>
+                }
+                isOpen={showWarningModal}
+                onClose={() => setShowWarningModal(false)}
+            />
+        </form>
     )
 }
 
@@ -230,23 +213,24 @@ export const EditEmployeeForm = (props: EditEmployeeFormProps): JSX.Element => {
     const { user } = useContext(UserContext)
     const { put } = useUpdateEmployees(user)
 
+    const { employee } = props
+
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
-    const onSubmit = async (employee: Employee) => {
-        const updatedEmployee = await put(employee, errorHandler)
+    const onSubmit = async (emp: Employee) => {
+        const updatedEmployee = await put(emp, errorHandler)
         return props.afterSubmit && props.afterSubmit(updatedEmployee)
     }
 
+    const getHeader = () =>
+        `${employee.firstName ?? " - "} ${employee.lastName ?? " - "}`
+
     return (
-        <>
-            <EmployeeForm {...props} onSubmit={onSubmit} />
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
-        </>
+        <FormSection header={getHeader()} errorMessage={errorMessage}>
+            <>
+                <EmployeeForm {...props} onSubmit={onSubmit} />
+            </>
+        </FormSection>
     )
 }

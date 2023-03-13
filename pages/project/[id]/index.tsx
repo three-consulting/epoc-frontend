@@ -109,13 +109,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
     }
 
     return (
-        <FormPage
-            header={
-                projectDetailResponse.isSuccess
-                    ? projectDetailResponse.data.name ?? "-"
-                    : "-"
-            }
-        >
+        <FormPage header="Projects">
             <Box>
                 {errorMessage ? (
                     <>
@@ -132,7 +126,9 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                 )}
                 {projectDetailResponse.isSuccess ? (
                     <>
-                        <FormSection header="Project details">
+                        <FormSection
+                            header={projectDetailResponse.data.name ?? "-"}
+                        >
                             <ProjectDetail
                                 project={projectDetailResponse.data}
                             />

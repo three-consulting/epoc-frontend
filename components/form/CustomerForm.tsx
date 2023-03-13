@@ -182,12 +182,6 @@ export const EditCustomerForm = (props: EditCustomerFormProps): JSX.Element => {
                     setCustomerFields={setCustomerFields}
                     setErrorMessage={setErrorMessage}
                 />
-                {errorMessage && (
-                    <>
-                        <ErrorAlert />
-                        <Box>{errorMessage}</Box>
-                    </>
-                )}
             </>
         </FormSection>
     )

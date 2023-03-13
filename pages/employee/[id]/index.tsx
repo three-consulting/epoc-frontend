@@ -11,6 +11,12 @@ import {
     useTasks,
     useTimesheetEntries,
 } from "@/lib/hooks/useList"
+import FormPage from "@/components/common/FormPage"
+import FormSection from "@/components/common/FormSection"
+import { Box } from "@chakra-ui/react"
+import FormButtons from "@/components/common/FormButtons"
+import Link from "next/link"
+import { StyledButton } from "@/components/common/Buttons"
 
 type Props = {
     employeeId: number
@@ -58,20 +64,36 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
         tasksResponse.isSuccess &&
         timesheetEntriesResponse.isSuccess
 
+    const getHeader = () =>
+        employeeDetailResponse.isSuccess
+            ? `${employeeDetailResponse.data.firstName ?? " - "} ${
+                  employeeDetailResponse.data.lastName ?? " - "
+              }`
+            : " - "
+
     return (
-        <div>
+        <FormPage header="Employees">
             {isError && <ErrorAlert title="Error" message="Error" />}
             {isLoading && <Loading />}
-            {isSuccess && (
-                <EmployeeDetail
-                    employee={employeeDetailResponse.data}
-                    employeeId={employeeId}
-                    entries={timesheetEntriesResponse.data}
-                    timesheets={timesheetsResponse.data}
-                    tasks={tasksResponse.data}
-                />
-            )}
-        </div>
+            <FormSection header={getHeader()}>
+                {isSuccess ? (
+                    <EmployeeDetail
+                        employee={employeeDetailResponse.data}
+                        employeeId={employeeId}
+                        entries={timesheetEntriesResponse.data}
+                        timesheets={timesheetsResponse.data}
+                        tasks={tasksResponse.data}
+                    />
+                ) : (
+                    <Box>{"Not found"}</Box>
+                )}
+                <FormButtons>
+                    <Link key={`${employeeId}`} href={`${employeeId}/edit`}>
+                        <StyledButton buttontype="edit" />
+                    </Link>
+                </FormButtons>
+            </FormSection>
+        </FormPage>
     )
 }
 

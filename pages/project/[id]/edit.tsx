@@ -31,7 +31,7 @@ function EditProjectPage({ projectId }: Props): JSX.Element {
     const redirectToProjectDetail = () => router.push(`/project/${projectId}`)
 
     return (
-        <FormPage header="Edit project">
+        <FormPage header="Projects">
             <Box>
                 {(customersResponse.isLoading ||
                     employeesResponse.isLoading ||
