@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { Dispatch, SetStateAction, useContext } from "react"
 import {
     Text,
     Flex,
@@ -29,6 +29,7 @@ interface LinkItemProps {
     name: string
     icon: IconType
     href: string
+    setShowNavigations?: Dispatch<SetStateAction<boolean>>
 }
 
 const userLinkItems: LinkItemProps[] = [
@@ -73,10 +74,15 @@ const ThemedItem = ({ children }: { children: JSX.Element }) => (
     </ChakraProvider>
 )
 
-const NavItem = ({ name, icon, href }: LinkItemProps) => (
+const NavItem = ({ name, icon, href, setShowNavigations }: LinkItemProps) => (
     <LinkBox as="div">
         <ThemedItem>
-            <LinkOverlay href={href}>
+            <LinkOverlay
+                href={href}
+                onClick={() =>
+                    setShowNavigations && setShowNavigations((show) => !show)
+                }
+            >
                 <Flex>
                     <HStack>
                         <Icon as={icon} />
@@ -88,7 +94,11 @@ const NavItem = ({ name, icon, href }: LinkItemProps) => (
     </LinkBox>
 )
 
-function LeftNav(): JSX.Element {
+function Navigations({
+    setShowNavigations,
+}: {
+    setShowNavigations?: Dispatch<SetStateAction<boolean>>
+}): JSX.Element {
     const { user, role, signInWithGoogle, signOutAndClear } =
         useContext(AuthContext)
 
@@ -110,6 +120,7 @@ function LeftNav(): JSX.Element {
                         name={item.name}
                         icon={item.icon}
                         href={item.href}
+                        setShowNavigations={setShowNavigations}
                     />
                 ))}
             {isAdmin &&
@@ -120,6 +131,7 @@ function LeftNav(): JSX.Element {
                         name={item.name}
                         icon={item.icon}
                         href={item.href}
+                        setShowNavigations={setShowNavigations}
                     />
                 ))}
             {user ? (
@@ -157,4 +169,4 @@ function LeftNav(): JSX.Element {
     )
 }
 
-export default LeftNav
+export default Navigations

@@ -36,6 +36,11 @@ const components: Record<string, StyleConfig> = {
                 paddingX: "1.5rem",
                 _hover: { cursor: "pointer" },
             },
+            mobile: {
+                paddingY: "1.5rem",
+                color: "whitesmoke",
+                bg: "black",
+            },
         },
         defaultProps: {
             size: "md",
@@ -50,14 +55,15 @@ const StyledItems = ({ children }: { children: JSX.Element }) => (
 )
 
 type TContent = JSX.Element | Array<JSX.Element> | string
-type THeaderType = "top" | "main" | "sub" | "element"
+type THeaderType = "top" | "main" | "sub" | "element" | "mobile"
 
 interface IHeader {
     type: THeaderType
     children?: TContent
+    menu?: JSX.Element
 }
 
-const Header = ({ children, type }: IHeader) => {
+const Header = ({ children, type, menu }: IHeader) => {
     let variant: THeaderType = "top"
     let size = "3xl"
     switch (type) {
@@ -76,6 +82,11 @@ const Header = ({ children, type }: IHeader) => {
             size = "sm"
             break
         }
+        case "mobile": {
+            variant = type
+            size = "xl"
+            break
+        }
         default: {
             break
         }
@@ -83,7 +94,10 @@ const Header = ({ children, type }: IHeader) => {
     return (
         <StyledItems>
             <Heading variant={`${variant}Header`} size={size}>
-                {children ?? "[...] - Epoc"}
+                <Flex justifyContent="space-between" alignItems="center">
+                    {children ?? "[...] - Epoc"}
+                    {menu}
+                </Flex>
             </Heading>
         </StyledItems>
     )
