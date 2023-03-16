@@ -85,16 +85,7 @@ const testRequestPath = (): object => pathSpy.getCalls()[0].args[0]
 
 test("a task with the required fields only can be submitted", async () => {
     expect(testProject.id).toBeDefined()
-    render(
-        <>
-            {testProject.id && (
-                <CreateTaskForm
-                    project={testProject}
-                    projectId={testProject.id}
-                />
-            )}
-        </>
-    )
+    render(<>{testProject.id && <CreateTaskForm project={testProject} />}</>)
     await fillAndSubmitForm(testTaskRequiredFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
@@ -109,16 +100,7 @@ test("a task with the required fields only can be submitted", async () => {
 
 test("a task with all fields can be submitted", async () => {
     expect(testProject.id).toBeDefined()
-    render(
-        <>
-            {testProject.id && (
-                <CreateTaskForm
-                    project={testProject}
-                    projectId={testProject.id}
-                />
-            )}
-        </>
-    )
+    render(<>{testProject.id && <CreateTaskForm project={testProject} />}</>)
     await fillAndSubmitForm(testTaskAllFields)
 
     await waitFor(() => expect(bodySpy.callCount).toEqual(1))
@@ -139,7 +121,6 @@ test("afterSubmit is invoked with the correct data", async () => {
             {testProject.id && (
                 <CreateTaskForm
                     project={testProject}
-                    projectId={testProject.id}
                     afterSubmit={afterSubmitSpy}
                 />
             )}
@@ -161,11 +142,7 @@ test("onCancel is invoked", async () => {
     render(
         <>
             {testProject.id && (
-                <CreateTaskForm
-                    project={testProject}
-                    projectId={testProject.id}
-                    onCancel={onCancelSpy}
-                />
+                <CreateTaskForm project={testProject} onCancel={onCancelSpy} />
             )}
         </>
     )
@@ -178,14 +155,7 @@ test("onCancel is invoked", async () => {
 
 test("a required field cannot be missing", async () => {
     const form = render(
-        <>
-            {testProject.id && (
-                <CreateTaskForm
-                    project={testProject}
-                    projectId={testProject.id}
-                />
-            )}
-        </>
+        <>{testProject.id && <CreateTaskForm project={testProject} />}</>
     )
     const taskMissingRequired = Object.assign({}, testTaskAllFields)
     taskKeys(testTaskRequiredFields).forEach((key: keyof Task) => {

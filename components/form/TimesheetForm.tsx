@@ -37,15 +37,18 @@ interface ITimesheetForm extends ICreateTimesheetForm {
 
 type TimesheetFields = Partial<Timesheet>
 
-const validateTimesheetFields = (
-    fields: TimesheetFields,
-    projectId?: number
-): Timesheet => {
+const validateTimesheetFields = (fields: TimesheetFields): Timesheet => {
     const { name, rate, allocation, project, employee } = fields
-    if (name && rate !== undefined && allocation && project && employee) {
+    if (
+        name &&
+        rate !== undefined &&
+        allocation !== undefined &&
+        project &&
+        employee
+    ) {
         return {
             ...fields,
-            project: { ...project, id: projectId },
+            project,
             name,
             rate,
             allocation,
@@ -72,6 +75,22 @@ const TimesheetForm = ({
     const { user } = useContext(UserContext)
     const projectResponse = useProjects(user)
 
+    const onProjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        event.preventDefault()
+        const id = Number(event.target.value)
+        if (id && projectResponse.isSuccess) {
+            const selectedProject = projectResponse.data.find(
+                (pro) => pro.id === id
+            )
+            if (selectedProject) {
+                setTimesheetFields({
+                    ...timesheetFields,
+                    project: selectedProject,
+                })
+            }
+        }
+    }
+
     const setEmployee = (event: React.FormEvent<HTMLSelectElement>) => {
         event.preventDefault()
         const id = Number(event.currentTarget.value)
@@ -96,7 +115,7 @@ const TimesheetForm = ({
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
-            const sheet = validateTimesheetFields(timesheetFields, projectId)
+            const sheet = validateTimesheetFields(timesheetFields)
             onSubmit(sheet)
         } catch (error) {
             errorHandler(error as Error)
@@ -124,11 +143,13 @@ const TimesheetForm = ({
             <Box>
                 <form onSubmit={handleSubmit}>
                     {!project && !projectId && projectResponse.isSuccess && (
-                        <FormControl isRequired>
+                        <FormControl
+                            isRequired={timesheetFieldMetadata.project.required}
+                        >
                             <FormLabel>Project</FormLabel>
                             <Select
                                 value={timesheetFields?.project?.id}
-                                onChange={setEmployee}
+                                onChange={onProjectChange}
                                 placeholder="Select project"
                                 data-testid="form-field-project"
                             >
@@ -143,8 +164,10 @@ const TimesheetForm = ({
                             </Select>
                         </FormControl>
                     )}
-                    <FormControl isRequired>
-                        <FormLabel>User</FormLabel>
+                    <FormControl
+                        isRequired={timesheetFieldMetadata.employee.required}
+                    >
+                        <FormLabel>Employee</FormLabel>
                         <Select
                             value={timesheetFields?.employee?.id}
                             onChange={setEmployee}

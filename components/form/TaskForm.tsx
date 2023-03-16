@@ -20,7 +20,6 @@ import { useProjects } from "@/lib/hooks/useList"
 
 interface ICreateTaskForm extends FormBase<Task> {
     project?: Project
-    projectId?: number
 }
 
 interface IEditTaskForm extends ICreateTaskForm {
@@ -54,7 +53,6 @@ const TaskForm = ({
     onSubmit,
     onCancel,
     project,
-    projectId,
 }: ITaskForm): JSX.Element => {
     const [taskFields, setTaskFields] = useState<TaskFields>(
         taskOrNull || { project, billable: true }
@@ -78,27 +76,33 @@ const TaskForm = ({
         }
     }
 
+    const onProjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = parseInt(event.target.value, 10)
+        if (!isNaN(value) && projectResponse.isSuccess) {
+            const selectedProject = projectResponse.data.find(
+                (pro) => pro.id === value
+            )
+            setTaskFields({
+                ...taskFields,
+                project: selectedProject,
+            })
+        }
+    }
+
     return (
         <Flex flexDirection="column">
             <form onSubmit={handleSubmit}>
                 <FormContainer>
-                    {!project && !projectId && projectResponse.isSuccess && (
-                        <FormControl isRequired>
+                    {!project && projectResponse.isSuccess && (
+                        <FormControl
+                            isRequired={taskFieldMetadata.project.required}
+                        >
                             <FormLabel>Project</FormLabel>
                             <Select
-                                value={taskFields?.project?.name || ""}
-                                placeholder={"Task project"}
-                                onChange={(event) =>
-                                    setTaskFields({
-                                        ...taskFields,
-                                        project: projectResponse.data.find(
-                                            (pro) =>
-                                                pro.id ===
-                                                parseInt(event.target.value, 10)
-                                        ),
-                                    })
-                                }
-                                data-testid={"form-field-name"}
+                                value={taskFields?.project?.id || ""}
+                                placeholder={"Select project"}
+                                onChange={onProjectChange}
+                                data-testid={"form-field-project"}
                             >
                                 {projectResponse.data.map((pro) => (
                                     <option

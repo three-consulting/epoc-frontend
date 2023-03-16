@@ -43,7 +43,6 @@ const EditTaskPage = ({ taskId }: IEditTaskPage): JSX.Element => {
                         <EditTaskForm
                             task={taskDetailResponse.data}
                             project={taskDetailResponse.data.project}
-                            projectId={taskDetailResponse.data.project.id}
                             afterSubmit={redirectToTaskDetail}
                             onCancel={redirectToTaskDetail}
                         />

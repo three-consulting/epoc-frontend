@@ -84,11 +84,7 @@ test("a task can be edited with required fields", async () => {
     render(
         <>
             {testTask.id && (
-                <EditTaskForm
-                    project={testProject}
-                    task={testTask}
-                    projectId={1}
-                />
+                <EditTaskForm project={testProject} task={testTask} />
             )}
         </>
     )
@@ -112,11 +108,7 @@ test("a task can be edited with all fields", async () => {
     render(
         <>
             {testTask.id && (
-                <EditTaskForm
-                    project={testProject}
-                    task={testTask}
-                    projectId={1}
-                />
+                <EditTaskForm project={testProject} task={testTask} />
             )}
         </>
     )
@@ -144,7 +136,6 @@ test("afterSubmit is invoked with the correct data", async () => {
                 <EditTaskForm
                     project={testProject}
                     task={testTask}
-                    projectId={1}
                     afterSubmit={afterSubmitSpy}
                 />
             )}
@@ -169,7 +160,6 @@ test("onCancel is invoked", async () => {
                 <EditTaskForm
                     project={testProject}
                     task={testTask}
-                    projectId={1}
                     onCancel={onCancelSpy}
                 />
             )}
@@ -187,11 +177,7 @@ test("a required field cannot be missing", async () => {
     const form = render(
         <>
             {testProject.id && (
-                <EditTaskForm
-                    project={testProject}
-                    projectId={testProject.id}
-                    task={testTask}
-                />
+                <EditTaskForm project={testProject} task={testTask} />
             )}
         </>
     )

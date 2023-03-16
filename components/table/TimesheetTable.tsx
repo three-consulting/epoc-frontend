@@ -1,37 +1,18 @@
 import { Box } from "@chakra-ui/layout"
-import {
-    Modal,
-    ModalCloseButton,
-    ModalContent,
-    ModalHeader,
-    ModalOverlay,
-} from "@chakra-ui/react"
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table"
-import React, { useState } from "react"
-import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
-import { CreateTimesheetForm } from "../form/TimesheetForm"
+import React from "react"
+import { Timesheet } from "@/lib/types/apiTypes"
 import { useRouter } from "next/router"
 import FormSection from "../common/FormSection"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
+import Link from "next/link"
 
-interface TimesheetRowProps {
+interface ITimesheetRow {
     timesheet: Timesheet
 }
-function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
-    const router = useRouter()
-
-    const pushToTimesheet = (
-        timesheetId: number | undefined,
-        event: React.MouseEvent
-    ) => {
-        event.preventDefault()
-        if (timesheetId) {
-            router.push(`/timesheet/${timesheetId}`)
-        }
-    }
-
-    return (
+const TimesheetRow = ({ timesheet }: ITimesheetRow): JSX.Element => (
+    <Link href={`timesheet/${timesheet.id}`}>
         <Tr
             _hover={{
                 backgroundColor: "#6f6f6f",
@@ -39,29 +20,20 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
                 cursor: "pointer",
             }}
         >
-            <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
-                {timesheet.employee?.firstName} {timesheet.employee?.lastName}
+            <Td>
+                {`${timesheet.employee?.firstName} ${timesheet.employee?.lastName}`}
             </Td>
-            <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
-                {timesheet.allocation} %
-            </Td>
+            <Td>{`${timesheet.allocation} %`}</Td>
         </Tr>
-    )
-}
+    </Link>
+)
 
-interface TimesheetTableProps {
+interface ITimesheetTable {
     timesheets: Timesheet[]
-    project?: Project
-    employees?: Employee[]
 }
 
-const TimesheetTable = ({
-    project,
-    timesheets,
-    employees,
-}: TimesheetTableProps): JSX.Element => {
-    const [displayNewTimesheetForm, setDisplayNewTimesheetForm] =
-        useState(false)
+const TimesheetTable = ({ timesheets }: ITimesheetTable): JSX.Element => {
+    const router = useRouter()
 
     return (
         <FormSection header="Timesheets">
@@ -100,37 +72,9 @@ const TimesheetTable = ({
                 <FormButtons>
                     <StyledButton
                         buttontype="add"
-                        onClick={() => setDisplayNewTimesheetForm(true)}
+                        onClick={() => router.push("/timesheet/new")}
                     />
                 </FormButtons>
-                {project?.id && employees && (
-                    <Modal
-                        isOpen={displayNewTimesheetForm}
-                        onClose={() => setDisplayNewTimesheetForm(false)}
-                    >
-                        <ModalOverlay />
-                        <ModalContent
-                            paddingX="1rem"
-                            paddingBottom="1rem"
-                            backgroundColor="whitesmoke"
-                        >
-                            <ModalHeader>Add user to project</ModalHeader>
-                            <CreateTimesheetForm
-                                project={project}
-                                projectId={project.id}
-                                employees={employees}
-                                afterSubmit={(timesheetUpdate) =>
-                                    timesheetUpdate.isSuccess &&
-                                    setDisplayNewTimesheetForm(false)
-                                }
-                                onCancel={() =>
-                                    setDisplayNewTimesheetForm(false)
-                                }
-                            />
-                            <ModalCloseButton />
-                        </ModalContent>
-                    </Modal>
-                )}
             </>
         </FormSection>
     )

@@ -179,9 +179,7 @@ const ProjectDetailPage = ({ projectId }: IProjectDetailPage): JSX.Element => {
                                 {timesheetsResponse.isSuccess &&
                                     employeesResponse.isSuccess && (
                                         <TimesheetTable
-                                            project={projectDetailResponse.data}
                                             timesheets={timesheetsResponse.data}
-                                            employees={employeesResponse.data}
                                         />
                                     )}
                                 {tasksResponse.isSuccess && (
