@@ -5,7 +5,6 @@ import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import TimesheetDetail from "@/components/detail/TimesheetDetail"
-import Link from "next/link"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useTimesheetDetail } from "@/lib/hooks/useDetail"
 import { StyledButton } from "@/components/common/Buttons"
@@ -19,10 +18,20 @@ type Props = {
 
 function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
     const { user } = useContext(UserContext)
+
+    const router = useRouter()
+
     const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
 
+    const getHeader = () =>
+        timesheetDetailResponse.isSuccess
+            ? timesheetDetailResponse.data.name
+            : " - "
+
+    const onEditClick = (url: string) => router.push(url)
+
     return (
-        <FormPage header="moi">
+        <FormPage header="Timesheet">
             {timesheetDetailResponse.isLoading && <Loading />}
             {timesheetDetailResponse.isError && (
                 <ErrorAlert
@@ -31,15 +40,17 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
                 />
             )}
             {timesheetDetailResponse.isSuccess ? (
-                <FormSection header="-">
+                <FormSection header={getHeader()}>
                     <TimesheetDetail timesheet={timesheetDetailResponse.data} />
                     <FormButtons>
-                        <Link
-                            key={`${timesheetDetailResponse.data.id}`}
-                            href={`${timesheetDetailResponse.data.id}/edit`}
-                        >
-                            <StyledButton buttontype="edit" />
-                        </Link>
+                        <StyledButton
+                            buttontype="edit"
+                            onClick={() =>
+                                onEditClick(
+                                    `${timesheetDetailResponse.data.id}/edit`
+                                )
+                            }
+                        />
                     </FormButtons>
                 </FormSection>
             ) : (

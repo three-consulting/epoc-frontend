@@ -90,35 +90,38 @@ export const CustomButton = (props: ICustomButton): JSX.Element => {
 
 interface IStyledIconButton extends IconButtonProps {
     iconType: IconType
-    hover?: boolean
+    hoverOver?: boolean
 }
 
-const StyledIconButton = (props: IStyledIconButton): JSX.Element => (
-    <ChakraProvider theme={extendTheme({ components })}>
-        <IconButton
-            icon={<Icon as={props.iconType} boxSize="1.5rem" />}
-            _hover={
-                props.hover
-                    ? {
-                          color: props.backgroundColor,
-                          backgroundColor: props.color,
-                      }
-                    : {}
-            }
-            {...props}
-        >
-            {props.children}
-        </IconButton>
-    </ChakraProvider>
-)
+const StyledIconButton = (props: IStyledIconButton): JSX.Element => {
+    const { hoverOver, iconType, ...rest } = props
+    return (
+        <ChakraProvider theme={extendTheme({ components })}>
+            <IconButton
+                icon={<Icon as={iconType} boxSize="1.5rem" />}
+                _hover={
+                    hoverOver
+                        ? {
+                              color: props.backgroundColor,
+                              backgroundColor: props.color,
+                          }
+                        : {}
+                }
+                {...rest}
+            >
+                {props.children}
+            </IconButton>
+        </ChakraProvider>
+    )
+}
 
 export const RemoveIconButton = (props: IconButtonProps): JSX.Element => (
     <StyledIconButton
         {...props}
-        iconType={BsX}
         color="whitesmoke"
         backgroundColor="#6f6f6f"
-        hover={true}
+        iconType={BsX}
+        hoverOver={true}
     />
 )
 
@@ -128,12 +131,15 @@ interface ISortingOrderIconButton extends IconButtonProps {
 
 export const SortingOrderIconButton = (
     props: ISortingOrderIconButton
-): JSX.Element => (
-    <StyledIconButton
-        {...props}
-        iconType={props.oldestFirst ? BsSortNumericDown : BsSortNumericDownAlt}
-        color="whitesmoke"
-        backgroundColor="#6f6f6f"
-        hover={true}
-    />
-)
+): JSX.Element => {
+    const { oldestFirst, ...rest } = props
+    return (
+        <StyledIconButton
+            {...rest}
+            color="whitesmoke"
+            backgroundColor="#6f6f6f"
+            iconType={oldestFirst ? BsSortNumericDown : BsSortNumericDownAlt}
+            hoverOver={true}
+        />
+    )
+}

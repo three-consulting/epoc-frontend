@@ -1,5 +1,3 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { Box } from "@chakra-ui/layout"
 import {
@@ -11,9 +9,8 @@ import {
     Tbody,
 } from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
-import React, { useContext, useState } from "react"
-import { StyledButton, RemoveIconButton } from "../common/Buttons"
-import ErrorAlert from "../common/ErrorAlert"
+import React, { useState } from "react"
+import { StyledButton } from "../common/Buttons"
 import FormButtons from "../common/FormButtons"
 import FormSection from "../common/FormSection"
 import { CreateTaskForm, EditTaskForm } from "../form/TaskForm"
@@ -24,40 +21,17 @@ interface TaskRowProps {
 }
 
 function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
-    const { user } = useContext(UserContext)
-    const { put } = useUpdateTasks(user)
-
-    const [errorMessage, setErrorMessage] = useState<string>()
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-    const archiveTask = () => put({ ...task, status: "ARCHIVED" }, errorHandler)
-
-    const onRemove = (event: React.MouseEvent) => {
-        event.stopPropagation()
-        archiveTask()
-    }
-
     return (
-        <>
-            <Tr
-                _hover={{
-                    backgroundColor: "#6f6f6f",
-                    color: "whitesmoke",
-                    cursor: "pointer",
-                }}
-                onClick={onClick}
-            >
-                <Td>{task.name}</Td>
-                <Td display="flex" justifyContent="end">
-                    <RemoveIconButton aria-label="Remove" onClick={onRemove} />
-                </Td>
-            </Tr>
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
-        </>
+        <Tr
+            _hover={{
+                backgroundColor: "#6f6f6f",
+                color: "whitesmoke",
+                cursor: "pointer",
+            }}
+            onClick={onClick}
+        >
+            <Td>{task.name}</Td>
+        </Tr>
     )
 }
 
@@ -79,7 +53,6 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                             <Thead>
                                 <Tr>
                                     <Th>Name</Th>
-                                    <Th />
                                 </Tr>
                             </Thead>
                             <Tbody>
@@ -110,7 +83,6 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                         <FormButtons>
                             <StyledButton
                                 buttontype="add"
-                                name="Task"
                                 onClick={() => setDisplayNewTaskForm(true)}
                             />
                         </FormButtons>

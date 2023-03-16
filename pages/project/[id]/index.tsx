@@ -12,7 +12,6 @@ import {
     ModalContent,
     ModalOverlay,
 } from "@chakra-ui/react"
-import Link from "next/link"
 import TimesheetTable from "@/components/table/TimesheetTable"
 import TaskTable from "@/components/table/TaskTable"
 import ProjectDetail from "@/components/detail/ProjectDetail"
@@ -29,14 +28,17 @@ import {
     RemoveIconButton,
 } from "@/components/common/Buttons"
 
-type Props = {
+interface IProjectDetailPage {
     projectId: number
 }
 
 type ProjectStatus = "ACTIVE" | "ARCHIVED"
 
-function ProjectDetailPage({ projectId }: Props): JSX.Element {
+const ProjectDetailPage = ({ projectId }: IProjectDetailPage): JSX.Element => {
     const { user } = useContext(UserContext)
+
+    const router = useRouter()
+
     const projectDetailResponse = useProjectDetail(projectId, user)
     const timesheetsResponse = useTimesheets(user, projectId)
     const employeesResponse = useEmployees(user)
@@ -108,6 +110,8 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
         }
     }
 
+    const onEditClick = (url: string) => router.push(url)
+
     return (
         <FormPage header="Projects">
             <Box>
@@ -133,12 +137,12 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                                 project={projectDetailResponse.data}
                             />
                             <FormButtons>
-                                <Link
-                                    key={`${projectId}`}
-                                    href={`${projectId}/edit`}
-                                >
-                                    <StyledButton buttontype="edit" />
-                                </Link>
+                                <StyledButton
+                                    buttontype="edit"
+                                    onClick={() =>
+                                        onEditClick(`${projectId}/edit`)
+                                    }
+                                />
                                 <CustomButton {...getCustomButtonProps()} />
                             </FormButtons>
                         </FormSection>

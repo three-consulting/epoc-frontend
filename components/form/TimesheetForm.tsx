@@ -4,7 +4,6 @@ import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
 import {
     Box,
-    Flex,
     FormControl,
     FormErrorMessage,
     FormLabel,
@@ -16,19 +15,20 @@ import ErrorAlert from "../common/ErrorAlert"
 import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
+import FormSection from "../common/FormSection"
 
-type CreateTimesheetFormProps = FormBase<Timesheet> & {
+interface ICreateTimesheetForm extends FormBase<Timesheet> {
     employees: Employee[]
     project: Project
     projectId: number
 }
 
-type EditTimesheetFormProps = CreateTimesheetFormProps & {
+interface IEditTimesheetForm extends ICreateTimesheetForm {
     timesheet: Timesheet
     timesheetId: number
 }
 
-type TimesheetFormProps = CreateTimesheetFormProps & {
+interface ITimesheetForm extends ICreateTimesheetForm {
     timesheet?: Timesheet
     timesheetId?: number
     onSubmit: (timesheet: Timesheet) => void
@@ -56,14 +56,14 @@ const validateTimesheetFields = (
     throw Error("Invalid timesheet form: Missing required fields")
 }
 
-function TimesheetForm({
+const TimesheetForm = ({
     timesheet: timesheetOrNull,
     project,
     projectId,
     employees,
     onSubmit,
     onCancel,
-}: TimesheetFormProps): JSX.Element {
+}: ITimesheetForm): JSX.Element => {
     const [timesheetFields, setTimesheetFields] = useState<TimesheetFields>(
         timesheetOrNull || { project }
     )
@@ -118,9 +118,12 @@ function TimesheetForm({
     const abortSubmission = onCancel && onCancel
 
     return (
-        <Flex flexDirection="column">
-            <form onSubmit={handleSubmit}>
-                <Box paddingX="1.5rem" paddingY="1rem">
+        <FormSection
+            header={timesheetFields.name || " - "}
+            errorMessage={errorMessage}
+        >
+            <Box>
+                <form onSubmit={handleSubmit}>
                     <FormControl isRequired>
                         <FormLabel>User</FormLabel>
                         <Select
@@ -242,20 +245,14 @@ function TimesheetForm({
                             data-testid="form-button-cancel"
                         />
                     </FormButtons>
-                </Box>
-                {errorMessage && (
-                    <>
-                        <ErrorAlert />
-                        <Box>{errorMessage}</Box>
-                    </>
-                )}
-            </form>
-        </Flex>
+                </form>
+            </Box>
+        </FormSection>
     )
 }
 
 export const CreateTimesheetForm = (
-    props: CreateTimesheetFormProps
+    props: ICreateTimesheetForm
 ): JSX.Element => {
     const { user } = useContext(UserContext)
     const { post } = useUpdateTimesheets(user)
@@ -281,9 +278,7 @@ export const CreateTimesheetForm = (
     )
 }
 
-export const EditTimesheetForm = (
-    props: EditTimesheetFormProps
-): JSX.Element => {
+export const EditTimesheetForm = (props: IEditTimesheetForm): JSX.Element => {
     const { user } = useContext(UserContext)
     const { put } = useUpdateTimesheets(user)
 

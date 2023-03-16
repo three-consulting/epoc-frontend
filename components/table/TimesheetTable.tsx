@@ -7,35 +7,19 @@ import {
     ModalOverlay,
 } from "@chakra-ui/react"
 import { Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/table"
-import React, { useContext, useState } from "react"
-import ErrorAlert from "../common/ErrorAlert"
+import React, { useState } from "react"
 import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { CreateTimesheetForm } from "../form/TimesheetForm"
 import { useRouter } from "next/router"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
 import FormSection from "../common/FormSection"
 import FormButtons from "../common/FormButtons"
-import { RemoveIconButton, StyledButton } from "../common/Buttons"
+import { StyledButton } from "../common/Buttons"
 
 interface TimesheetRowProps {
     timesheet: Timesheet
 }
 function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(UserContext)
-    const { put } = useUpdateTimesheets(user)
-
-    const [errorMessage, setErrorMessage] = useState<string>()
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
-    const archiveTimesheet = async (
-        timesheetToArchive: Timesheet,
-        event: React.MouseEvent
-    ) => {
-        event.preventDefault()
-        await put({ ...timesheetToArchive, status: "ARCHIVED" }, errorHandler)
-    }
 
     const pushToTimesheet = (
         timesheetId: number | undefined,
@@ -48,35 +32,20 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     }
 
     return (
-        <>
-            <Tr
-                _hover={{
-                    backgroundColor: "#6f6f6f",
-                    color: "whitesmoke",
-                    cursor: "pointer",
-                }}
-            >
-                <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
-                    {timesheet.employee?.firstName}{" "}
-                    {timesheet.employee?.lastName}
-                </Td>
-                <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
-                    {timesheet.allocation} %
-                </Td>
-                <Td display="flex" justifyContent="end">
-                    <RemoveIconButton
-                        aria-label="Remove"
-                        onClick={(event) => archiveTimesheet(timesheet, event)}
-                    />
-                </Td>
-            </Tr>
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
-        </>
+        <Tr
+            _hover={{
+                backgroundColor: "#6f6f6f",
+                color: "whitesmoke",
+                cursor: "pointer",
+            }}
+        >
+            <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
+                {timesheet.employee?.firstName} {timesheet.employee?.lastName}
+            </Td>
+            <Td onClick={(event) => pushToTimesheet(timesheet.id, event)}>
+                {timesheet.allocation} %
+            </Td>
+        </Tr>
     )
 }
 
@@ -95,7 +64,7 @@ function TimesheetTable({
         useState(false)
 
     return (
-        <FormSection header="Users">
+        <FormSection header="Timesheets">
             <>
                 {timesheets.filter(
                     (timesheet) => timesheet.status !== "ARCHIVED"
@@ -106,7 +75,6 @@ function TimesheetTable({
                                 <Tr>
                                     <Th>Name</Th>
                                     <Th>Allocation</Th>
-                                    <Th />
                                 </Tr>
                             </Thead>
                             <Tbody>
@@ -132,7 +100,6 @@ function TimesheetTable({
                 <FormButtons>
                     <StyledButton
                         buttontype="add"
-                        name="User"
                         onClick={() => setDisplayNewTimesheetForm(true)}
                     />
                 </FormButtons>
