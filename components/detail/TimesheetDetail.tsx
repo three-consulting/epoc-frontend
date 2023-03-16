@@ -2,11 +2,11 @@ import { Timesheet } from "@/lib/types/apiTypes"
 import { Flex } from "@chakra-ui/layout"
 import React from "react"
 
-type TimesheetDetailProps = {
+interface ITimesheetDetail {
     timesheet: Timesheet
 }
 
-function TimesheetDetail({ timesheet }: TimesheetDetailProps): JSX.Element {
+const TimesheetDetail = ({ timesheet }: ITimesheetDetail): JSX.Element => {
     const {
         description,
         allocation,

@@ -10,11 +10,13 @@ import { useEmployees } from "@/lib/hooks/useList"
 import FormPage from "@/components/common/FormPage"
 import { Box } from "@chakra-ui/react"
 
-type Props = {
+interface IEditTimesheetPage {
     timesheetId: number
 }
 
-function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
+const EditTimesheetPage = ({
+    timesheetId,
+}: IEditTimesheetPage): JSX.Element => {
     const router = useRouter()
     const { user } = useContext(UserContext)
 

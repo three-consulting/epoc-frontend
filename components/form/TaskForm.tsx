@@ -2,37 +2,45 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
-import { Box, Flex, FormControl, FormLabel, Input } from "@chakra-ui/react"
+import {
+    Box,
+    Flex,
+    FormControl,
+    FormLabel,
+    Input,
+    Select,
+} from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { CheckBoxField, FormContainer } from "../common/FormFields"
 import { taskFieldMetadata } from "@/lib/types/typeMetadata"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
+import { useProjects } from "@/lib/hooks/useList"
 
-type CreateTaskFormProps = FormBase<Task> & {
-    project: Project
-    projectId: number
+interface ICreateTaskForm extends FormBase<Task> {
+    project?: Project
+    projectId?: number
 }
 
-type EditTaskFormProps = CreateTaskFormProps & {
+interface IEditTaskForm extends ICreateTaskForm {
     task: Task
 }
 
-type TaskFormProps = CreateTaskFormProps & {
+interface ITaskForm extends ICreateTaskForm {
     task?: Task
     onSubmit: (task: Task) => void
 }
 
-type TaskFields = Partial<Task> & { project: Project; billable: boolean }
+type TaskFields = Partial<Task> & { project?: Project; billable: boolean }
 
-const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
+const validateTaskFields = (fields: TaskFields): Task => {
     const { name, project, billable } = fields
 
-    if (name && typeof billable !== "undefined") {
+    if (name && project && typeof billable !== "undefined") {
         return {
             ...fields,
-            project: { ...project, id: projectId },
+            project,
             name,
             billable,
         }
@@ -41,16 +49,19 @@ const validateTaskFields = (fields: TaskFields, projectId: number): Task => {
     throw Error("Invalid task form: missing required fields")
 }
 
-function TaskForm({
+const TaskForm = ({
     task: taskOrNull,
     onSubmit,
     onCancel,
     project,
     projectId,
-}: TaskFormProps): JSX.Element {
+}: ITaskForm): JSX.Element => {
     const [taskFields, setTaskFields] = useState<TaskFields>(
         taskOrNull || { project, billable: true }
     )
+
+    const { user } = useContext(UserContext)
+    const projectResponse = useProjects(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -60,7 +71,7 @@ function TaskForm({
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         try {
-            const updatedTask = validateTaskFields(taskFields, projectId)
+            const updatedTask = validateTaskFields(taskFields)
             onSubmit(updatedTask)
         } catch (error) {
             errorHandler(error as Error)
@@ -71,6 +82,35 @@ function TaskForm({
         <Flex flexDirection="column">
             <form onSubmit={handleSubmit}>
                 <FormContainer>
+                    {!project && !projectId && projectResponse.isSuccess && (
+                        <FormControl isRequired>
+                            <FormLabel>Project</FormLabel>
+                            <Select
+                                value={taskFields?.project?.name || ""}
+                                placeholder={"Task project"}
+                                onChange={(event) =>
+                                    setTaskFields({
+                                        ...taskFields,
+                                        project: projectResponse.data.find(
+                                            (pro) =>
+                                                pro.id ===
+                                                parseInt(event.target.value, 10)
+                                        ),
+                                    })
+                                }
+                                data-testid={"form-field-name"}
+                            >
+                                {projectResponse.data.map((pro) => (
+                                    <option
+                                        key={pro.name + pro.id}
+                                        value={pro.id}
+                                    >
+                                        {pro.name}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    )}
                     <FormControl isRequired={taskFieldMetadata.name.required}>
                         <FormLabel>Name</FormLabel>
                         <Input
@@ -136,7 +176,7 @@ function TaskForm({
     )
 }
 
-export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
+export const CreateTaskForm = (props: ICreateTaskForm): JSX.Element => {
     const { user } = useContext(UserContext)
     const { post } = useUpdateTasks(user)
 
@@ -161,7 +201,7 @@ export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
     )
 }
 
-export const EditTaskForm = (props: EditTaskFormProps): JSX.Element => {
+export const EditTaskForm = (props: IEditTaskForm): JSX.Element => {
     const { user } = useContext(UserContext)
     const { put } = useUpdateTasks(user)
 

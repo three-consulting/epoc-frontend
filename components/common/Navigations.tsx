@@ -20,6 +20,8 @@ import {
     BsPeopleFill,
     BsPersonBadge,
     BsFillFileTextFill,
+    BsFillFileEarmarkBarGraphFill,
+    BsCardChecklist,
 } from "react-icons/bs"
 import { IconType } from "react-icons"
 import { Role } from "@/lib/types/auth"
@@ -35,6 +37,12 @@ interface LinkItemProps {
 const userLinkItems: LinkItemProps[] = [
     { name: "Home", icon: BsHouse, href: "/" },
     { name: "Projects", icon: BsBriefcase, href: "/project" },
+    {
+        name: "Timesheets",
+        icon: BsFillFileEarmarkBarGraphFill,
+        href: "/timesheet",
+    },
+    { name: "Tasks", icon: BsCardChecklist, href: "/task" },
     { name: "Customers", icon: BsPersonBadge, href: "/customer" },
 ]
 

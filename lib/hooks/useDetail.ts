@@ -1,5 +1,5 @@
 import { User } from "firebase/auth"
-import { Customer, Project, Timesheet, Employee } from "../types/apiTypes"
+import { Customer, Project, Timesheet, Employee, Task } from "../types/apiTypes"
 import { ApiGetResponse } from "../types/hooks"
 import { useGet, detailEndpoint } from "./swrInterface"
 
@@ -22,3 +22,6 @@ export const useEmployeeDetail = (
     id: number,
     user: User
 ): ApiGetResponse<Employee> => useGet(user, detailEndpoint("employee", id))
+
+export const useTaskDetail = (id: number, user: User): ApiGetResponse<Task> =>
+    useGet(user, detailEndpoint("task", id))

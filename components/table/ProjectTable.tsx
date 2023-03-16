@@ -12,22 +12,26 @@ interface ProjectRowProps {
     project: Project
 }
 
-function ProjectRow({ project }: ProjectRowProps) {
-    return (
-        <Link href={`project/${project.id}`}>
-            <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
-                <Td>{project.name}</Td>
-                <Td>{project.customer?.name}</Td>
-            </Tr>
-        </Link>
-    )
-}
+const ProjectRow = ({ project }: ProjectRowProps) => (
+    <Link href={`project/${project.id}`}>
+        <Tr
+            _hover={{
+                backgroundColor: "#6f6f6f",
+                color: "whitesmoke",
+                cursor: "pointer",
+            }}
+        >
+            <Td>{project.name}</Td>
+            <Td>{project.customer?.name}</Td>
+        </Tr>
+    </Link>
+)
 
-interface ProjectTableProps {
+interface IProjectTable {
     projects: Project[]
 }
 
-function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
+const ProjectTable = ({ projects }: IProjectTable): JSX.Element => {
     const router = useRouter()
     return (
         <FormSection header={projects ? "All projects" : "No projects found"}>

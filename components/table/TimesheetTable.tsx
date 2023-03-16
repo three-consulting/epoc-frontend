@@ -50,16 +50,16 @@ function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
 }
 
 interface TimesheetTableProps {
-    project: Project
     timesheets: Timesheet[]
-    employees: Employee[]
+    project?: Project
+    employees?: Employee[]
 }
 
-function TimesheetTable({
+const TimesheetTable = ({
     project,
     timesheets,
     employees,
-}: TimesheetTableProps): JSX.Element {
+}: TimesheetTableProps): JSX.Element => {
     const [displayNewTimesheetForm, setDisplayNewTimesheetForm] =
         useState(false)
 
@@ -103,7 +103,7 @@ function TimesheetTable({
                         onClick={() => setDisplayNewTimesheetForm(true)}
                     />
                 </FormButtons>
-                {project.id && (
+                {project?.id && employees && (
                     <Modal
                         isOpen={displayNewTimesheetForm}
                         onClose={() => setDisplayNewTimesheetForm(false)}

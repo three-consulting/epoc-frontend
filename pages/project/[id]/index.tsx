@@ -185,10 +185,7 @@ const ProjectDetailPage = ({ projectId }: IProjectDetailPage): JSX.Element => {
                                         />
                                     )}
                                 {tasksResponse.isSuccess && (
-                                    <TaskTable
-                                        project={projectDetailResponse.data}
-                                        tasks={tasksResponse.data}
-                                    />
+                                    <TaskTable tasks={tasksResponse.data} />
                                 )}
                             </>
                         )}

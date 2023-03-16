@@ -1,48 +1,38 @@
-import { Project, Task } from "@/lib/types/apiTypes"
+import { Task } from "@/lib/types/apiTypes"
 import { Box } from "@chakra-ui/layout"
-import {
-    Modal,
-    ModalCloseButton,
-    ModalContent,
-    ModalHeader,
-    ModalOverlay,
-    Tbody,
-} from "@chakra-ui/react"
+import { Tbody } from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
-import React, { useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import React from "react"
 import { StyledButton } from "../common/Buttons"
 import FormButtons from "../common/FormButtons"
 import FormSection from "../common/FormSection"
-import { CreateTaskForm, EditTaskForm } from "../form/TaskForm"
 
-interface TaskRowProps {
+interface ITaskRow {
     task: Task
-    onClick?: () => void
 }
 
-function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
-    return (
+const TaskRow = ({ task }: ITaskRow): JSX.Element => (
+    <Link href={`task/${task.id}`}>
         <Tr
             _hover={{
                 backgroundColor: "#6f6f6f",
                 color: "whitesmoke",
                 cursor: "pointer",
             }}
-            onClick={onClick}
         >
             <Td>{task.name}</Td>
         </Tr>
-    )
-}
+    </Link>
+)
 
-interface TaskTableProps {
-    project: Project
+interface ITaskTable {
     tasks: Task[]
 }
 
-function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
-    const [displayNewTaskForm, setDisplayNewTaskForm] = useState(false)
-    const [taskToEdit, setTaskToEdit] = useState<Task>()
+const TaskTable = ({ tasks }: ITaskTable): JSX.Element => {
+    const router = useRouter()
 
     return (
         <FormSection header="Tasks">
@@ -62,9 +52,6 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                                             <TaskRow
                                                 task={task}
                                                 key={`${task.id}`}
-                                                onClick={() =>
-                                                    setTaskToEdit(task)
-                                                }
                                             />
                                         )
                                 )}
@@ -78,69 +65,14 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                         To add a task click the button below.
                     </Box>
                 )}
-                {project.id ? (
-                    <Box>
-                        <FormButtons>
-                            <StyledButton
-                                buttontype="add"
-                                onClick={() => setDisplayNewTaskForm(true)}
-                            />
-                        </FormButtons>
-                        <Modal
-                            isOpen={displayNewTaskForm}
-                            onClose={() => setDisplayNewTaskForm(false)}
-                        >
-                            <ModalOverlay />
-                            <ModalContent
-                                paddingX="1rem"
-                                paddingBottom="1rem"
-                                backgroundColor="whitesmoke"
-                            >
-                                <ModalHeader>Add task to project</ModalHeader>
-                                <ModalCloseButton />
-                                <CreateTaskForm
-                                    project={project}
-                                    projectId={project.id}
-                                    afterSubmit={(taskUpdate) =>
-                                        taskUpdate.isSuccess &&
-                                        setDisplayNewTaskForm(false)
-                                    }
-                                    onCancel={() =>
-                                        setDisplayNewTaskForm(false)
-                                    }
-                                />
-                            </ModalContent>
-                        </Modal>
-                        <Modal
-                            isOpen={Boolean(taskToEdit)}
-                            onClose={() => setTaskToEdit(undefined)}
-                        >
-                            <ModalOverlay />
-                            <ModalContent
-                                paddingX="1rem"
-                                paddingBottom="1rem"
-                                backgroundColor="whitesmoke"
-                            >
-                                <ModalHeader>Edit task</ModalHeader>
-                                <ModalCloseButton />
-                                {taskToEdit && (
-                                    <EditTaskForm
-                                        task={taskToEdit}
-                                        project={project}
-                                        projectId={project.id}
-                                        afterSubmit={(taskUpdate) =>
-                                            taskUpdate.isSuccess &&
-                                            setTaskToEdit(undefined)
-                                        }
-                                        onCancel={() =>
-                                            setTaskToEdit(undefined)
-                                        }
-                                    />
-                                )}
-                            </ModalContent>
-                        </Modal>
-                    </Box>
-                ) : null}
+                <Box>
+                    <FormButtons>
+                        <StyledButton
+                            buttontype="add"
+                            onClick={() => router.push("/task/new")}
+                        />
+                    </FormButtons>
+                </Box>
             </>
         </FormSection>
     )

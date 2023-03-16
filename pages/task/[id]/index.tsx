@@ -4,52 +4,48 @@ import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
-import TimesheetDetail from "@/components/detail/TimesheetDetail"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import { useTimesheetDetail } from "@/lib/hooks/useDetail"
+import { useTaskDetail } from "@/lib/hooks/useDetail"
 import { StyledButton } from "@/components/common/Buttons"
 import FormButtons from "@/components/common/FormButtons"
 import FormSection from "@/components/common/FormSection"
 import FormPage from "@/components/common/FormPage"
+import TaskDetail from "@/components/detail/TaskDetail"
 
-interface ITimesheetDetailPage {
-    timesheetId: number
+interface ITaskDetailPage {
+    taskId: number
 }
 
-const TimesheetDetailPage = ({
-    timesheetId,
-}: ITimesheetDetailPage): JSX.Element => {
+const TaskDetailPage = ({ taskId }: ITaskDetailPage): JSX.Element => {
     const { user } = useContext(UserContext)
 
     const router = useRouter()
 
-    const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
+    const taskDetailResponse = useTaskDetail(taskId, user)
 
     const getHeader = () =>
-        timesheetDetailResponse.isSuccess
-            ? timesheetDetailResponse.data.name
-            : " - "
+        taskDetailResponse.isSuccess ? taskDetailResponse.data.name : " - "
 
     const onEditClick = (url: string) => router.push(url)
 
     return (
-        <FormPage header="Timesheet">
-            {timesheetDetailResponse.isLoading && <Loading />}
-            {timesheetDetailResponse.isError && (
+        <FormPage header="Tasks">
+            {taskDetailResponse.isLoading && <Loading />}
+            {taskDetailResponse.isError && (
                 <ErrorAlert
-                    title={timesheetDetailResponse.errorMessage}
-                    message={timesheetDetailResponse.errorMessage}
+                    title={taskDetailResponse.errorMessage}
+                    message={taskDetailResponse.errorMessage}
                 />
             )}
-            {timesheetDetailResponse.isSuccess ? (
+            {taskDetailResponse.isSuccess ? (
                 <FormSection header={getHeader()}>
-                    <TimesheetDetail timesheet={timesheetDetailResponse.data} />
+                    <TaskDetail task={taskDetailResponse.data} />
                     <FormButtons>
                         <StyledButton
                             buttontype="edit"
                             onClick={() =>
                                 onEditClick(
-                                    `${timesheetDetailResponse.data.id}/edit`
+                                    `${taskDetailResponse.data.id}/edit`
                                 )
                             }
                         />
@@ -65,7 +61,7 @@ const TimesheetDetailPage = ({
 const Page: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <TimesheetDetailPage timesheetId={Number(id)} /> : null
+    return id ? <TaskDetailPage taskId={Number(id)} /> : null
 }
 
 export default Page
