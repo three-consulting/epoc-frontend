@@ -17,7 +17,7 @@ import TaskTable from "@/components/table/TaskTable"
 import ProjectDetail from "@/components/detail/ProjectDetail"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useProjectDetail } from "@/lib/hooks/useDetail"
-import { useTimesheets, useEmployees, useTasks } from "@/lib/hooks/useList"
+import { useTimesheets, useTasks } from "@/lib/hooks/useList"
 import { useUpdateProjects } from "@/lib/hooks/useUpdate"
 import FormSection from "@/components/common/FormSection"
 import FormPage from "@/components/common/FormPage"
@@ -41,7 +41,6 @@ const ProjectDetailPage = ({ projectId }: IProjectDetailPage): JSX.Element => {
 
     const projectDetailResponse = useProjectDetail(projectId, user)
     const timesheetsResponse = useTimesheets(user, projectId)
-    const employeesResponse = useEmployees(user)
     const tasksResponse = useTasks(user, projectId)
 
     const { put } = useUpdateProjects(user)
@@ -91,7 +90,7 @@ const ProjectDetailPage = ({ projectId }: IProjectDetailPage): JSX.Element => {
         switch (getStatus()) {
             case "ACTIVE": {
                 return {
-                    text: "Archive Project",
+                    text: "Archive",
                     colorScheme: "pink",
                     variant: "outline",
                     onClick: onArchive,
@@ -99,7 +98,7 @@ const ProjectDetailPage = ({ projectId }: IProjectDetailPage): JSX.Element => {
             }
             case "ARCHIVED": {
                 return {
-                    text: "Rectivate Project",
+                    text: "Rectivate",
                     colorScheme: "teal",
                     onClick: onActivate,
                 }
@@ -115,18 +114,9 @@ const ProjectDetailPage = ({ projectId }: IProjectDetailPage): JSX.Element => {
     return (
         <FormPage header="Projects">
             <Box>
-                {errorMessage ? (
-                    <>
-                        <ErrorAlert />
-                        <Box>{errorMessage}</Box>
-                    </>
-                ) : null}
                 {projectDetailResponse.isLoading && <Loading />}
-                {projectDetailResponse.isError && (
-                    <ErrorAlert
-                        title={projectDetailResponse.errorMessage}
-                        message={projectDetailResponse.errorMessage}
-                    />
+                {errorMessage && (
+                    <ErrorAlert title={errorMessage} message={errorMessage} />
                 )}
                 {projectDetailResponse.isSuccess ? (
                     <>
@@ -167,21 +157,13 @@ const ProjectDetailPage = ({ projectId }: IProjectDetailPage): JSX.Element => {
                             </ModalContent>
                         </Modal>
 
-                        {timesheetsResponse.isLoading && <Loading />}
-                        {timesheetsResponse.isError && (
-                            <ErrorAlert
-                                title={timesheetsResponse.errorMessage}
-                                message={timesheetsResponse.errorMessage}
-                            />
-                        )}
                         {projectDetailResponse.data.status === "ACTIVE" && (
                             <>
-                                {timesheetsResponse.isSuccess &&
-                                    employeesResponse.isSuccess && (
-                                        <TimesheetTable
-                                            timesheets={timesheetsResponse.data}
-                                        />
-                                    )}
+                                {timesheetsResponse.isSuccess && (
+                                    <TimesheetTable
+                                        timesheets={timesheetsResponse.data}
+                                    />
+                                )}
                                 {tasksResponse.isSuccess && (
                                     <TaskTable tasks={tasksResponse.data} />
                                 )}
