@@ -2,21 +2,15 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
-import {
-    Box,
-    Flex,
-    FormControl,
-    FormLabel,
-    Input,
-    Select,
-} from "@chakra-ui/react"
+import { Box, FormControl, FormLabel, Input, Select } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
-import { CheckBoxField, FormContainer } from "../common/FormFields"
+import { CheckBoxField } from "../common/FormFields"
 import { taskFieldMetadata } from "@/lib/types/typeMetadata"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
 import { useProjects } from "@/lib/hooks/useList"
+import FormSection from "../common/FormSection"
 
 interface ICreateTaskForm extends FormBase<Task> {
     project?: Project
@@ -90,9 +84,9 @@ const TaskForm = ({
     }
 
     return (
-        <Flex flexDirection="column">
-            <form onSubmit={handleSubmit}>
-                <FormContainer>
+        <FormSection header={taskFields.name || "-"}>
+            <Box>
+                <form onSubmit={handleSubmit}>
                     {!project && projectResponse.isSuccess && (
                         <FormControl
                             isRequired={taskFieldMetadata.project.required}
@@ -174,9 +168,9 @@ const TaskForm = ({
                             <Box>{errorMessage}</Box>
                         </>
                     )}
-                </FormContainer>
-            </form>
-        </Flex>
+                </form>
+            </Box>
+        </FormSection>
     )
 }
 

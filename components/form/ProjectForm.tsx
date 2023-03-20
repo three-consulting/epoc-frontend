@@ -19,16 +19,16 @@ import { NewCustomerModal } from "../common/FormFields"
 import FormButtons from "../common/FormButtons"
 import { StyledButton } from "../common/Buttons"
 
-type CreateProjectFormProps = FormBase<Project> & {
+interface ICreateProjectForm extends FormBase<Project> {
     employees: Employee[]
     customers: Customer[]
 }
 
-type EditProjectFormProps = CreateProjectFormProps & {
+interface IEditProjectForm extends ICreateProjectForm {
     project: Project
 }
 
-type ProjectFormProps = CreateProjectFormProps & {
+interface IProjectForm extends ICreateProjectForm {
     project?: Project
     onSubmit: (project: Project) => void
 }
@@ -49,13 +49,13 @@ const validateProjectFields = (form: ProjectFields): Project => {
     throw Error("Invalid project form: missing required fields")
 }
 
-function ProjectForm({
+const ProjectForm = ({
     project: projectOrNull,
     customers,
     employees,
     onSubmit,
     onCancel,
-}: ProjectFormProps) {
+}: IProjectForm) => {
     const [projectFields, setProjectFields] = useState<ProjectFields>(
         projectOrNull || {}
     )
@@ -214,7 +214,6 @@ function ProjectForm({
 
                                 <StyledButton
                                     buttontype="add"
-                                    name="Customer"
                                     onClick={() =>
                                         setDisplayCreateCustomerForm(true)
                                     }
@@ -268,9 +267,7 @@ function ProjectForm({
     )
 }
 
-export const CreateProjectForm = (
-    props: CreateProjectFormProps
-): JSX.Element => {
+export const CreateProjectForm = (props: ICreateProjectForm): JSX.Element => {
     const { user } = useContext(UserContext)
     const { post } = useUpdateProjects(user)
 
@@ -295,7 +292,7 @@ export const CreateProjectForm = (
     )
 }
 
-export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
+export const EditProjectForm = (props: IEditProjectForm): JSX.Element => {
     const { user } = useContext(UserContext)
     const { put } = useUpdateProjects(user)
 
