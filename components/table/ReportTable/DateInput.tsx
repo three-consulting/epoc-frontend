@@ -7,6 +7,7 @@ import {
     FormLabel,
     Input,
     InputGroup,
+    useMediaQuery,
 } from "@chakra-ui/react"
 import { User } from "firebase/auth"
 
@@ -24,6 +25,8 @@ const DateInput = ({
     setStartDate,
     setEndDate,
 }: IDateInput): JSX.Element => {
+    const [isLarge] = useMediaQuery("(min-width: 800px)")
+
     const isInvalid = endDate < startDate || !endDate || !startDate
 
     const handleStartDateChange = (
@@ -53,7 +56,7 @@ const DateInput = ({
     return (
         <Box paddingY="1rem">
             <FormLabel fontWeight="bold">Set time interval: </FormLabel>
-            <InputGroup>
+            <InputGroup flexDirection={isLarge ? "row" : "column"}>
                 <FormControl isInvalid={isInvalid && !isUntouched}>
                     <Input
                         type={"date"}

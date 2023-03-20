@@ -6,25 +6,29 @@ import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import CustomerDetail from "@/components/detail/CustomerDetail"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
-import Link from "next/link"
 import { useCustomerDetail } from "@/lib/hooks/useDetail"
 import { StyledButton } from "@/components/common/Buttons"
 import FormButtons from "@/components/common/FormButtons"
 import FormPage from "@/components/common/FormPage"
 import FormSection from "@/components/common/FormSection"
 
-type Props = {
+interface ICustomerDetailPage {
     customerId: number
 }
 
-function CustomerDetailPage({ customerId }: Props): JSX.Element {
+function CustomerDetailPage({ customerId }: ICustomerDetailPage): JSX.Element {
     const { user } = useContext(UserContext)
+
+    const router = useRouter()
+
     const customerDetailResponse = useCustomerDetail(customerId, user)
 
     const getHeader = () =>
         customerDetailResponse.isSuccess
             ? customerDetailResponse.data.name
             : "-"
+
+    const onEditClick = (url: string) => router.push(url)
 
     return (
         <FormPage header="Customers">
@@ -39,9 +43,10 @@ function CustomerDetailPage({ customerId }: Props): JSX.Element {
                     <Box>Not found</Box>
                 )}
                 <FormButtons>
-                    <Link key={`${customerId}`} href={`${customerId}/edit`}>
-                        <StyledButton buttontype="edit" />
-                    </Link>
+                    <StyledButton
+                        buttontype="edit"
+                        onClick={() => onEditClick(`${customerId}/edit`)}
+                    />
                 </FormButtons>
             </FormSection>
         </FormPage>

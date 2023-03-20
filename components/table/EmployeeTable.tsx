@@ -1,6 +1,12 @@
 import { Employee } from "@/lib/types/apiTypes"
 import { Box } from "@chakra-ui/layout"
-import { Alert, AlertIcon, AlertTitle, Tbody } from "@chakra-ui/react"
+import {
+    Alert,
+    AlertIcon,
+    AlertTitle,
+    Tbody,
+    useMediaQuery,
+} from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import Link from "next/link"
@@ -15,16 +21,24 @@ interface EmployeeRowProps {
     employee: Employee
 }
 
-const EmployeeRow = ({ employee }: EmployeeRowProps): JSX.Element => (
-    <Link href={`employee/${employee.id}`}>
-        <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
-            <Td>{employee.firstName}</Td>
-            <Td>{employee.lastName}</Td>
-            <Td>{employee.email}</Td>
-            <Td>{employee.role}</Td>
-        </Tr>
-    </Link>
-)
+const EmployeeRow = ({ employee }: EmployeeRowProps): JSX.Element => {
+    const [isLarge] = useMediaQuery("(min-width: 800px)")
+
+    return (
+        <Link href={`employee/${employee.id}`}>
+            <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
+                <Td>{employee.firstName}</Td>
+                <Td>{employee.lastName}</Td>
+                {isLarge && (
+                    <>
+                        <Td>{employee.email}</Td>
+                        <Td>{employee.role}</Td>
+                    </>
+                )}
+            </Tr>
+        </Link>
+    )
+}
 
 interface ISyncEmployeesButton {
     user: User
@@ -81,6 +95,8 @@ const EmployeeTable = ({
     employeesResponse,
     setEmployeesResponse,
 }: EmployeeTableProps): JSX.Element => {
+    const [isLarge] = useMediaQuery("(min-width: 800px)")
+
     const getHeader = () =>
         employeesResponse?.isSuccess && employeesResponse.data.length > 0
             ? "All users"
@@ -93,8 +109,12 @@ const EmployeeTable = ({
                         <Tr>
                             <Th>First name</Th>
                             <Th>Last name</Th>
-                            <Th>Email</Th>
-                            <Th>Role</Th>
+                            {isLarge && (
+                                <>
+                                    <Th>Email</Th>
+                                    <Th>Role</Th>
+                                </>
+                            )}
                         </Tr>
                     </Thead>
                     <Tbody>

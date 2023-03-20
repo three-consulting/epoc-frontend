@@ -1,5 +1,5 @@
 import { Customer, Employee, Project, Task } from "@/lib/types/apiTypes"
-import { Box, FormLabel, Select } from "@chakra-ui/react"
+import { Box, Flex, FormLabel, Select, useMediaQuery } from "@chakra-ui/react"
 import React, { Dispatch, SetStateAction } from "react"
 
 type TSetter<T> = Dispatch<SetStateAction<T>>
@@ -26,6 +26,8 @@ const FilterFields = ({
     projcetState,
     taskState,
 }: IFilterFields) => {
+    const [isLarge] = useMediaQuery("(min-width: 800px)")
+
     const [selectedEmployee, setSelectedEmployee] = employeeState
     const [selectedCustomer, setSelectedCustomer] = customerState
     const [selectedProject, setSelectedProject] = projcetState
@@ -67,7 +69,10 @@ const FilterFields = ({
         )
     }
     return (
-        <Box display="flex" justifyContent="space-between">
+        <Flex
+            flexDirection={isLarge ? "row" : "column"}
+            justifyContent="space-between"
+        >
             <Box marginRight="1rem">
                 <FormLabel fontWeight="bold">Filter by employee: </FormLabel>
                 <Select
@@ -85,7 +90,7 @@ const FilterFields = ({
                     ))}
                 </Select>
             </Box>
-            <Box marginX="1rem">
+            <Box>
                 <FormLabel fontWeight="bold">Filter by customer: </FormLabel>
                 <Select
                     onChange={handleCustomerChange}
@@ -100,7 +105,7 @@ const FilterFields = ({
                     ))}
                 </Select>
             </Box>
-            <Box marginX="1rem">
+            <Box>
                 <FormLabel fontWeight="bold">Filter by project: </FormLabel>
                 <Select
                     onChange={handleProjectChange}
@@ -115,7 +120,7 @@ const FilterFields = ({
                     ))}
                 </Select>
             </Box>
-            <Box marginLeft="1rem">
+            <Box>
                 <FormLabel fontWeight="bold">Filter by task: </FormLabel>
                 <Select
                     onChange={handleTaskChange}
@@ -130,7 +135,7 @@ const FilterFields = ({
                     ))}
                 </Select>
             </Box>
-        </Box>
+        </Flex>
     )
 }
 export default FilterFields

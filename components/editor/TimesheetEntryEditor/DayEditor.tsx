@@ -15,6 +15,7 @@ import {
     FormLabel,
     Select,
     Text,
+    useMediaQuery,
 } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import EntryTable from "./EntryTable"
@@ -35,6 +36,8 @@ const DayEditor = ({
     tasks,
     setTimesheetEntries,
 }: IDayEditor): JSX.Element => {
+    const [isLarge] = useMediaQuery("(min-width: 800px)")
+
     const { user } = useContext(UserContext)
     const { delete: del } = useUpdateTimesheetEntries(user)
 
@@ -103,14 +106,23 @@ const DayEditor = ({
                                     ))}
                                 </Select>
                             </FormControl>
-                            <Text
-                                style={{ padding: "1rem", color: "whitesmoke" }}
-                            >
-                                {" or "}
-                            </Text>
-                            <ImportFromCSVModal
-                                setTimesheetEntries={setTimesheetEntries}
-                            />
+                            {isLarge && (
+                                <>
+                                    <Text
+                                        style={{
+                                            padding: "1rem",
+                                            color: "whitesmoke",
+                                        }}
+                                    >
+                                        {" or "}
+                                    </Text>
+                                    <ImportFromCSVModal
+                                        setTimesheetEntries={
+                                            setTimesheetEntries
+                                        }
+                                    />
+                                </>
+                            )}
                         </Flex>
                     </Header>
                     <Box paddingX="0.5rem">

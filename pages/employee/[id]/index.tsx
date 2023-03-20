@@ -15,15 +15,19 @@ import FormPage from "@/components/common/FormPage"
 import FormSection from "@/components/common/FormSection"
 import { Box } from "@chakra-ui/react"
 import FormButtons from "@/components/common/FormButtons"
-import Link from "next/link"
 import { StyledButton } from "@/components/common/Buttons"
 
-type Props = {
+interface IEmployeeDetailPage {
     employeeId: number
 }
 
-function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
+const EmployeeDetailPage = ({
+    employeeId,
+}: IEmployeeDetailPage): JSX.Element => {
     const { user } = useContext(UserContext)
+
+    const router = useRouter()
+
     const employeeDetailResponse = useEmployeeDetail(employeeId, user)
     const tasksResponse = useTasks(user)
     const timesheetsResponse = useTimesheets(
@@ -71,6 +75,8 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
               }`
             : " - "
 
+    const onEditClick = (url: string) => router.push(url)
+
     return (
         <FormPage header="Employees">
             {isError && <ErrorAlert title="Error" message="Error" />}
@@ -88,9 +94,10 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
                     <Box>{"Not found"}</Box>
                 )}
                 <FormButtons>
-                    <Link key={`${employeeId}`} href={`${employeeId}/edit`}>
-                        <StyledButton buttontype="edit" />
-                    </Link>
+                    <StyledButton
+                        buttontype="edit"
+                        onClick={() => onEditClick(`${employeeId}/edit`)}
+                    />
                 </FormButtons>
             </FormSection>
         </FormPage>
