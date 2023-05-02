@@ -13,6 +13,7 @@ import { User } from "firebase/auth"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { round } from "lodash"
+import { DateTime } from "luxon"
 
 export const customersByEmployeeTimesheets = (
     timesheets: Timesheet[],
@@ -104,7 +105,11 @@ export const filterEntries = (
     if (task?.id) {
         entries = entries.filter((entry) => entry.task.id === task.id)
     }
-    return entries
+    return entries.sort(
+        (ent1, ent2) =>
+            DateTime.fromISO(ent1.date).valueOf() -
+            DateTime.fromISO(ent2.date).valueOf()
+    )
 }
 
 export const handleCsvExportClick = async (
