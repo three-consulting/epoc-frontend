@@ -7,17 +7,34 @@ import {
     handleCsvExportClick,
     handlePdfExportClick,
 } from "./utils"
-import { Customer, Employee, Project, Task } from "@/lib/types/apiTypes"
+import {
+    Customer,
+    Employee,
+    Project,
+    Task,
+    TimesheetEntry,
+} from "@/lib/types/apiTypes"
 import { User } from "firebase/auth"
+import { ApiGetResponse } from "@/lib/types/hooks"
 
 interface ITableButtons {
-    startDate: string
-    endDate: string
+    startDate: string | null
+    endDate: string | null
     selectedEmployee?: Employee
     selectedCustomer?: Customer
     selectedProject?: Project
     selectedTask?: Task
     user: User
+}
+
+type TTEResponse = ApiGetResponse<TimesheetEntry[]>
+
+type TUnsuccess = {
+    isSuccess: false
+}
+
+const unSuccess: TUnsuccess = {
+    isSuccess: false,
 }
 
 const TableButtons = ({
@@ -29,12 +46,15 @@ const TableButtons = ({
     selectedTask,
     user,
 }: ITableButtons): JSX.Element => {
-    const timesheetsEntries = useTimesheetEntries(
-        user,
-        startDate,
-        endDate,
-        selectedEmployee?.email
-    )
+    const timesheetsEntries: TTEResponse | TUnsuccess =
+        startDate && endDate
+            ? useTimesheetEntries(
+                  user,
+                  startDate,
+                  endDate,
+                  selectedEmployee?.email
+              )
+            : unSuccess
 
     const filteredEntries = timesheetsEntries.isSuccess
         ? filterEntries(
@@ -47,10 +67,10 @@ const TableButtons = ({
         : []
 
     const isInvalid =
-        filteredEntries.length < 1 ||
-        endDate < startDate ||
+        !startDate ||
         !endDate ||
-        !startDate
+        filteredEntries.length < 1 ||
+        endDate < startDate
 
     return (
         <FormButtons>
@@ -58,6 +78,8 @@ const TableButtons = ({
                 text="Export as .csv"
                 colorScheme="green"
                 onClick={() =>
+                    startDate &&
+                    endDate &&
                     handleCsvExportClick(user, startDate, endDate, {
                         employee: selectedEmployee,
                         project: selectedProject,
@@ -71,6 +93,8 @@ const TableButtons = ({
                 text="Export as .pdf"
                 colorScheme="green"
                 onClick={() =>
+                    startDate &&
+                    endDate &&
                     handlePdfExportClick(
                         filteredEntries,
                         startDate,

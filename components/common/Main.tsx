@@ -1,5 +1,5 @@
 import React, { ReactNode, useContext } from "react"
-import { Box, Flex } from "@chakra-ui/react"
+import { Box, Flex, useMediaQuery } from "@chakra-ui/react"
 import LeftNav from "./LeftNav"
 import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import FormPage from "./FormPage"
@@ -9,14 +9,18 @@ interface MainProps {
     children?: ReactNode
 }
 
-const PleaseLogInPage = () => (
+const PleaseLogInPage = ({ isLarge }: { isLarge: boolean }) => (
     <FormPage header="Sign-in">
-        <Header type="sub">{"Please log in to see stuff."}</Header>
+        <Box style={{ minWidth: isLarge ? "50vw" : undefined }}>
+            <Header type="sub">{"Please log in to see stuff."}</Header>
+        </Box>
     </FormPage>
 )
 
 const Main = ({ children }: MainProps): JSX.Element => {
     const { user } = useContext(AuthContext)
+
+    const [isLarge] = useMediaQuery("(min-width: 900px)")
 
     return (
         <Flex
@@ -25,8 +29,8 @@ const Main = ({ children }: MainProps): JSX.Element => {
             justifyContent="center"
             minHeight="100vh"
         >
-            <LeftNav />
-            <Box minWidth="40vw">{user ? children : <PleaseLogInPage />}</Box>
+            {isLarge && <LeftNav />}
+            <Box>{user ? children : <PleaseLogInPage isLarge={isLarge} />}</Box>
         </Flex>
     )
 }

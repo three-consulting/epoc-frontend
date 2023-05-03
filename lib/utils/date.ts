@@ -3,11 +3,25 @@ import { DateTime } from "luxon"
 export const toLocalDisplayDate = (date: string) =>
     DateTime.fromISO(date).toLocaleString()
 
-export const jsDateToShortISODate = (date: Date) =>
-    DateTime.fromJSDate(date).toISO().replace(/T.*/, "")
+export const jsDateToShortISODate = (date: Date | null): string | null => {
+    if (date) {
+        const dtm = DateTime.fromJSDate(date).toISO()
 
-export const dateTimeToShortISODate = (dateTime: DateTime) =>
-    dateTime.toISO().replace(/T.*/, "")
+        if (dtm) {
+            return dtm.replace(/T.*/, "")
+        }
+        return dtm
+    }
+    return date
+}
+
+export const dateTimeToShortISODate = (dateTime: DateTime): string | null => {
+    const iso = dateTime.toISO()
+    if (iso) {
+        return iso.replace(/T.*/, "")
+    }
+    return iso
+}
 
 export const isDates = (dates: unknown): dates is [Date, Date] =>
     Array.isArray(dates) &&
