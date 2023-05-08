@@ -43,7 +43,13 @@ const validateTimesheetFields = (
     projectId: number
 ): Timesheet => {
     const { name, rate, allocation, project, employee } = fields
-    if (name && rate !== undefined && allocation && project && employee) {
+    if (
+        name &&
+        rate !== undefined &&
+        allocation !== undefined &&
+        project &&
+        employee
+    ) {
         return {
             ...fields,
             project: { ...project, id: projectId },
