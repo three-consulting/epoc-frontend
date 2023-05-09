@@ -256,7 +256,7 @@ export const CreateTimesheetEntryForm = ({
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [timesheetEntryFields, setTimesheetEntryFields] =
         useState<TimesheetEntryFields>({
-            date: jsDateToShortISODate(datesRange(dates)[0]),
+            date: jsDateToShortISODate(datesRange(dates)[0]) ?? undefined,
             timesheet,
         })
 
@@ -269,9 +269,7 @@ export const CreateTimesheetEntryForm = ({
                 const newTimesheetEntries = dates.map(
                     (entryDate: Date | null) => ({
                         ...entry,
-                        date: entryDate
-                            ? jsDateToShortISODate(entryDate)
-                            : entry.date,
+                        date: jsDateToShortISODate(entryDate) ?? entry.date,
                     })
                 )
                 const response = await post(newTimesheetEntries, errorHandler)

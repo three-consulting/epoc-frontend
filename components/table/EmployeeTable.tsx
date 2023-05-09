@@ -1,6 +1,12 @@
 import { Employee } from "@/lib/types/apiTypes"
 import { Box } from "@chakra-ui/layout"
-import { Alert, AlertIcon, AlertTitle, Tbody } from "@chakra-ui/react"
+import {
+    Alert,
+    AlertIcon,
+    AlertTitle,
+    Tbody,
+    useMediaQuery,
+} from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import Link from "next/link"
@@ -13,15 +19,20 @@ import { CustomButton } from "../common/Buttons"
 
 interface EmployeeRowProps {
     employee: Employee
+    isLarge: boolean
 }
 
-const EmployeeRow = ({ employee }: EmployeeRowProps): JSX.Element => (
+const EmployeeRow = ({ employee, isLarge }: EmployeeRowProps): JSX.Element => (
     <Link href={`employee/${employee.id}`}>
         <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
             <Td>{employee.firstName}</Td>
             <Td>{employee.lastName}</Td>
-            <Td>{employee.email}</Td>
-            <Td>{employee.role}</Td>
+            {isLarge && (
+                <>
+                    <Td>{employee.email}</Td>
+                    <Td>{employee.role}</Td>
+                </>
+            )}
         </Tr>
     </Link>
 )
@@ -81,6 +92,8 @@ const EmployeeTable = ({
     employeesResponse,
     setEmployeesResponse,
 }: EmployeeTableProps): JSX.Element => {
+    const [isLarge] = useMediaQuery("(min-width: 900px)")
+
     const getHeader = () =>
         employeesResponse?.isSuccess && employeesResponse.data.length > 0
             ? "All users"
@@ -93,14 +106,19 @@ const EmployeeTable = ({
                         <Tr>
                             <Th>First name</Th>
                             <Th>Last name</Th>
-                            <Th>Email</Th>
-                            <Th>Role</Th>
+                            {isLarge && (
+                                <>
+                                    <Th>Email</Th>
+                                    <Th>Role</Th>
+                                </>
+                            )}
                         </Tr>
                     </Thead>
                     <Tbody>
                         {employeesResponse.data.map((employee) => (
                             <EmployeeRow
                                 employee={employee}
+                                isLarge={isLarge}
                                 key={`${employee.id}`}
                             />
                         ))}

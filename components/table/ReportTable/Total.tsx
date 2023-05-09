@@ -5,8 +5,8 @@ import React from "react"
 import { totalIncome } from "./utils"
 
 interface ITotalHours {
-    startDate: string
-    endDate: string
+    startDate: string | null
+    endDate: string | null
     totalQuantity: number
     employeeName?: string
     entries: TimesheetEntry[]
@@ -22,14 +22,15 @@ const Total = ({
     totalQuantity > 0 ? (
         <p>
             The total number of hours {employeeName && `by ${employeeName}`}{" "}
-            between {toLocalDisplayDate(startDate)} and{" "}
-            {toLocalDisplayDate(endDate)} is {round(totalQuantity, 2)}. The
-            projected income in this interval is {totalIncome(entries)}€.
+            between {startDate ? toLocalDisplayDate(startDate) : "-"} and{" "}
+            {endDate ? toLocalDisplayDate(endDate) : "-"} is{" "}
+            {round(totalQuantity, 2)}. The projected income in this interval is{" "}
+            {totalIncome(entries)}€.
         </p>
     ) : (
         <p>
-            No hours between {toLocalDisplayDate(startDate)} and{" "}
-            {toLocalDisplayDate(startDate)}.
+            No hours between {startDate ? toLocalDisplayDate(startDate) : "-"}{" "}
+            and {startDate ? toLocalDisplayDate(startDate) : "-"}.
         </p>
     )
 

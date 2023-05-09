@@ -5,8 +5,12 @@ import {
     extendTheme,
     Flex,
     Heading,
+    Icon,
     StyleConfig,
+    useMediaQuery,
 } from "@chakra-ui/react"
+import MenuNav from "../nav/MenuNav"
+import { BsChatLeftDots } from "react-icons/bs"
 
 const components: Record<string, StyleConfig> = {
     Heading: {
@@ -84,6 +88,39 @@ const Header = ({ children, type }: IHeader) => {
         <StyledItems>
             <Heading variant={`${variant}Header`} size={size}>
                 {children ?? "[...] - Epoc"}
+            </Heading>
+        </StyledItems>
+    )
+}
+
+interface ITopHeader {
+    children?: TContent
+}
+
+export const TopHeader = ({ children }: ITopHeader): JSX.Element => {
+    const [isLarge] = useMediaQuery("(min-width: 900px)")
+
+    return (
+        <StyledItems>
+            <Heading
+                style={{
+                    paddingLeft: "1.5rem",
+                    paddingRight: "1.5rem",
+                    paddingTop: "1rem",
+                    paddingBottom: "1rem",
+                    color: isLarge ? "black" : "whitesmoke",
+                    background: isLarge ? "whitesmoke" : "black",
+                }}
+                size={"3xl"}
+            >
+                <Flex justifyContent="space-between">
+                    <Flex>
+                        <Icon as={BsChatLeftDots} marginRight={2} />
+                        <Box marginLeft={2}>{"Epoc"}</Box>
+                    </Flex>
+                    {children}
+                    {!isLarge && <MenuNav />}
+                </Flex>
             </Heading>
         </StyledItems>
     )

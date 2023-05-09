@@ -52,8 +52,8 @@ const ReportTable = ({
     const firstDay = dateTimeToShortISODate(DateTime.now().startOf("month"))
     const lastDay = dateTimeToShortISODate(DateTime.now().endOf("month"))
 
-    const [startDate, setStartDate] = useState<string>(firstDay)
-    const [endDate, setEndDate] = useState<string>(lastDay)
+    const [startDate, setStartDate] = useState<string | null>(firstDay)
+    const [endDate, setEndDate] = useState<string | null>(lastDay)
 
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>()
     const [selectedCustomer, setSelectedCustomer] = useState<Customer>()
@@ -63,7 +63,7 @@ const ReportTable = ({
     const [hide, setHide] = useState<boolean>(true)
 
     const reportsResponse =
-        role === Role.ADMIN
+        role === Role.ADMIN && startDate && endDate
             ? useTimesheetEntries(user, startDate, endDate)
             : undefined
     const allEntries = reportsResponse?.isSuccess ? reportsResponse.data : []
