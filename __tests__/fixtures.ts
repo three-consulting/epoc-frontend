@@ -14,6 +14,7 @@ export const testEmployee: Employee = {
     email: "test@test.test",
     role: "USER",
     firebaseUid: "testUid1",
+    status: "ACTIVE",
 }
 
 export const anotherTestEmployee: Employee = {
@@ -23,6 +24,7 @@ export const anotherTestEmployee: Employee = {
     email: "test2@test.test",
     role: "USER",
     firebaseUid: "testUid2",
+    status: "ACTIVE",
 }
 
 export const thirdTestEmployee: Employee = {
@@ -31,6 +33,7 @@ export const thirdTestEmployee: Employee = {
     lastName: "tekija",
     email: "test@test.test",
     role: "USER",
+    status: "ACTIVE",
 }
 
 export const testEmployeeRequiredFields: Employee = {
@@ -38,6 +41,7 @@ export const testEmployeeRequiredFields: Employee = {
     lastName: "tekija",
     email: "test@test.test",
     role: "USER",
+    status: "ACTIVE",
 }
 
 export const testEmployeeAllFields: Employee = {
@@ -47,6 +51,7 @@ export const testEmployeeAllFields: Employee = {
     email: "test@test.test",
     role: "USER",
     firebaseUid: "testUid1",
+    status: "ACTIVE",
 }
 
 export const testCustomer: Customer = {

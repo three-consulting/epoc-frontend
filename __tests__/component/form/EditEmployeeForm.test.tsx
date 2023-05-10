@@ -48,6 +48,7 @@ const isEmployeeKeys = (keys: unknown): keys is (keyof Employee)[] =>
             "updated",
             "firebaseUid",
             "role",
+            "status",
         ].includes(key)
     )
 

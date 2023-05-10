@@ -27,7 +27,7 @@ type EmployeeFormProps = CreateEmployeeFormProps & {
 type EmployeeFields = Partial<Employee>
 
 const validateEmployeeFields = (fields: EmployeeFields): Employee => {
-    const { firstName, lastName, email, role } = fields
+    const { firstName, lastName, email, role, status } = fields
     if (!firstName) {
         throw Error("Invalid employee form: missing required field firstName")
     }
@@ -39,6 +39,9 @@ const validateEmployeeFields = (fields: EmployeeFields): Employee => {
     }
     if (!role) {
         throw Error("Invalid employee form: missing required field role")
+    }
+    if (!status) {
+        throw Error("Invalid employee form: missing required field status")
     }
     return fields as Employee
 }
@@ -99,6 +102,16 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                 event.target.value === "ADMIN" || event.target.value === "USER"
                     ? event.target.value
                     : "USER",
+        })
+
+    const onStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) =>
+        setEmployeeFields({
+            ...employeeFields,
+            status:
+                event.target.value === "ACTIVE" ||
+                event.target.value === "ARCHIVED"
+                    ? event.target.value
+                    : "ACTIVE",
         })
 
     return (
@@ -164,6 +177,22 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                     >
                         <option value={"USER"}>User</option>
                         <option value={"ADMIN"}>Admin</option>
+                    </Select>
+                </FormControl>
+
+                <FormControl
+                    mt={4}
+                    isRequired={employeeFieldMetadata.status.required}
+                >
+                    <FormLabel>Employee Status</FormLabel>
+                    <Select
+                        placeholder="Employee Status"
+                        value={employeeFields.status || ""}
+                        onChange={onStatusChange}
+                        data-testid={"form-field-status"}
+                    >
+                        <option value={"ACTIVE"}>Active</option>
+                        <option value={"ARCHIVED"}>Archived</option>
                     </Select>
                 </FormControl>
             </div>
