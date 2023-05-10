@@ -31,6 +31,7 @@ const EmployeeRow = ({ employee, isLarge }: EmployeeRowProps): JSX.Element => (
                 <>
                     <Td>{employee.email}</Td>
                     <Td>{employee.role}</Td>
+                    <Td>{employee.status}</Td>
                 </>
             )}
         </Tr>
@@ -110,6 +111,7 @@ const EmployeeTable = ({
                                 <>
                                     <Th>Email</Th>
                                     <Th>Role</Th>
+                                    <Th>Status</Th>
                                 </>
                             )}
                         </Tr>
