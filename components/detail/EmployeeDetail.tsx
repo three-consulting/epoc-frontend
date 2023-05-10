@@ -12,11 +12,12 @@ type EmployeeDetailProps = {
 }
 
 const EmployeeDetail = ({ employee }: EmployeeDetailProps): JSX.Element => {
-    const { email, role, updated, created } = employee
+    const { email, role, status, updated, created } = employee
     return (
         <>
             <Flex>Email: {email || "-"}</Flex>
             <Flex>Role: {role || "-"}</Flex>
+            <Flex>Status: {status || "-"}</Flex>
             {created && <Flex>Created: {toLocalDisplayDate(created)}</Flex>}
             {updated && <Flex>Updated: {toLocalDisplayDate(updated)}</Flex>}
         </>
