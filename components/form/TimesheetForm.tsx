@@ -123,7 +123,9 @@ function TimesheetForm({
 
     const abortSubmission = onCancel && onCancel
 
-    const actives = employees.filter((employee) => employee.status === "ACTIVE")
+    const activeEmployees = employees.filter(
+        (employee) => employee.status === "ACTIVE"
+    )
 
     return (
         <Flex flexDirection="column">
@@ -137,7 +139,7 @@ function TimesheetForm({
                             placeholder="Select employee"
                             data-testid="form-field-employee"
                         >
-                            {actives.map((employee) => (
+                            {activeEmployees.map((employee) => (
                                 <option
                                     key={`${employee.id}`}
                                     value={employee.id}
