@@ -109,6 +109,10 @@ function ProjectForm({
 
     const abortSubmission = onCancel && onCancel
 
+    const activeEmployees = employees.filter(
+        (employee) => employee.status === "ACTIVE"
+    )
+
     return (
         <FormSection
             header={projectFields.name || "-"}
@@ -242,7 +246,7 @@ function ProjectForm({
                             value={projectFields.managingEmployee?.id}
                             data-testid={"form-field-managing-employee"}
                         >
-                            {employees.map((employee) => (
+                            {activeEmployees.map((employee) => (
                                 <option key={employee.id} value={employee.id}>
                                     {`${employee.firstName} ${employee.lastName}`}
                                 </option>
