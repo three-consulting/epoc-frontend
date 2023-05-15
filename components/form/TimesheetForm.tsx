@@ -136,7 +136,6 @@ function TimesheetForm({
                         <Select
                             value={timesheetFields.employee?.id}
                             onChange={setEmployee}
-                            placeholder="Select employee"
                             data-testid="form-field-employee"
                         >
                             {activeEmployees.map((employee) => (
@@ -147,6 +146,9 @@ function TimesheetForm({
                                     {`${employee.firstName} ${employee.lastName}`}
                                 </option>
                             ))}
+                            <option selected hidden disabled value="User name">
+                                Select user
+                            </option>
                         </Select>
                     </FormControl>
                     <FormControl

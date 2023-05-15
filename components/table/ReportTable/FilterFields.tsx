@@ -72,7 +72,6 @@ const FilterFields = ({
                 <FormLabel fontWeight="bold">Filter by employee: </FormLabel>
                 <Select
                     onChange={handleEmployeeChange}
-                    placeholder="Select employee"
                     value={selectedEmployee?.id}
                     data-testid={"form-field-managing-employee"}
                 >
@@ -83,13 +82,15 @@ const FilterFields = ({
                             }`}
                         </option>
                     ))}
+                    <option selected hidden disabled value="Employee name">
+                        Select employee
+                    </option>
                 </Select>
             </Box>
             <Box marginX="1rem">
                 <FormLabel fontWeight="bold">Filter by customer: </FormLabel>
                 <Select
                     onChange={handleCustomerChange}
-                    placeholder="Select customer"
                     value={selectedCustomer?.id}
                     data-testid={"form-field-managing-customer"}
                 >
@@ -98,13 +99,15 @@ const FilterFields = ({
                             {`${customer.name ?? " - "}`}
                         </option>
                     ))}
+                    <option selected hidden disabled value="Customer name">
+                        Select customer
+                    </option>
                 </Select>
             </Box>
             <Box marginX="1rem">
                 <FormLabel fontWeight="bold">Filter by project: </FormLabel>
                 <Select
                     onChange={handleProjectChange}
-                    placeholder="Select project"
                     value={selectedProject?.id}
                     data-testid={"form-field-managing-project"}
                 >
@@ -113,13 +116,15 @@ const FilterFields = ({
                             {`${project.name ?? " - "}`}
                         </option>
                     ))}
+                    <option selected hidden disabled value="Project name">
+                        Select project
+                    </option>
                 </Select>
             </Box>
             <Box marginLeft="1rem">
                 <FormLabel fontWeight="bold">Filter by task: </FormLabel>
                 <Select
                     onChange={handleTaskChange}
-                    placeholder="Select task"
                     value={selectedTask?.id}
                     data-testid={"form-field-managing-task"}
                 >
@@ -128,6 +133,9 @@ const FilterFields = ({
                             {`${task.name ?? " - "}`}
                         </option>
                     ))}
+                    <option selected hidden disabled value="Task name">
+                        Select task
+                    </option>
                 </Select>
             </Box>
         </Box>

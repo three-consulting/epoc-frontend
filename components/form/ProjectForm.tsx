@@ -201,7 +201,6 @@ function ProjectForm({
                             >
                                 <Select
                                     onChange={handleCustomerChange}
-                                    placeholder="Select customer"
                                     marginRight="0.3rem"
                                     value={projectFields.customer?.id}
                                     data-testid={"form-field-customer"}
@@ -214,6 +213,14 @@ function ProjectForm({
                                             {customer.name}
                                         </option>
                                     ))}
+                                    <option
+                                        selected
+                                        hidden
+                                        disabled
+                                        value="Customer name"
+                                    >
+                                        Select customer
+                                    </option>
                                 </Select>
 
                                 <StyledButton
@@ -242,7 +249,6 @@ function ProjectForm({
                         <FormLabel>Managing employee</FormLabel>
                         <Select
                             onChange={handleEmployeeChange}
-                            placeholder="Select employee"
                             value={projectFields.managingEmployee?.id}
                             data-testid={"form-field-managing-employee"}
                         >
@@ -251,6 +257,14 @@ function ProjectForm({
                                     {`${employee.firstName} ${employee.lastName}`}
                                 </option>
                             ))}
+                            <option
+                                selected
+                                hidden
+                                disabled
+                                value="Employee name"
+                            >
+                                Select employee
+                            </option>
                         </Select>
                     </FormControl>
                     <FormButtons>
