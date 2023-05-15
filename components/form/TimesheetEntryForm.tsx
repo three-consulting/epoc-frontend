@@ -163,7 +163,7 @@ const TimesheetEntryForm = ({
                     <Select
                         onChange={handleTaskChange}
                         marginRight="0.3rem"
-                        value={timesheetEntryFields.task?.id}
+                        value={timesheetEntryFields.task?.id || ""}
                         data-testid={"form-field-task"}
                         key={taskSelectorKey}
                     >
@@ -172,7 +172,7 @@ const TimesheetEntryForm = ({
                                 {task.name}
                             </option>
                         ))}
-                        <option selected hidden disabled value="">
+                        <option hidden disabled value="">
                             Select task
                         </option>
                     </Select>

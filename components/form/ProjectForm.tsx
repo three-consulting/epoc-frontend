@@ -202,7 +202,7 @@ function ProjectForm({
                                 <Select
                                     onChange={handleCustomerChange}
                                     marginRight="0.3rem"
-                                    value={projectFields.customer?.id}
+                                    value={projectFields.customer?.id || ""}
                                     data-testid={"form-field-customer"}
                                 >
                                     {customers.map((customer) => (
@@ -213,7 +213,7 @@ function ProjectForm({
                                             {customer.name}
                                         </option>
                                     ))}
-                                    <option selected hidden disabled value="">
+                                    <option hidden disabled value="">
                                         Select customer
                                     </option>
                                 </Select>
@@ -244,7 +244,7 @@ function ProjectForm({
                         <FormLabel>Managing employee</FormLabel>
                         <Select
                             onChange={handleEmployeeChange}
-                            value={projectFields.managingEmployee?.id}
+                            value={projectFields.managingEmployee?.id || ""}
                             data-testid={"form-field-managing-employee"}
                         >
                             {activeEmployees.map((employee) => (
@@ -252,7 +252,7 @@ function ProjectForm({
                                     {`${employee.firstName} ${employee.lastName}`}
                                 </option>
                             ))}
-                            <option selected hidden disabled value="">
+                            <option hidden disabled value="">
                                 Select employee
                             </option>
                         </Select>

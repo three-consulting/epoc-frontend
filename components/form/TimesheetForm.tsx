@@ -134,7 +134,7 @@ function TimesheetForm({
                     <FormControl isRequired>
                         <FormLabel>User</FormLabel>
                         <Select
-                            value={timesheetFields.employee?.id}
+                            value={timesheetFields.employee?.id || ""}
                             onChange={setEmployee}
                             data-testid="form-field-employee"
                         >
@@ -146,7 +146,7 @@ function TimesheetForm({
                                     {`${employee.firstName} ${employee.lastName}`}
                                 </option>
                             ))}
-                            <option selected hidden disabled value="">
+                            <option hidden disabled value="">
                                 Select user
                             </option>
                         </Select>

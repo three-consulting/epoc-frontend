@@ -72,7 +72,7 @@ const FilterFields = ({
                 <FormLabel fontWeight="bold">Filter by employee: </FormLabel>
                 <Select
                     onChange={handleEmployeeChange}
-                    value={selectedEmployee?.id}
+                    value={selectedEmployee?.id || ""}
                     data-testid={"form-field-managing-employee"}
                 >
                     {employees.map((employee, idx) => (
@@ -82,16 +82,14 @@ const FilterFields = ({
                             }`}
                         </option>
                     ))}
-                    <option selected hidden disabled value="">
-                        Select employee
-                    </option>
+                    <option value="" />
                 </Select>
             </Box>
             <Box marginX="1rem">
                 <FormLabel fontWeight="bold">Filter by customer: </FormLabel>
                 <Select
                     onChange={handleCustomerChange}
-                    value={selectedCustomer?.id}
+                    value={selectedCustomer?.id || ""}
                     data-testid={"form-field-managing-customer"}
                 >
                     {customers.map((customer, idx) => (
@@ -99,16 +97,15 @@ const FilterFields = ({
                             {`${customer.name ?? " - "}`}
                         </option>
                     ))}
-                    <option selected hidden disabled value="">
-                        Select customer
-                    </option>
+                    <option value="" />
                 </Select>
             </Box>
             <Box marginX="1rem">
                 <FormLabel fontWeight="bold">Filter by project: </FormLabel>
                 <Select
                     onChange={handleProjectChange}
-                    value={selectedProject?.id}
+                    value={selectedProject?.id || ""}
+                    defaultValue={""}
                     data-testid={"form-field-managing-project"}
                 >
                     {projects.map((project, idx) => (
@@ -116,16 +113,15 @@ const FilterFields = ({
                             {`${project.name ?? " - "}`}
                         </option>
                     ))}
-                    <option selected hidden disabled value="">
-                        Select project
-                    </option>
+                    <option value="" />
                 </Select>
             </Box>
             <Box marginLeft="1rem">
                 <FormLabel fontWeight="bold">Filter by task: </FormLabel>
                 <Select
                     onChange={handleTaskChange}
-                    value={selectedTask?.id}
+                    value={selectedTask?.id || ""}
+                    defaultValue={""}
                     data-testid={"form-field-managing-task"}
                 >
                     {tasks.map((task, idx) => (
@@ -133,9 +129,7 @@ const FilterFields = ({
                             {`${task.name ?? " - "}`}
                         </option>
                     ))}
-                    <option selected hidden disabled value="">
-                        Select task
-                    </option>
+                    <option value="" />
                 </Select>
             </Box>
         </Box>
