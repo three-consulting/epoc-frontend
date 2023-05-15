@@ -105,7 +105,6 @@ const FilterFields = ({
                 <Select
                     onChange={handleProjectChange}
                     value={selectedProject?.id || ""}
-                    defaultValue={""}
                     data-testid={"form-field-managing-project"}
                 >
                     {projects.map((project, idx) => (
@@ -121,7 +120,6 @@ const FilterFields = ({
                 <Select
                     onChange={handleTaskChange}
                     value={selectedTask?.id || ""}
-                    defaultValue={""}
                     data-testid={"form-field-managing-task"}
                 >
                     {tasks.map((task, idx) => (
