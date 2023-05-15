@@ -170,11 +170,13 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                 >
                     <FormLabel>Employee Role</FormLabel>
                     <Select
-                        placeholder="Employee Role"
                         value={employeeFields.role || ""}
                         onChange={onRoleChange}
                         data-testid={"form-field-role"}
                     >
+                        <option hidden disabled value="">
+                            Select role
+                        </option>
                         <option value={"USER"}>User</option>
                         <option value={"ADMIN"}>Admin</option>
                     </Select>
@@ -186,11 +188,13 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                 >
                     <FormLabel>Employee Status</FormLabel>
                     <Select
-                        placeholder="Employee Status"
                         value={employeeFields.status || ""}
                         onChange={onStatusChange}
                         data-testid={"form-field-status"}
                     >
+                        <option hidden disabled value="">
+                            Select status
+                        </option>
                         <option value={"ACTIVE"}>Active</option>
                         <option value={"ARCHIVED"}>Archived</option>
                     </Select>

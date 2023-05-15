@@ -233,14 +233,13 @@ const FromCsvForm = ({
                         <GridItem area="task">
                             <FormControl isRequired={true}>
                                 <FormLabel as="label">{"Task"}</FormLabel>
-                                <Select
-                                    placeholder={"Select task"}
-                                    onChange={onTasksChange}
-                                    width="11rem"
-                                >
+                                <Select onChange={onTasksChange} width="11rem">
                                     {recordKeyOptions.map((key) => (
                                         <option key={key}>{key}</option>
                                     ))}
+                                    <option hidden disabled value="">
+                                        Select task
+                                    </option>
                                 </Select>
                             </FormControl>
                         </GridItem>

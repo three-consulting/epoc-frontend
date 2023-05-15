@@ -201,9 +201,8 @@ function ProjectForm({
                             >
                                 <Select
                                     onChange={handleCustomerChange}
-                                    placeholder="Select customer"
                                     marginRight="0.3rem"
-                                    value={projectFields.customer?.id}
+                                    value={projectFields.customer?.id || ""}
                                     data-testid={"form-field-customer"}
                                 >
                                     {customers.map((customer) => (
@@ -214,6 +213,9 @@ function ProjectForm({
                                             {customer.name}
                                         </option>
                                     ))}
+                                    <option hidden disabled value="">
+                                        Select customer
+                                    </option>
                                 </Select>
 
                                 <StyledButton
@@ -242,8 +244,7 @@ function ProjectForm({
                         <FormLabel>Managing employee</FormLabel>
                         <Select
                             onChange={handleEmployeeChange}
-                            placeholder="Select employee"
-                            value={projectFields.managingEmployee?.id}
+                            value={projectFields.managingEmployee?.id || ""}
                             data-testid={"form-field-managing-employee"}
                         >
                             {activeEmployees.map((employee) => (
@@ -251,6 +252,9 @@ function ProjectForm({
                                     {`${employee.firstName} ${employee.lastName}`}
                                 </option>
                             ))}
+                            <option hidden disabled value="">
+                                Select employee
+                            </option>
                         </Select>
                     </FormControl>
                     <FormButtons>

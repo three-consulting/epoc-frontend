@@ -72,8 +72,7 @@ const FilterFields = ({
                 <FormLabel fontWeight="bold">Filter by employee: </FormLabel>
                 <Select
                     onChange={handleEmployeeChange}
-                    placeholder="Select employee"
-                    value={selectedEmployee?.id}
+                    value={selectedEmployee?.id || ""}
                     data-testid={"form-field-managing-employee"}
                 >
                     {employees.map((employee, idx) => (
@@ -83,14 +82,14 @@ const FilterFields = ({
                             }`}
                         </option>
                     ))}
+                    <option value="" />
                 </Select>
             </Box>
             <Box marginX="1rem">
                 <FormLabel fontWeight="bold">Filter by customer: </FormLabel>
                 <Select
                     onChange={handleCustomerChange}
-                    placeholder="Select customer"
-                    value={selectedCustomer?.id}
+                    value={selectedCustomer?.id || ""}
                     data-testid={"form-field-managing-customer"}
                 >
                     {customers.map((customer, idx) => (
@@ -98,14 +97,14 @@ const FilterFields = ({
                             {`${customer.name ?? " - "}`}
                         </option>
                     ))}
+                    <option value="" />
                 </Select>
             </Box>
             <Box marginX="1rem">
                 <FormLabel fontWeight="bold">Filter by project: </FormLabel>
                 <Select
                     onChange={handleProjectChange}
-                    placeholder="Select project"
-                    value={selectedProject?.id}
+                    value={selectedProject?.id || ""}
                     data-testid={"form-field-managing-project"}
                 >
                     {projects.map((project, idx) => (
@@ -113,14 +112,14 @@ const FilterFields = ({
                             {`${project.name ?? " - "}`}
                         </option>
                     ))}
+                    <option value="" />
                 </Select>
             </Box>
             <Box marginLeft="1rem">
                 <FormLabel fontWeight="bold">Filter by task: </FormLabel>
                 <Select
                     onChange={handleTaskChange}
-                    placeholder="Select task"
-                    value={selectedTask?.id}
+                    value={selectedTask?.id || ""}
                     data-testid={"form-field-managing-task"}
                 >
                     {tasks.map((task, idx) => (
@@ -128,6 +127,7 @@ const FilterFields = ({
                             {`${task.name ?? " - "}`}
                         </option>
                     ))}
+                    <option value="" />
                 </Select>
             </Box>
         </Box>
