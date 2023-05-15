@@ -174,7 +174,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                         onChange={onRoleChange}
                         data-testid={"form-field-role"}
                     >
-                        <option selected hidden disabled value="Employee Role">
+                        <option selected hidden disabled value="">
                             Select role
                         </option>
                         <option value={"USER"}>User</option>
@@ -192,12 +192,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                         onChange={onStatusChange}
                         data-testid={"form-field-status"}
                     >
-                        <option
-                            selected
-                            hidden
-                            disabled
-                            value="Employee Status"
-                        >
+                        <option selected hidden disabled value="">
                             Select status
                         </option>
                         <option value={"ACTIVE"}>Active</option>

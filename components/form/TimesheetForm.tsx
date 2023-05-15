@@ -146,7 +146,7 @@ function TimesheetForm({
                                     {`${employee.firstName} ${employee.lastName}`}
                                 </option>
                             ))}
-                            <option selected hidden disabled value="User name">
+                            <option selected hidden disabled value="">
                                 Select user
                             </option>
                         </Select>

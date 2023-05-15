@@ -213,12 +213,7 @@ function ProjectForm({
                                             {customer.name}
                                         </option>
                                     ))}
-                                    <option
-                                        selected
-                                        hidden
-                                        disabled
-                                        value="Customer name"
-                                    >
+                                    <option selected hidden disabled value="">
                                         Select customer
                                     </option>
                                 </Select>
@@ -257,12 +252,7 @@ function ProjectForm({
                                     {`${employee.firstName} ${employee.lastName}`}
                                 </option>
                             ))}
-                            <option
-                                selected
-                                hidden
-                                disabled
-                                value="Employee name"
-                            >
+                            <option selected hidden disabled value="">
                                 Select employee
                             </option>
                         </Select>

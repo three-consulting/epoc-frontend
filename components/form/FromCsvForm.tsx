@@ -237,12 +237,7 @@ const FromCsvForm = ({
                                     {recordKeyOptions.map((key) => (
                                         <option key={key}>{key}</option>
                                     ))}
-                                    <option
-                                        selected
-                                        hidden
-                                        disabled
-                                        value="Task"
-                                    >
+                                    <option selected hidden disabled value="">
                                         Select task
                                     </option>
                                 </Select>

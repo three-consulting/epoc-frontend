@@ -82,7 +82,7 @@ const FilterFields = ({
                             }`}
                         </option>
                     ))}
-                    <option selected hidden disabled value="Employee name">
+                    <option selected hidden disabled value="">
                         Select employee
                     </option>
                 </Select>
@@ -99,7 +99,7 @@ const FilterFields = ({
                             {`${customer.name ?? " - "}`}
                         </option>
                     ))}
-                    <option selected hidden disabled value="Customer name">
+                    <option selected hidden disabled value="">
                         Select customer
                     </option>
                 </Select>
@@ -116,7 +116,7 @@ const FilterFields = ({
                             {`${project.name ?? " - "}`}
                         </option>
                     ))}
-                    <option selected hidden disabled value="Project name">
+                    <option selected hidden disabled value="">
                         Select project
                     </option>
                 </Select>
@@ -133,7 +133,7 @@ const FilterFields = ({
                             {`${task.name ?? " - "}`}
                         </option>
                     ))}
-                    <option selected hidden disabled value="Task name">
+                    <option selected hidden disabled value="">
                         Select task
                     </option>
                 </Select>
