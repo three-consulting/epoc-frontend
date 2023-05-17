@@ -95,12 +95,7 @@ const TableButtons = ({
                 onClick={() =>
                     startDate &&
                     endDate &&
-                    handlePdfExportClick(
-                        filteredEntries,
-                        startDate,
-                        endDate,
-                        selectedEmployee
-                    )
+                    handlePdfExportClick(filteredEntries, startDate, endDate)
                 }
                 disabled={isInvalid}
             />
