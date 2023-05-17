@@ -12,7 +12,7 @@ import { getText } from "@/lib/utils/fetch"
 import { User } from "firebase/auth"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
-import { round } from "lodash"
+import { groupBy, round, toArray } from "lodash"
 import { DateTime } from "luxon"
 
 export const customersByEmployeeTimesheets = (
@@ -146,63 +146,73 @@ export const handleCsvExportClick = async (
 }
 
 export const handlePdfExportClick = (
-    entries: Array<TimesheetEntry>,
+    timesheetEntries: Array<TimesheetEntry>,
     startDate: string,
-    endDate: string,
-    employee?: Employee
+    endDate: string
 ) => {
     const JsPDF = jsPDF
     const doc = new JsPDF()
 
-    const totalHours =
-        entries.length > 0
-            ? entries.reduce((prv, crr) => prv + crr.quantity, 0)
-            : 0
-
-    const startX = 14
-
-    doc.setFontSize(24)
-    doc.text("Time Report", startX, 14)
-
-    doc.setFontSize(12)
-    doc.text(
-        `Timeframe: ${formatDate(startDate)} - ${formatDate(endDate)}`,
-        startX,
-        24
+    const groupedEntries = toArray(
+        groupBy(timesheetEntries, (entry) => entry.timesheet.id)
     )
-    doc.text(
-        `Employee: ${employee?.firstName ?? "-"} ${employee?.lastName ?? "-"}`,
-        startX,
-        29
-    )
-    doc.text(`Email: ${employee?.email ?? "-"}`, startX, 34)
-    doc.text(`Total hours: ${totalHours}`, startX, 39)
+    groupedEntries.forEach((entries, index) => {
+        const employee = entries[0]?.timesheet?.employee
 
-    const headers = [
-        "Date",
-        "Client",
-        "Project",
-        "Task",
-        "Hours",
-        "Description",
-    ]
-    const data =
-        entries.length > 0
-            ? entries.map((entry) => [
-                  entry.date ? formatDate(entry.date) : "-",
-                  entry.timesheet.project.customer.name ?? "-",
-                  entry.timesheet.project.name ?? "-",
-                  entry.task.name ?? "-",
-                  entry.quantity.toString() ?? "-",
-                  entry.description ?? "-",
-              ])
-            : [headers.map(() => "-")]
+        if (index !== 0) {
+            doc.addPage()
+        }
+        const totalHours =
+            entries.length > 0
+                ? entries.reduce((prv, crr) => prv + crr.quantity, 0)
+                : 0
 
-    autoTable(doc, {
-        head: [headers],
-        body: data,
-        startY: 50,
+        const startX = 14
+
+        doc.setFontSize(24)
+        doc.text("Time Report", startX, 14)
+
+        doc.setFontSize(12)
+        doc.text(
+            `Timeframe: ${formatDate(startDate)} - ${formatDate(endDate)}`,
+            startX,
+            24
+        )
+        doc.text(
+            `Employee: ${employee?.firstName ?? "-"} ${
+                employee?.lastName ?? "-"
+            }`,
+            startX,
+            29
+        )
+        doc.text(`Email: ${employee?.email ?? "-"}`, startX, 34)
+        doc.text(`Total hours: ${totalHours}`, startX, 39)
+
+        const headers = [
+            "Date",
+            "Client",
+            "Project",
+            "Task",
+            "Hours",
+            "Description",
+        ]
+        const data =
+            entries.length > 0
+                ? entries.map((entry) => [
+                      entry.date ? formatDate(entry.date) : "-",
+                      entry.timesheet.project.customer.name ?? "-",
+                      entry.timesheet.project.name ?? "-",
+                      entry.task.name ?? "-",
+                      entry.quantity.toString() ?? "-",
+                      entry.description ?? "-",
+                  ])
+                : [headers.map(() => "-")]
+
+        autoTable(doc, {
+            head: [headers],
+            body: data,
+            startY: 50,
+        })
     })
-
     doc.save(`timereport_${formatDate(startDate)}-${formatDate(endDate)}.pdf`)
 }

@@ -75,7 +75,7 @@ const DateInput = ({
                     {isInvalid ? (
                         <FormErrorMessage>Invalid dates</FormErrorMessage>
                     ) : (
-                        <FormHelperText>Intrerval end</FormHelperText>
+                        <FormHelperText>Interval end</FormHelperText>
                     )}
                 </FormControl>
             </InputGroup>
