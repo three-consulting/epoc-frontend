@@ -16,7 +16,7 @@ import {
 import styled from "@emotion/styled"
 import ErrorAlert from "./ErrorAlert"
 import { AddCustomerForm } from "../form/CustomerForm"
-import FormButtons from "./FormButtons"
+import StyledButtons from "./StyledButtons"
 import { CustomButton, StyledButton } from "./Buttons"
 
 type FormInputFieldProps = {
@@ -85,11 +85,11 @@ type FormButtonsProps = {
     onCancel: (() => void) | undefined
 }
 
-export const FromButtons = ({
+export const FormButtons = ({
     onSubmit,
     onCancel,
 }: FormButtonsProps): JSX.Element => (
-    <FormButtons>
+    <StyledButtons>
         <StyledButton
             buttontype="submit"
             onClick={onSubmit}
@@ -100,7 +100,7 @@ export const FromButtons = ({
             onClick={onCancel}
             data-testid={"form-button-cancel"}
         />
-    </FormButtons>
+    </StyledButtons>
 )
 
 type FormButtonProps = {
@@ -109,16 +109,16 @@ type FormButtonProps = {
     onClick: (event: React.MouseEvent) => void
 }
 
-export const FromButton = ({
+export const FormButton = ({
     buttonName,
     buttonColor,
     onClick,
 }: FormButtonProps): JSX.Element => (
-    <FormButtons>
+    <StyledButtons>
         <CustomButton colorScheme={buttonColor} onClick={onClick}>
             {buttonName}
         </CustomButton>
-    </FormButtons>
+    </StyledButtons>
 )
 
 export const FormContainer = styled.div`

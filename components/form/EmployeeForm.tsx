@@ -7,7 +7,7 @@ import ErrorAlert from "../common/ErrorAlert"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { employeeFieldMetadata } from "@/lib/types/typeMetadata"
 import WarningModal from "../common/WarningModal"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
 import { isError } from "lodash"
 import FormSection from "../common/FormSection"
@@ -200,7 +200,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                     </Select>
                 </FormControl>
             </div>
-            <FormButtons>
+            <StyledButtons>
                 <StyledButton
                     buttontype="save"
                     onClick={() => setShowWarningModal(true)}
@@ -212,7 +212,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                     onClick={onCancel}
                     data-testid="form-button-cancel"
                 />
-            </FormButtons>
+            </StyledButtons>
             {errorMessage && (
                 <>
                     <ErrorAlert />
@@ -223,7 +223,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                 header={"Are you sure?"}
                 content={"Changes in this form will overwrite data in firebase"}
                 buttons={
-                    <FormButtons>
+                    <StyledButtons>
                         <StyledButton
                             buttontype="confirm"
                             onClick={onConfirm}
@@ -233,7 +233,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
                             buttontype="cancel"
                             onClick={() => setShowWarningModal(false)}
                         />
-                    </FormButtons>
+                    </StyledButtons>
                 }
                 isOpen={showWarningModal}
                 onClose={() => setShowWarningModal(false)}

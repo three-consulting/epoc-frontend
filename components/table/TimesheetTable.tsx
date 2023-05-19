@@ -15,7 +15,7 @@ import { useRouter } from "next/router"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
 import FormSection from "../common/FormSection"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import { RemoveIconButton, StyledButton } from "../common/Buttons"
 
 interface TimesheetRowProps {
@@ -129,13 +129,13 @@ function TimesheetTable({
                         To add a user click the button below.
                     </Box>
                 )}
-                <FormButtons>
+                <StyledButtons>
                     <StyledButton
                         buttontype="add"
                         name="User"
                         onClick={() => setDisplayNewTimesheetForm(true)}
                     />
-                </FormButtons>
+                </StyledButtons>
                 {project.id && (
                     <Modal
                         isOpen={displayNewTimesheetForm}

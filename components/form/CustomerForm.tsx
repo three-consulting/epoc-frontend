@@ -7,7 +7,7 @@ import ErrorAlert from "../common/ErrorAlert"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { customerFieldMetadata } from "@/lib/types/typeMetadata"
 import FormSection from "../common/FormSection"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
 
 type CustomerFormPropsBase = FormBase<Customer>
@@ -91,7 +91,7 @@ function CustomerForm({
                     data-testid={"form-field-description"}
                 />
             </FormControl>
-            <FormButtons>
+            <StyledButtons>
                 <StyledButton
                     buttontype="save"
                     type="submit"
@@ -102,7 +102,7 @@ function CustomerForm({
                     onClick={abortSubmission}
                     data-testid="form-button-cancel"
                 />
-            </FormButtons>
+            </StyledButtons>
         </form>
     )
 }

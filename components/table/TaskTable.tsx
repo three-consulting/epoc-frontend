@@ -14,7 +14,7 @@ import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React, { useContext, useState } from "react"
 import { StyledButton, RemoveIconButton } from "../common/Buttons"
 import ErrorAlert from "../common/ErrorAlert"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import FormSection from "../common/FormSection"
 import { CreateTaskForm, EditTaskForm } from "../form/TaskForm"
 
@@ -107,13 +107,13 @@ function TaskTable({ project, tasks }: TaskTableProps): JSX.Element {
                 )}
                 {project.id ? (
                     <Box>
-                        <FormButtons>
+                        <StyledButtons>
                             <StyledButton
                                 buttontype="add"
                                 name="Task"
                                 onClick={() => setDisplayNewTaskForm(true)}
                             />
-                        </FormButtons>
+                        </StyledButtons>
                         <Modal
                             isOpen={displayNewTaskForm}
                             onClose={() => setDisplayNewTaskForm(false)}

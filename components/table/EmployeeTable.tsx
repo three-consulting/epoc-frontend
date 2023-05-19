@@ -14,7 +14,7 @@ import { User } from "firebase/auth"
 import { ApiGetResponse } from "@/lib/types/hooks"
 import { firebaseSyncEndpoint, useGet } from "@/lib/hooks/swrInterface"
 import FormSection from "../common/FormSection"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import { CustomButton } from "../common/Buttons"
 
 interface EmployeeRowProps {
@@ -131,12 +131,12 @@ const EmployeeTable = ({
                     No employees have been added yet.
                 </Box>
             )}
-            <FormButtons>
+            <StyledButtons>
                 <SyncEmployeesButton
                     user={user}
                     setEmployeesResponse={setEmployeesResponse}
                 />
-            </FormButtons>
+            </StyledButtons>
         </FormSection>
     )
 }

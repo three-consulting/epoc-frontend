@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Project } from "@/lib/types/apiTypes"
 import FormSection from "../common/FormSection"
 import { useRouter } from "next/router"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
 
 interface ProjectRowProps {
@@ -49,13 +49,13 @@ function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
                             ))}
                         </Tbody>
                     </Table>
-                    <FormButtons>
+                    <StyledButtons>
                         <StyledButton
                             buttontype="add"
                             onClick={() => router.push("/project/new")}
                             name="project"
                         />
-                    </FormButtons>
+                    </StyledButtons>
                 </Box>
             )}
         </FormSection>
