@@ -14,7 +14,7 @@ import {
 import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
 
 type CreateTimesheetFormProps = FormBase<Timesheet> & {
@@ -241,7 +241,7 @@ function TimesheetForm({
                             Rate must be a non-negative number.
                         </FormErrorMessage>
                     </FormControl>
-                    <FormButtons>
+                    <StyledButtons>
                         <StyledButton
                             buttontype="submit"
                             isDisabled={!rateIsValid || invalidAllocation}
@@ -253,7 +253,7 @@ function TimesheetForm({
                             onClick={abortSubmission}
                             data-testid="form-button-cancel"
                         />
-                    </FormButtons>
+                    </StyledButtons>
                 </Box>
                 {errorMessage && (
                     <>

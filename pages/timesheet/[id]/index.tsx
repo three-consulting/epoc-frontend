@@ -9,7 +9,7 @@ import Link from "next/link"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useTimesheetDetail } from "@/lib/hooks/useDetail"
 import { StyledButton } from "@/components/common/Buttons"
-import FormButtons from "@/components/common/FormButtons"
+import StyledButtons from "@/components/common/StyledButtons"
 import FormSection from "@/components/common/FormSection"
 import FormPage from "@/components/common/FormPage"
 
@@ -33,14 +33,14 @@ function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
             {timesheetDetailResponse.isSuccess ? (
                 <FormSection header="-">
                     <TimesheetDetail timesheet={timesheetDetailResponse.data} />
-                    <FormButtons>
+                    <StyledButtons>
                         <Link
                             key={`${timesheetDetailResponse.data.id}`}
                             href={`${timesheetDetailResponse.data.id}/edit`}
                         >
                             <StyledButton buttontype="edit" />
                         </Link>
-                    </FormButtons>
+                    </StyledButtons>
                 </FormSection>
             ) : (
                 <Box>Not found</Box>

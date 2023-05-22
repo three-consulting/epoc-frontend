@@ -22,7 +22,7 @@ import { useTimesheets, useEmployees, useTasks } from "@/lib/hooks/useList"
 import { useUpdateProjects } from "@/lib/hooks/useUpdate"
 import FormSection from "@/components/common/FormSection"
 import FormPage from "@/components/common/FormPage"
-import FormButtons from "@/components/common/FormButtons"
+import StyledButtons from "@/components/common/StyledButtons"
 import {
     CustomButton,
     StyledButton,
@@ -132,7 +132,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                             <ProjectDetail
                                 project={projectDetailResponse.data}
                             />
-                            <FormButtons>
+                            <StyledButtons>
                                 <Link
                                     key={`${projectId}`}
                                     href={`${projectId}/edit`}
@@ -140,7 +140,7 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                                     <StyledButton buttontype="edit" />
                                 </Link>
                                 <CustomButton {...getCustomButtonProps()} />
-                            </FormButtons>
+                            </StyledButtons>
                         </FormSection>
 
                         <Modal

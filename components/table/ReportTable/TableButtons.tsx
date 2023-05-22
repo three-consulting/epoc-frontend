@@ -1,6 +1,6 @@
 import React from "react"
 import { CustomButton } from "@/components/common/Buttons"
-import FormButtons from "@/components/common/FormButtons"
+import StyledButtons from "@/components/common/StyledButtons"
 import { useTimesheetEntries } from "@/lib/hooks/useList"
 import {
     filterEntries,
@@ -73,7 +73,7 @@ const TableButtons = ({
         endDate < startDate
 
     return (
-        <FormButtons>
+        <StyledButtons>
             <CustomButton
                 text="Export as .csv"
                 colorScheme="green"
@@ -99,7 +99,7 @@ const TableButtons = ({
                 }
                 disabled={isInvalid}
             />
-        </FormButtons>
+        </StyledButtons>
     )
 }
 

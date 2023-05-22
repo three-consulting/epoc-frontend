@@ -5,7 +5,7 @@ import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
 import React from "react"
 import Link from "next/link"
 import FormSection from "../common/FormSection"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
 import { useRouter } from "next/router"
 
@@ -54,13 +54,13 @@ function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
                     No customers have been added yet.
                 </Box>
             )}
-            <FormButtons>
+            <StyledButtons>
                 <StyledButton
                     buttontype="add"
                     name="customer"
                     onClick={() => router.push("/customer/new")}
                 />
-            </FormButtons>
+            </StyledButtons>
         </FormSection>
     )
 }

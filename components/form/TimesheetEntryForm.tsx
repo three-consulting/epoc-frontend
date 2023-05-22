@@ -16,7 +16,7 @@ import React, {
     useState,
 } from "react"
 import ErrorAlert from "../common/ErrorAlert"
-import { FromButtons } from "../common/FormFields"
+import { FormButtons } from "../common/FormFields"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 import { datesRange, jsDateToShortISODate } from "@/lib/utils/date"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
@@ -69,6 +69,8 @@ export const validateTimesheetEntryFields = (
         throw Error(
             "Invalid timesheet entry form: missing required quantity field"
         )
+    } else if (quantity <= 0 || quantity > 24) {
+        throw Error("Invalid timesheet entry form: hour field out of range")
     } else if (!date) {
         throw Error("Invalid timesheet entry form: missing required date field")
     } else if (!task) {
@@ -130,6 +132,8 @@ const TimesheetEntryForm = ({
                     <FormLabel>Hours</FormLabel>
                     <Input
                         value={quantityRef.current}
+                        min={0}
+                        max={24}
                         placeholder="Hours"
                         isRequired={true}
                         onChange={handleQuantityChange}
@@ -223,7 +227,7 @@ export const EditTimesheetEntryForm = ({
     }
 
     const Buttons = (
-        <FromButtons onSubmit={() => handlePut()} onCancel={onCancel} />
+        <FormButtons onSubmit={() => handlePut()} onCancel={onCancel} />
     )
 
     return (
@@ -294,7 +298,7 @@ export const CreateTimesheetEntryForm = ({
     }
 
     const buttons = (
-        <FromButtons onSubmit={() => handlePost()} onCancel={onCancel} />
+        <FormButtons onSubmit={() => handlePost()} onCancel={onCancel} />
     )
 
     return (

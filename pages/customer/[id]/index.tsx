@@ -9,7 +9,7 @@ import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import Link from "next/link"
 import { useCustomerDetail } from "@/lib/hooks/useDetail"
 import { StyledButton } from "@/components/common/Buttons"
-import FormButtons from "@/components/common/FormButtons"
+import StyledButtons from "@/components/common/StyledButtons"
 import FormPage from "@/components/common/FormPage"
 import FormSection from "@/components/common/FormSection"
 
@@ -38,11 +38,11 @@ function CustomerDetailPage({ customerId }: Props): JSX.Element {
                 ) : (
                     <Box>Not found</Box>
                 )}
-                <FormButtons>
+                <StyledButtons>
                     <Link key={`${customerId}`} href={`${customerId}/edit`}>
                         <StyledButton buttontype="edit" />
                     </Link>
-                </FormButtons>
+                </StyledButtons>
             </FormSection>
         </FormPage>
     )

@@ -7,7 +7,7 @@ import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { CheckBoxField, FormContainer } from "../common/FormFields"
 import { taskFieldMetadata } from "@/lib/types/typeMetadata"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
 
 type CreateTaskFormProps = FormBase<Task> & {
@@ -112,7 +112,7 @@ function TaskForm({
                         }
                         testId={"form-field-billable"}
                     />
-                    <FormButtons>
+                    <StyledButtons>
                         <StyledButton
                             buttontype="submit"
                             type="submit"
@@ -123,7 +123,7 @@ function TaskForm({
                             onClick={abortSubmission}
                             data-testid="form-button-cancel"
                         />
-                    </FormButtons>
+                    </StyledButtons>
                     {errorMessage && (
                         <>
                             <ErrorAlert />

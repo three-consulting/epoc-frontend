@@ -34,7 +34,7 @@ import { parseCsv, parseQuantity } from "@/lib/utils/common"
 import FileDropper from "../common/FileDropper"
 import FromCsvForm from "../form/FromCsvForm"
 import { CustomButton, StyledButton } from "../common/Buttons"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 
 export type Timesheets = Array<Timesheet>
 export type Tasks = Array<Task>
@@ -308,7 +308,7 @@ const ImportFromCSVModal = ({
                     </ModalBody>
 
                     <ModalFooter>
-                        <FormButtons>
+                        <StyledButtons>
                             {confirm ? (
                                 <>
                                     <StyledButton
@@ -334,7 +334,7 @@ const ImportFromCSVModal = ({
                                     />
                                 </>
                             )}
-                        </FormButtons>
+                        </StyledButtons>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

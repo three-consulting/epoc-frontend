@@ -14,7 +14,7 @@ import {
 import FormPage from "@/components/common/FormPage"
 import FormSection from "@/components/common/FormSection"
 import { Box } from "@chakra-ui/react"
-import FormButtons from "@/components/common/FormButtons"
+import StyledButtons from "@/components/common/StyledButtons"
 import Link from "next/link"
 import { StyledButton } from "@/components/common/Buttons"
 
@@ -87,11 +87,11 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
                 ) : (
                     <Box>{"Not found"}</Box>
                 )}
-                <FormButtons>
+                <StyledButtons>
                     <Link key={`${employeeId}`} href={`${employeeId}/edit`}>
                         <StyledButton buttontype="edit" />
                     </Link>
-                </FormButtons>
+                </StyledButtons>
             </FormSection>
         </FormPage>
     )

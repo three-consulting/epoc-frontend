@@ -1,11 +1,11 @@
 import { ButtonGroup } from "@chakra-ui/react"
 import React from "react"
 
-interface IFormButtons {
+interface IStyledButtons {
     children: JSX.Element | Array<JSX.Element>
 }
 
-const FormButtons = (props: IFormButtons): JSX.Element => {
+const StyledButtons = (props: IStyledButtons): JSX.Element => {
     const { children } = props
 
     return (
@@ -15,4 +15,4 @@ const FormButtons = (props: IFormButtons): JSX.Element => {
     )
 }
 
-export default FormButtons
+export default StyledButtons

@@ -16,7 +16,7 @@ import React, { useContext, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import FormSection from "../common/FormSection"
 import { NewCustomerModal } from "../common/FormFields"
-import FormButtons from "../common/FormButtons"
+import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
 
 type CreateProjectFormProps = FormBase<Project> & {
@@ -257,7 +257,7 @@ function ProjectForm({
                             </option>
                         </Select>
                     </FormControl>
-                    <FormButtons>
+                    <StyledButtons>
                         <StyledButton
                             buttontype="submit"
                             type="submit"
@@ -269,7 +269,7 @@ function ProjectForm({
                             onClick={abortSubmission}
                             data-testid={"form-button-cancel"}
                         />
-                    </FormButtons>
+                    </StyledButtons>
                 </form>
             </Box>
         </FormSection>
