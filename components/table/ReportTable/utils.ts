@@ -9,11 +9,14 @@ import {
 } from "@/lib/types/apiTypes"
 import { downloadFile } from "@/lib/utils/common"
 import { getText } from "@/lib/utils/fetch"
+import { getAllByDisplayValue } from "@testing-library/react"
 import { User } from "firebase/auth"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { groupBy, round, toArray } from "lodash"
 import { DateTime } from "luxon"
+
+type EmployeeHours = [name: string, hours: number]
 
 export const customersByEmployeeTimesheets = (
     timesheets: Timesheet[],
@@ -152,10 +155,50 @@ export const handlePdfExportClick = (
 ) => {
     const JsPDF = jsPDF
     const doc = new JsPDF()
+    const startX = 14
 
     const groupedEntries = toArray(
         groupBy(timesheetEntries, (entry) => entry.timesheet.id)
     )
+
+    if (groupedEntries.length > 1) {
+        let totalHours = 0
+        const allData: EmployeeHours[] = []
+        doc.setFontSize(20)
+        doc.setFontSize(24)
+        doc.text("Time Report", startX, 25)
+        doc.setFontSize(12)
+        doc.text(
+            `Timeframe: ${formatDate(startDate)} - ${formatDate(endDate)}`,
+            startX,
+            35
+        )
+
+        groupedEntries.forEach((entries) => {
+            const totalHoursPerEmployee =
+                entries.length > 0
+                    ? entries.reduce((prv, crr) => prv + crr.quantity, 0)
+                    : 0
+            const employee = entries[0]?.timesheet?.employee
+            const employeeName = `${employee?.firstName} ${employee?.lastName}`
+            totalHours += totalHoursPerEmployee
+
+            const employeeHours: EmployeeHours = [
+                employeeName,
+                totalHoursPerEmployee,
+            ]
+            allData.push(employeeHours)
+        })
+        doc.text(`Total hours: ${totalHours}`, startX, 40)
+        const headers = ["Name", "Hours"]
+        autoTable(doc, {
+            head: [headers],
+            body: allData,
+            startY: 60,
+        })
+        doc.addPage()
+    }
+
     groupedEntries.forEach((entries, index) => {
         const employee = entries[0]?.timesheet?.employee
 
@@ -166,8 +209,6 @@ export const handlePdfExportClick = (
             entries.length > 0
                 ? entries.reduce((prv, crr) => prv + crr.quantity, 0)
                 : 0
-
-        const startX = 14
 
         doc.setFontSize(24)
         doc.text("Time Report", startX, 14)
@@ -190,12 +231,13 @@ export const handlePdfExportClick = (
 
         const headers = [
             "Date",
-            "Client",
+            "Customer",
             "Project",
             "Task",
             "Hours",
             "Description",
         ]
+
         const data =
             entries.length > 0
                 ? entries.map((entry) => [
