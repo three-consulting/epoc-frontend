@@ -162,8 +162,7 @@ export const handlePdfExportClick = (
 
     if (groupedEntries.length > 1) {
         let totalHours = 0
-        const allData: EmployeeHours[] = []
-        doc.setFontSize(20)
+        const allEmployeeHours: EmployeeHours[] = []
         doc.setFontSize(24)
         doc.text("Time Report", startX, 25)
         doc.setFontSize(12)
@@ -186,13 +185,13 @@ export const handlePdfExportClick = (
                 employeeName,
                 totalHoursPerEmployee,
             ]
-            allData.push(employeeHours)
+            allEmployeeHours.push(employeeHours)
         })
         doc.text(`Total hours: ${totalHours}`, startX, 40)
         const headers = ["Name", "Hours"]
         autoTable(doc, {
             head: [headers],
-            body: allData,
+            body: allEmployeeHours,
             startY: 60,
         })
         doc.addPage()
