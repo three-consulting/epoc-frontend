@@ -9,7 +9,6 @@ import {
 } from "@/lib/types/apiTypes"
 import { downloadFile } from "@/lib/utils/common"
 import { getText } from "@/lib/utils/fetch"
-import { getAllByDisplayValue } from "@testing-library/react"
 import { User } from "firebase/auth"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
