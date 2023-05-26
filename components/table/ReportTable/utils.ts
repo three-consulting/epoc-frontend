@@ -12,7 +12,7 @@ import { getText } from "@/lib/utils/fetch"
 import { User } from "firebase/auth"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
-import { groupBy, round, toArray } from "lodash"
+import { groupBy, round, toArray, mapValues, sum, sumBy, toPairs } from "lodash"
 import { DateTime } from "luxon"
 
 export const customersByEmployeeTimesheets = (
@@ -145,57 +145,97 @@ export const handleCsvExportClick = async (
     downloadFile(blob, fileName)
 }
 
-export const handlePdfExportClick = (
-    timesheetEntries: Array<TimesheetEntry>,
+const initializeTitlePage = (
     startDate: string,
-    endDate: string
+    endDate: string,
+    document: jsPDF
 ) => {
-    const JsPDF = jsPDF
-    const doc = new JsPDF()
-
-    const groupedEntries = toArray(
-        groupBy(timesheetEntries, (entry) => entry.timesheet.id)
+    document.setFontSize(24)
+    document.text("Time Report", 14, 25)
+    document.setFontSize(12)
+    document.text(
+        `Timeframe: ${formatDate(startDate)} - ${formatDate(endDate)}`,
+        14,
+        35
     )
-    groupedEntries.forEach((entries, index) => {
+}
+
+const createTitlePage = (
+    allEntries: Array<Array<TimesheetEntry>>,
+    document: jsPDF,
+    startingDate: string,
+    endingDate: string
+) => {
+    initializeTitlePage(startingDate, endingDate, document)
+
+    const groupedHours = groupBy(
+        allEntries.flat().map((x) => ({
+            name: `${x.timesheet.employee.firstName} ${x.timesheet.employee.lastName}`,
+            quantity: x.quantity as number,
+        })),
+        (x) => x.name
+    )
+    const allEmployeeHours = mapValues(groupedHours, (x) =>
+        sumBy(x, "quantity")
+    )
+    const totalHours = sum(Object.values(allEmployeeHours))
+    document.text(`Total hours: ${totalHours}`, 14, 40)
+    autoTable(document, {
+        head: [["Name", "Hours"]],
+        body: toPairs(allEmployeeHours),
+        startY: 60,
+    })
+    document.addPage()
+}
+
+const createEmployeeHoursPages = (
+    allEntries: Array<Array<TimesheetEntry>>,
+    document: jsPDF,
+    startingDate: string,
+    endingDate: string,
+    startX: number
+) => {
+    allEntries.forEach((entries: Array<TimesheetEntry>, index) => {
         const employee = entries[0]?.timesheet?.employee
 
         if (index !== 0) {
-            doc.addPage()
+            document.addPage()
         }
         const totalHours =
             entries.length > 0
-                ? entries.reduce((prv, crr) => prv + crr.quantity, 0)
+                ? entries.reduce((prv: number, crr) => prv + crr.quantity, 0)
                 : 0
 
-        const startX = 14
+        document.setFontSize(24)
+        document.text("Time Report", startX, 14)
 
-        doc.setFontSize(24)
-        doc.text("Time Report", startX, 14)
-
-        doc.setFontSize(12)
-        doc.text(
-            `Timeframe: ${formatDate(startDate)} - ${formatDate(endDate)}`,
+        document.setFontSize(12)
+        document.text(
+            `Timeframe: ${formatDate(startingDate)} - ${formatDate(
+                endingDate
+            )}`,
             startX,
             24
         )
-        doc.text(
+        document.text(
             `Employee: ${employee?.firstName ?? "-"} ${
                 employee?.lastName ?? "-"
             }`,
             startX,
             29
         )
-        doc.text(`Email: ${employee?.email ?? "-"}`, startX, 34)
-        doc.text(`Total hours: ${totalHours}`, startX, 39)
+        document.text(`Email: ${employee?.email ?? "-"}`, startX, 34)
+        document.text(`Total hours: ${totalHours}`, startX, 39)
 
         const headers = [
             "Date",
-            "Client",
+            "Customer",
             "Project",
             "Task",
             "Hours",
             "Description",
         ]
+
         const data =
             entries.length > 0
                 ? entries.map((entry) => [
@@ -208,11 +248,32 @@ export const handlePdfExportClick = (
                   ])
                 : [headers.map(() => "-")]
 
-        autoTable(doc, {
+        autoTable(document, {
             head: [headers],
             body: data,
             startY: 50,
         })
     })
+}
+
+export const handlePdfExportClick = (
+    timesheetEntries: Array<TimesheetEntry>,
+    startDate: string,
+    endDate: string
+) => {
+    const JsPDF = jsPDF
+    const doc = new JsPDF()
+    const startX = 14
+
+    const groupedEntries = toArray(
+        groupBy(timesheetEntries, (entry) => entry.timesheet.id)
+    )
+
+    if (groupedEntries.length > 1) {
+        createTitlePage(groupedEntries, doc, startDate, endDate)
+    }
+
+    createEmployeeHoursPages(groupedEntries, doc, startDate, endDate, startX)
+
     doc.save(`timereport_${formatDate(startDate)}-${formatDate(endDate)}.pdf`)
 }
