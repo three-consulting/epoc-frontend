@@ -70,4 +70,5 @@ export const timesheetEntryFieldMetadata: Record<string, FieldMetadata> = {
     task: { required: true },
     created: { required: false },
     updated: { required: false },
+    flex: { required: true },
 }

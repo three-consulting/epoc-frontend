@@ -163,6 +163,8 @@ export interface components {
       created?: string;
       /** Format: date-time */
       updated?: string;
+      /** Format: float */
+      flex: number;
     };
   };
 }

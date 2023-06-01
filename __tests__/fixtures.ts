@@ -161,6 +161,7 @@ export const testTimesheetEntry: TimesheetEntry = {
     date: "2022-06-09",
     timesheet: testTimesheet,
     task: testChangeTask,
+    flex: 3,
 }
 
 export const testTimesheetEntryRequiredFields: TimesheetEntry = {
@@ -168,6 +169,7 @@ export const testTimesheetEntryRequiredFields: TimesheetEntry = {
     date: "2022-06-09",
     timesheet: testTimesheet,
     task: testTask,
+    flex: 2,
 }
 
 export const testTimesheetEntryAllFields: TimesheetEntry = {
@@ -176,4 +178,5 @@ export const testTimesheetEntryAllFields: TimesheetEntry = {
     description: "Test description",
     timesheet: testTimesheet,
     task: testTask,
+    flex: -2,
 }
