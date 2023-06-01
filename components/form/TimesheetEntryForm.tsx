@@ -60,7 +60,7 @@ interface EditTimesheetEntryFormProps extends FormBase<TimesheetEntry> {
 export const validateTimesheetEntryFields = (
     fields: TimesheetEntryFields
 ): TimesheetEntry => {
-    const { timesheet, quantity, date, task } = fields
+    const { timesheet, quantity, date, task, flex } = fields
     if (!timesheet) {
         throw Error(
             "Invalid timesheet entry form: missing required timesheet field"
@@ -75,8 +75,12 @@ export const validateTimesheetEntryFields = (
         throw Error("Invalid timesheet entry form: missing required date field")
     } else if (!task) {
         throw Error("Invalid timesheet entry form: missing required task field")
+    } else if (flex === undefined) {
+        throw Error("Invalid timesheet entry form: missing required flex field")
+    } else if (flex < -10 || flex > 10) {
+        throw Error("Invalid timesheet entry form: flex field out of range")
     }
-    return { ...fields, timesheet, quantity, date, task }
+    return { ...fields, timesheet, quantity, date, task, flex }
 }
 
 const TimesheetEntryForm = ({
@@ -89,7 +93,7 @@ const TimesheetEntryForm = ({
     const quantityRef = useRef<string>(
         timesheetEntryFields.quantity?.toString() || ""
     )
-
+    const flexRef = useRef<string>(timesheetEntryFields.flex?.toString() || "")
     const handleQuantityChange = (event: React.FormEvent<HTMLInputElement>) => {
         event.preventDefault()
         quantityRef.current = event.currentTarget.value
@@ -104,6 +108,24 @@ const TimesheetEntryForm = ({
             setTimesheetEntryFields({
                 ...timesheetEntryFields,
                 quantity,
+            })
+        }
+    }
+
+    const handleFlexChange = (event: React.FormEvent<HTMLInputElement>) => {
+        event.preventDefault()
+        flexRef.current = event.currentTarget.value
+        const flex = Number(flexRef.current)
+
+        if (flexRef.current === "") {
+            setTimesheetEntryFields({
+                ...timesheetEntryFields,
+                flex: undefined,
+            })
+        } else if (!isNaN(flex)) {
+            setTimesheetEntryFields({
+                ...timesheetEntryFields,
+                flex,
             })
         }
     }
@@ -180,6 +202,21 @@ const TimesheetEntryForm = ({
                             Select task
                         </option>
                     </Select>
+                </FormControl>
+                <FormControl
+                    isRequired={timesheetEntryFieldMetadata.flex.required}
+                >
+                    <FormLabel>Flex</FormLabel>
+                    <Input
+                        value={flexRef.current}
+                        min={-10}
+                        max={10}
+                        placeholder="Flex"
+                        isRequired={true}
+                        onChange={handleFlexChange}
+                        data-testid="form-field-flex"
+                        type="number"
+                    />
                 </FormControl>
                 {buttons}
             </Flex>

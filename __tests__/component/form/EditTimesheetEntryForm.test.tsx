@@ -53,6 +53,7 @@ const isTimesheetEntryKeys = (
             "task",
             "created",
             "updated",
+            "flex",
         ].includes(key)
     )
 
@@ -76,6 +77,10 @@ const fillAndSubmitForm = async (timesheetEntry: Partial<TimesheetEntry>) => {
 
     fireEvent.change(screen.getByTestId("form-field-task"), {
         target: { value: timesheetEntry.task?.id || "" },
+    })
+
+    fireEvent.change(screen.getByTestId("form-field-flex"), {
+        target: { value: timesheetEntry.flex || 0 },
     })
 
     await waitFor(() =>
