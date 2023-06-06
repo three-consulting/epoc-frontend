@@ -42,6 +42,9 @@ export interface paths {
     get: operations["getTimesheetEntryForId"];
     delete: operations["deleteTimesheetEntryForId"];
   };
+  "/timesheet-entry/flex": {
+    get: operations["getEmployeeFlex"];
+  };
   "/timesheet-entry/csv-export": {
     get: operations["exportTimesheetEntriesAsCsv"];
   };
@@ -480,6 +483,21 @@ export interface operations {
     responses: {
       /** OK */
       200: unknown;
+    };
+  };
+  getEmployeeFlex: {
+    parameters: {
+      query: {
+        email: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": number;
+        };
+      };
     };
   };
   exportTimesheetEntriesAsCsv: {
