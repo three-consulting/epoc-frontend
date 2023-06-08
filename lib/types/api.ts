@@ -495,7 +495,7 @@ export interface operations {
       /** OK */
       200: {
         content: {
-          "*/*": number;
+          "application/json": number;
         };
       };
     };
