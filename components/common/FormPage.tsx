@@ -1,5 +1,6 @@
-import { Box, useMediaQuery } from "@chakra-ui/react"
-import React from "react"
+import { MediaContext } from "@/lib/contexts/MediaContext"
+import { Box } from "@chakra-ui/react"
+import React, { useContext } from "react"
 import Header from "./Header"
 
 interface IFormPage {
@@ -8,7 +9,7 @@ interface IFormPage {
 }
 
 const FormPage = (props: IFormPage): JSX.Element => {
-    const [isLarge] = useMediaQuery("(min-width: 900px)")
+    const { isLarge } = useContext(MediaContext)
     const { header, children } = props
 
     return (
