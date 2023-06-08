@@ -1,4 +1,3 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { Box } from "@chakra-ui/layout"
@@ -17,6 +16,7 @@ import ErrorAlert from "../common/ErrorAlert"
 import StyledButtons from "../common/StyledButtons"
 import FormSection from "../common/FormSection"
 import { CreateTaskForm, EditTaskForm } from "../form/TaskForm"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface TaskRowProps {
     task: Task
@@ -24,7 +24,7 @@ interface TaskRowProps {
 }
 
 function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { put } = useUpdateTasks(user)
 
     const [errorMessage, setErrorMessage] = useState<string>()

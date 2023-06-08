@@ -5,9 +5,9 @@ import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
 import { EditTimesheetForm } from "@/components/form/TimesheetForm"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useTimesheetDetail } from "@/lib/hooks/useDetail"
 import { useEmployees } from "@/lib/hooks/useList"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     timesheetId: number
@@ -15,7 +15,7 @@ type Props = {
 
 function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
 
     const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
     const employeesResponse = useEmployees(user)

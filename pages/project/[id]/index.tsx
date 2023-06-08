@@ -16,7 +16,6 @@ import Link from "next/link"
 import TimesheetTable from "@/components/table/TimesheetTable"
 import TaskTable from "@/components/table/TaskTable"
 import ProjectDetail from "@/components/detail/ProjectDetail"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useProjectDetail } from "@/lib/hooks/useDetail"
 import { useTimesheets, useEmployees, useTasks } from "@/lib/hooks/useList"
 import { useUpdateProjects } from "@/lib/hooks/useUpdate"
@@ -28,6 +27,7 @@ import {
     StyledButton,
     RemoveIconButton,
 } from "@/components/common/Buttons"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     projectId: number
@@ -36,7 +36,7 @@ type Props = {
 type ProjectStatus = "ACTIVE" | "ARCHIVED"
 
 function ProjectDetailPage({ projectId }: Props): JSX.Element {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const projectDetailResponse = useProjectDetail(projectId, user)
     const timesheetsResponse = useTimesheets(user, projectId)
     const employeesResponse = useEmployees(user)

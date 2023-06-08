@@ -1,4 +1,3 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
@@ -9,6 +8,7 @@ import { CheckBoxField, FormContainer } from "../common/FormFields"
 import { taskFieldMetadata } from "@/lib/types/typeMetadata"
 import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CreateTaskFormProps = FormBase<Task> & {
     project: Project
@@ -137,7 +137,7 @@ function TaskForm({
 }
 
 export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { post } = useUpdateTasks(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -162,7 +162,7 @@ export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
 }
 
 export const EditTaskForm = (props: EditTaskFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { put } = useUpdateTasks(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")

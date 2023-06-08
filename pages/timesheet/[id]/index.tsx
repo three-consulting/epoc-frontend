@@ -6,19 +6,19 @@ import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import TimesheetDetail from "@/components/detail/TimesheetDetail"
 import Link from "next/link"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useTimesheetDetail } from "@/lib/hooks/useDetail"
 import { StyledButton } from "@/components/common/Buttons"
 import StyledButtons from "@/components/common/StyledButtons"
 import FormSection from "@/components/common/FormSection"
 import FormPage from "@/components/common/FormPage"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     timesheetId: number
 }
 
 function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
 
     return (

@@ -3,11 +3,11 @@ import type { NextPage } from "next"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { EditCustomerForm } from "@/components/form/CustomerForm"
 import { useCustomerDetail } from "@/lib/hooks/useDetail"
 import FormPage from "@/components/common/FormPage"
 import { Box } from "@chakra-ui/react"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     customerId: number
@@ -15,7 +15,7 @@ type Props = {
 
 function EditCustomerPage({ customerId }: Props): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
 
     const customerDetailResponse = useCustomerDetail(customerId, user)
 

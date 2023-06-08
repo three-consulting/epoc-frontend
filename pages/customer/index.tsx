@@ -3,12 +3,12 @@ import type { NextPage } from "next"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import CustomerTable from "@/components/table/CustomerTable"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useCustomers } from "@/lib/hooks/useList"
 import FormPage from "@/components/common/FormPage"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 const Customers: NextPage = () => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const customersResponse = useCustomers(user)
 
     return (

@@ -1,10 +1,11 @@
 import React, { ReactNode, useContext } from "react"
 import { Box, Flex } from "@chakra-ui/react"
 import LeftNav from "./LeftNav"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import FormPage from "./FormPage"
 import Header from "./Header"
 import { MediaContext } from "@/lib/contexts/MediaContext"
+import useFirebaseAuth from "@/lib/hooks/useFirebaseAuth"
+import { AuthProvider } from "@/lib/contexts/FirebaseAuthContext"
 
 interface MainProps {
     children?: ReactNode
@@ -19,8 +20,8 @@ const PleaseLogInPage = ({ isLarge }: { isLarge: boolean }) => (
 )
 
 const Main = ({ children }: MainProps): JSX.Element => {
-    const { user } = useContext(AuthContext)
-
+    const auth = useFirebaseAuth()
+    const { user } = auth
     const { isLarge } = useContext(MediaContext)
     return (
         <Flex
@@ -29,8 +30,16 @@ const Main = ({ children }: MainProps): JSX.Element => {
             justifyContent="center"
             minHeight="100vh"
         >
-            {isLarge && <LeftNav />}
-            <Box>{user ? children : <PleaseLogInPage isLarge={isLarge} />}</Box>
+            {isLarge && <LeftNav {...auth} />}
+            <Box>
+                {user && user.email ? (
+                    <AuthProvider auth={{ ...auth, user, email: user.email }}>
+                        {children}
+                    </AuthProvider>
+                ) : (
+                    <PleaseLogInPage isLarge={isLarge} />
+                )}
+            </Box>
         </Flex>
     )
 }

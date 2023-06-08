@@ -1,6 +1,6 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
-import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import Loading from "@/components/common/Loading"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import {
@@ -16,8 +16,7 @@ import FormPage from "@/components/common/FormPage"
 import ReportTable from "@/components/table/ReportTable"
 
 const Report: NextPage = () => {
-    const { user } = useContext(UserContext)
-    const { role } = useContext(AuthContext)
+    const { user, role } = useContext(AuthContext)
 
     const customersResponse = useCustomers(user)
     const projectsResponse = useProjects(user)

@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import {
     Text,
     Flex,
@@ -21,8 +21,7 @@ import {
     BsFillFileTextFill,
 } from "react-icons/bs"
 import { IconType } from "react-icons"
-import { Role } from "@/lib/types/auth"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
+import { FirebaseAuthStateNullableUser, Role } from "@/lib/types/auth"
 import Link from "next/link"
 
 interface LinkItemProps {
@@ -88,10 +87,12 @@ const NavItem = ({ name, icon, href }: LinkItemProps) => (
     </Link>
 )
 
-function LeftNav(): JSX.Element {
-    const { user, role, signInWithGoogle, signOutAndClear } =
-        useContext(AuthContext)
-
+function LeftNav({
+    user,
+    role,
+    signInWithGoogle,
+    signOutAndClear,
+}: FirebaseAuthStateNullableUser): JSX.Element {
     const isAdmin = role === Role.ADMIN
     const isLoggedIn = user !== null
 

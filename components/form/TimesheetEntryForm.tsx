@@ -19,12 +19,12 @@ import ErrorAlert from "../common/ErrorAlert"
 import { FormButtons } from "../common/FormFields"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 import { datesRange, jsDateToShortISODate } from "@/lib/utils/date"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import {
     useUpdateTimesheetEntries,
     useUpdateTimesheetEntry,
 } from "@/lib/hooks/useUpdate"
 import { isError } from "lodash"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 type TimesheetEntryFields = Partial<TimesheetEntry>
@@ -232,7 +232,7 @@ export const EditTimesheetEntryForm = ({
     afterSubmit,
     ...props
 }: EditTimesheetEntryFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { put } = useUpdateTimesheetEntry(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -293,7 +293,7 @@ export const CreateTimesheetEntryForm = ({
     afterSubmit,
     ...props
 }: CreateTimesheetEntryFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { post } = useUpdateTimesheetEntries(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")

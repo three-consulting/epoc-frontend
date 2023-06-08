@@ -4,11 +4,11 @@ import { Customer } from "@/lib/types/apiTypes"
 import { useUpdateCustomers } from "@/lib/hooks/useUpdate"
 import { FormBase } from "@/lib/types/forms"
 import ErrorAlert from "../common/ErrorAlert"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { customerFieldMetadata } from "@/lib/types/typeMetadata"
 import FormSection from "../common/FormSection"
 import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CustomerFormPropsBase = FormBase<Customer>
 type CustomerFields = Partial<Customer>
@@ -110,7 +110,7 @@ function CustomerForm({
 export const CreateCustomerForm = (
     props: CreateCustomerFormProps
 ): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { post } = useUpdateCustomers(user)
 
     const { customer } = props
@@ -152,7 +152,7 @@ export const CreateCustomerForm = (
 }
 
 export const EditCustomerForm = (props: EditCustomerFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { put } = useUpdateCustomers(user)
 
     const { customer } = props
@@ -190,7 +190,7 @@ export const EditCustomerForm = (props: EditCustomerFormProps): JSX.Element => {
 export const AddCustomerForm = (
     props: CreateCustomerFormProps
 ): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { post } = useUpdateCustomers(user)
 
     const { customer } = props
