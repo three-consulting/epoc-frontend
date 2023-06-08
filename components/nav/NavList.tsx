@@ -11,7 +11,6 @@ import {
     StyleConfig,
     Text,
     extendTheme,
-    useMediaQuery,
 } from "@chakra-ui/react"
 import { IconType } from "react-icons"
 import {
@@ -25,6 +24,7 @@ import {
 } from "react-icons/bs"
 import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import { Role } from "@/lib/types/auth"
+import { MediaContext } from "@/lib/contexts/MediaContext"
 
 interface LinkItemProps {
     name: string
@@ -87,7 +87,7 @@ const adminLinkItems: LinkItemProps[] = [
 ]
 
 const NavList = () => {
-    const [isLarge] = useMediaQuery("(min-width: 900px)")
+    const { isLarge } = useContext(MediaContext)
 
     const { user, role, signInWithGoogle, signOutAndClear } =
         useContext(AuthContext)

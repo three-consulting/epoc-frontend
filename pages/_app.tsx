@@ -4,18 +4,21 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { AuthProvider, UserProvider } from "@/lib/contexts/FirebaseAuthContext"
 import "styles/Calendar.css"
 import Layout from "@/components/common/Layout"
+import { MediaProvider } from "@/lib/contexts/MediaContext"
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
     return (
-        <AuthProvider>
-            <ChakraProvider>
-                <Layout>
-                    <UserProvider>
-                        <Component {...pageProps} />
-                    </UserProvider>
-                </Layout>
-            </ChakraProvider>
-        </AuthProvider>
+        <MediaProvider>
+            <AuthProvider>
+                <ChakraProvider>
+                    <Layout>
+                        <UserProvider>
+                            <Component {...pageProps} />
+                        </UserProvider>
+                    </Layout>
+                </ChakraProvider>
+            </AuthProvider>
+        </MediaProvider>
     )
 }
 export default MyApp

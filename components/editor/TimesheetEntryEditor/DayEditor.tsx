@@ -3,6 +3,7 @@ import Header from "@/components/common/Header"
 import { CreateTimesheetEntryForm } from "@/components/form/TimesheetEntryForm"
 import ImportFromCSVModal from "@/components/modal/ImportFromCSVModal"
 import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { MediaContext } from "@/lib/contexts/MediaContext"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import { Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
 import { jsDateToShortISODate, toLocalDisplayDate } from "@/lib/utils/date"
@@ -13,7 +14,6 @@ import {
     FormLabel,
     Select,
     Text,
-    useMediaQuery,
 } from "@chakra-ui/react"
 import React, { Dispatch, SetStateAction, useContext, useState } from "react"
 import EntryTable from "./EntryTable"
@@ -55,7 +55,7 @@ const DayEditor = ({
     tasks,
     setTimesheetEntries,
 }: IDayEditor): JSX.Element => {
-    const [isLarge] = useMediaQuery("(min-width: 900px)")
+    const { isLarge } = useContext(MediaContext)
 
     const { user } = useContext(UserContext)
     const { delete: del } = useUpdateTimesheetEntries(user)

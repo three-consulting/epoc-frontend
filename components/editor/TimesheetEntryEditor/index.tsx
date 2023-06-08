@@ -9,10 +9,9 @@ import {
     SimpleGrid,
     Switch,
     Tooltip,
-    useMediaQuery,
     useOutsideClick,
 } from "@chakra-ui/react"
-import React, { useRef, useState } from "react"
+import React, { useContext, useRef, useState } from "react"
 import Calendar, {
     CalendarTileProperties,
     ViewCallbackProperties,
@@ -22,6 +21,7 @@ import { datesRange, datesValue, jsDateToShortISODate } from "@/lib/utils/date"
 import useHoliday from "@/lib/hooks/useHoliday"
 import { BsSunglasses } from "react-icons/bs"
 import DayEditor from "./DayEditor"
+import { MediaContext } from "@/lib/contexts/MediaContext"
 
 interface TimesheetEntryEditorProps {
     entries: TimesheetEntry[]
@@ -83,7 +83,7 @@ const TimesheetEntryEditor = ({
     timesheets,
     tasks,
 }: TimesheetEntryEditorProps): JSX.Element => {
-    const [isLarge] = useMediaQuery("(min-width: 900px)")
+    const { isLarge } = useContext(MediaContext)
 
     const [selectInterval, setSelectInterval] = useState<boolean>(false)
     const [dates, setDates] = useState<[Date] | [Date | null, Date | null]>([

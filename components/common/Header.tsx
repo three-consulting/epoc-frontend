@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import {
     Box,
     ChakraProvider,
@@ -7,10 +7,10 @@ import {
     Heading,
     Icon,
     StyleConfig,
-    useMediaQuery,
 } from "@chakra-ui/react"
 import MenuNav from "../nav/MenuNav"
 import { BsChatLeftDots } from "react-icons/bs"
+import { MediaContext } from "@/lib/contexts/MediaContext"
 
 const components: Record<string, StyleConfig> = {
     Heading: {
@@ -98,7 +98,7 @@ interface ITopHeader {
 }
 
 export const TopHeader = ({ children }: ITopHeader): JSX.Element => {
-    const [isLarge] = useMediaQuery("(min-width: 900px)")
+    const { isLarge } = useContext(MediaContext)
 
     return (
         <StyledItems>

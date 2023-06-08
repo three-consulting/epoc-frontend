@@ -1,14 +1,14 @@
 import { Employee } from "@/lib/types/apiTypes"
 import { Box } from "@chakra-ui/layout"
-import {
-    Alert,
-    AlertIcon,
-    AlertTitle,
-    Tbody,
-    useMediaQuery,
-} from "@chakra-ui/react"
+import { Alert, AlertIcon, AlertTitle, Tbody } from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
+import React, {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from "react"
 import Link from "next/link"
 import { User } from "firebase/auth"
 import { ApiGetResponse } from "@/lib/types/hooks"
@@ -16,6 +16,7 @@ import { firebaseSyncEndpoint, useGet } from "@/lib/hooks/swrInterface"
 import FormSection from "../common/FormSection"
 import StyledButtons from "../common/StyledButtons"
 import { CustomButton } from "../common/Buttons"
+import { MediaContext } from "@/lib/contexts/MediaContext"
 
 interface EmployeeRowProps {
     employee: Employee
@@ -93,7 +94,7 @@ const EmployeeTable = ({
     employeesResponse,
     setEmployeesResponse,
 }: EmployeeTableProps): JSX.Element => {
-    const [isLarge] = useMediaQuery("(min-width: 900px)")
+    const { isLarge } = useContext(MediaContext)
 
     const getHeader = () =>
         employeesResponse?.isSuccess && employeesResponse.data.length > 0
