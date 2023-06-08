@@ -9,7 +9,6 @@ import {
     StyleConfig,
     Container,
     LinkBox,
-    LinkOverlay,
     Box,
 } from "@chakra-ui/react"
 import {
@@ -24,6 +23,7 @@ import {
 import { IconType } from "react-icons"
 import { Role } from "@/lib/types/auth"
 import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
+import Link from "next/link"
 
 interface LinkItemProps {
     name: string
@@ -74,18 +74,18 @@ const ThemedItem = ({ children }: { children: JSX.Element }) => (
 )
 
 const NavItem = ({ name, icon, href }: LinkItemProps) => (
-    <LinkBox as="div">
-        <ThemedItem>
-            <LinkOverlay href={href}>
+    <Link href={href}>
+        <LinkBox as="div">
+            <ThemedItem>
                 <Flex>
                     <HStack>
                         <Icon as={icon} />
                         <Text>{name}</Text>
                     </HStack>
                 </Flex>
-            </LinkOverlay>
-        </ThemedItem>
-    </LinkBox>
+            </ThemedItem>
+        </LinkBox>
+    </Link>
 )
 
 function LeftNav(): JSX.Element {
