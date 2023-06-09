@@ -11,7 +11,7 @@ import {
     Tooltip,
     useOutsideClick,
 } from "@chakra-ui/react"
-import React, { useContext, useRef, useState } from "react"
+import React, { useRef, useState, useContext } from "react"
 import Calendar, {
     CalendarTileProperties,
     ViewCallbackProperties,
@@ -22,6 +22,7 @@ import useHoliday from "@/lib/hooks/useHoliday"
 import { BsSunglasses } from "react-icons/bs"
 import DayEditor from "./DayEditor"
 import { MediaContext } from "@/lib/contexts/MediaContext"
+import { useFlex } from "@/lib/hooks/misc"
 
 interface TimesheetEntryEditorProps {
     entries: TimesheetEntry[]
@@ -78,12 +79,23 @@ const MonthlyHours = ({ entries, dates }: monthlyHoursProps): JSX.Element => {
     )
 }
 
+interface FlexProps {
+    flex: number
+}
+
+const TotalFlexitime = ({ flex }: FlexProps): JSX.Element => (
+    <p>
+        Total flex: <b>{flex}</b>
+    </p>
+)
+
 const TimesheetEntryEditor = ({
     entries,
     timesheets,
     tasks,
 }: TimesheetEntryEditorProps): JSX.Element => {
     const { isLarge } = useContext(MediaContext)
+    const flexRequest = useFlex()
 
     const [selectInterval, setSelectInterval] = useState<boolean>(false)
     const [dates, setDates] = useState<[Date] | [Date | null, Date | null]>([
@@ -301,6 +313,11 @@ const TimesheetEntryEditor = ({
                                                 entries={entries}
                                                 dates={datesRange(dates)}
                                             />
+                                            {flexRequest.isSuccess && (
+                                                <TotalFlexitime
+                                                    flex={flexRequest.data}
+                                                />
+                                            )}
                                         </Flex>
                                     </Flex>
                                 </SimpleGrid>

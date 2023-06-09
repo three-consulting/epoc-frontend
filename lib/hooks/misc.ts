@@ -19,9 +19,9 @@ export const useEmployeeSync = (shouldSync: boolean) => {
 
 export const useFlex = () => {
     const { user, email } = useContext(AuthContext)
-    return useGet<Employee[]>(
+    return useGet<number>(
         listEndpoint("timesheet-entry/flex" as Endpoint),
-        [],
+        ["timesheet-entry"],
         user,
         { email }
     )
