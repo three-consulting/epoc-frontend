@@ -18,11 +18,11 @@ import ReportTable from "@/components/table/ReportTable"
 const Report: NextPage = () => {
     const { user, role } = useContext(AuthContext)
 
-    const customersResponse = useCustomers(user)
-    const projectsResponse = useProjects(user)
-    const employeeResponse = useEmployees(user)
-    const timesheetsResponse = useTimesheets(user)
-    const tasksResponse = useTasks(user)
+    const customersResponse = useCustomers()
+    const projectsResponse = useProjects()
+    const employeeResponse = useEmployees()
+    const timesheetsResponse = useTimesheets()
+    const tasksResponse = useTasks()
 
     const isLoading =
         customersResponse.isLoading ||

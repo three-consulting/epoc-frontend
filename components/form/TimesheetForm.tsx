@@ -269,9 +269,7 @@ function TimesheetForm({
 export const CreateTimesheetForm = (
     props: CreateTimesheetFormProps
 ): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { post } = useUpdateTimesheets(user)
-
+    const { post } = useUpdateTimesheets()
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
@@ -296,9 +294,7 @@ export const CreateTimesheetForm = (
 export const EditTimesheetForm = (
     props: EditTimesheetFormProps
 ): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { put } = useUpdateTimesheets(user)
-
+    const { put } = useUpdateTimesheets()
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 

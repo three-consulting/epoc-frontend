@@ -1,5 +1,5 @@
 import { FormControl, FormLabel, Input, Box, Select } from "@chakra-ui/react"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Employee } from "@/lib/types/apiTypes"
 import { useUpdateEmployees } from "@/lib/hooks/useUpdate"
 import { FormBase } from "@/lib/types/forms"
@@ -10,7 +10,6 @@ import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
 import { isError } from "lodash"
 import FormSection from "../common/FormSection"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CreateEmployeeFormProps = FormBase<Employee>
 
@@ -243,11 +242,8 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
 }
 
 export const EditEmployeeForm = (props: EditEmployeeFormProps): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { put } = useUpdateEmployees(user)
-
+    const { put } = useUpdateEmployees()
     const { employee } = props
-
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 

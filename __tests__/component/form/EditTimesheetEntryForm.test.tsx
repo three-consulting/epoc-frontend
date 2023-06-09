@@ -15,7 +15,6 @@ import {
     testTimesheetEntryRequiredFields,
 } from "../../fixtures"
 
-import { User } from "firebase/auth"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 import { checkTestRequestBodyRequiredFields } from "../../util"
 
@@ -26,7 +25,6 @@ const pathSpy = spy((path) => path)
 jest.mock("@/lib/utils/fetch", () => ({
     put: async (
         path: string,
-        _user: User,
         body: object
     ): Promise<ApiUpdateResponse<TimesheetEntry>> =>
         (await pathSpy(path)) && bodySpy(body),

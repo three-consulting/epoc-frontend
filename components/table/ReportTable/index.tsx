@@ -64,7 +64,7 @@ const ReportTable = ({
 
     const reportsResponse =
         role === Role.ADMIN && startDate && endDate
-            ? useTimesheetEntries(user, startDate, endDate)
+            ? useTimesheetEntries(startDate, endDate)
             : undefined
     const allEntries = reportsResponse?.isSuccess ? reportsResponse.data : []
 

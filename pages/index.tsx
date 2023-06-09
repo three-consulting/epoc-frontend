@@ -13,15 +13,14 @@ import TimesheetEntryEditor from "@/components/editor/TimesheetEntryEditor"
 import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 const Home: NextPage = () => {
-    const { user, email } = useContext(AuthContext)
-    const timesheetsResponse = useTimesheets(user, undefined, email)
-    const tasksResponse = useTasks(user)
+    const { email } = useContext(AuthContext)
+    const timesheetsResponse = useTimesheets(undefined, email)
+    const tasksResponse = useTasks()
 
     const startDate = "0000-01-01"
     const endDate = "9999-01-01"
 
     const timesheetEntriesResponse = useTimesheetEntries(
-        user,
         startDate,
         endDate,
         email

@@ -48,12 +48,7 @@ const TableButtons = ({
 }: ITableButtons): JSX.Element => {
     const timesheetsEntries: TTEResponse | TUnsuccess =
         startDate && endDate
-            ? useTimesheetEntries(
-                  user,
-                  startDate,
-                  endDate,
-                  selectedEmployee?.email
-              )
+            ? useTimesheetEntries(startDate, endDate, selectedEmployee?.email)
             : unSuccess
 
     const filteredEntries = timesheetsEntries.isSuccess

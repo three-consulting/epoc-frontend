@@ -1,5 +1,5 @@
 import { FormControl, FormLabel, Input, Box } from "@chakra-ui/react"
-import React, { Dispatch, SetStateAction, useContext, useState } from "react"
+import React, { Dispatch, SetStateAction, useState } from "react"
 import { Customer } from "@/lib/types/apiTypes"
 import { useUpdateCustomers } from "@/lib/hooks/useUpdate"
 import { FormBase } from "@/lib/types/forms"
@@ -8,7 +8,6 @@ import { customerFieldMetadata } from "@/lib/types/typeMetadata"
 import FormSection from "../common/FormSection"
 import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CustomerFormPropsBase = FormBase<Customer>
 type CustomerFields = Partial<Customer>
@@ -110,15 +109,11 @@ function CustomerForm({
 export const CreateCustomerForm = (
     props: CreateCustomerFormProps
 ): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { post } = useUpdateCustomers(user)
-
+    const { post } = useUpdateCustomers()
     const { customer } = props
-
     const [customerFields, setCustomerFields] = useState<CustomerFields>(
         customer || {}
     )
-
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
@@ -152,15 +147,11 @@ export const CreateCustomerForm = (
 }
 
 export const EditCustomerForm = (props: EditCustomerFormProps): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { put } = useUpdateCustomers(user)
-
+    const { put } = useUpdateCustomers()
     const { customer } = props
-
     const [customerFields, setCustomerFields] = useState<CustomerFields>(
         customer || {}
     )
-
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
@@ -190,15 +181,11 @@ export const EditCustomerForm = (props: EditCustomerFormProps): JSX.Element => {
 export const AddCustomerForm = (
     props: CreateCustomerFormProps
 ): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { post } = useUpdateCustomers(user)
-
+    const { post } = useUpdateCustomers()
     const { customer } = props
-
     const [customerFields, setCustomerFields] = useState<CustomerFields>(
         customer || {}
     )
-
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 

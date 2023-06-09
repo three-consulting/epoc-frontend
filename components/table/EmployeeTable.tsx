@@ -10,13 +10,12 @@ import React, {
     useState,
 } from "react"
 import Link from "next/link"
-import { User } from "firebase/auth"
 import { ApiGetResponse } from "@/lib/types/hooks"
-import { firebaseSyncEndpoint, useGet } from "@/lib/hooks/swrInterface"
 import FormSection from "../common/FormSection"
 import StyledButtons from "../common/StyledButtons"
 import { CustomButton } from "../common/Buttons"
 import { MediaContext } from "@/lib/contexts/MediaContext"
+import { useEmployeeSync } from "@/lib/hooks/misc"
 
 interface EmployeeRowProps {
     employee: Employee
@@ -40,20 +39,15 @@ const EmployeeRow = ({ employee, isLarge }: EmployeeRowProps): JSX.Element => (
 )
 
 interface ISyncEmployeesButton {
-    user: User
     setEmployeesResponse: Dispatch<SetStateAction<ApiGetResponse<Employee[]>>>
 }
 
 export const SyncEmployeesButton = ({
-    user,
     setEmployeesResponse,
 }: ISyncEmployeesButton): JSX.Element => {
     const [shouldSync, setShouldSync] = useState<boolean>(false)
 
-    const employeeSyncResponse = useGet<Employee[]>(
-        user,
-        shouldSync ? firebaseSyncEndpoint("employee-sync") : null
-    )
+    const employeeSyncResponse = useEmployeeSync(shouldSync)
 
     useEffect(() => {
         if (shouldSync && employeeSyncResponse?.isSuccess) {
@@ -84,13 +78,11 @@ export const SyncEmployeesButton = ({
 }
 
 interface EmployeeTableProps {
-    user: User
     employeesResponse?: ApiGetResponse<Employee[]>
     setEmployeesResponse: Dispatch<SetStateAction<ApiGetResponse<Employee[]>>>
 }
 
 const EmployeeTable = ({
-    user,
     employeesResponse,
     setEmployeesResponse,
 }: EmployeeTableProps): JSX.Element => {
@@ -134,7 +126,6 @@ const EmployeeTable = ({
             )}
             <StyledButtons>
                 <SyncEmployeesButton
-                    user={user}
                     setEmployeesResponse={setEmployeesResponse}
                 />
             </StyledButtons>

@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import { Heading } from "@chakra-ui/layout"
 import ErrorAlert from "@/components/common/ErrorAlert"
@@ -7,7 +7,6 @@ import { useRouter } from "next/dist/client/router"
 import { EditTimesheetForm } from "@/components/form/TimesheetForm"
 import { useTimesheetDetail } from "@/lib/hooks/useDetail"
 import { useEmployees } from "@/lib/hooks/useList"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     timesheetId: number
@@ -15,10 +14,8 @@ type Props = {
 
 function EditTimesheetPage({ timesheetId }: Props): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(AuthContext)
-
-    const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
-    const employeesResponse = useEmployees(user)
+    const timesheetDetailResponse = useTimesheetDetail(timesheetId)
+    const employeesResponse = useEmployees()
 
     const errorMessage =
         (timesheetDetailResponse.isError &&

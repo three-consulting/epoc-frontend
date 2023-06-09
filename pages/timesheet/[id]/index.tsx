@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import { Box } from "@chakra-ui/layout"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
@@ -11,15 +11,13 @@ import { StyledButton } from "@/components/common/Buttons"
 import StyledButtons from "@/components/common/StyledButtons"
 import FormSection from "@/components/common/FormSection"
 import FormPage from "@/components/common/FormPage"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     timesheetId: number
 }
 
 function TimesheetDetailPage({ timesheetId }: Props): JSX.Element {
-    const { user } = useContext(AuthContext)
-    const timesheetDetailResponse = useTimesheetDetail(timesheetId, user)
+    const timesheetDetailResponse = useTimesheetDetail(timesheetId)
 
     return (
         <FormPage header="moi">

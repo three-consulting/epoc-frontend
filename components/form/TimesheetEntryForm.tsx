@@ -8,13 +8,7 @@ import {
     Input,
     Select,
 } from "@chakra-ui/react"
-import React, {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useRef,
-    useState,
-} from "react"
+import React, { Dispatch, SetStateAction, useRef, useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { FormButtons } from "../common/FormFields"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
@@ -24,7 +18,6 @@ import {
     useUpdateTimesheetEntry,
 } from "@/lib/hooks/useUpdate"
 import { isError } from "lodash"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
 type TimesheetEntryFields = Partial<TimesheetEntry>
@@ -232,13 +225,10 @@ export const EditTimesheetEntryForm = ({
     afterSubmit,
     ...props
 }: EditTimesheetEntryFormProps): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { put } = useUpdateTimesheetEntry(user)
-
+    const { put } = useUpdateTimesheetEntry()
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [timesheetEntryFields, setTimesheetEntryFields] =
         useState<TimesheetEntryFields>(timesheetEntry)
-
     const errorHandler = (error: Error) => setErrorMessage(error.toString())
 
     const handlePut = async () => {
@@ -293,9 +283,7 @@ export const CreateTimesheetEntryForm = ({
     afterSubmit,
     ...props
 }: CreateTimesheetEntryFormProps): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { post } = useUpdateTimesheetEntries(user)
-
+    const { post } = useUpdateTimesheetEntries()
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [timesheetEntryFields, setTimesheetEntryFields] =
         useState<TimesheetEntryFields>({

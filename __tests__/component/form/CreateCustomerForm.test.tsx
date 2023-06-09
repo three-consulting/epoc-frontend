@@ -11,7 +11,6 @@ import {
     testCustomerRequiredFields,
 } from "../../fixtures"
 
-import { User } from "firebase/auth"
 import { customerFieldMetadata } from "@/lib/types/typeMetadata"
 import { checkTestRequestBodyRequiredFields } from "../../util"
 
@@ -22,7 +21,6 @@ const pathSpy = sinon.spy((path) => path)
 jest.mock("@/lib/utils/fetch", () => ({
     post: async (
         path: string,
-        _user: User,
         body: object
     ): Promise<ApiUpdateResponse<Customer>> =>
         (await pathSpy(path)) && bodySpy(body),

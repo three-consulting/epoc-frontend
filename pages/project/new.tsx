@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
@@ -9,13 +9,11 @@ import { ApiUpdateResponse } from "@/lib/types/hooks"
 import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 import { Box } from "@chakra-ui/react"
 import FormPage from "@/components/common/FormPage"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 const New: NextPage = () => {
     const router = useRouter()
-    const { user } = useContext(AuthContext)
-    const customersResponse = useCustomers(user)
-    const employeesResponse = useEmployees(user)
+    const customersResponse = useCustomers()
+    const employeesResponse = useEmployees()
 
     const errorMessage =
         (customersResponse.isError && customersResponse.errorMessage) ||

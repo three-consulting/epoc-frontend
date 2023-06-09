@@ -1,4 +1,6 @@
 import { User } from "firebase/auth"
+import { useContext } from "react"
+import { AuthContext } from "../contexts/FirebaseAuthContext"
 import {
     Customer,
     Employee,
@@ -24,42 +26,55 @@ const pushOptionalFields = (
     return record
 }
 
-export const useCustomers = (user: User): ApiGetResponse<Customer[]> =>
-    useGet(user, listEndpoint("customer"))
+export const useCustomers = (): ApiGetResponse<Customer[]> => {
+    const { user } = useContext(AuthContext)
+    return useGet(listEndpoint("customer"), ["customer"], user)
+}
 
-export const useProjects = (user: User): ApiGetResponse<Project[]> =>
-    useGet(user, listEndpoint("project"))
+export const useProjects = (): ApiGetResponse<Project[]> => {
+    const { user } = useContext(AuthContext)
+    return useGet(listEndpoint("project"), ["project"], user)
+}
 
-export const useEmployees = (user: User): ApiGetResponse<Employee[]> =>
-    useGet(user, listEndpoint("employee"))
+export const useEmployees = (): ApiGetResponse<Employee[]> => {
+    const { user } = useContext(AuthContext)
+    return useGet(listEndpoint("employee"), ["employee"], user)
+}
 
-export const useTasks = (
-    user: User,
-    projectId?: number
-): ApiGetResponse<Task[]> =>
-    useGet(user, listEndpoint("task"), pushOptionalFields({}, { projectId }))
+export const useTasks = (projectId?: number): ApiGetResponse<Task[]> => {
+    const { user } = useContext(AuthContext)
+    return useGet(
+        listEndpoint("task"),
+        ["task"],
+        user,
+        pushOptionalFields({}, { projectId })
+    )
+}
 
 export const useTimesheets = (
-    user: User,
     projectId?: number,
     email?: string
-): ApiGetResponse<Timesheet[]> =>
-    useGet(
-        user,
+): ApiGetResponse<Timesheet[]> => {
+    const { user } = useContext(AuthContext)
+    return useGet(
         listEndpoint("timesheet"),
+        ["timesheet"],
+        user,
         pushOptionalFields({}, { projectId, email })
     )
+}
 
 export const useTimesheetEntries = (
-    user: User,
     startDate: string,
     endDate: string,
     email?: string,
     timesheetId?: number
-): ApiGetResponse<TimesheetEntry[]> =>
-    useGet(
-        user,
+): ApiGetResponse<TimesheetEntry[]> => {
+    const { user } = useContext(AuthContext)
+    return useGet(
         listEndpoint("timesheet-entry"),
+        ["timesheet-entry"],
+        user,
         pushOptionalFields(
             {
                 startDate,
@@ -68,3 +83,4 @@ export const useTimesheetEntries = (
             { email, timesheetId }
         )
     )
+}

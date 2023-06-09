@@ -2,13 +2,12 @@ import { useUpdateTasks } from "@/lib/hooks/useUpdate"
 import { Project, Task } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
 import { Box, Flex, FormControl, FormLabel, Input } from "@chakra-ui/react"
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { CheckBoxField, FormContainer } from "../common/FormFields"
 import { taskFieldMetadata } from "@/lib/types/typeMetadata"
 import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CreateTaskFormProps = FormBase<Task> & {
     project: Project
@@ -137,8 +136,7 @@ function TaskForm({
 }
 
 export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { post } = useUpdateTasks(user)
+    const { post } = useUpdateTasks()
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
@@ -162,9 +160,7 @@ export const CreateTaskForm = (props: CreateTaskFormProps): JSX.Element => {
 }
 
 export const EditTaskForm = (props: EditTaskFormProps): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { put } = useUpdateTasks(user)
-
+    const { put } = useUpdateTasks()
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 

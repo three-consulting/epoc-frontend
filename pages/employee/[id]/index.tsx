@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
@@ -16,18 +16,15 @@ import { Box } from "@chakra-ui/react"
 import StyledButtons from "@/components/common/StyledButtons"
 import Link from "next/link"
 import { StyledButton } from "@/components/common/Buttons"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     employeeId: number
 }
 
 function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
-    const { user } = useContext(AuthContext)
-    const employeeDetailResponse = useEmployeeDetail(employeeId, user)
-    const tasksResponse = useTasks(user)
+    const employeeDetailResponse = useEmployeeDetail(employeeId)
+    const tasksResponse = useTasks()
     const timesheetsResponse = useTimesheets(
-        user,
         undefined,
         employeeDetailResponse.isSuccess
             ? employeeDetailResponse.data.email
@@ -38,7 +35,6 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
     const endDate = "9999-01-01"
 
     const timesheetEntriesResponse = useTimesheetEntries(
-        user,
         startDate,
         endDate,
         employeeDetailResponse.isSuccess

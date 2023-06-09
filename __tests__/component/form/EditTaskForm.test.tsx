@@ -11,7 +11,6 @@ import {
     testTaskAllFields,
     testTaskRequiredFields,
 } from "../../fixtures"
-import { User } from "firebase/auth"
 import { EditTaskForm } from "@/components/form/TaskForm"
 
 import { taskFieldMetadata } from "@/lib/types/typeMetadata"
@@ -22,11 +21,7 @@ const bodySpy = sinon.spy((body) => body)
 const pathSpy = sinon.spy((path) => path)
 
 jest.mock("@/lib/utils/fetch", () => ({
-    put: async (
-        path: string,
-        _user: User,
-        body: object
-    ): Promise<ApiUpdateResponse<Task>> =>
+    put: async (path: string, body: object): Promise<ApiUpdateResponse<Task>> =>
         (await pathSpy(path)) && bodySpy(body),
 }))
 

@@ -16,7 +16,6 @@ import {
     testProjectRequiredFields,
 } from "../../fixtures"
 
-import { User } from "firebase/auth"
 import { projectFieldMetadata } from "@/lib/types/typeMetadata"
 import { checkTestRequestBodyRequiredFields } from "../../util"
 
@@ -27,7 +26,6 @@ const pathSpy = sinon.spy((path) => path)
 jest.mock("@/lib/utils/fetch", () => ({
     put: async (
         path: string,
-        _user: User,
         body: object
     ): Promise<ApiUpdateResponse<Project>> =>
         (await pathSpy(path)) && bodySpy(body),

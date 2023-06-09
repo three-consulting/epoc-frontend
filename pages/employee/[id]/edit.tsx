@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
@@ -7,7 +7,6 @@ import { EditEmployeeForm } from "@/components/form/EmployeeForm"
 import { useEmployeeDetail } from "@/lib/hooks/useDetail"
 import FormPage from "@/components/common/FormPage"
 import { Box } from "@chakra-ui/react"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     employeeId: number
@@ -15,9 +14,8 @@ type Props = {
 
 function EditEmployeePage({ employeeId }: Props): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(AuthContext)
 
-    const employeeDetailResponse = useEmployeeDetail(employeeId, user)
+    const employeeDetailResponse = useEmployeeDetail(employeeId)
 
     const errorMessage =
         (employeeDetailResponse.isError &&

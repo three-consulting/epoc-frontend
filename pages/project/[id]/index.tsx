@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import { Box } from "@chakra-ui/layout"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
@@ -27,7 +27,6 @@ import {
     StyledButton,
     RemoveIconButton,
 } from "@/components/common/Buttons"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     projectId: number
@@ -36,13 +35,12 @@ type Props = {
 type ProjectStatus = "ACTIVE" | "ARCHIVED"
 
 function ProjectDetailPage({ projectId }: Props): JSX.Element {
-    const { user } = useContext(AuthContext)
-    const projectDetailResponse = useProjectDetail(projectId, user)
-    const timesheetsResponse = useTimesheets(user, projectId)
-    const employeesResponse = useEmployees(user)
-    const tasksResponse = useTasks(user, projectId)
+    const projectDetailResponse = useProjectDetail(projectId)
+    const timesheetsResponse = useTimesheets(projectId)
+    const employeesResponse = useEmployees()
+    const tasksResponse = useTasks()
 
-    const { put } = useUpdateProjects(user)
+    const { put } = useUpdateProjects()
 
     const [displayArchivedModal, setDisplayArchivedModal] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string>("")

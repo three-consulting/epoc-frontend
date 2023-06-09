@@ -7,28 +7,41 @@ import {
     TimesheetEntry,
 } from "../types/apiTypes"
 import { UpdateHook } from "../types/hooks"
-import { User } from "firebase/auth"
 import { useUpdate } from "./swrInterface"
+import { useContext } from "react"
+import { AuthContext } from "../contexts/FirebaseAuthContext"
 
-export const useUpdateCustomers = (user: User): UpdateHook<Customer> =>
-    useUpdate("customer", user)
+export const useUpdateCustomers = (): UpdateHook<Customer> => {
+    const { user } = useContext(AuthContext)
+    return useUpdate("customer", user)
+}
 
-export const useUpdateProjects = (user: User): UpdateHook<Project> =>
-    useUpdate("project", user)
+export const useUpdateProjects = (): UpdateHook<Project> => {
+    const { user } = useContext(AuthContext)
+    return useUpdate("project", user)
+}
 
-export const useUpdateTasks = (user: User): UpdateHook<Task> =>
-    useUpdate("task", user)
+export const useUpdateTasks = (): UpdateHook<Task> => {
+    const { user } = useContext(AuthContext)
+    return useUpdate("task", user)
+}
 
-export const useUpdateTimesheets = (user: User): UpdateHook<Timesheet> =>
-    useUpdate("timesheet", user)
+export const useUpdateTimesheets = (): UpdateHook<Timesheet> => {
+    const { user } = useContext(AuthContext)
+    return useUpdate("timesheet", user)
+}
 
-export const useUpdateTimesheetEntry = (
-    user: User
-): UpdateHook<TimesheetEntry> => useUpdate("timesheet-entry", user)
+export const useUpdateTimesheetEntry = (): UpdateHook<TimesheetEntry> => {
+    const { user } = useContext(AuthContext)
+    return useUpdate("timesheet-entry", user)
+}
 
-export const useUpdateTimesheetEntries = (
-    user: User
-): UpdateHook<TimesheetEntry[]> => useUpdate("timesheet-entry", user)
+export const useUpdateTimesheetEntries = (): UpdateHook<TimesheetEntry[]> => {
+    const { user } = useContext(AuthContext)
+    return useUpdate("timesheet-entry", user)
+}
 
-export const useUpdateEmployees = (user: User): UpdateHook<Employee> =>
-    useUpdate("employee", user)
+export const useUpdateEmployees = (): UpdateHook<Employee> => {
+    const { user } = useContext(AuthContext)
+    return useUpdate("employee", user)
+}
