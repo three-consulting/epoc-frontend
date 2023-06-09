@@ -266,7 +266,7 @@ export const handlePdfExportClick = (
     const startX = 14
 
     const groupedEntries = toArray(
-        groupBy(timesheetEntries, (entry) => entry.timesheet.id)
+        groupBy(timesheetEntries, (entry) => entry.timesheet.employee.id)
     )
 
     if (groupedEntries.length > 1) {
