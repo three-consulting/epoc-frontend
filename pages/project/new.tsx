@@ -6,14 +6,14 @@ import { CreateProjectForm } from "@/components/form/ProjectForm"
 import { useRouter } from "next/router"
 import { Project } from "@/lib/types/apiTypes"
 import { ApiUpdateResponse } from "@/lib/types/hooks"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 import { Box } from "@chakra-ui/react"
 import FormPage from "@/components/common/FormPage"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 const New: NextPage = () => {
     const router = useRouter()
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const customersResponse = useCustomers(user)
     const employeesResponse = useEmployees(user)
 

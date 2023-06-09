@@ -1,4 +1,3 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateProjects } from "@/lib/hooks/useUpdate"
 import { Customer, Employee, Project } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
@@ -18,6 +17,7 @@ import FormSection from "../common/FormSection"
 import { NewCustomerModal } from "../common/FormFields"
 import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CreateProjectFormProps = FormBase<Project> & {
     employees: Employee[]
@@ -279,7 +279,7 @@ function ProjectForm({
 export const CreateProjectForm = (
     props: CreateProjectFormProps
 ): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { post } = useUpdateProjects(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -304,7 +304,7 @@ export const CreateProjectForm = (
 }
 
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { put } = useUpdateProjects(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")

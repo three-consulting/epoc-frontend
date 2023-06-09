@@ -1,6 +1,5 @@
 import React, { useContext } from "react"
 import type { NextPage } from "next"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import {
@@ -11,13 +10,10 @@ import {
 import FormPage from "@/components/common/FormPage"
 import { Box } from "@chakra-ui/react"
 import TimesheetEntryEditor from "@/components/editor/TimesheetEntryEditor"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
-interface IndexPageProps {
-    email: string
-}
-
-const IndexPage = ({ email }: IndexPageProps) => {
-    const { user } = useContext(UserContext)
+const Home: NextPage = () => {
+    const { user, email } = useContext(AuthContext)
     const timesheetsResponse = useTimesheets(user, undefined, email)
     const tasksResponse = useTasks(user)
 
@@ -70,11 +66,6 @@ const IndexPage = ({ email }: IndexPageProps) => {
             </Box>
         </FormPage>
     )
-}
-
-const Home: NextPage = () => {
-    const { user } = useContext(UserContext)
-    return user && user.email ? <IndexPage email={user.email} /> : null
 }
 
 export default Home

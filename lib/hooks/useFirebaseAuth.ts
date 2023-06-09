@@ -8,9 +8,9 @@ import {
     signInWithRedirect,
     GoogleAuthProvider,
 } from "firebase/auth"
-import { FirebaseAuthState, Role } from "@/lib/types/auth"
+import { FirebaseAuthStateNullableUser, Role } from "@/lib/types/auth"
 
-export default function useFirebaseAuth(): FirebaseAuthState {
+export default function useFirebaseAuth(): FirebaseAuthStateNullableUser {
     const [user, setUser] = useState<FirebaseUser | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
     const [firebaseError, setFirebaseError] = useState<unknown | null>(null)

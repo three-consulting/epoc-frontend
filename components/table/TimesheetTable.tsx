@@ -12,18 +12,18 @@ import ErrorAlert from "../common/ErrorAlert"
 import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { CreateTimesheetForm } from "../form/TimesheetForm"
 import { useRouter } from "next/router"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
 import FormSection from "../common/FormSection"
 import StyledButtons from "../common/StyledButtons"
 import { RemoveIconButton, StyledButton } from "../common/Buttons"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface TimesheetRowProps {
     timesheet: Timesheet
 }
 function TimesheetRow({ timesheet }: TimesheetRowProps): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { put } = useUpdateTimesheets(user)
 
     const [errorMessage, setErrorMessage] = useState<string>()

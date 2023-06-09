@@ -5,8 +5,7 @@ export enum Role {
     USER = "USER",
 }
 
-export interface FirebaseAuthState {
-    user: FirebaseUser | null
+type FirebaseAuthStateBase = {
     role?: Role
     loading: boolean
     firebaseError: unknown
@@ -14,6 +13,11 @@ export interface FirebaseAuthState {
     signInWithGoogle: () => Promise<void>
 }
 
-export interface UserState {
+export type FirebaseAuthStateNullableUser = {
+    user: FirebaseUser | null
+} & FirebaseAuthStateBase
+
+export type FirebaseAuthState = {
     user: FirebaseUser
-}
+    email: string
+} & FirebaseAuthStateNullableUser

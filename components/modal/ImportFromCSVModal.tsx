@@ -26,7 +26,6 @@ import {
 import { validateTimesheetEntryFields } from "../form/TimesheetEntryForm"
 import ErrorAlert from "../common/ErrorAlert"
 import { Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import { useTasks, useTimesheets } from "@/lib/hooks/useList"
 import FromCsvTable from "../table/FromCsvTable"
@@ -35,6 +34,7 @@ import FileDropper from "../common/FileDropper"
 import FromCsvForm from "../form/FromCsvForm"
 import { CustomButton, StyledButton } from "../common/Buttons"
 import StyledButtons from "../common/StyledButtons"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 export type Timesheets = Array<Timesheet>
 export type Tasks = Array<Task>
@@ -51,7 +51,7 @@ interface IImportCsvDialog {
 const ImportFromCSVModal = ({
     setTimesheetEntries,
 }: IImportCsvDialog): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { post } = useUpdateTimesheetEntries(user)
 
     const timesheets = useTimesheets(user)

@@ -4,7 +4,6 @@ import { useRouter } from "next/dist/client/router"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import EmployeeDetail from "@/components/detail/EmployeeDetail"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useEmployeeDetail } from "@/lib/hooks/useDetail"
 import {
     useTimesheets,
@@ -17,13 +16,14 @@ import { Box } from "@chakra-ui/react"
 import StyledButtons from "@/components/common/StyledButtons"
 import Link from "next/link"
 import { StyledButton } from "@/components/common/Buttons"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     employeeId: number
 }
 
 function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const employeeDetailResponse = useEmployeeDetail(employeeId, user)
     const tasksResponse = useTasks(user)
     const timesheetsResponse = useTimesheets(

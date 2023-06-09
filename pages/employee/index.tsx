@@ -3,7 +3,7 @@ import type { NextPage } from "next"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import EmployeeTable from "@/components/table/EmployeeTable"
-import { AuthContext, UserContext } from "@/lib/contexts/FirebaseAuthContext"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useEmployees } from "@/lib/hooks/useList"
 import { ApiGetResponse } from "@/lib/types/hooks"
 import { Employee } from "@/lib/types/apiTypes"
@@ -12,8 +12,7 @@ import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 import FormPage from "@/components/common/FormPage"
 
 const Employees: NextPage = () => {
-    const { user } = useContext(UserContext)
-    const { role } = useContext(AuthContext)
+    const { user, role } = useContext(AuthContext)
     const initialEmployeeResponse = useEmployees(user)
 
     const [employeesResponse, setEmployeesResponse] = useState<

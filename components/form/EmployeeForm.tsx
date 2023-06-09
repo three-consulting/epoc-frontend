@@ -4,13 +4,13 @@ import { Employee } from "@/lib/types/apiTypes"
 import { useUpdateEmployees } from "@/lib/hooks/useUpdate"
 import { FormBase } from "@/lib/types/forms"
 import ErrorAlert from "../common/ErrorAlert"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { employeeFieldMetadata } from "@/lib/types/typeMetadata"
 import WarningModal from "../common/WarningModal"
 import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
 import { isError } from "lodash"
 import FormSection from "../common/FormSection"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CreateEmployeeFormProps = FormBase<Employee>
 
@@ -243,7 +243,7 @@ const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
 }
 
 export const EditEmployeeForm = (props: EditEmployeeFormProps): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { put } = useUpdateEmployees(user)
 
     const { employee } = props

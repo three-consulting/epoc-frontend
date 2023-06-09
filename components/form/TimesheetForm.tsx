@@ -1,4 +1,3 @@
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useUpdateTimesheets } from "@/lib/hooks/useUpdate"
 import { Employee, Project, Timesheet } from "@/lib/types/apiTypes"
 import { FormBase } from "@/lib/types/forms"
@@ -16,6 +15,7 @@ import ErrorAlert from "../common/ErrorAlert"
 import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
 import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CreateTimesheetFormProps = FormBase<Timesheet> & {
     employees: Employee[]
@@ -269,7 +269,7 @@ function TimesheetForm({
 export const CreateTimesheetForm = (
     props: CreateTimesheetFormProps
 ): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { post } = useUpdateTimesheets(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")
@@ -296,7 +296,7 @@ export const CreateTimesheetForm = (
 export const EditTimesheetForm = (
     props: EditTimesheetFormProps
 ): JSX.Element => {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
     const { put } = useUpdateTimesheets(user)
 
     const [errorMessage, setErrorMessage] = useState<string>("")

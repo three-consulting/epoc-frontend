@@ -4,11 +4,11 @@ import { EditProjectForm } from "@/components/form/ProjectForm"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import { useRouter } from "next/dist/client/router"
-import { UserContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useProjectDetail } from "@/lib/hooks/useDetail"
 import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 import { Box } from "@chakra-ui/react"
 import FormPage from "@/components/common/FormPage"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     projectId: number
@@ -16,7 +16,7 @@ type Props = {
 
 function EditProjectPage({ projectId }: Props): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(UserContext)
+    const { user } = useContext(AuthContext)
 
     const customersResponse = useCustomers(user)
     const employeesResponse = useEmployees(user)
