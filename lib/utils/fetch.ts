@@ -1,11 +1,16 @@
 import { User } from "firebase/auth"
 
-async function httpText(path: string, user: User): Promise<string> {
-    const jwt = await user.getIdToken()
+async function httpText(path: string, user?: User): Promise<string> {
+    const jwt = user && (await user.getIdToken())
+    const auth = jwt
+        ? {
+              Authorization: `Bearer ${jwt}`,
+          }
+        : undefined
     const request = new Request(path, {
         headers: {
+            ...auth,
             "Content-Type": "text/plain",
-            Authorization: `Bearer ${jwt}`,
         },
     })
     const response = await fetch(request)
@@ -14,14 +19,19 @@ async function httpText(path: string, user: User): Promise<string> {
 
 async function httpJSON<T>(
     path: string,
-    user: User,
+    user?: User,
     config?: RequestInit
 ): Promise<T> {
-    const jwt = await user.getIdToken()
+    const jwt = user && (await user.getIdToken())
+    const auth = jwt
+        ? {
+              Authorization: `Bearer ${jwt}`,
+          }
+        : undefined
     const request = new Request(path, {
         headers: {
+            ...auth,
             "Content-Type": "application/json",
-            Authorization: `Bearer ${jwt}`,
         },
         ...config,
     })
@@ -48,7 +58,7 @@ export const pathToUrl = (
 
 export function getText(
     path: string,
-    user: User,
+    user?: User,
     params?: Record<string, string | number>
 ) {
     const url = pathToUrl(path, params)
@@ -57,7 +67,7 @@ export function getText(
 
 export function getJSON<T>(
     path: string,
-    user: User,
+    user?: User,
     params?: Record<string, string | number>,
     config?: RequestInit
 ): Promise<T> {
@@ -68,8 +78,8 @@ export function getJSON<T>(
 
 export function post<T, U>(
     path: string,
-    user: User,
     body: T,
+    user?: User,
     params?: Record<string, string | number>,
     config?: RequestInit
 ): Promise<U> {
@@ -84,8 +94,8 @@ export function post<T, U>(
 
 export function put<T, U>(
     path: string,
-    user: User,
     body: T,
+    user?: User,
     config?: RequestInit
 ): Promise<U> {
     const init = {
@@ -100,7 +110,7 @@ export function put<T, U>(
 // delete is a reserved keyword
 export function del<T>(
     path: string,
-    user: User,
+    user?: User,
     config?: RequestInit
 ): Promise<T> {
     const init = {

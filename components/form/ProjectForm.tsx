@@ -11,13 +11,12 @@ import {
     Select,
     Box,
 } from "@chakra-ui/react"
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import FormSection from "../common/FormSection"
 import { NewCustomerModal } from "../common/FormFields"
 import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CreateProjectFormProps = FormBase<Project> & {
     employees: Employee[]
@@ -279,9 +278,7 @@ function ProjectForm({
 export const CreateProjectForm = (
     props: CreateProjectFormProps
 ): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { post } = useUpdateProjects(user)
-
+    const { post } = useUpdateProjects()
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)
 
@@ -304,8 +301,7 @@ export const CreateProjectForm = (
 }
 
 export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
-    const { user } = useContext(AuthContext)
-    const { put } = useUpdateProjects(user)
+    const { put } = useUpdateProjects()
 
     const [errorMessage, setErrorMessage] = useState<string>("")
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

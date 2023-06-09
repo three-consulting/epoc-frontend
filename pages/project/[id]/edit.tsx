@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import { EditProjectForm } from "@/components/form/ProjectForm"
 import ErrorAlert from "@/components/common/ErrorAlert"
@@ -8,7 +8,6 @@ import { useProjectDetail } from "@/lib/hooks/useDetail"
 import { useCustomers, useEmployees } from "@/lib/hooks/useList"
 import { Box } from "@chakra-ui/react"
 import FormPage from "@/components/common/FormPage"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     projectId: number
@@ -16,11 +15,10 @@ type Props = {
 
 function EditProjectPage({ projectId }: Props): JSX.Element {
     const router = useRouter()
-    const { user } = useContext(AuthContext)
 
-    const customersResponse = useCustomers(user)
-    const employeesResponse = useEmployees(user)
-    const projectDetailResponse = useProjectDetail(projectId, user)
+    const customersResponse = useCustomers()
+    const employeesResponse = useEmployees()
+    const projectDetailResponse = useProjectDetail(projectId)
 
     const errorMessage =
         (customersResponse.isError && customersResponse.errorMessage) ||

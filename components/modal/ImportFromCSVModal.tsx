@@ -52,10 +52,10 @@ const ImportFromCSVModal = ({
     setTimesheetEntries,
 }: IImportCsvDialog): JSX.Element => {
     const { user } = useContext(AuthContext)
-    const { post } = useUpdateTimesheetEntries(user)
+    const { post } = useUpdateTimesheetEntries()
 
-    const timesheets = useTimesheets(user)
-    const tasks = useTasks(user)
+    const timesheets = useTimesheets()
+    const tasks = useTasks()
 
     const { isOpen, onOpen, onClose } = useDisclosure()
 

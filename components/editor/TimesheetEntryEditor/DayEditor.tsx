@@ -2,7 +2,6 @@ import { SortingOrderIconButton } from "@/components/common/Buttons"
 import Header from "@/components/common/Header"
 import { CreateTimesheetEntryForm } from "@/components/form/TimesheetEntryForm"
 import ImportFromCSVModal from "@/components/modal/ImportFromCSVModal"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import { MediaContext } from "@/lib/contexts/MediaContext"
 import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import { Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
@@ -56,9 +55,7 @@ const DayEditor = ({
     setTimesheetEntries,
 }: IDayEditor): JSX.Element => {
     const { isLarge } = useContext(MediaContext)
-
-    const { user } = useContext(AuthContext)
-    const { delete: del } = useUpdateTimesheetEntries(user)
+    const { delete: del } = useUpdateTimesheetEntries()
 
     const [timesheet, setTimesheet] = useState<Timesheet | undefined>(undefined)
 

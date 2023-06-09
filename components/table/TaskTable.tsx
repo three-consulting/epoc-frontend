@@ -10,13 +10,12 @@ import {
     Tbody,
 } from "@chakra-ui/react"
 import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import { StyledButton, RemoveIconButton } from "../common/Buttons"
 import ErrorAlert from "../common/ErrorAlert"
 import StyledButtons from "../common/StyledButtons"
 import FormSection from "../common/FormSection"
 import { CreateTaskForm, EditTaskForm } from "../form/TaskForm"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 interface TaskRowProps {
     task: Task
@@ -24,8 +23,7 @@ interface TaskRowProps {
 }
 
 function TaskRow({ task, onClick }: TaskRowProps): JSX.Element {
-    const { user } = useContext(AuthContext)
-    const { put } = useUpdateTasks(user)
+    const { put } = useUpdateTasks()
 
     const [errorMessage, setErrorMessage] = useState<string>()
     const errorHandler = (error: Error) => setErrorMessage(`${error}`)

@@ -1,15 +1,13 @@
-import React, { useContext } from "react"
+import React from "react"
 import type { NextPage } from "next"
 import ProjectTable from "@/components/table/ProjectTable"
 import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import { useProjects } from "@/lib/hooks/useList"
 import FormPage from "@/components/common/FormPage"
 
 const Projects: NextPage = () => {
-    const { user } = useContext(AuthContext)
-    const projectsResponse = useProjects(user)
+    const projectsResponse = useProjects()
 
     return (
         <FormPage header="Projects">

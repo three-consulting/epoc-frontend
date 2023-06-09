@@ -12,8 +12,8 @@ import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 import FormPage from "@/components/common/FormPage"
 
 const Employees: NextPage = () => {
-    const { user, role } = useContext(AuthContext)
-    const initialEmployeeResponse = useEmployees(user)
+    const { role } = useContext(AuthContext)
+    const initialEmployeeResponse = useEmployees()
 
     const [employeesResponse, setEmployeesResponse] = useState<
         ApiGetResponse<Employee[]>
@@ -45,7 +45,6 @@ const Employees: NextPage = () => {
             )}
             {employeesResponse?.isSuccess && (
                 <EmployeeTable
-                    user={user}
                     employeesResponse={employeesResponse}
                     setEmployeesResponse={setEmployeesResponse}
                 />

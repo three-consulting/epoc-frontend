@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import { Box } from "@chakra-ui/layout"
 import type { NextPage } from "next"
 import { useRouter } from "next/dist/client/router"
@@ -11,15 +11,13 @@ import { StyledButton } from "@/components/common/Buttons"
 import StyledButtons from "@/components/common/StyledButtons"
 import FormPage from "@/components/common/FormPage"
 import FormSection from "@/components/common/FormSection"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type Props = {
     customerId: number
 }
 
 function CustomerDetailPage({ customerId }: Props): JSX.Element {
-    const { user } = useContext(AuthContext)
-    const customerDetailResponse = useCustomerDetail(customerId, user)
+    const customerDetailResponse = useCustomerDetail(customerId)
 
     const getHeader = () =>
         customerDetailResponse.isSuccess

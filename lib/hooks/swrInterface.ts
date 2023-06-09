@@ -36,12 +36,25 @@ export const urlToCacheKey = (url: URL): string =>
 export const firebaseSyncEndpoint = (endpoint: Endpoint): string =>
     `${prefixEndpoint(`employee`)}/${endpoint}`
 
-export const useGet = <T>(
-    user: User,
+const getCacheKey = (
     endpoint: string | null,
+    deps: Endpoint[],
+    params?: Record<string, string | number>
+) => {
+    const key = endpoint ? urlToCacheKey(pathToUrl(endpoint, params)) : null
+    if (key) {
+        return JSON.stringify({ key, deps })
+    }
+    return undefined
+}
+
+export const useGet = <T>(
+    endpoint: string | null,
+    deps: Endpoint[],
+    user?: User,
     params?: Record<string, string | number>
 ): ApiGetResponse<T> => {
-    const key = endpoint ? urlToCacheKey(pathToUrl(endpoint, params)) : null
+    const key = getCacheKey(endpoint, deps, params)
     return swrToApiGetResponse(
         useSWR<T, Error>(
             () => key,
@@ -50,16 +63,40 @@ export const useGet = <T>(
     )
 }
 
+type CacheKeyData = {
+    key: string
+    deps: Endpoint[]
+}
+
+const jsonOrNull = (str: string): CacheKeyData | undefined => {
+    try {
+        return JSON.parse(str)
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error parsing JSON")
+        return undefined
+    }
+}
+
+const mutateByEndpoint = (endpoint: Endpoint) => (key: string) => {
+    const json = jsonOrNull(key)
+    if (json) {
+        const { deps } = json
+        return deps.includes(endpoint)
+    }
+    return false
+}
+
 export const useUpdate = (endpoint: Endpoint, user: User) => {
     const matchMutate = useMatchMutate()
-    const refresh = () => matchMutate(endpointRegex(endpoint))
+    const refresh = () => matchMutate(mutateByEndpoint(endpoint))
 
     return {
         post: async <T>(...[item, errorHandler]: UpdateHookArgs<T>) => {
             const newItem = await post<T, T>(
                 listEndpoint(endpoint),
-                user,
-                item
+                item,
+                user
             ).catch(errorHandler)
             refresh()
 
@@ -69,8 +106,8 @@ export const useUpdate = (endpoint: Endpoint, user: User) => {
         put: async <T>(...[item, errorHandler]: UpdateHookArgs<T>) => {
             const updatedItem = await put<T, T>(
                 listEndpoint(endpoint),
-                user,
-                item
+                item,
+                user
             ).catch(errorHandler)
             refresh()
 
