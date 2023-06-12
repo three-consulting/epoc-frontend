@@ -287,6 +287,7 @@ export const CreateTimesheetEntryForm = ({
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [timesheetEntryFields, setTimesheetEntryFields] =
         useState<TimesheetEntryFields>({
+            flex: 0,
             date: jsDateToShortISODate(datesRange(dates)[0]) ?? undefined,
             timesheet,
         })
