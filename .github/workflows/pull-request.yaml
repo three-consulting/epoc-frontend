@@ -28,42 +28,61 @@ jobs:
           yarn eslint .
           yarn test
    
-      - name: Check types
-        id: validate_types
+      - name: Check types in dev
+        id: validate_types_dev
         run: |
           yarn openapi-typescript https://epoc-backend-testing.herokuapp.com/docs --output dev.ts
+          export DEV_DIFF="$(diff dev.ts lib/types/api.ts)"
+          echo "DEV_DIFF<<EOF" >> $GITHUB_ENV
+          echo "$DEV_DIFF" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Check types in prod
+        id: validate_types_prod
+        run: |
           yarn openapi-typescript https://epoc-backend.herokuapp.com/docs --output prod.ts
-          export DEV="$(diff dev.ts lib/types/api.ts)"
-          DEV="${DEV//'%'/'%25'}"
-          DEV="${DEV//$'\n'/'%0A'}"
-          DEV="${DEV//$'\r'/'%0D'}"
-          echo "::set-output name=dev::$(echo "$DEV")"
-          export PROD="$(diff prod.ts lib/types/api.ts)"
-          PROD="${PROD//'%'/'%25'}"
-          PROD="${PROD//$'\n'/'%0A'}"
-          PROD="${PROD//$'\r'/'%0D'}"
-          echo "::set-output name=prod::$(echo "$PROD")"
+          export PROD_DIFF="$(diff prod.ts lib/types/api.ts)"
+          echo "PROD_DIFF<<EOF" >> $GITHUB_ENV
+          echo "$PROD_DIFF" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+
+      - name: Find old dev type validation comment
+        uses: peter-evans/find-comment@v2
+        id: dev-types
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: DEV type validation result
+
+      - name: Find old dev type validation comment
+        uses: peter-evans/find-comment@v2
+        id: prod-types
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: PROD type validation result
 
       - name: Comment results of dev type validations
-        uses: actions/github-script@v6
-        if: ${{ steps.validate_types.outputs.dev != '' }}
+        uses: peter-evans/create-or-update-comment@v3
         with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `DEV: Type validation error in line: ${{ toJSON(steps.validate_types.outputs.dev) }}`
-            })
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.dev-types.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            DEV type validation result
+            ```diff
+            ${{ env.DEV_DIFF }}
+            ```
 
       - name: Comment results of prod type validations
-        uses: actions/github-script@v6
-        if: ${{ steps.validate_types.outputs.prod != '' }}
+        uses: peter-evans/create-or-update-comment@v3
         with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `PROD: Type validation error in line: ${{ toJSON(steps.validate_types.outputs.prod) }}`
-            })
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.prod-types.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            PROD type validation result
+            ```diff
+            ${{ env.PROD_DIFF }}
+            ```
