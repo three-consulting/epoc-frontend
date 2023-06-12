@@ -8,40 +8,25 @@ import {
 } from "../types/apiTypes"
 import { UpdateHook } from "../types/hooks"
 import { useUpdate } from "./swrInterface"
-import { useContext } from "react"
-import { AuthContext } from "../contexts/FirebaseAuthContext"
+import { useUser } from "./misc"
 
-export const useUpdateCustomers = (): UpdateHook<Customer> => {
-    const { user } = useContext(AuthContext)
-    return useUpdate("customer", user)
-}
+export const useUpdateCustomers = (): UpdateHook<Customer> =>
+    useUpdate("customer", useUser())
 
-export const useUpdateProjects = (): UpdateHook<Project> => {
-    const { user } = useContext(AuthContext)
-    return useUpdate("project", user)
-}
+export const useUpdateProjects = (): UpdateHook<Project> =>
+    useUpdate("project", useUser())
 
-export const useUpdateTasks = (): UpdateHook<Task> => {
-    const { user } = useContext(AuthContext)
-    return useUpdate("task", user)
-}
+export const useUpdateTasks = (): UpdateHook<Task> =>
+    useUpdate("task", useUser())
 
-export const useUpdateTimesheets = (): UpdateHook<Timesheet> => {
-    const { user } = useContext(AuthContext)
-    return useUpdate("timesheet", user)
-}
+export const useUpdateTimesheets = (): UpdateHook<Timesheet> =>
+    useUpdate("timesheet", useUser())
 
-export const useUpdateTimesheetEntry = (): UpdateHook<TimesheetEntry> => {
-    const { user } = useContext(AuthContext)
-    return useUpdate("timesheet-entry", user)
-}
+export const useUpdateTimesheetEntry = (): UpdateHook<TimesheetEntry> =>
+    useUpdate("timesheet-entry", useUser())
 
-export const useUpdateTimesheetEntries = (): UpdateHook<TimesheetEntry[]> => {
-    const { user } = useContext(AuthContext)
-    return useUpdate("timesheet-entry", user)
-}
+export const useUpdateTimesheetEntries = (): UpdateHook<TimesheetEntry[]> =>
+    useUpdate("timesheet-entry", useUser())
 
-export const useUpdateEmployees = (): UpdateHook<Employee> => {
-    const { user } = useContext(AuthContext)
-    return useUpdate("employee", user)
-}
+export const useUpdateEmployees = (): UpdateHook<Employee> =>
+    useUpdate("employee", useUser())
