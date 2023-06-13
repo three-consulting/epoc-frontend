@@ -21,9 +21,11 @@ const PleaseLogInPage = ({ isLarge }: { isLarge: boolean }) => (
 
 const Main = ({ children }: MainProps): JSX.Element => {
     const auth = useFirebaseAuth()
-    const { user } = auth
+    const { user, loading } = auth
     const { isLarge } = useContext(MediaContext)
-    return (
+    return loading ? (
+        <></>
+    ) : (
         <Flex
             flexDirection="row"
             alignContent="center"

@@ -27,6 +27,7 @@ export default function useFirebaseAuth(): FirebaseAuthStateNullableUser {
     const signOutAndClear = async () => {
         await signOut(auth)
         clear()
+        setLoading(false)
     }
 
     const signInWithGoogle = async () => {
