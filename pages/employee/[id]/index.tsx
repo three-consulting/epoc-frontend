@@ -85,7 +85,9 @@ function EmployeeDetailPage({ employeeId }: Props): JSX.Element {
                 )}
                 <StyledButtons>
                     <Link key={`${employeeId}`} href={`${employeeId}/edit`}>
-                        <StyledButton buttontype="edit" />
+                        <a>
+                            <StyledButton buttontype="edit" />
+                        </a>
                     </Link>
                 </StyledButtons>
             </FormSection>

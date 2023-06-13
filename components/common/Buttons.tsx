@@ -8,6 +8,7 @@ import {
     IconButtonProps,
     StyleConfig,
 } from "@chakra-ui/react"
+import _ from "lodash"
 import React from "react"
 import { IconType } from "react-icons"
 import { BsSortNumericDown, BsSortNumericDownAlt, BsX } from "react-icons/bs"
@@ -89,23 +90,14 @@ export const CustomButton = (props: ICustomButton): JSX.Element => {
 }
 
 interface IStyledIconButton extends IconButtonProps {
-    iconType: IconType
-    hover?: boolean
+    icontype: IconType
 }
 
 const StyledIconButton = (props: IStyledIconButton): JSX.Element => (
     <ChakraProvider theme={extendTheme({ components })}>
         <IconButton
-            icon={<Icon as={props.iconType} boxSize="1.5rem" />}
-            _hover={
-                props.hover
-                    ? {
-                          color: props.backgroundColor,
-                          backgroundColor: props.color,
-                      }
-                    : {}
-            }
-            {...props}
+            icon={<Icon as={props.icontype} boxSize="1.5rem" />}
+            {..._.omit(props, "icontype")}
         >
             {props.children}
         </IconButton>
@@ -115,10 +107,9 @@ const StyledIconButton = (props: IStyledIconButton): JSX.Element => (
 export const RemoveIconButton = (props: IconButtonProps): JSX.Element => (
     <StyledIconButton
         {...props}
-        iconType={BsX}
+        icontype={BsX}
         color="whitesmoke"
         backgroundColor="#6f6f6f"
-        hover={true}
     />
 )
 
@@ -131,9 +122,8 @@ export const SortingOrderIconButton = (
 ): JSX.Element => (
     <StyledIconButton
         {...props}
-        iconType={props.oldestFirst ? BsSortNumericDown : BsSortNumericDownAlt}
+        icontype={props.oldestFirst ? BsSortNumericDown : BsSortNumericDownAlt}
         color="whitesmoke"
         backgroundColor="#6f6f6f"
-        hover={true}
     />
 )

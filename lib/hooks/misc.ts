@@ -8,6 +8,8 @@ import {
     useGet,
 } from "./swrInterface"
 
+export const useUser = () => useContext(AuthContext).user
+
 export const useEmployeeSync = (shouldSync: boolean) => {
     const { user } = useContext(AuthContext)
     return useGet<Employee[]>(

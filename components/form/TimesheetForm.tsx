@@ -10,12 +10,11 @@ import {
     Input,
     Select,
 } from "@chakra-ui/react"
-import React, { useContext, useState } from "react"
+import React, { useState } from "react"
 import ErrorAlert from "../common/ErrorAlert"
 import { timesheetFieldMetadata } from "@/lib/types/typeMetadata"
 import StyledButtons from "../common/StyledButtons"
 import { StyledButton } from "../common/Buttons"
-import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 
 type CreateTimesheetFormProps = FormBase<Timesheet> & {
     employees: Employee[]

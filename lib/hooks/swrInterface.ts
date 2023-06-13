@@ -1,5 +1,6 @@
 import { User } from "firebase/auth"
-import useSWR from "swr"
+import useSWR, { mutate } from "swr"
+import _ from "lodash"
 import { NEXT_PUBLIC_API_URL } from "../conf"
 import {
     ApiGetResponse,
@@ -9,7 +10,6 @@ import {
     updateToApiUpdateResponse,
 } from "../types/hooks"
 import { del, pathToUrl, getJSON, post, put } from "../utils/fetch"
-import { useMatchMutate } from "../utils/matchMutate"
 
 export type Endpoint =
     | `customer`
@@ -21,6 +21,11 @@ export type Endpoint =
     | `timesheet-entries`
     | `time-category`
     | `employee-sync`
+
+type CacheKeyData = {
+    key: string
+    deps: Endpoint[]
+}
 
 export const endpointRegex = (endpoint: Endpoint): RegExp =>
     new RegExp(`^/${endpoint}([/|?].+)?`)
@@ -52,20 +57,19 @@ export const useGet = <T>(
     endpoint: string | null,
     deps: Endpoint[],
     user?: User,
-    params?: Record<string, string | number>
+    params?: Record<string, string | number | undefined>
 ): ApiGetResponse<T> => {
-    const key = getCacheKey(endpoint, deps, params)
+    const pars = _.pickBy(params, (x) => !_.isUndefined(x)) as Record<
+        string,
+        string | number
+    >
+    const key = getCacheKey(endpoint, deps, pars)
     return swrToApiGetResponse(
         useSWR<T, Error>(
             () => key,
-            () => getJSON(endpoint ?? "", user, params)
+            () => getJSON(endpoint ?? "", user, pars)
         )
     )
-}
-
-type CacheKeyData = {
-    key: string
-    deps: Endpoint[]
 }
 
 const jsonOrNull = (str: string): CacheKeyData | undefined => {
@@ -88,8 +92,8 @@ const mutateByEndpoint = (endpoint: Endpoint) => (key: string) => {
 }
 
 export const useUpdate = (endpoint: Endpoint, user: User) => {
-    const matchMutate = useMatchMutate()
-    const refresh = () => matchMutate(mutateByEndpoint(endpoint))
+    const filter = mutateByEndpoint(endpoint)
+    const refresh = () => mutate((key: string) => filter(key))
 
     return {
         post: async <T>(...[item, errorHandler]: UpdateHookArgs<T>) => {

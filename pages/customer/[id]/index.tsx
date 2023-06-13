@@ -38,7 +38,9 @@ function CustomerDetailPage({ customerId }: Props): JSX.Element {
                 )}
                 <StyledButtons>
                     <Link key={`${customerId}`} href={`${customerId}/edit`}>
-                        <StyledButton buttontype="edit" />
+                        <a>
+                            <StyledButton buttontype="edit" />
+                        </a>
                     </Link>
                 </StyledButtons>
             </FormSection>

@@ -135,7 +135,9 @@ function ProjectDetailPage({ projectId }: Props): JSX.Element {
                                     key={`${projectId}`}
                                     href={`${projectId}/edit`}
                                 >
-                                    <StyledButton buttontype="edit" />
+                                    <a>
+                                        <StyledButton buttontype="edit" />
+                                    </a>
                                 </Link>
                                 <CustomButton {...getCustomButtonProps()} />
                             </StyledButtons>
