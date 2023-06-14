@@ -1,5 +1,5 @@
 import { Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
-import { isDate, round, sum } from "lodash"
+import { isDate, round, sum, join } from "lodash"
 import {
     Box,
     Flex,
@@ -201,26 +201,45 @@ const TimesheetEntryEditor = ({
                                         view,
                                     }: CalendarTileProperties) => {
                                         if (view === "month") {
-                                            let content = ""
-                                            if (holidaysObject.isSuccess) {
-                                                content =
-                                                    holidaysObject.data
-                                                        .find(
-                                                            (item) =>
-                                                                item.date ===
-                                                                jsDateToShortISODate(
-                                                                    date
-                                                                )
+                                            const holidayContent =
+                                                holidaysObject.isSuccess
+                                                    ? holidaysObject.data
+                                                          .find(
+                                                              (holiday) =>
+                                                                  holiday.date ===
+                                                                  jsDateToShortISODate(
+                                                                      date
+                                                                  )
+                                                          )
+                                                          ?.summary?.toString()
+                                                    : undefined
+                                            const entryHours = entries
+                                                .filter(
+                                                    (entry) =>
+                                                        entry.date ===
+                                                        jsDateToShortISODate(
+                                                            date
                                                         )
-                                                        ?.summary.toString() ??
-                                                    ""
-                                            }
-                                            return (
-                                                <Tooltip
-                                                    hasArrow
-                                                    label={content}
-                                                >
-                                                    {content.length > 0 ? (
+                                                )
+                                                .map((item) => [
+                                                    item.timesheet.project.name,
+                                                    item.quantity,
+                                                ])
+                                            const joinedEntryHours =
+                                                entryHours.map((item) =>
+                                                    join(item, ": ")
+                                                )
+                                            const entryHoursForDay = sum(
+                                                entryHours.map(
+                                                    (item) => item[1]
+                                                )
+                                            )
+                                            if (holidayContent) {
+                                                return (
+                                                    <Tooltip
+                                                        hasArrow
+                                                        label={holidayContent}
+                                                    >
                                                         <span>
                                                             <Icon
                                                                 as={
@@ -241,11 +260,25 @@ const TimesheetEntryEditor = ({
                                                                 zIndex="overlay"
                                                             />
                                                         </span>
-                                                    ) : (
-                                                        ""
-                                                    )}
-                                                </Tooltip>
-                                            )
+                                                    </Tooltip>
+                                                )
+                                            }
+                                            if (entryHoursForDay > 0) {
+                                                return (
+                                                    <Tooltip
+                                                        hasArrow
+                                                        label={join(
+                                                            joinedEntryHours,
+                                                            ", "
+                                                        )}
+                                                        top={1}
+                                                    >
+                                                        <span className="react-calendar__tile--tooltip">
+                                                            {entryHoursForDay} h
+                                                        </span>
+                                                    </Tooltip>
+                                                )
+                                            }
                                         }
                                         return <></>
                                     }}
