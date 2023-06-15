@@ -213,27 +213,6 @@ const TimesheetEntryEditor = ({
                                                           )
                                                           ?.summary?.toString()
                                                     : undefined
-                                            const entryHours = entries
-                                                .filter(
-                                                    (entry) =>
-                                                        entry.date ===
-                                                        jsDateToShortISODate(
-                                                            date
-                                                        )
-                                                )
-                                                .map((item) => [
-                                                    item.timesheet.project.name,
-                                                    item.quantity,
-                                                ])
-                                            const joinedEntryHours =
-                                                entryHours.map((item) =>
-                                                    join(item, ": ")
-                                                )
-                                            const entryHoursForDay = sum(
-                                                entryHours.map(
-                                                    (item) => item[1]
-                                                )
-                                            )
                                             if (holidayContent) {
                                                 return (
                                                     <Tooltip
@@ -263,7 +242,28 @@ const TimesheetEntryEditor = ({
                                                     </Tooltip>
                                                 )
                                             }
-                                            if (entryHoursForDay > 0) {
+                                            const entryHours = entries
+                                                .filter(
+                                                    (entry) =>
+                                                        entry.date ===
+                                                        jsDateToShortISODate(
+                                                            date
+                                                        )
+                                                )
+                                                .map((item) => [
+                                                    item.timesheet.project.name,
+                                                    item.quantity,
+                                                ])
+                                            const joinedEntryHours =
+                                                entryHours.map((item) =>
+                                                    join(item, ": ")
+                                                )
+                                            const entryHoursForDate = sum(
+                                                entryHours.map(
+                                                    (item) => item[1]
+                                                )
+                                            )
+                                            if (entryHoursForDate > 0) {
                                                 return (
                                                     <Tooltip
                                                         hasArrow
@@ -274,7 +274,8 @@ const TimesheetEntryEditor = ({
                                                         top={1}
                                                     >
                                                         <span className="react-calendar__tile--tooltip">
-                                                            {entryHoursForDay} h
+                                                            {entryHoursForDate}{" "}
+                                                            h
                                                         </span>
                                                     </Tooltip>
                                                 )
