@@ -242,7 +242,7 @@ const TimesheetEntryEditor = ({
                                                     </Tooltip>
                                                 )
                                             }
-                                            const entryHours = entries
+                                            const entryHours = timesheetEntries
                                                 .filter(
                                                     (entry) =>
                                                         entry.date ===
