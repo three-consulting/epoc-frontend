@@ -1,21 +1,13 @@
 import React, { ChangeEventHandler } from "react"
 import {
-    Box,
     Flex,
     FormControl,
     FormErrorMessage,
     FormLabel,
     Input,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalHeader,
-    ModalOverlay,
 } from "@chakra-ui/react"
 import styled from "@emotion/styled"
 import ErrorAlert from "./ErrorAlert"
-import { AddCustomerForm } from "../form/CustomerForm"
 import StyledButtons from "./StyledButtons"
 import { CustomButton, StyledButton } from "./Buttons"
 
@@ -135,34 +127,4 @@ export const FormAlerts = ({ errorMessage }: FormAlertProps): JSX.Element => (
         <ErrorAlert />
         <div>{errorMessage}</div>
     </>
-)
-
-type NewCustomerModalProps = {
-    displayCreateCustomerForm: boolean
-    setDisplayCreateCustomerForm: (value: React.SetStateAction<boolean>) => void
-}
-
-export const NewCustomerModal = ({
-    displayCreateCustomerForm,
-    setDisplayCreateCustomerForm,
-}: NewCustomerModalProps): JSX.Element => (
-    <Modal
-        closeOnOverlayClick={false}
-        isOpen={displayCreateCustomerForm}
-        onClose={() => setDisplayCreateCustomerForm(false)}
-    >
-        <ModalOverlay />
-        <ModalContent>
-            <ModalHeader>Add New Customer</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-                <Box paddingBottom="1rem">
-                    <AddCustomerForm
-                        afterSubmit={() => setDisplayCreateCustomerForm(false)}
-                        onCancel={() => setDisplayCreateCustomerForm(false)}
-                    />
-                </Box>
-            </ModalBody>
-        </ModalContent>
-    </Modal>
 )

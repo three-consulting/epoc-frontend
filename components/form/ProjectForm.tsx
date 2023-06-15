@@ -1,325 +1,138 @@
-import { useUpdateProjects } from "@/lib/hooks/useUpdate"
+import React from "react"
+import { useForm } from "react-hook-form"
+import { Checkbox, FormLabel, Input, Select } from "@chakra-ui/react"
 import { Customer, Employee, Project } from "@/lib/types/apiTypes"
-import { FormBase } from "@/lib/types/forms"
-import { projectFieldMetadata } from "@/lib/types/typeMetadata"
-import { Flex } from "@chakra-ui/layout"
-import {
-    FormControl,
-    FormErrorMessage,
-    FormLabel,
-    Input,
-    Select,
-    Box,
-} from "@chakra-ui/react"
-import React, { useState } from "react"
-import ErrorAlert from "../common/ErrorAlert"
-import FormSection from "../common/FormSection"
-import { NewCustomerModal } from "../common/FormFields"
-import StyledButtons from "../common/StyledButtons"
-import { StyledButton } from "../common/Buttons"
+import _ from "lodash"
+import { FormContainer, FormField, SubmitButton, toggleArchived } from "./utils"
 
-type CreateProjectFormProps = FormBase<Project> & {
-    employees: Employee[]
+type ProjectFormProps = {
+    project: Partial<Project>
     customers: Customer[]
+    employees: Employee[]
+    onSubmit: (task: Project) => Promise<void>
 }
 
-type EditProjectFormProps = CreateProjectFormProps & {
-    project: Project
-}
-
-type ProjectFormProps = CreateProjectFormProps & {
-    project?: Project
-    onSubmit: (project: Project) => void
-}
-
-type ProjectFields = Partial<Project>
-
-const validateProjectFields = (form: ProjectFields): Project => {
-    const { name, startDate, customer, managingEmployee } = form
-    if (name && startDate && customer && managingEmployee) {
-        return {
-            ...form,
-            name,
-            startDate,
-            customer,
-            managingEmployee,
-        }
+const convertProject = ({
+    name,
+    managingEmployee,
+    customer,
+    startDate,
+    ...rest
+}: Partial<Project>): Project => {
+    if (name && managingEmployee && customer && startDate) {
+        return { name, managingEmployee, customer, startDate, ...rest }
     }
-    throw Error("Invalid project form: missing required fields")
+    throw Error("Form error, missing required fields")
 }
 
-function ProjectForm({
-    project: projectOrNull,
-    customers,
+const ProjectForm = ({
+    project,
     employees,
+    customers,
     onSubmit,
-    onCancel,
-}: ProjectFormProps) {
-    const [projectFields, setProjectFields] = useState<ProjectFields>(
-        projectOrNull || {}
-    )
-    const [displayCreateCustomerForm, setDisplayCreateCustomerForm] =
-        useState(false)
+}: ProjectFormProps) => {
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm({ mode: "onBlur" })
 
-    const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
+    const employeeById = (id: number) => employees.find((e) => e.id === id)
+    const customerById = (id: number) => customers.find((c) => c.id === id)
 
-    const handleCustomerChange = (
-        event: React.FormEvent<HTMLSelectElement>
-    ) => {
-        event.preventDefault()
-        const id = event.currentTarget.value
-        if (id) {
-            const customer = customers.find(
-                (customerIterator) => customerIterator.id === Number(id)
-            )
-            setProjectFields({ ...projectFields, customer })
-        }
-    }
-
-    const handleEmployeeChange = (
-        event: React.FormEvent<HTMLSelectElement>
-    ) => {
-        event.preventDefault()
-        const id = event.currentTarget.value
-        if (id) {
-            const employee = employees.find(
-                (employeeIterator) => employeeIterator.id === Number(id)
-            )
-            setProjectFields({ ...projectFields, managingEmployee: employee })
-        }
-    }
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        try {
-            const project = validateProjectFields(projectFields)
-            onSubmit(project)
-        } catch (error) {
-            errorHandler(error as Error)
-        }
-    }
-
-    const invalidEndDate =
-        (projectFields.startDate &&
-            projectFields.endDate &&
-            projectFields.startDate > projectFields.endDate) ||
-        false
-
-    const abortSubmission = onCancel && onCancel
-
-    const activeEmployees = employees.filter(
-        (employee) => employee.status === "ACTIVE"
-    )
+    const validateEndDate = (startDate: Date, endDate: Date) =>
+        endDate > startDate || "The end date must be after the start date"
 
     return (
-        <FormSection
-            header={projectFields.name || "-"}
-            errorMessage={errorMessage}
-        >
-            <Box>
-                <form onSubmit={handleSubmit}>
-                    <FormControl
-                        isRequired={projectFieldMetadata.name.required}
+        <FormContainer>
+            <form
+                onSubmit={handleSubmit((data) =>
+                    onSubmit(convertProject({ ...project, ...data }))
+                )}
+            >
+                <FormField field={"name"} errors={errors}>
+                    <FormLabel>Name</FormLabel>
+                    <Input
+                        {...register("name", {
+                            required: "This is required",
+                        })}
+                        defaultValue={project.name}
+                    />
+                </FormField>
+                <FormField field={"description"} errors={errors}>
+                    <FormLabel>Description</FormLabel>
+                    <Input
+                        {...register("description")}
+                        defaultValue={project.description}
+                    />
+                </FormField>
+                <FormField field={"customer"} errors={errors}>
+                    <FormLabel>Customer</FormLabel>
+                    <Select
+                        {...register("customer", {
+                            required: "This is required",
+                            setValueAs: (id) => customerById(Number(id)),
+                        })}
+                        defaultValue={project?.customer?.id}
+                        placeholder={" "}
                     >
-                        <FormLabel>Project name</FormLabel>
-                        <Input
-                            value={projectFields.name || ""}
-                            placeholder="Project name"
-                            onChange={(event) =>
-                                setProjectFields({
-                                    ...projectFields,
-                                    name: event.target.value,
-                                })
-                            }
-                            data-testid={"form-field-name"}
-                        />
-                    </FormControl>
-                    <FormControl
-                        isRequired={projectFieldMetadata.description.required}
-                    >
-                        <FormLabel>Project description</FormLabel>
-                        <Input
-                            value={projectFields.description || ""}
-                            placeholder="Project description"
-                            onChange={(event) =>
-                                setProjectFields({
-                                    ...projectFields,
-                                    description: event.target.value,
-                                })
-                            }
-                            data-testid={"form-field-description"}
-                        />
-                    </FormControl>
-                    <FormControl
-                        isRequired={projectFieldMetadata.startDate.required}
-                    >
-                        <FormLabel>Start date</FormLabel>
-                        <Input
-                            type="date"
-                            value={projectFields.startDate || ""}
-                            placeholder="Project start date"
-                            onChange={(event) =>
-                                setProjectFields({
-                                    ...projectFields,
-                                    startDate: event.target.value,
-                                })
-                            }
-                            data-testid={"form-field-start-date"}
-                        />
-                    </FormControl>
-                    <FormControl
-                        isRequired={projectFieldMetadata.endDate.required}
-                        isInvalid={invalidEndDate}
-                    >
-                        <FormLabel>End date</FormLabel>
-                        <Input
-                            type="date"
-                            value={projectFields.endDate || ""}
-                            placeholder="Project end date"
-                            onChange={(event) =>
-                                setProjectFields({
-                                    ...projectFields,
-                                    endDate: event.target.value,
-                                })
-                            }
-                            data-testid={"form-field-end-date"}
-                        />
-                        <FormErrorMessage>
-                            End date precedes start date
-                        </FormErrorMessage>
-                    </FormControl>
-                    <Flex justifyContent="center">
-                        <FormControl
-                            isRequired={projectFieldMetadata.customer.required}
-                        >
-                            <FormLabel>Customer</FormLabel>
-                            <Flex
-                                flexDirection="row"
-                                justifyContent="space-between"
-                            >
-                                <Select
-                                    onChange={handleCustomerChange}
-                                    marginRight="0.3rem"
-                                    value={projectFields.customer?.id || ""}
-                                    data-testid={"form-field-customer"}
-                                >
-                                    {customers.map((customer) => (
-                                        <option
-                                            key={`${customer.id}`}
-                                            value={customer.id}
-                                        >
-                                            {customer.name}
-                                        </option>
-                                    ))}
-                                    <option hidden disabled value="">
-                                        Select customer
-                                    </option>
-                                </Select>
-
-                                <StyledButton
-                                    buttontype="add"
-                                    name="Customer"
-                                    onClick={() =>
-                                        setDisplayCreateCustomerForm(true)
-                                    }
-                                />
-                                <NewCustomerModal
-                                    displayCreateCustomerForm={
-                                        displayCreateCustomerForm
-                                    }
-                                    setDisplayCreateCustomerForm={
-                                        setDisplayCreateCustomerForm
-                                    }
-                                />
-                            </Flex>
-                        </FormControl>
-                    </Flex>
-                    <FormControl
-                        isRequired={
-                            projectFieldMetadata.managingEmployee.required
-                        }
-                    >
-                        <FormLabel>Managing employee</FormLabel>
-                        <Select
-                            onChange={handleEmployeeChange}
-                            value={projectFields.managingEmployee?.id || ""}
-                            data-testid={"form-field-managing-employee"}
-                        >
-                            {activeEmployees.map((employee) => (
-                                <option key={employee.id} value={employee.id}>
-                                    {`${employee.firstName} ${employee.lastName}`}
-                                </option>
-                            ))}
-                            <option hidden disabled value="">
-                                Select employee
+                        {customers.map((c) => (
+                            <option key={c.id} value={c.id}>
+                                {c.name}
                             </option>
-                        </Select>
-                    </FormControl>
-                    <StyledButtons>
-                        <StyledButton
-                            buttontype="submit"
-                            type="submit"
-                            data-testid={"form-button-submit"}
-                        />
-                        <StyledButton
-                            buttontype="cancel"
-                            type="button"
-                            onClick={abortSubmission}
-                            data-testid={"form-button-cancel"}
-                        />
-                    </StyledButtons>
-                </form>
-            </Box>
-        </FormSection>
+                        ))}
+                    </Select>
+                </FormField>
+                <FormField field={"startDate"} errors={errors}>
+                    <FormLabel>Start date</FormLabel>
+                    <Input
+                        {...register("startDate", { valueAsDate: true })}
+                        type={"date"}
+                        defaultValue={project.startDate}
+                    />
+                </FormField>
+                <FormField field={"endDate"} errors={errors}>
+                    <FormLabel>End date</FormLabel>
+                    <Input
+                        {...register("endDate", {
+                            validate: (endDate, { startDate }) =>
+                                !endDate || validateEndDate(startDate, endDate),
+                        })}
+                        type={"date"}
+                        defaultValue={project.endDate}
+                    />
+                </FormField>
+                <FormField field={"managingEmployee"} errors={errors}>
+                    <FormLabel>Managing Employee</FormLabel>
+                    <Select
+                        {...register("managingEmployee", {
+                            required: "This is required",
+                            setValueAs: (id) => employeeById(Number(id)),
+                        })}
+                        defaultValue={project?.managingEmployee?.id}
+                        placeholder={" "}
+                    >
+                        {employees.map((e) => (
+                            <option key={e.id} value={e.id}>
+                                {e.firstName} {e.lastName}
+                            </option>
+                        ))}
+                    </Select>
+                </FormField>
+                <FormField field={"status"} errors={errors}>
+                    <FormLabel>Archived</FormLabel>
+                    <Checkbox
+                        onChange={(event) =>
+                            toggleArchived(event.target.checked, setValue)
+                        }
+                        defaultChecked={project.status === "ARCHIVED"}
+                    />
+                </FormField>
+                <SubmitButton disabled={!_.isEmpty(errors)} />
+            </form>
+        </FormContainer>
     )
 }
 
-export const CreateProjectForm = (
-    props: CreateProjectFormProps
-): JSX.Element => {
-    const { post } = useUpdateProjects()
-    const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
-    const onSubmit = async (project: Project) => {
-        const newProject = await post(project, errorHandler)
-        return props.afterSubmit && props.afterSubmit(newProject)
-    }
-
-    return (
-        <>
-            <ProjectForm {...props} onSubmit={onSubmit} />
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
-        </>
-    )
-}
-
-export const EditProjectForm = (props: EditProjectFormProps): JSX.Element => {
-    const { put } = useUpdateProjects()
-
-    const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
-    const onSubmit = async (project: Project) => {
-        const updatedProject = await put(project, errorHandler)
-        return props.afterSubmit && props.afterSubmit(updatedProject)
-    }
-
-    return (
-        <>
-            <ProjectForm {...props} onSubmit={onSubmit} />
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
-        </>
-    )
-}
+export default ProjectForm
