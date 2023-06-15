@@ -168,7 +168,7 @@ const TimesheetEntryEditor = ({
                             width="100%"
                             backgroundColor="#cfcfcf"
                         >
-                            <Box>
+                            <Box width="100%">
                                 <Calendar
                                     onChange={onDatesChange}
                                     returnValue={
