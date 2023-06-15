@@ -155,18 +155,13 @@ const TimesheetEntryEditor = ({
                 <Flex ref={ref} flexDirection="column">
                     <Flex
                         flexDirection="row"
-                        paddingX={isLarge ? "2rem" : "0rem"}
-                        paddingY={isLarge ? "1rem" : "0rem"}
                         justifyContent="center"
                         minWidth={isLarge ? "50vw" : undefined}
                     >
                         <Flex
                             flexDirection="column"
                             alignItems="center"
-                            paddingY={isLarge ? "1rem" : "0rem"}
-                            paddingX={isLarge ? "1rem" : "0rem"}
                             width="100%"
-                            backgroundColor="#cfcfcf"
                         >
                             <Box width="100%">
                                 <Calendar
@@ -219,26 +214,25 @@ const TimesheetEntryEditor = ({
                                                         hasArrow
                                                         label={holidayContent}
                                                     >
-                                                        <span>
+                                                        <Box
+                                                            position={
+                                                                "absolute"
+                                                            }
+                                                            width={"100%"}
+                                                        >
                                                             <Icon
                                                                 as={
                                                                     BsSunglasses
                                                                 }
-                                                                boxSize="2rem"
-                                                                position="absolute"
-                                                                marginY={
-                                                                    isLarge
-                                                                        ? "0.2rem"
-                                                                        : "0.3rem"
+                                                                display={
+                                                                    "block"
                                                                 }
-                                                                marginX={
-                                                                    isLarge
-                                                                        ? "-0.3rem"
-                                                                        : "-1.5rem"
-                                                                }
+                                                                margin="0 auto"
+                                                                width={"2em"}
+                                                                height={"2em"}
                                                                 zIndex="overlay"
                                                             />
-                                                        </span>
+                                                        </Box>
                                                     </Tooltip>
                                                 )
                                             }
