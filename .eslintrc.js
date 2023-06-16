@@ -42,6 +42,7 @@ module.exports = {
         "id-length": 0,
         "id-match": 0,
         "comma-spacing": 0,
+        "no-negated-condition": 0,
     },
     settings: {
         react: {

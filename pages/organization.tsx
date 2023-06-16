@@ -14,42 +14,84 @@ import {
     useUpdateProjects,
 } from "@/lib/hooks/useUpdate"
 import { Customer, Employee } from "@/lib/types/apiTypes"
+import { ApiGetResponse } from "@/lib/types/hooks"
 import { Box, Heading, useDisclosure } from "@chakra-ui/react"
+import { User } from "@firebase/auth"
 import { NextPage } from "next"
 import React, { useContext, useState } from "react"
 
-const Organization: NextPage = () => {
-    const projectResponse = useProjects()
-    const employeeResponse = useEmployees()
-    const customerResponse = useCustomers()
+type EmployeeViewProps = {
+    employeeResponse: ApiGetResponse<Employee[]>
+    user: User
+}
 
-    const { post: postProject } = useUpdateProjects()
+const EmployeeView = ({ employeeResponse, user }: EmployeeViewProps) => {
     const { put: putEmployee } = useUpdateEmployees()
-    const { post: postCustomer, put: putCustomer } = useUpdateCustomers()
-
-    const projectDisclosure = useDisclosure()
-    const customerDisclosure = useDisclosure()
-
     const [selectedEmployee, setSelectedEmployee] = useState<Employee>()
-    const [selectedCustomer, setSelectedCustomer] = useState<Customer>()
 
     const [isLoading, setIsLoading] = useState(false)
-    const { user } = useContext(AuthContext)
     const syncUrl = `${prefixEndpoint("employee")}/employee-sync`
     const syncEmployees = async () => {
         setIsLoading(true)
         await getAndMutate(syncUrl, ["employee"], user)
         setIsLoading(false)
     }
-
-    const projectActionButton = {
-        text: "Create project",
-        onClick: projectDisclosure.onOpen,
-    }
     const employeeActionButton = {
         text: "Sync employees",
         onClick: syncEmployees,
         isLoading,
+    }
+
+    return (
+        <>
+            <Heading as="h3" size="md">
+                Employees
+            </Heading>
+            {selectedEmployee && (
+                <ItemDrawer
+                    isOpen={Boolean(selectedEmployee)}
+                    onClose={() => setSelectedEmployee(undefined)}
+                >
+                    <EmployeeForm
+                        employee={selectedEmployee}
+                        onSubmit={async (employee) => {
+                            const updated = await putEmployee(
+                                employee,
+                                () => undefined
+                            )
+                            syncEmployees()
+                            return updated
+                        }}
+                    />
+                </ItemDrawer>
+            )}
+            <EmployeeTable
+                response={employeeResponse}
+                onOpenDetail={setSelectedEmployee}
+                actionButton={employeeActionButton}
+            />
+        </>
+    )
+}
+
+const Organization: NextPage = () => {
+    const { user, role } = useContext(AuthContext)
+
+    const projectResponse = useProjects()
+    const customerResponse = useCustomers()
+    const employeeResponse = useEmployees()
+
+    const { post: postProject } = useUpdateProjects()
+    const { post: postCustomer, put: putCustomer } = useUpdateCustomers()
+
+    const projectDisclosure = useDisclosure()
+    const customerDisclosure = useDisclosure()
+
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer>()
+
+    const projectActionButton = {
+        text: "Create project",
+        onClick: projectDisclosure.onOpen,
     }
     const customerActionButton = {
         text: "Create customer",
@@ -75,10 +117,9 @@ const Organization: NextPage = () => {
                             project={{}}
                             customers={customerResponse.data}
                             employees={employeeResponse.data}
-                            onSubmit={async (project) => {
-                                await postProject(project, () => undefined)
-                                projectDisclosure.onClose()
-                            }}
+                            onSubmit={(project) =>
+                                postProject(project, () => undefined)
+                            }
                         />
                     </ItemDrawer>
                 )}
@@ -86,29 +127,9 @@ const Organization: NextPage = () => {
                 response={projectResponse}
                 actionButton={projectActionButton}
             />
-            <Heading as="h3" size="md">
-                Employees
-            </Heading>
-            {selectedEmployee && (
-                <ItemDrawer
-                    isOpen={Boolean(selectedEmployee)}
-                    onClose={() => setSelectedEmployee(undefined)}
-                >
-                    <EmployeeForm
-                        employee={selectedEmployee}
-                        onSubmit={async (employee) => {
-                            await putEmployee(employee, () => undefined)
-                            setSelectedEmployee(undefined)
-                            syncEmployees()
-                        }}
-                    />
-                </ItemDrawer>
+            {role === "ADMIN" && (
+                <EmployeeView employeeResponse={employeeResponse} user={user} />
             )}
-            <EmployeeTable
-                response={employeeResponse}
-                onOpenDetail={setSelectedEmployee}
-                actionButton={employeeActionButton}
-            />
             <Heading as="h3" size="md">
                 Customers
             </Heading>
@@ -118,10 +139,9 @@ const Organization: NextPage = () => {
                     onClose={customerDisclosure.onClose}
                 >
                     <CustomerForm
-                        onSubmit={async (customer) => {
-                            await postCustomer(customer, () => undefined)
-                            customerDisclosure.onClose()
-                        }}
+                        onSubmit={(customer) =>
+                            postCustomer(customer, () => undefined)
+                        }
                         customer={{}}
                     />
                 </ItemDrawer>
@@ -135,10 +155,9 @@ const Organization: NextPage = () => {
                 >
                     <CustomerForm
                         customer={selectedCustomer}
-                        onSubmit={async (customer) => {
-                            await putCustomer(customer, () => undefined)
-                            setSelectedCustomer(undefined)
-                        }}
+                        onSubmit={(customer) =>
+                            putCustomer(customer, () => undefined)
+                        }
                     />
                 </ItemDrawer>
             )}

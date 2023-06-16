@@ -296,7 +296,7 @@ const InnerTable = <T,>({
     return (
         <>
             <Box height="200px">
-                <Table>
+                <Table layout={"fixed"} width="full">
                     <Thead>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <Tr key={headerGroup.id}>

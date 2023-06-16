@@ -65,10 +65,9 @@ const DisplayProjectDetail = ({ id }: { id: number }) => {
                     >
                         <ProjectForm
                             project={projectResponse.data}
-                            onSubmit={async (project) => {
-                                await putProject(project, () => undefined)
-                                projectDisclosure.onClose()
-                            }}
+                            onSubmit={(project) =>
+                                putProject(project, () => undefined)
+                            }
                             employees={employeesResponse.data}
                             customers={customersResponse.data}
                         />
@@ -102,10 +101,9 @@ const DisplayProjectDetail = ({ id }: { id: number }) => {
                     <TimesheetForm
                         timesheet={selectedTimesheet}
                         employees={employeesResponse.data}
-                        onSubmit={async (timesheet) => {
-                            await putTimesheet(timesheet, () => undefined)
-                            setSelectedTimesheet(undefined)
-                        }}
+                        onSubmit={(timesheet) =>
+                            putTimesheet(timesheet, () => undefined)
+                        }
                     />
                 </ItemDrawer>
             )}
@@ -116,10 +114,9 @@ const DisplayProjectDetail = ({ id }: { id: number }) => {
                         <TimesheetForm
                             timesheet={{ project: projectResponse.data }}
                             employees={employeesResponse.data}
-                            onSubmit={async (timesheet) => {
-                                await postTimesheet(timesheet, () => undefined)
-                                timesheetDisclosure.onClose()
-                            }}
+                            onSubmit={(timesheet) =>
+                                postTimesheet(timesheet, () => undefined)
+                            }
                         />
                     </ItemDrawer>
                 )}
@@ -135,10 +132,7 @@ const DisplayProjectDetail = ({ id }: { id: number }) => {
                 <ItemDrawer {...taskDisclosure}>
                     <TaskForm
                         task={{ project: projectResponse.data }}
-                        onSubmit={async (task) => {
-                            await postTask(task, () => undefined)
-                            taskDisclosure.onClose()
-                        }}
+                        onSubmit={(task) => postTask(task, () => undefined)}
                     />
                 </ItemDrawer>
             )}
@@ -149,10 +143,7 @@ const DisplayProjectDetail = ({ id }: { id: number }) => {
                 >
                     <TaskForm
                         task={selectedTask}
-                        onSubmit={async (task) => {
-                            await putTask(task, () => undefined)
-                            setSelectedTask(undefined)
-                        }}
+                        onSubmit={(task) => putTask(task, () => undefined)}
                     />
                 </ItemDrawer>
             )}

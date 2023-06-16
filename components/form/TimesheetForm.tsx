@@ -4,11 +4,12 @@ import { Checkbox, FormLabel, Input, Select } from "@chakra-ui/react"
 import { Employee, Timesheet } from "@/lib/types/apiTypes"
 import _ from "lodash"
 import { FormContainer, FormField, SubmitButton, toggleArchived } from "./utils"
+import { ApiUpdateResponse } from "@/lib/types/hooks"
 
 type TimesheetFormProps = {
     timesheet: Partial<Timesheet>
     employees: Employee[]
-    onSubmit: (task: Timesheet) => Promise<void>
+    onSubmit: (timesheet: Timesheet) => Promise<ApiUpdateResponse<Timesheet>>
 }
 
 const convertTimesheet = ({
@@ -19,7 +20,13 @@ const convertTimesheet = ({
     project,
     ...rest
 }: Partial<Timesheet>): Timesheet => {
-    if (name && employee && rate && allocation && project) {
+    if (
+        !_.isUndefined(name) &&
+        !_.isUndefined(employee) &&
+        !_.isUndefined(rate) &&
+        !_.isUndefined(allocation) &&
+        !_.isUndefined(project)
+    ) {
         return { name, employee, rate, allocation, project, ...rest }
     }
     throw Error("Form error, missing required fields")

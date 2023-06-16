@@ -12,8 +12,8 @@ import {
 } from "@/lib/hooks/useList"
 import AuthErrorAlert from "@/components/common/AuthErrorAlert"
 import { Role } from "@/lib/types/auth"
-import FormPage from "@/components/common/FormPage"
 import ReportTable from "@/components/table/ReportTable"
+import { Box } from "@chakra-ui/layout"
 
 const Report: NextPage = () => {
     const { user, role } = useContext(AuthContext)
@@ -36,7 +36,7 @@ const Report: NextPage = () => {
     }
 
     return (
-        <FormPage header="Reports">
+        <Box>
             {customersResponse.isError && (
                 <ErrorAlert
                     title={customersResponse.errorMessage}
@@ -82,7 +82,7 @@ const Report: NextPage = () => {
                         user={user}
                     />
                 )}
-        </FormPage>
+        </Box>
     )
 }
 

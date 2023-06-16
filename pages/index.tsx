@@ -1,21 +1,26 @@
-import React, { useContext } from "react"
+import React, { useContext, useState } from "react"
 import type { NextPage } from "next"
-import ErrorAlert from "@/components/common/ErrorAlert"
 import Loading from "@/components/common/Loading"
 import {
     useTasks,
     useTimesheetEntries,
     useTimesheets,
 } from "@/lib/hooks/useList"
-import FormPage from "@/components/common/FormPage"
 import { Box } from "@chakra-ui/react"
 import TimesheetEntryEditor from "@/components/editor/TimesheetEntryEditor"
 import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
+import TimesheetEntryTable from "@/components/editor/TimesheetEntryTable"
+import { MediaContext } from "@/lib/contexts/MediaContext"
 
 const Home: NextPage = () => {
     const { email } = useContext(AuthContext)
-    const timesheetsResponse = useTimesheets(undefined, email)
-    const tasksResponse = useTasks()
+    const { isLarge } = useContext(MediaContext)
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+        undefined
+    )
+    const [dateUnderEdit, setDateUnderEdit] = useState<Date | undefined>(
+        undefined
+    )
 
     const startDate = "0000-01-01"
     const endDate = "9999-01-01"
@@ -25,45 +30,38 @@ const Home: NextPage = () => {
         endDate,
         email
     )
-
-    const isLoading =
-        timesheetsResponse.isLoading ||
-        timesheetEntriesResponse.isLoading ||
-        tasksResponse.isLoading
+    const timesheetsResponse = useTimesheets(undefined, email)
+    const tasksResponse = useTasks()
 
     return (
-        <FormPage header="Home">
-            <Box>
-                {timesheetsResponse.isError && (
-                    <ErrorAlert
-                        title={timesheetsResponse.errorMessage}
-                        message={timesheetsResponse.errorMessage}
-                    />
-                )}
-                {timesheetEntriesResponse.isError && (
-                    <ErrorAlert
-                        title={timesheetEntriesResponse.errorMessage}
-                        message={timesheetEntriesResponse.errorMessage}
-                    />
-                )}
-                {tasksResponse.isError && (
-                    <ErrorAlert
-                        title={tasksResponse.errorMessage}
-                        message={tasksResponse.errorMessage}
-                    />
-                )}
-                {isLoading && <Loading />}
-                {timesheetsResponse.isSuccess &&
-                    timesheetEntriesResponse.isSuccess &&
-                    tasksResponse.isSuccess && (
+        <Box>
+            {timesheetEntriesResponse.isSuccess ? (
+                <>
+                    {isLarge && (
                         <TimesheetEntryEditor
-                            timesheets={timesheetsResponse.data}
                             entries={timesheetEntriesResponse.data}
-                            tasks={tasksResponse.data}
+                            selectedDate={selectedDate || dateUnderEdit}
+                            setSelectedDate={setSelectedDate}
+                            dateUnderEdit={dateUnderEdit}
+                            setDateUnderEdit={setDateUnderEdit}
                         />
                     )}
-            </Box>
-        </FormPage>
+                    {timesheetsResponse.isSuccess &&
+                        tasksResponse.isSuccess &&
+                        timesheetEntriesResponse.isSuccess && (
+                            <TimesheetEntryTable
+                                selectedDate={selectedDate}
+                                timesheets={timesheetsResponse.data}
+                                tasks={tasksResponse.data}
+                                isLarge={isLarge}
+                                entries={timesheetEntriesResponse.data}
+                            />
+                        )}
+                </>
+            ) : (
+                <Loading />
+            )}
+        </Box>
     )
 }
 

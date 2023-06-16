@@ -1,13 +1,14 @@
-import React from "react"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Checkbox, FormLabel, Input, Select } from "@chakra-ui/react"
+import { Checkbox, FormLabel, Input, Select, useToast } from "@chakra-ui/react"
 import { Employee } from "@/lib/types/apiTypes"
 import _ from "lodash"
 import { FormContainer, FormField, SubmitButton, toggleArchived } from "./utils"
+import { ApiUpdateResponse } from "@/lib/types/hooks"
 
 type EmployeeFormProps = {
     employee: Partial<Employee>
-    onSubmit: (emloyee: Employee) => Promise<void>
+    onSubmit: (emloyee: Employee) => Promise<ApiUpdateResponse<Employee>>
 }
 
 const convertEmployee = ({
@@ -17,7 +18,12 @@ const convertEmployee = ({
     role,
     ...rest
 }: Partial<Employee>): Employee => {
-    if (firstName && lastName && email && role) {
+    if (
+        !_.isUndefined(firstName) &&
+        !_.isUndefined(lastName) &&
+        !_.isUndefined(email) &&
+        !_.isUndefined(role)
+    ) {
         return { firstName, lastName, email, role, ...rest }
     }
     throw Error("Form error, missing required fields")
@@ -31,13 +37,42 @@ const EmployeeForm = ({ employee, onSubmit }: EmployeeFormProps) => {
         formState: { errors },
     } = useForm({ mode: "onBlur" })
 
+    const toast = useToast()
+
+    const successToast = () =>
+        toast({
+            title: "Employee saved.",
+            status: "success",
+            duration: 4000,
+            isClosable: true,
+        })
+
+    const errorToast = () =>
+        toast({
+            title: "Error saving employee.",
+            status: "error",
+            duration: 4000,
+            isClosable: true,
+        })
+
+    const submit = handleSubmit(async (data) => {
+        setIsLoading(true)
+        const { isSuccess } = await onSubmit(
+            convertEmployee({ ...employee, ...data })
+        )
+        setIsLoading(false)
+        if (isSuccess) {
+            successToast()
+        } else {
+            errorToast()
+        }
+    })
+
+    const [isLoading, setIsLoading] = useState(false)
+
     return (
         <FormContainer>
-            <form
-                onSubmit={handleSubmit((data) =>
-                    onSubmit(convertEmployee({ ...employee, ...data }))
-                )}
-            >
+            <form onSubmit={submit}>
                 <FormField field={"firstName"} errors={errors}>
                     <FormLabel>Name</FormLabel>
                     <Input
@@ -86,7 +121,10 @@ const EmployeeForm = ({ employee, onSubmit }: EmployeeFormProps) => {
                         defaultChecked={employee.status === "ARCHIVED"}
                     />
                 </FormField>
-                <SubmitButton disabled={!_.isEmpty(errors)} />
+                <SubmitButton
+                    disabled={!_.isEmpty(errors)}
+                    isLoading={isLoading}
+                />
             </form>
         </FormContainer>
     )

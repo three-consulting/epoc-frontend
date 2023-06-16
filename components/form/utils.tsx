@@ -31,15 +31,17 @@ export const FormField = ({ field, errors, children }: FormFieldProps) => (
 
 type SubmitButtonProps = {
     disabled: boolean
+    isLoading?: boolean
 }
 
-export const SubmitButton = ({ disabled }: SubmitButtonProps) => (
+export const SubmitButton = ({ disabled, isLoading }: SubmitButtonProps) => (
     <Button
         mt={4}
         color="white"
         background="green.300"
         type="submit"
         isDisabled={disabled}
+        isLoading={isLoading}
     >
         Submit
     </Button>
