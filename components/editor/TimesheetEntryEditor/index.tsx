@@ -116,8 +116,6 @@ const TimesheetEntryEditor = ({
 
     const { isLarge } = useContext(MediaContext)
 
-    const [timesheetEntries] = useState<TimesheetEntry[]>(entries)
-
     const holidaysObject = useHoliday()
 
     const onYearOrMonthChange = ({
@@ -148,7 +146,7 @@ const TimesheetEntryEditor = ({
         return false
     }
 
-    const entryDates = timesheetEntries.map(({ date: entryDate }) => entryDate)
+    const entryDates = entries.map(({ date: entryDate }) => entryDate)
 
     const ref = useRef(null)
     useOutsideClick({
@@ -208,7 +206,7 @@ const TimesheetEntryEditor = ({
                                 </Tooltip>
                             )
                         }
-                        const entryHours = timesheetEntries
+                        const entryHours = entries
                             .filter(
                                 (entry) =>
                                     entry.date === jsDateToShortISODate(d)
