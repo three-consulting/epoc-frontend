@@ -1,5 +1,9 @@
 /* eslint-disable react/no-unescaped-entities */
-import { Project, Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
+import {
+    useUpdateTimesheetEntries,
+    useUpdateTimesheetEntry,
+} from "@/lib/hooks/useUpdate"
+import { Task, Timesheet, TimesheetEntry } from "@/lib/types/apiTypes"
 import { CloseIcon } from "@chakra-ui/icons"
 import {
     AlertDialog,
@@ -22,6 +26,7 @@ import {
     Input,
     Select,
     Stack,
+    useToast,
 } from "@chakra-ui/react"
 import _ from "lodash"
 import { DateTime } from "luxon"
@@ -37,7 +42,7 @@ import {
 import { SubmitButton } from "../form/utils"
 
 type TimesheetEntryRow = {
-    project: Project
+    timesheet: Timesheet
     task: Task
     monday: number | ""
     tuesday: number | ""
@@ -46,6 +51,8 @@ type TimesheetEntryRow = {
     friday: number | ""
     saturday: number | ""
     sunday: number | ""
+    ids: (number | undefined)[]
+    days: DateTime[]
     description?: string
 }
 
@@ -59,14 +66,68 @@ const dayFields = [
     "sunday",
 ]
 
-const convertTimesheetEntryRows = (
-    rows: Partial<TimesheetEntryRow>[]
-): TimesheetEntryRow[] => rows as TimesheetEntryRow[]
+const convertTimesheetEntryRow = ({
+    timesheet,
+    task,
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday,
+    sunday,
+    ids,
+    days,
+    ...rest
+}: Partial<TimesheetEntryRow>): TimesheetEntryRow => {
+    if (
+        !_.isUndefined(timesheet) &&
+        !_.isUndefined(task) &&
+        !_.isUndefined(monday) &&
+        !_.isUndefined(tuesday) &&
+        !_.isUndefined(wednesday) &&
+        !_.isUndefined(thursday) &&
+        !_.isUndefined(friday) &&
+        !_.isUndefined(saturday) &&
+        !_.isUndefined(sunday) &&
+        !_.isUndefined(ids) &&
+        !_.isUndefined(days)
+    ) {
+        return {
+            timesheet,
+            task,
+            monday,
+            tuesday,
+            wednesday,
+            thursday,
+            friday,
+            saturday,
+            sunday,
+            ids,
+            days,
+            ...rest,
+        }
+    }
+    throw Error("Form error, missing required fields")
+}
+
+const timesheetEntryRowToTimesheetEntries = (
+    row: TimesheetEntryRow
+): TimesheetEntry[] =>
+    dayFields.map((day, index) => ({
+        id: row.ids[index],
+        quantity: (_.get(row, day) || 0) as number,
+        timesheet: row.timesheet,
+        task: row.task,
+        description: row.description,
+        date: row.days[index].toISODate() || "",
+        flex: 0,
+    }))
 
 const timesheetEntriesToTimesheetEntryRows = (
     entries: TimesheetEntry[],
     monday: DateTime
-) => {
+): TimesheetEntryRow[] => {
     const entryRows = _.groupBy(entries, ({ timesheet, task, description }) => [
         timesheet.id,
         task.id,
@@ -110,6 +171,9 @@ const timesheetEntriesToTimesheetEntryRows = (
         task: dayFields
             .map((d) => _.get(g, d)?.task)
             .filter((x) => !_.isEmpty(x))[0],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ids: dayFields.map((day) => (g as any)[day]?.id),
+        days: dayFields.map((day, i) => monday.plus({ days: i })),
     }))
 }
 
@@ -455,6 +519,7 @@ const TimesheetEntryTable = ({
     )
 
     useEffect(() => {
+        getValues()?.rows?.forEach(() => remove(0))
         reset()
         for (const row of entryRows) {
             append({ ...row, timesheet: row.timesheet.id, task: row.task.id })
@@ -480,10 +545,55 @@ const TimesheetEntryTable = ({
     const [selectedRemove, setSelectedRemove] = useState<number>()
     const cancelRef = useRef<HTMLButtonElement>(null)
 
-    const submit = handleSubmit((vals) => {
+    const { post } = useUpdateTimesheetEntries()
+    const { put, delete: del } = useUpdateTimesheetEntry()
+
+    const toast = useToast()
+
+    const successToast = () =>
+        toast({
+            title: "Entries saved.",
+            status: "success",
+            duration: 4000,
+            isClosable: true,
+        })
+
+    const errorToast = () =>
+        toast({
+            title: "Error saving entries.",
+            status: "error",
+            duration: 4000,
+            isClosable: true,
+        })
+
+    const submit = handleSubmit(async (vals) => {
         const { rows } = vals
-        // eslint-disable-next-line no-console
-        console.log(convertTimesheetEntryRows(rows))
+        const updatedEntries = (rows as TimesheetEntryRow[])
+            .map(convertTimesheetEntryRow)
+            .flatMap(timesheetEntryRowToTimesheetEntries)
+            .filter(({ id, quantity }) => !_.isUndefined(id) || quantity > 0)
+
+        const postResponse = await post(
+            updatedEntries.filter(({ id }) => _.isUndefined(id)),
+            () => undefined
+        )
+
+        // TODO: This is a dirty compatbility hack. Use the multi element put hook when available.
+        const putResponses = await Promise.all(
+            updatedEntries
+                .filter(({ id }) => !_.isUndefined(id))
+                .map((x) => put(x, () => undefined))
+        )
+
+        const sucess =
+            postResponse.isSuccess &&
+            !putResponses.map((x) => x.isSuccess).includes(false)
+
+        if (sucess) {
+            successToast()
+        } else {
+            errorToast()
+        }
     })
 
     const empty = {
@@ -497,6 +607,8 @@ const TimesheetEntryTable = ({
         saturday: "",
         sunday: "",
         description: "",
+        ids: [],
+        days: dayFields.map((_day, i) => monday.plus({ day: i })),
     }
 
     const idAsTimesheet = (id: string) =>
@@ -509,6 +621,15 @@ const TimesheetEntryTable = ({
         tasks.filter((t) => t.project.id === Number(id))
 
     const [displayAlert, setDisplayAlert] = useState(false)
+
+    const deleteEntriesByRow = (i: number) => {
+        const row = getValues().rows[i] as TimesheetEntryRow
+        return Promise.all(
+            row?.ids?.map(
+                (id) => !_.isUndefined(id) && del(id, () => undefined)
+            )
+        )
+    }
 
     useEffect(() => {
         const deletingEmptyRow =
@@ -555,9 +676,14 @@ const TimesheetEntryTable = ({
                                 </Button>
                                 <Button
                                     colorScheme="red"
-                                    onClick={() => {
-                                        remove(selectedRemove)
-                                        setSelectedRemove(undefined)
+                                    onClick={async () => {
+                                        if (!_.isUndefined(selectedRemove)) {
+                                            await deleteEntriesByRow(
+                                                selectedRemove
+                                            )
+                                            remove(selectedRemove)
+                                            setSelectedRemove(undefined)
+                                        }
                                     }}
                                     ml={3}
                                 >

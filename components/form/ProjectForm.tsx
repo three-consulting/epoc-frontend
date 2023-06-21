@@ -133,6 +133,7 @@ const ProjectForm = ({
                         {...register("endDate", {
                             validate: (endDate, { startDate }) =>
                                 !endDate || validateEndDate(startDate, endDate),
+                            valueAsDate: true,
                         })}
                         type={"date"}
                         defaultValue={project.endDate}

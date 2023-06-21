@@ -1,6 +1,6 @@
-import React from "react"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Checkbox, FormLabel, Input, Select } from "@chakra-ui/react"
+import { Checkbox, FormLabel, Input, Select, useToast } from "@chakra-ui/react"
 import { Employee, Timesheet } from "@/lib/types/apiTypes"
 import _ from "lodash"
 import { FormContainer, FormField, SubmitButton, toggleArchived } from "./utils"
@@ -46,13 +46,42 @@ const TimesheetForm = ({
 
     const employeeById = (id: number) => employees.find((e) => e.id === id)
 
+    const toast = useToast()
+
+    const successToast = () =>
+        toast({
+            title: "Timesheet saved.",
+            status: "success",
+            duration: 4000,
+            isClosable: true,
+        })
+
+    const errorToast = () =>
+        toast({
+            title: "Error saving timesheet.",
+            status: "error",
+            duration: 4000,
+            isClosable: true,
+        })
+
+    const submit = handleSubmit(async (data) => {
+        setIsLoading(true)
+        const { isSuccess } = await onSubmit(
+            convertTimesheet({ ...timesheet, ...data })
+        )
+        setIsLoading(false)
+        if (isSuccess) {
+            successToast()
+        } else {
+            errorToast()
+        }
+    })
+
+    const [isLoading, setIsLoading] = useState(false)
+
     return (
         <FormContainer>
-            <form
-                onSubmit={handleSubmit((data) =>
-                    onSubmit(convertTimesheet({ ...timesheet, ...data }))
-                )}
-            >
+            <form onSubmit={submit}>
                 <FormField field={"employee"} errors={errors}>
                     <FormLabel>Employee</FormLabel>
                     <Select
@@ -117,7 +146,10 @@ const TimesheetForm = ({
                         defaultChecked={timesheet.status === "ARCHIVED"}
                     />
                 </FormField>
-                <SubmitButton disabled={!_.isEmpty(errors)} />
+                <SubmitButton
+                    disabled={!_.isEmpty(errors)}
+                    isLoading={isLoading}
+                />
             </form>
         </FormContainer>
     )

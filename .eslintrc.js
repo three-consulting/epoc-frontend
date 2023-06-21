@@ -43,6 +43,7 @@ module.exports = {
         "id-match": 0,
         "comma-spacing": 0,
         "no-negated-condition": 0,
+        "no-warning-comments": 0,
     },
     settings: {
         react: {
