@@ -1,101 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TimesheetEntry } from "@/lib/types/apiTypes"
 import _, { sum, join } from "lodash"
-import {
-    Box,
-    Card,
-    CardBody,
-    CardHeader,
-    Heading,
-    Icon,
-    Stack,
-    StackDivider,
-    Tooltip,
-    Text,
-    useOutsideClick,
-} from "@chakra-ui/react"
-import React, { useContext, useRef, useState } from "react"
+import { Box, Icon, Tooltip, useOutsideClick } from "@chakra-ui/react"
+import React, { useRef } from "react"
 import Calendar, {
     CalendarTileProperties,
     ViewCallbackProperties,
 } from "react-calendar"
-import { DateTime } from "luxon"
 import { jsDateToShortISODate } from "@/lib/utils/date"
 import useHoliday from "@/lib/hooks/useHoliday"
 import { BsSunglasses } from "react-icons/bs"
-import { useFlex } from "@/lib/hooks/misc"
-import { MediaContext } from "@/lib/contexts/MediaContext"
-
-const weeklyHours = (date: Date, entries: TimesheetEntry[]): number =>
-    sum(
-        entries
-            .filter(
-                (entry) =>
-                    DateTime.fromISO(entry.date) <=
-                        DateTime.fromJSDate(date).endOf("week") &&
-                    DateTime.fromISO(entry.date) >=
-                        DateTime.fromJSDate(date).startOf("week")
-            )
-            .map((item) => item.quantity)
-    )
-
-const monthlyHours = (date: Date, entries: TimesheetEntry[]) =>
-    sum(
-        entries
-            .filter(
-                (entry) =>
-                    DateTime.fromISO(entry.date) <=
-                        DateTime.fromJSDate(date).endOf("month") &&
-                    DateTime.fromISO(entry.date) >=
-                        DateTime.fromJSDate(date).startOf("month")
-            )
-            .map((item) => item.quantity)
-    )
-
-type SummaryProps = {
-    hoursMonth: number
-    hoursWeek: number
-    flex: number
-    onClose: () => void
-    isOpen: boolean
-}
-
-const Summary = ({ hoursWeek, hoursMonth, flex }: SummaryProps) => (
-    <Card>
-        <CardHeader>
-            <Heading size="md">Summary</Heading>
-        </CardHeader>
-
-        <CardBody>
-            <Stack divider={<StackDivider />} spacing="4">
-                <Box>
-                    <Heading size="xs" textTransform="uppercase">
-                        Hours this week
-                    </Heading>
-                    <Text pt="2" fontSize="sm">
-                        {hoursWeek}
-                    </Text>
-                </Box>
-                <Box>
-                    <Heading size="xs" textTransform="uppercase">
-                        Hours this month
-                    </Heading>
-                    <Text pt="2" fontSize="sm">
-                        {hoursMonth}
-                    </Text>
-                </Box>
-                <Box>
-                    <Heading size="xs" textTransform="uppercase">
-                        Flex
-                    </Heading>
-                    <Text pt="2" fontSize="sm">
-                        {flex}
-                    </Text>
-                </Box>
-            </Stack>
-        </CardBody>
-    </Card>
-)
 
 interface TimesheetEntryEditorProps {
     entries: TimesheetEntry[]
@@ -112,10 +25,6 @@ const TimesheetEntryEditor = ({
     dateUnderEdit,
     setDateUnderEdit,
 }: TimesheetEntryEditorProps): JSX.Element => {
-    const flexRequest = useFlex()
-
-    const { isLarge } = useContext(MediaContext)
-
     const holidaysObject = useHoliday()
 
     const onYearOrMonthChange = ({
