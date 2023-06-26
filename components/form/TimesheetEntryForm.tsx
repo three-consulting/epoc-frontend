@@ -13,10 +13,7 @@ import ErrorAlert from "../common/ErrorAlert"
 import { FormButtons } from "../common/FormFields"
 import { timesheetEntryFieldMetadata } from "@/lib/types/typeMetadata"
 import { datesRange, jsDateToShortISODate } from "@/lib/utils/date"
-import {
-    useUpdateTimesheetEntries,
-    useUpdateTimesheetEntry,
-} from "@/lib/hooks/useUpdate"
+import { useUpdateTimesheetEntries } from "@/lib/hooks/useUpdate"
 import { isError } from "lodash"
 
 type TSetState<T> = Dispatch<SetStateAction<T>>
@@ -225,7 +222,7 @@ export const EditTimesheetEntryForm = ({
     afterSubmit,
     ...props
 }: EditTimesheetEntryFormProps): JSX.Element => {
-    const { put } = useUpdateTimesheetEntry()
+    const { put } = useUpdateTimesheetEntries()
     const [errorMessage, setErrorMessage] = useState<string>("")
     const [timesheetEntryFields, setTimesheetEntryFields] =
         useState<TimesheetEntryFields>(timesheetEntry)
@@ -235,7 +232,7 @@ export const EditTimesheetEntryForm = ({
         if (timesheetEntryFields) {
             try {
                 const entry = validateTimesheetEntryFields(timesheetEntryFields)
-                const updatedTimesheetEntry = await put(entry, errorHandler)
+                const updatedTimesheetEntry = await put([entry], errorHandler)
                 setTimesheetEntries((entries) => {
                     const indx = entries.findIndex((ent) => ent.id === id)
                     entries[indx] = entry
@@ -243,7 +240,12 @@ export const EditTimesheetEntryForm = ({
                 })
 
                 if (afterSubmit) {
-                    afterSubmit(updatedTimesheetEntry)
+                    if (updatedTimesheetEntry.isSuccess) {
+                        afterSubmit({
+                            ...updatedTimesheetEntry,
+                            data: updatedTimesheetEntry.data[0],
+                        })
+                    }
                 }
             } catch (err) {
                 if (isError(err)) {

@@ -112,10 +112,12 @@ test("a timesheet with the required fields only can be submitted", async () => {
             testRequestBody(),
             timesheetEntryFieldMetadata
         ) && testRequestBody()
-    ).toStrictEqual({
-        id: testTimesheetEntry.id,
-        ...testTimesheetEntryRequiredFields,
-    })
+    ).toStrictEqual([
+        {
+            id: testTimesheetEntry.id,
+            ...testTimesheetEntryRequiredFields,
+        },
+    ])
 })
 
 test("a timesheet with all fields can be submitted", async () => {
@@ -144,10 +146,12 @@ test("a timesheet with all fields can be submitted", async () => {
             testRequestBody(),
             timesheetEntryFieldMetadata
         ) && testRequestBody()
-    ).toStrictEqual({
-        id: testTimesheetEntry.id,
-        ...testTimesheetEntryAllFields,
-    })
+    ).toStrictEqual([
+        {
+            id: testTimesheetEntry.id,
+            ...testTimesheetEntryAllFields,
+        },
+    ])
 })
 
 test("afterSubmit is invoked with the correct data", async () => {
