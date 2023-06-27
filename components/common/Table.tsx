@@ -134,16 +134,16 @@ const TableButtons = ({
                 pageIndex={pageIndex}
             />
             {actionButton && (
-                <Button
-                    mr="auto"
-                    background="green.300"
-                    color="white"
-                    width={64}
-                    onClick={actionButton.onClick}
-                    isLoading={actionButton.isLoading}
-                >
-                    {actionButton.text}
-                </Button>
+                <Center>
+                    <Button
+                        background="green.300"
+                        color="white"
+                        onClick={actionButton.onClick}
+                        isLoading={actionButton.isLoading}
+                    >
+                        {actionButton.text}
+                    </Button>
+                </Center>
             )}
         </Stack>
     )
