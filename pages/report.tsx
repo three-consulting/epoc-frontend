@@ -43,6 +43,7 @@ import { User } from "firebase/auth"
 import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
+import { useRouter } from "next/router"
 
 export const handleCsvExportClick = async (
     user: User,
@@ -672,6 +673,12 @@ const ExportButtons = ({ getValues, entries }: ExportButtonsProps) => {
 
 const Report: NextPage = () => {
     const { isLarge } = useContext(MediaContext)
+    const { role } = useContext(AuthContext)
+    const router = useRouter()
+
+    if (role !== "ADMIN") {
+        router.push("/404")
+    }
 
     const startDate = "0000-01-01"
     const endDate = "9999-01-01"
