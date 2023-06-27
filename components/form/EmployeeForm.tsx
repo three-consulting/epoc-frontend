@@ -94,7 +94,7 @@ const EmployeeForm = ({ employee, onSubmit }: EmployeeFormProps) => {
                     />
                 </FormField>
                 <FormField field={"role"} errors={errors}>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Role</FormLabel>
                     <Select
                         {...register("role", {
                             required: "This is required",
