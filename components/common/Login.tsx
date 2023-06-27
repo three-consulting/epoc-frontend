@@ -9,7 +9,7 @@ type LoginPageProps = {
 }
 
 const LoginPage = ({ signInWithGoogle }: LoginPageProps) => (
-    <Center height="100vh">
+    <Center height="80vh">
         <Stack textAlign="center">
             <p>Welcome to Epoc.</p>
             <Box>
