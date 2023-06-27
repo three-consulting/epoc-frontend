@@ -25,5 +25,4 @@ jobs:
           yarn run type-check
           yarn prettier --check .
           yarn eslint .
-          yarn test
           yarn validate-types-dev

@@ -1,25 +1,35 @@
-import React, { ReactNode } from "react"
-import { TopHeader } from "./Header"
-import Main from "./Main"
-import { Flex } from "@chakra-ui/react"
+import { MediaContext } from "@/lib/contexts/MediaContext"
+import { Container } from "@chakra-ui/react"
+import React, { useContext } from "react"
+import Sidebar from "./Sidebar"
 
-interface LayoutProps {
-    children?: ReactNode
+type BaseProps = {
+    children: JSX.Element
 }
 
-const Layout = (props: LayoutProps): JSX.Element => {
-    const { children } = props
-
+const Base = ({ children }: BaseProps) => {
+    const { isLarge } = useContext(MediaContext)
     return (
-        <Flex
-            flexDirection="column"
-            minHeight="100vh"
-            background="linear-gradient(#9f9f9f, #efefef)"
+        <Container
+            background={"white"}
+            maxW="container.xl"
+            p={isLarge ? "16" : "4"}
+            minH={"100vh"}
+            overflowY="scroll"
         >
-            <TopHeader />
-            <Main>{children}</Main>
-        </Flex>
+            {children}
+        </Container>
     )
 }
+
+type LayoutProps = {
+    children: JSX.Element
+}
+
+const Layout = ({ children }: LayoutProps) => (
+    <Sidebar>
+        <Base>{children}</Base>
+    </Sidebar>
+)
 
 export default Layout

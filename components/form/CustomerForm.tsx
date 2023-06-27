@@ -1,214 +1,92 @@
-import { FormControl, FormLabel, Input, Box } from "@chakra-ui/react"
-import React, { Dispatch, SetStateAction, useState } from "react"
+import React, { useState } from "react"
+import { useForm } from "react-hook-form"
+import { Checkbox, FormLabel, Input } from "@chakra-ui/react"
 import { Customer } from "@/lib/types/apiTypes"
-import { useUpdateCustomers } from "@/lib/hooks/useUpdate"
-import { FormBase } from "@/lib/types/forms"
-import ErrorAlert from "../common/ErrorAlert"
-import { customerFieldMetadata } from "@/lib/types/typeMetadata"
-import FormSection from "../common/FormSection"
-import StyledButtons from "../common/StyledButtons"
-import { StyledButton } from "../common/Buttons"
+import _ from "lodash"
+import {
+    FormContainer,
+    FormField,
+    SubmitButton,
+    toggleArchived,
+    useSuccessErrorToast,
+} from "./utils"
+import { ApiUpdateResponse } from "@/lib/types/hooks"
 
-type CustomerFormPropsBase = FormBase<Customer>
-type CustomerFields = Partial<Customer>
-
-interface CreateCustomerFormProps extends CustomerFormPropsBase {
-    customer?: Customer | null
-}
-
-interface EditCustomerFormProps extends CustomerFormPropsBase {
-    customer: Customer | null
-}
-
-type CustomerFormProps = CreateCustomerFormProps & {
-    customerFields: CustomerFields
-    setCustomerFields: Dispatch<SetStateAction<CustomerFields>>
-    setErrorMessage: Dispatch<SetStateAction<string>>
-    onSubmit: (customer: Customer) => void
-}
-
-const validateCustomerFields = (fields: CustomerFields): Customer => {
-    const { name } = fields
-    if (name) {
-        return { ...fields, name }
+const convertCustomer = ({ name, ...rest }: Partial<Customer>): Customer => {
+    if (!_.isUndefined(name)) {
+        return { ...rest, name }
     }
-    throw Error("Invalid customer form: missing required fields")
+    throw Error("Form error, missing required fields")
 }
 
-function CustomerForm({
-    customerFields,
-    setCustomerFields,
-    setErrorMessage,
-    onSubmit,
-    onCancel,
-}: CustomerFormProps) {
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
+type CustomerFormProps = {
+    customer: Partial<Customer>
+    onSubmit: (customer: Customer) => Promise<ApiUpdateResponse<Customer>>
+}
 
-    const abortSubmission = onCancel && onCancel
+const CustomerForm = ({ customer, onSubmit }: CustomerFormProps) => {
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm({ mode: "onBlur" })
+
+    const { successToast, errorToast } = useSuccessErrorToast(
+        "Customer saved.",
+        "Error saving customer."
+    )
+
+    const submit = handleSubmit(async (data) => {
+        setIsLoading(true)
+        const { isSuccess } = await onSubmit(
+            convertCustomer({ ...customer, ...data })
+        )
+        setIsLoading(false)
+        if (isSuccess) {
+            successToast()
+        } else {
+            errorToast()
+        }
+    })
+
+    const [isLoading, setIsLoading] = useState(false)
 
     return (
-        <form
-            onSubmit={(event) => {
-                event.preventDefault()
-                try {
-                    const customer = validateCustomerFields(customerFields)
-                    onSubmit(customer)
-                } catch (error) {
-                    errorHandler(error as Error)
-                }
-            }}
-        >
-            <FormControl isRequired={customerFieldMetadata.name.required}>
-                <FormLabel>Customer Name</FormLabel>
-                <Input
-                    placeholder="Customer Name"
-                    value={customerFields.name || ""}
-                    onChange={(event) =>
-                        setCustomerFields({
-                            ...customerFields,
-                            name: event.target.value,
-                        })
-                    }
-                    data-testid={"form-field-name"}
+        <FormContainer>
+            <form onSubmit={submit}>
+                <FormField field={"name"} errors={errors}>
+                    <FormLabel>Name</FormLabel>
+                    <Input
+                        {...register("name", {
+                            required: "This is required",
+                        })}
+                        defaultValue={customer.name}
+                    />
+                </FormField>
+                <FormField field={"description"} errors={errors}>
+                    <FormLabel>Description</FormLabel>
+                    <Input
+                        {...register("description")}
+                        defaultValue={customer.description}
+                    />
+                </FormField>
+                <FormField field={"archived"} errors={errors}>
+                    <FormLabel>Archived</FormLabel>
+                    <Checkbox
+                        onChange={(event) =>
+                            toggleArchived(event.target.checked, setValue)
+                        }
+                        defaultChecked={customer.status === "ARCHIVED"}
+                    />
+                </FormField>
+                <SubmitButton
+                    disabled={!_.isEmpty(errors)}
+                    isLoading={isLoading}
                 />
-            </FormControl>
-
-            <FormControl
-                mt={4}
-                isRequired={customerFieldMetadata.description.required}
-            >
-                <FormLabel>Description</FormLabel>
-                <Input
-                    placeholder="Description"
-                    value={customerFields.description || ""}
-                    onChange={(event) =>
-                        setCustomerFields({
-                            ...customerFields,
-                            description: event.target.value,
-                        })
-                    }
-                    data-testid={"form-field-description"}
-                />
-            </FormControl>
-            <StyledButtons>
-                <StyledButton
-                    buttontype="save"
-                    type="submit"
-                    data-testid="form-button-submit"
-                />
-                <StyledButton
-                    buttontype="cancel"
-                    onClick={abortSubmission}
-                    data-testid="form-button-cancel"
-                />
-            </StyledButtons>
-        </form>
+            </form>
+        </FormContainer>
     )
 }
 
-export const CreateCustomerForm = (
-    props: CreateCustomerFormProps
-): JSX.Element => {
-    const { post } = useUpdateCustomers()
-    const { customer } = props
-    const [customerFields, setCustomerFields] = useState<CustomerFields>(
-        customer || {}
-    )
-    const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
-    const onSubmit = async (cust: Customer) => {
-        const newCustomer = await post(cust, errorHandler)
-        return props.afterSubmit && props.afterSubmit(newCustomer)
-    }
-
-    return (
-        <FormSection
-            header={customerFields.name ?? "-"}
-            errorMessage={errorMessage}
-        >
-            <>
-                <CustomerForm
-                    {...props}
-                    onSubmit={onSubmit}
-                    customerFields={customerFields}
-                    setCustomerFields={setCustomerFields}
-                    setErrorMessage={setErrorMessage}
-                />
-                {errorMessage && (
-                    <>
-                        <ErrorAlert />
-                        <Box>{errorMessage}</Box>
-                    </>
-                )}
-            </>
-        </FormSection>
-    )
-}
-
-export const EditCustomerForm = (props: EditCustomerFormProps): JSX.Element => {
-    const { put } = useUpdateCustomers()
-    const { customer } = props
-    const [customerFields, setCustomerFields] = useState<CustomerFields>(
-        customer || {}
-    )
-    const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
-    const onSubmit = async (cust: Customer) => {
-        const updatedCustomer = await put(cust, errorHandler)
-        return props.afterSubmit && props.afterSubmit(updatedCustomer)
-    }
-
-    return (
-        <FormSection
-            header={customerFields.name ?? "-"}
-            errorMessage={errorMessage}
-        >
-            <>
-                <CustomerForm
-                    {...props}
-                    onSubmit={onSubmit}
-                    customerFields={customerFields}
-                    setCustomerFields={setCustomerFields}
-                    setErrorMessage={setErrorMessage}
-                />
-            </>
-        </FormSection>
-    )
-}
-
-export const AddCustomerForm = (
-    props: CreateCustomerFormProps
-): JSX.Element => {
-    const { post } = useUpdateCustomers()
-    const { customer } = props
-    const [customerFields, setCustomerFields] = useState<CustomerFields>(
-        customer || {}
-    )
-    const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
-    const onSubmit = async (cust: Customer) => {
-        const newCustomer = await post(cust, errorHandler)
-        return props.afterSubmit && props.afterSubmit(newCustomer)
-    }
-
-    return (
-        <>
-            <CustomerForm
-                {...props}
-                onSubmit={onSubmit}
-                customerFields={customerFields}
-                setCustomerFields={setCustomerFields}
-                setErrorMessage={setErrorMessage}
-            />
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
-        </>
-    )
-}
+export default CustomerForm

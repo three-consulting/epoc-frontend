@@ -1,67 +1,47 @@
 import { Customer } from "@/lib/types/apiTypes"
-import { Box } from "@chakra-ui/layout"
-import { Tbody } from "@chakra-ui/react"
-import { Table, Td, Th, Thead, Tr } from "@chakra-ui/table"
+import { ApiGetResponse } from "@/lib/types/hooks"
+import { createColumnHelper } from "@tanstack/react-table"
+import _ from "lodash"
 import React from "react"
-import Link from "next/link"
-import FormSection from "../common/FormSection"
-import StyledButtons from "../common/StyledButtons"
-import { StyledButton } from "../common/Buttons"
-import { useRouter } from "next/router"
+import ItemTable, { ActionButton } from "../common/Table"
+import { archivedFilter, StatusBadge } from "./utils"
 
-interface CustomerRowProps {
-    customer: Customer
+type CustomerTableProps = {
+    response: ApiGetResponse<Customer[]>
+    actionButton?: ActionButton
+    onOpenDetail?: (c: Customer) => void
 }
 
-function CustomerRow({ customer }: CustomerRowProps): JSX.Element {
+const CustomerTable = ({
+    response,
+    actionButton,
+    onOpenDetail,
+}: CustomerTableProps) => {
+    const columnHelper = createColumnHelper<Customer>()
+
+    const columns = [
+        columnHelper.accessor("name", {
+            cell: (info) => info.getValue(),
+            header: "Name",
+        }),
+        columnHelper.accessor("status", {
+            cell: (info) => <StatusBadge status={info.getValue()} />,
+            header: "Status",
+        }),
+    ]
+
+    const defaultSort = (items: Customer[]) => _.sortBy(items, (x) => x.id)
+
     return (
-        <Link href={`customer/${customer.id}`}>
-            <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
-                <Td>{customer.name}</Td>
-            </Tr>
-        </Link>
-    )
-}
-
-interface CustomerTableProps {
-    customers: Customer[]
-}
-
-function CustomerTable({ customers }: CustomerTableProps): JSX.Element {
-    const router = useRouter()
-    return (
-        <FormSection
-            header={customers ? "All customers" : "No customers found"}
-        >
-            {customers.length ? (
-                <Table variant="simple">
-                    <Thead>
-                        <Tr>
-                            <Th>Name</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {customers.map((customer) => (
-                            <CustomerRow
-                                customer={customer}
-                                key={`${customer.id}`}
-                            />
-                        ))}
-                    </Tbody>
-                </Table>
-            ) : (
-                <Box borderWidth="1px" padding="1rem" margin="1rem">
-                    No customers have been added yet.
-                </Box>
-            )}
-            <StyledButtons>
-                <StyledButton
-                    buttontype="add"
-                    name="customer"
-                    onClick={() => router.push("/customer/new")}
-                />
-            </StyledButtons>
-        </FormSection>
+        <ItemTable
+            response={response}
+            columns={columns}
+            onOpenDetail={onOpenDetail}
+            searchPlaceholder={"Search customers"}
+            actionButton={actionButton}
+            defaultSort={defaultSort}
+            archivedFilter={archivedFilter}
+        />
     )
 }
 

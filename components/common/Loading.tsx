@@ -1,13 +1,37 @@
+import { ApiGetResponse } from "@/lib/types/hooks"
+import { Center, Spinner } from "@chakra-ui/react"
 import React from "react"
-import { SkeletonCircle, Box, SkeletonText } from "@chakra-ui/react"
 
-function Loading(): JSX.Element {
-    return (
-        <Box padding="6" boxShadow="lg" bg="white">
-            <SkeletonCircle size="10" />
-            <SkeletonText mt="4" noOfLines={4} spacing="4" />
-        </Box>
-    )
+type LoadingProps = {
+    height?: string
+    spinnerSize?: string
+}
+
+const Loading = ({ height, spinnerSize }: LoadingProps) => (
+    <Center height={height || "100vh"}>
+        <Spinner size={spinnerSize || "xl"} />
+    </Center>
+)
+
+type AwaitRequestProps<T> = {
+    req: ApiGetResponse<T>
+    children: JSX.Element
+    height?: string
+    spinnerSize?: string
+}
+
+export const AwaitRequest = <T,>({
+    req,
+    children,
+    height,
+    spinnerSize,
+}: AwaitRequestProps<T>): JSX.Element => {
+    if (req.isLoading) {
+        return <Loading height={height} spinnerSize={spinnerSize} />
+    } else if (req.isError) {
+        return <p>Error: {req.errorMessage}</p>
+    }
+    return req.isSuccess && <>{children}</>
 }
 
 export default Loading

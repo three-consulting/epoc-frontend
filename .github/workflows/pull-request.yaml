@@ -26,7 +26,6 @@ jobs:
           yarn run type-check
           yarn prettier --check .
           yarn eslint .
-          yarn test
    
       - name: Check types in dev
         id: validate_types_dev

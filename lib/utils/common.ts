@@ -1,6 +1,7 @@
 import { isError } from "lodash"
 import { parse } from "csv-parse/sync"
 import { TimesheetEntry } from "../types/apiTypes"
+import { DateTime } from "luxon"
 
 export const downloadFile = (blob: Blob, fileName: string) => {
     const link = document.createElement("a")
@@ -49,3 +50,14 @@ export const parseQuantity = (
     }
     throw new Error("Quantity can't be parsed")
 }
+
+export const functionCompose =
+    <T>(fs: ((t: T) => T)[]): ((t: T) => T) =>
+    (t: T) =>
+        fs.reduce((acc, f) => f(acc), t)
+
+export const getDayAndMonth = (datetime: DateTime) =>
+    `${datetime.day}.${datetime.month}.`
+
+export const yyyymmddToDateTime = (yyyymmdd: string) =>
+    DateTime.fromFormat(yyyymmdd, "yyyy-MM-dd")
