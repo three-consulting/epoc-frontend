@@ -22,10 +22,7 @@ export const useUpdateTasks = (): UpdateHook<Task> =>
 export const useUpdateTimesheets = (): UpdateHook<Timesheet> =>
     useUpdate("timesheet", useUser())
 
-export const useUpdateTimesheetEntry = (): UpdateHook<TimesheetEntry> =>
-    useUpdate("timesheet-entry", useUser())
-
-export const useUpdateTimesheetEntries = (): UpdateHook<TimesheetEntry[]> =>
+export const useUpdateTimesheetEntry = (): UpdateHook<TimesheetEntry[]> =>
     useUpdate("timesheet-entry", useUser())
 
 export const useUpdateEmployees = (): UpdateHook<Employee> =>

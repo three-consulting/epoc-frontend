@@ -1,64 +1,47 @@
-import React from "react"
-import { Box } from "@chakra-ui/layout"
-import { Table, Thead, Tr, Td, Th, Tbody } from "@chakra-ui/react"
-import Link from "next/link"
+import React, { useContext } from "react"
 import { Project } from "@/lib/types/apiTypes"
-import FormSection from "../common/FormSection"
-import { useRouter } from "next/router"
-import StyledButtons from "../common/StyledButtons"
-import { StyledButton } from "../common/Buttons"
+import { createColumnHelper } from "@tanstack/react-table"
+import ItemTable, { ActionButton } from "../common/Table"
+import { ApiGetResponse } from "@/lib/types/hooks"
+import { MediaContext } from "@/lib/contexts/MediaContext"
+import _ from "lodash"
+import { archivedFilter, StatusBadge } from "./utils"
 
-interface ProjectRowProps {
-    project: Project
+type ProjectTableProps = {
+    response: ApiGetResponse<Project[]>
+    actionButton?: ActionButton
 }
 
-function ProjectRow({ project }: ProjectRowProps) {
+const ProjectTable = ({ response, actionButton }: ProjectTableProps) => {
+    const columnHelper = createColumnHelper<Project>()
+    const { isLarge } = useContext(MediaContext)
+
+    const columns = [
+        columnHelper.accessor("name", {
+            cell: (info) => info.getValue(),
+            header: "Name",
+        }),
+        columnHelper.accessor((row) => row.customer.name, {
+            id: "Customer",
+        }),
+        columnHelper.accessor("status", {
+            cell: (info) => <StatusBadge status={info.getValue()} />,
+            header: "Status",
+        }),
+    ]
+
+    const defaultSort = (items: Project[]) => _.sortBy(items, (x) => x.id)
+
     return (
-        <Link href={`project/${project.id}`}>
-            <Tr _hover={{ backgroundColor: "gray.200", cursor: "pointer" }}>
-                <Td>{project.name}</Td>
-                <Td>{project.customer?.name}</Td>
-            </Tr>
-        </Link>
-    )
-}
-
-interface ProjectTableProps {
-    projects: Project[]
-}
-
-function ProjectTable({ projects }: ProjectTableProps): JSX.Element {
-    const router = useRouter()
-    return (
-        <FormSection header={projects ? "All projects" : "No projects found"}>
-            {projects && (
-                <Box>
-                    <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <Th>Name</Th>
-                                <Th>Client</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {projects.map((project) => (
-                                <ProjectRow
-                                    project={project}
-                                    key={`${project.id}`}
-                                />
-                            ))}
-                        </Tbody>
-                    </Table>
-                    <StyledButtons>
-                        <StyledButton
-                            buttontype="add"
-                            onClick={() => router.push("/project/new")}
-                            name="project"
-                        />
-                    </StyledButtons>
-                </Box>
-            )}
-        </FormSection>
+        <ItemTable
+            response={response}
+            columns={isLarge ? columns : columns.slice(0, 1)}
+            searchPlaceholder={"Search projects"}
+            rowLink={(project: Project) => `/project/${project.id}`}
+            actionButton={actionButton}
+            defaultSort={defaultSort}
+            archivedFilter={archivedFilter}
+        />
     )
 }
 

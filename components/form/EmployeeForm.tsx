@@ -1,265 +1,126 @@
-import { FormControl, FormLabel, Input, Box, Select } from "@chakra-ui/react"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
+import { useForm } from "react-hook-form"
+import { Checkbox, FormLabel, Input, Select } from "@chakra-ui/react"
 import { Employee } from "@/lib/types/apiTypes"
-import { useUpdateEmployees } from "@/lib/hooks/useUpdate"
-import { FormBase } from "@/lib/types/forms"
-import ErrorAlert from "../common/ErrorAlert"
-import { employeeFieldMetadata } from "@/lib/types/typeMetadata"
-import WarningModal from "../common/WarningModal"
-import StyledButtons from "../common/StyledButtons"
-import { StyledButton } from "../common/Buttons"
-import { isError } from "lodash"
-import FormSection from "../common/FormSection"
+import _ from "lodash"
+import {
+    FormContainer,
+    FormField,
+    SubmitButton,
+    toggleArchived,
+    useSuccessErrorToast,
+} from "./utils"
+import { ApiUpdateResponse } from "@/lib/types/hooks"
 
-type CreateEmployeeFormProps = FormBase<Employee>
-
-type EditEmployeeFormProps = CreateEmployeeFormProps & {
-    employee: Employee
+const convertEmployee = ({
+    firstName,
+    lastName,
+    email,
+    role,
+    ...rest
+}: Partial<Employee>): Employee => {
+    if (
+        !_.isUndefined(firstName) &&
+        !_.isUndefined(lastName) &&
+        !_.isUndefined(email) &&
+        !_.isUndefined(role)
+    ) {
+        return { firstName, lastName, email, role, ...rest }
+    }
+    throw Error("Form error, missing required fields")
 }
 
-type EmployeeFormProps = CreateEmployeeFormProps & {
-    employee?: Employee
-    onSubmit: (employee: Employee) => void
-    onCancel?: () => void
+type EmployeeFormProps = {
+    employee: Partial<Employee>
+    onSubmit: (emloyee: Employee) => Promise<ApiUpdateResponse<Employee>>
 }
 
-type EmployeeFields = Partial<Employee>
+const EmployeeForm = ({ employee, onSubmit }: EmployeeFormProps) => {
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm({ mode: "onBlur" })
 
-const validateEmployeeFields = (fields: EmployeeFields): Employee => {
-    const { firstName, lastName, email, role, status } = fields
-    if (!firstName) {
-        throw Error("Invalid employee form: missing required field firstName")
-    }
-    if (!lastName) {
-        throw Error("Invalid employee form: missing required field lastName")
-    }
-    if (!email) {
-        throw Error("Invalid employee form: missing required field email")
-    }
-    if (!role) {
-        throw Error("Invalid employee form: missing required field role")
-    }
-    if (!status) {
-        throw Error("Invalid employee form: missing required field status")
-    }
-    return fields as Employee
-}
-
-const EmployeeForm = ({ onSubmit, onCancel, employee }: EmployeeFormProps) => {
-    const [disableSave, setDisableSave] = useState<boolean>(true)
-    const [showWarningModal, setShowWarningModal] = useState<boolean>(false)
-    const [employeeFields, setEmployeeFields] = useState<EmployeeFields>(
-        employee || {}
+    const { successToast, errorToast } = useSuccessErrorToast(
+        "Employee saved.",
+        "Error saving employee."
     )
 
-    const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
-    useEffect(() => {
-        try {
-            if (validateEmployeeFields(employeeFields)) {
-                setDisableSave(false)
-            }
-        } catch (_err) {
-            setDisableSave(true)
+    const submit = handleSubmit(async (data) => {
+        setIsLoading(true)
+        const { isSuccess } = await onSubmit(
+            convertEmployee({ ...employee, ...data })
+        )
+        setIsLoading(false)
+        if (isSuccess) {
+            successToast()
+        } else {
+            errorToast()
         }
-    }, [employeeFields])
+    })
 
-    const onConfirm = (event: React.MouseEvent) => {
-        event.preventDefault()
-        try {
-            onSubmit(validateEmployeeFields(employeeFields))
-        } catch (error) {
-            if (isError(error)) {
-                errorHandler(error)
-            }
-        }
-    }
-
-    const onFirstNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-        setEmployeeFields({
-            ...employeeFields,
-            firstName: event.target.value,
-        })
-
-    const onLastNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-        setEmployeeFields({
-            ...employeeFields,
-            lastName: event.target.value,
-        })
-
-    const onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-        setEmployeeFields({
-            ...employeeFields,
-            email: event.target.value,
-        })
-
-    const onRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) =>
-        setEmployeeFields({
-            ...employeeFields,
-            role:
-                event.target.value === "ADMIN" || event.target.value === "USER"
-                    ? event.target.value
-                    : "USER",
-        })
-
-    const onStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) =>
-        setEmployeeFields({
-            ...employeeFields,
-            status:
-                event.target.value === "ACTIVE" ||
-                event.target.value === "ARCHIVED"
-                    ? event.target.value
-                    : "ACTIVE",
-        })
+    const [isLoading, setIsLoading] = useState(false)
 
     return (
-        <form
-            onSubmit={(event) => {
-                event.preventDefault()
-                try {
-                    onSubmit(validateEmployeeFields(employeeFields))
-                } catch (error) {
-                    errorHandler(error as Error)
-                }
-            }}
-        >
-            <div style={{ padding: "20px" }}>
-                <FormControl
-                    isRequired={employeeFieldMetadata.firstName.required}
-                >
-                    <FormLabel>Employee First Name</FormLabel>
+        <FormContainer>
+            <form onSubmit={submit}>
+                <FormField field={"firstName"} errors={errors}>
+                    <FormLabel>Name</FormLabel>
                     <Input
-                        placeholder="Employee First Name"
-                        value={employeeFields.firstName || ""}
-                        onChange={onFirstNameChange}
-                        data-testid={"form-field-firstName"}
+                        {...register("firstName", {
+                            required: "This is required",
+                        })}
+                        defaultValue={employee.firstName}
                     />
-                </FormControl>
-
-                <FormControl
-                    mt={4}
-                    isRequired={employeeFieldMetadata.lastName.required}
-                >
-                    <FormLabel>Employee Last Name</FormLabel>
+                </FormField>
+                <FormField field={"lastName"} errors={errors}>
+                    <FormLabel>Last name</FormLabel>
                     <Input
-                        placeholder="Employee Last Name"
-                        value={employeeFields.lastName || ""}
-                        onChange={onLastNameChange}
-                        data-testid={"form-field-lastName"}
+                        {...register("lastName", {
+                            required: "This is required",
+                        })}
+                        defaultValue={employee.lastName}
                     />
-                </FormControl>
-
-                <FormControl
-                    mt={4}
-                    isRequired={employeeFieldMetadata.email.required}
-                >
-                    <FormLabel>Employee Email</FormLabel>
+                </FormField>
+                <FormField field={"email"} errors={errors}>
+                    <FormLabel>Email</FormLabel>
                     <Input
-                        placeholder="Employee Email"
-                        value={employeeFields.email || ""}
-                        onChange={onEmailChange}
-                        data-testid={"form-field-email"}
+                        {...register("email", {
+                            required: "This is required",
+                        })}
+                        defaultValue={employee.email}
                     />
-                </FormControl>
-
-                <FormControl
-                    mt={4}
-                    isRequired={employeeFieldMetadata.role.required}
-                >
-                    <FormLabel>Employee Role</FormLabel>
+                </FormField>
+                <FormField field={"role"} errors={errors}>
+                    <FormLabel>Email</FormLabel>
                     <Select
-                        value={employeeFields.role || ""}
-                        onChange={onRoleChange}
-                        data-testid={"form-field-role"}
+                        {...register("role", {
+                            required: "This is required",
+                        })}
+                        defaultValue={employee.role}
                     >
-                        <option hidden disabled value="">
-                            Select role
-                        </option>
-                        <option value={"USER"}>User</option>
-                        <option value={"ADMIN"}>Admin</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="USER">User</option>
                     </Select>
-                </FormControl>
-
-                <FormControl
-                    mt={4}
-                    isRequired={employeeFieldMetadata.status.required}
-                >
-                    <FormLabel>Employee Status</FormLabel>
-                    <Select
-                        value={employeeFields.status || ""}
-                        onChange={onStatusChange}
-                        data-testid={"form-field-status"}
-                    >
-                        <option hidden disabled value="">
-                            Select status
-                        </option>
-                        <option value={"ACTIVE"}>Active</option>
-                        <option value={"ARCHIVED"}>Archived</option>
-                    </Select>
-                </FormControl>
-            </div>
-            <StyledButtons>
-                <StyledButton
-                    buttontype="save"
-                    onClick={() => setShowWarningModal(true)}
-                    disabled={disableSave}
-                    data-testid="form-button-save"
+                </FormField>
+                <FormField field={"archived"} errors={errors}>
+                    <FormLabel>Archived</FormLabel>
+                    <Checkbox
+                        onChange={(event) =>
+                            toggleArchived(event.target.checked, setValue)
+                        }
+                        defaultChecked={employee.status === "ARCHIVED"}
+                    />
+                </FormField>
+                <SubmitButton
+                    disabled={!_.isEmpty(errors)}
+                    isLoading={isLoading}
                 />
-                <StyledButton
-                    buttontype="cancel"
-                    onClick={onCancel}
-                    data-testid="form-button-cancel"
-                />
-            </StyledButtons>
-            {errorMessage && (
-                <>
-                    <ErrorAlert />
-                    <Box>{errorMessage}</Box>
-                </>
-            )}
-            <WarningModal
-                header={"Are you sure?"}
-                content={"Changes in this form will overwrite data in firebase"}
-                buttons={
-                    <StyledButtons>
-                        <StyledButton
-                            buttontype="confirm"
-                            onClick={onConfirm}
-                            data-testid="form-button-confirm"
-                        />
-                        <StyledButton
-                            buttontype="cancel"
-                            onClick={() => setShowWarningModal(false)}
-                        />
-                    </StyledButtons>
-                }
-                isOpen={showWarningModal}
-                onClose={() => setShowWarningModal(false)}
-            />
-        </form>
+            </form>
+        </FormContainer>
     )
 }
 
-export const EditEmployeeForm = (props: EditEmployeeFormProps): JSX.Element => {
-    const { put } = useUpdateEmployees()
-    const { employee } = props
-    const [errorMessage, setErrorMessage] = useState<string>("")
-    const errorHandler = (error: Error) => setErrorMessage(`${error}`)
-
-    const onSubmit = async (emp: Employee) => {
-        const updatedEmployee = await put(emp, errorHandler)
-        return props.afterSubmit && props.afterSubmit(updatedEmployee)
-    }
-
-    const getHeader = () =>
-        `${employee.firstName ?? " - "} ${employee.lastName ?? " - "}`
-
-    return (
-        <FormSection header={getHeader()} errorMessage={errorMessage}>
-            <>
-                <EmployeeForm {...props} onSubmit={onSubmit} />
-            </>
-        </FormSection>
-    )
-}
+export default EmployeeForm
