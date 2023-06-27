@@ -71,7 +71,7 @@ const TimesheetEntryRow = ({
                                     }
                                     return entries
                                 })
-                                deleteTimesheetEntry(id, () => undefined)
+                                deleteTimesheetEntry([id], () => undefined)
                             }}
                         >
                             <Icon as={BsTrash} boxSize="1.5rem" />

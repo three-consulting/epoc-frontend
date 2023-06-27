@@ -36,7 +36,10 @@ export type UpdateHookFunction<T> = (
     ...args: UpdateHookArgs<T>
 ) => Promise<ApiUpdateResponse<T>>
 
-export type DeleteHookArgs = [id: number, errorHandler: (error: Error) => void]
+export type DeleteHookArgs = [
+    ids: number[],
+    errorHandler: (error: Error) => void
+]
 export type DeleteHookFunction = (...args: DeleteHookArgs) => Promise<void>
 
 export interface UpdateHook<T> {

@@ -11,8 +11,9 @@ export interface paths {
   };
   "/timesheet-entry": {
     get: operations["getTimesheetEntries"];
-    put: operations["updateTimesheetEntryForId"];
+    put: operations["updateTimesheetEntriesForId"];
     post: operations["createTimesheetEntries"];
+    delete: operations["deleteTimesheetEntriesForId"];
   };
   "/task": {
     get: operations["getTasks"];
@@ -40,7 +41,6 @@ export interface paths {
   };
   "/timesheet-entry/{timesheetEntryId}": {
     get: operations["getTimesheetEntryForId"];
-    delete: operations["deleteTimesheetEntryForId"];
   };
   "/timesheet-entry/flex": {
     get: operations["getEmployeeFlex"];
@@ -238,18 +238,18 @@ export interface operations {
       };
     };
   };
-  updateTimesheetEntryForId: {
+  updateTimesheetEntriesForId: {
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["TimesheetEntryDTO"];
+          "application/json": components["schemas"]["TimesheetEntryDTO"][];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["TimesheetEntryDTO"];
+        "application/json": components["schemas"]["TimesheetEntryDTO"][];
       };
     };
   };
@@ -265,6 +265,17 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["TimesheetEntryDTO"][];
+      };
+    };
+  };
+  deleteTimesheetEntriesForId: {
+    responses: {
+      /** OK */
+      200: unknown;
+    };
+    requestBody: {
+      content: {
+        "*/*": number[];
       };
     };
   };
@@ -472,17 +483,6 @@ export interface operations {
           "application/json": components["schemas"]["TimesheetEntryDTO"];
         };
       };
-    };
-  };
-  deleteTimesheetEntryForId: {
-    parameters: {
-      path: {
-        timesheetEntryId: number;
-      };
-    };
-    responses: {
-      /** OK */
-      200: unknown;
     };
   };
   getEmployeeFlex: {

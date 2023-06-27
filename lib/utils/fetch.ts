@@ -110,11 +110,13 @@ export function put<T, U>(
 // delete is a reserved keyword
 export function del<T>(
     path: string,
+    ids: number[],
     user?: User,
     config?: RequestInit
 ): Promise<T> {
     const init = {
         method: "delete",
+        body: JSON.stringify(ids),
         ...config,
     }
     const url = pathToUrl(path, {})

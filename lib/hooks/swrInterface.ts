@@ -118,8 +118,8 @@ export const useUpdate = (endpoint: Endpoint, user: User) => {
             return updateToApiUpdateResponse(updatedItem || null)
         },
 
-        delete: async <T>(...[id, errorHandler]: DeleteHookArgs) => {
-            await del<T>(detailEndpoint(endpoint, id), user).catch(errorHandler)
+        delete: async <T>(...[ids, errorHandler]: DeleteHookArgs) => {
+            await del<T>(listEndpoint(endpoint), ids, user).catch(errorHandler)
             refresh()
         },
     }
