@@ -251,7 +251,11 @@ const MobileTimesheetEntryTableRow = ({
                             )
                         }
                     >
-                        <Options options={timesheets} />
+                        {timesheets.map((t) => (
+                            <option key={t.id} value={t.id}>
+                                {t.project.name}
+                            </option>
+                        ))}
                     </Select>
                     <Select
                         width="200px"
