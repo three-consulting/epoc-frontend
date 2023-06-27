@@ -5,8 +5,8 @@ import {
     onAuthStateChanged,
     getAuth,
     signOut,
-    signInWithRedirect,
     GoogleAuthProvider,
+    signInWithPopup,
 } from "firebase/auth"
 import { FirebaseAuthStateNullableUser, Role } from "@/lib/types/auth"
 
@@ -34,7 +34,7 @@ export default function useFirebaseAuth(): FirebaseAuthStateNullableUser {
         const provider = new GoogleAuthProvider()
         provider.addScope("profile")
         provider.addScope("email")
-        await signInWithRedirect(auth, provider)
+        await signInWithPopup(auth, provider)
     }
 
     useEffect(() => {
