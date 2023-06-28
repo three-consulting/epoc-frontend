@@ -20,11 +20,14 @@ interface LinkItemProps {
     name: string
     href: string
 }
-const LinkItems: LinkItemProps[] = [
-    { name: "Home", href: "/" },
-    { name: "Organization", href: "/organization" },
-    { name: "Reports", href: "/report" },
-]
+const useLinkItems = (): LinkItemProps[] => {
+    const { role } = useContext(AuthContext)
+
+    return [
+        { name: "Home", href: "/" },
+        { name: "Organization", href: "/organization" },
+    ].concat(role === "ADMIN" ? [{ name: "Reports", href: "/report" }] : [])
+}
 
 export default function Sidebar({ children }: { children: ReactNode }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -60,6 +63,7 @@ interface SidebarProps extends BoxProps {
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     const { signOutAndClear } = useContext(AuthContext)
+    const linkItems = useLinkItems()
     return (
         <Box
             bg={useColorModeValue("white", "gray.900")}
@@ -84,7 +88,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                     onClick={onClose}
                 />
             </Flex>
-            {LinkItems.map((link) => (
+            {linkItems.map((link) => (
                 <NavItem key={link.name} href={link.href} onClick={onClose}>
                     <>{link.name}</>
                 </NavItem>

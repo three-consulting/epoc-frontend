@@ -204,16 +204,18 @@ const ItemTable = <T,>(props: ItemTableProps<T>) => {
                 width={"200px"}
                 ml={"auto"}
             />
-            <Box ml={"auto"}>
-                <Checkbox
-                    checked={displayArchived}
-                    onChange={({ target }) =>
-                        setDisplayArchived(target.checked)
-                    }
-                >
-                    Show archived
-                </Checkbox>
-            </Box>
+            {!_.isUndefined(props.archivedFilter) && (
+                <Box ml={"auto"}>
+                    <Checkbox
+                        checked={displayArchived}
+                        onChange={({ target }) =>
+                            setDisplayArchived(target.checked)
+                        }
+                    >
+                        Show archived
+                    </Checkbox>
+                </Box>
+            )}
         </>
     )
 
@@ -228,7 +230,7 @@ const ItemTable = <T,>(props: ItemTableProps<T>) => {
                     <Stack>{headerItems}</Stack>
                 )}
             </Box>
-            <Box overflow={"scroll"} height={props.tableHeight || height} m={4}>
+            <Box height={props.tableHeight || height} m={4}>
                 {props.response.isSuccess ? (
                     <InnerTable
                         {...props}
