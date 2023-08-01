@@ -41,6 +41,8 @@ import { useContext, useState } from "react"
 import { MediaContext } from "@/lib/contexts/MediaContext"
 import { ApiGetResponse } from "@/lib/types/hooks"
 import _ from "lodash"
+import { AuthContext } from "@/lib/contexts/FirebaseAuthContext"
+import { Role } from "@/lib/types/auth"
 
 type PaginationButtonProps = {
     setPagination: React.Dispatch<React.SetStateAction<PaginationState>>
@@ -181,7 +183,9 @@ export type ItemTableProps<T> = {
 const ItemTable = <T,>(props: ItemTableProps<T>) => {
     const [displayArchived, setDisplayArchived] = useState(false)
     const [search, setSearch] = useState("")
+
     const { isLarge } = useContext(MediaContext)
+    const { role } = useContext(AuthContext)
 
     const customFilter = (items: T[]) =>
         _.reduce(props.customFilters || [], (a, f) => a.filter(f), items)
@@ -204,7 +208,7 @@ const ItemTable = <T,>(props: ItemTableProps<T>) => {
                 width={"200px"}
                 ml={"auto"}
             />
-            {!_.isUndefined(props.archivedFilter) && (
+            {role === Role.ADMIN && !_.isUndefined(props.archivedFilter) && (
                 <Box ml={"auto"}>
                     <Checkbox
                         checked={displayArchived}
