@@ -2,6 +2,8 @@ name: Pull Request
 
 on:
   pull_request:
+    branches:
+      - main
     types:
       - opened
       - synchronize
@@ -30,7 +32,7 @@ jobs:
       - name: Check types in dev
         id: validate_types_dev
         run: |
-          yarn openapi-typescript https://epoc-backend-testing.herokuapp.com/docs --output dev.ts
+          yarn openapi-typescript https://epoc-backend-dev-ka3fwwycka-lz.a.run.app/docs --output dev.ts
           export DEV_DIFF="$(diff dev.ts lib/types/api.ts)"
           echo "DEV_DIFF<<EOF" >> $GITHUB_ENV
           echo "$DEV_DIFF" >> $GITHUB_ENV
