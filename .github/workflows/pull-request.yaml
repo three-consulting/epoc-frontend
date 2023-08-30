@@ -52,6 +52,7 @@ jobs:
           push: false
 
       - name: Check types in dev
+        if: github.actor != 'dependabot[bot]'
         id: validate_types_dev
         run: |
           yarn openapi-typescript https://epoc-backend-dev-ka3fwwycka-lz.a.run.app/docs --output dev.ts
@@ -61,6 +62,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Check types in prod
+        if: github.actor != 'dependabot[bot]'
         id: validate_types_prod
         run: |
           yarn openapi-typescript https://epoc-backend.herokuapp.com/docs --output prod.ts
@@ -70,6 +72,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Find old dev type validation comment
+        if: github.actor != 'dependabot[bot]'
         uses: peter-evans/find-comment@v2
         id: dev-types
         with:
@@ -78,6 +81,7 @@ jobs:
           body-includes: DEV type validation result
 
       - name: Find old dev type validation comment
+        if: github.actor != 'dependabot[bot]'
         uses: peter-evans/find-comment@v2
         id: prod-types
         with:
