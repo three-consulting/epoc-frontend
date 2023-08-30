@@ -86,6 +86,7 @@ jobs:
           body-includes: PROD type validation result
 
       - name: Comment results of dev type validations
+        if: github.actor != 'dependabot[bot]'
         uses: peter-evans/create-or-update-comment@v3
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -98,6 +99,7 @@ jobs:
             ```
 
       - name: Comment results of prod type validations
+        if: github.actor != 'dependabot[bot]'
         uses: peter-evans/create-or-update-comment@v3
         with:
           issue-number: ${{ github.event.pull_request.number }}
