@@ -41,7 +41,7 @@
         "jspdf-autotable": "^3.5.28",
         "lodash": "^4.17.21",
         "luxon": "^3.0.3",
-        "next": "^12.2.5",
+        "next": "^13.4.19",
         "react": "^18.2.0",
         "react-calendar": "^3.7.0",
         "react-dom": "^18.2.0",
