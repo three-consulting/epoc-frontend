@@ -38,8 +38,12 @@ module.exports = {
         "no-shadow": "off",
         "@typescript-eslint/no-shadow": ["error"],
         "no-magic-numbers": 0,
+        "no-use-before-define": 0,
         "id-length": 0,
         "id-match": 0,
+        "comma-spacing": 0,
+        "no-negated-condition": 0,
+        "no-warning-comments": 0,
     },
     settings: {
         react: {

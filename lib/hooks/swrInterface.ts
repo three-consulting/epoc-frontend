@@ -20,7 +20,6 @@ export type Endpoint =
     | `timesheet-entry`
     | `timesheet-entries`
     | `time-category`
-    | `employee-sync`
 
 type CacheKeyData = {
     key: string
@@ -30,7 +29,7 @@ type CacheKeyData = {
 export const endpointRegex = (endpoint: Endpoint): RegExp =>
     new RegExp(`^/${endpoint}([/|?].+)?`)
 
-const prefixEndpoint = (endpoint: Endpoint) =>
+export const prefixEndpoint = (endpoint: Endpoint) =>
     `${NEXT_PUBLIC_API_URL}/${endpoint}`
 export const listEndpoint = (endpoint: Endpoint): string =>
     prefixEndpoint(endpoint)
@@ -40,6 +39,18 @@ export const urlToCacheKey = (url: URL): string =>
     `${url.pathname}${url.search}`
 export const firebaseSyncEndpoint = (endpoint: Endpoint): string =>
     `${prefixEndpoint(`employee`)}/${endpoint}`
+
+export const getAndMutate = async (
+    url: string,
+    deps: Endpoint[],
+    user?: User
+) => {
+    const response = await getJSON(url, user)
+    mutate((key: string) =>
+        deps.map((endpoint) => mutateByEndpoint(endpoint)(key)).includes(true)
+    )
+    return response
+}
 
 const getCacheKey = (
     endpoint: string | null,

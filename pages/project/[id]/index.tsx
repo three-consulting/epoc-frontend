@@ -1,206 +1,166 @@
 import React, { useState } from "react"
-import { Box } from "@chakra-ui/layout"
-import type { NextPage } from "next"
-import { useRouter } from "next/dist/client/router"
-import ErrorAlert from "@/components/common/ErrorAlert"
-import Loading from "@/components/common/Loading"
-import {
-    Center,
-    Flex,
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalOverlay,
-} from "@chakra-ui/react"
-import Link from "next/link"
-import TimesheetTable from "@/components/table/TimesheetTable"
-import TaskTable from "@/components/table/TaskTable"
-import ProjectDetail from "@/components/detail/ProjectDetail"
+import { NextPage } from "next"
+import { useRouter } from "next/router"
 import { useProjectDetail } from "@/lib/hooks/useDetail"
-import { useTimesheets, useEmployees, useTasks } from "@/lib/hooks/useList"
-import { useUpdateProjects } from "@/lib/hooks/useUpdate"
-import FormSection from "@/components/common/FormSection"
-import FormPage from "@/components/common/FormPage"
-import StyledButtons from "@/components/common/StyledButtons"
+import { Task, Timesheet } from "@/lib/types/apiTypes"
+import { Box, Button, Heading, HStack, useDisclosure } from "@chakra-ui/react"
 import {
-    CustomButton,
-    StyledButton,
-    RemoveIconButton,
-} from "@/components/common/Buttons"
+    useCustomers,
+    useEmployees,
+    useTasks,
+    useTimesheets,
+} from "@/lib/hooks/useList"
+import TaskTable from "@/components/table/TaskTable"
+import TimesheetTable from "@/components/table/TimesheetTable"
+import { ChevronLeftIcon } from "@chakra-ui/icons"
+import Link from "next/link"
+import ProjectForm from "@/components/form/ProjectForm"
+import {
+    useUpdateProjects,
+    useUpdateTasks,
+    useUpdateTimesheets,
+} from "@/lib/hooks/useUpdate"
+import ItemDrawer from "@/components/common/ItemDrawer"
+import TaskForm from "@/components/form/TaskForm"
+import TimesheetForm from "@/components/form/TimesheetForm"
 
-type Props = {
-    projectId: number
-}
-
-type ProjectStatus = "ACTIVE" | "ARCHIVED"
-
-function ProjectDetailPage({ projectId }: Props): JSX.Element {
-    const projectDetailResponse = useProjectDetail(projectId)
-    const timesheetsResponse = useTimesheets(projectId)
+const DisplayProjectDetail = ({ id }: { id: number }) => {
+    const projectResponse = useProjectDetail(id)
+    const taskResponse = useTasks()
+    const timesheetResponse = useTimesheets(id)
     const employeesResponse = useEmployees()
-    const tasksResponse = useTasks()
+    const customersResponse = useCustomers()
 
-    const { put } = useUpdateProjects()
+    const { put: putProject } = useUpdateProjects()
+    const { post: postTimesheet, put: putTimesheet } = useUpdateTimesheets()
+    const { post: postTask, put: putTask } = useUpdateTasks()
 
-    const [displayArchivedModal, setDisplayArchivedModal] = useState(false)
-    const [errorMessage, setErrorMessage] = useState<string>("")
+    const projectDisclosure = useDisclosure()
+    const timesheetDisclosure = useDisclosure()
+    const taskDisclosure = useDisclosure()
 
-    const changeProjectStatus = async (
-        mouseEvent: React.MouseEvent,
-        status: ProjectStatus
-    ) => {
-        mouseEvent.preventDefault()
-        if (projectDetailResponse.isSuccess) {
-            await put({ ...projectDetailResponse.data, status }, (error) =>
-                setErrorMessage(`${error}`)
-            )
-            setDisplayArchivedModal(true)
-        } else {
-            setErrorMessage("Project failed to load.")
-        }
+    const [selectedTimesheet, setSelectedTimesheet] = useState<Timesheet>()
+    const [selectedTask, setSelectedTask] = useState<Task>()
+
+    const timesheetActionButton = {
+        text: "Create timesheet",
+        onClick: timesheetDisclosure.onOpen,
+    }
+    const taskActionButton = {
+        text: "Create task",
+        onClick: taskDisclosure.onOpen,
     }
 
-    const onArchive = (event: React.MouseEvent) =>
-        changeProjectStatus(event, "ARCHIVED")
-    const onActivate = (event: React.MouseEvent) =>
-        changeProjectStatus(event, "ACTIVE")
-    const onClose = () => setDisplayArchivedModal(false)
-
-    const getName = () =>
-        projectDetailResponse.isSuccess ? projectDetailResponse.data.name : ""
-    const getStatus = () =>
-        projectDetailResponse.isSuccess ? projectDetailResponse.data.status : ""
-    const getStatusString = () => {
-        switch (getStatus()) {
-            case "ACTIVE": {
-                return "reactivated"
-            }
-            case "ARCHIVED": {
-                return "archived"
-            }
-            default: {
-                return ""
-            }
-        }
-    }
-    const getCustomButtonProps = () => {
-        switch (getStatus()) {
-            case "ACTIVE": {
-                return {
-                    text: "Archive Project",
-                    colorScheme: "pink",
-                    variant: "outline",
-                    onClick: onArchive,
-                }
-            }
-            case "ARCHIVED": {
-                return {
-                    text: "Rectivate Project",
-                    colorScheme: "teal",
-                    onClick: onActivate,
-                }
-            }
-            default: {
-                return {}
-            }
-        }
-    }
+    const filterTaskByProject = (task: Task) => task.project.id === id
 
     return (
-        <FormPage header="Projects">
-            <Box>
-                {errorMessage ? (
-                    <>
-                        <ErrorAlert />
-                        <Box>{errorMessage}</Box>
-                    </>
-                ) : null}
-                {projectDetailResponse.isLoading && <Loading />}
-                {projectDetailResponse.isError && (
-                    <ErrorAlert
-                        title={projectDetailResponse.errorMessage}
-                        message={projectDetailResponse.errorMessage}
+        <Box>
+            {projectDisclosure.isOpen &&
+                projectResponse.isSuccess &&
+                employeesResponse.isSuccess &&
+                customersResponse.isSuccess && (
+                    <ItemDrawer
+                        isOpen={projectDisclosure.isOpen}
+                        onClose={projectDisclosure.onClose}
+                    >
+                        <ProjectForm
+                            project={projectResponse.data}
+                            onSubmit={(project) =>
+                                putProject(project, () => undefined)
+                            }
+                            employees={employeesResponse.data}
+                            customers={customersResponse.data}
+                        />
+                    </ItemDrawer>
+                )}
+            <HStack mb={8} spacing="24px">
+                <Link href="/organization">
+                    <Button>
+                        <ChevronLeftIcon />
+                    </Button>
+                </Link>
+                <Button
+                    background={"green.300"}
+                    color="white"
+                    onClick={projectDisclosure.onOpen}
+                >
+                    Edit project
+                </Button>
+            </HStack>
+            <Heading as="h1" mb={16}>
+                {projectResponse.isSuccess && projectResponse.data.name}
+            </Heading>
+            <Heading as="h2" size="md">
+                Timesheets
+            </Heading>
+            {selectedTimesheet && employeesResponse.isSuccess && (
+                <ItemDrawer
+                    isOpen={Boolean(selectedTimesheet)}
+                    onClose={() => setSelectedTimesheet(undefined)}
+                >
+                    <TimesheetForm
+                        timesheet={selectedTimesheet}
+                        employees={employeesResponse.data}
+                        onSubmit={(timesheet) =>
+                            putTimesheet(timesheet, () => undefined)
+                        }
                     />
+                </ItemDrawer>
+            )}
+            {timesheetDisclosure.isOpen &&
+                projectResponse.isSuccess &&
+                employeesResponse.isSuccess && (
+                    <ItemDrawer {...timesheetDisclosure}>
+                        <TimesheetForm
+                            timesheet={{ project: projectResponse.data }}
+                            employees={employeesResponse.data}
+                            onSubmit={(timesheet) =>
+                                postTimesheet(timesheet, () => undefined)
+                            }
+                        />
+                    </ItemDrawer>
                 )}
-                {projectDetailResponse.isSuccess ? (
-                    <>
-                        <FormSection
-                            header={projectDetailResponse.data.name ?? "-"}
-                        >
-                            <ProjectDetail
-                                project={projectDetailResponse.data}
-                            />
-                            <StyledButtons>
-                                <Link
-                                    key={`${projectId}`}
-                                    href={`${projectId}/edit`}
-                                >
-                                    <a>
-                                        <StyledButton buttontype="edit" />
-                                    </a>
-                                </Link>
-                                <CustomButton {...getCustomButtonProps()} />
-                            </StyledButtons>
-                        </FormSection>
-
-                        <Modal
-                            isOpen={displayArchivedModal}
-                            onClose={() => setDisplayArchivedModal(false)}
-                        >
-                            <ModalOverlay />
-                            <ModalContent borderRadius="0">
-                                <ModalBody paddingY="1rem" paddingX="1rem">
-                                    <Flex justifyContent="end">
-                                        <RemoveIconButton
-                                            aria-label="Close"
-                                            onClick={onClose}
-                                        />
-                                    </Flex>
-                                    <Center paddingY="2rem">
-                                        {`${getName()} has been ${getStatusString()}.`}
-                                    </Center>
-                                </ModalBody>
-                            </ModalContent>
-                        </Modal>
-
-                        {timesheetsResponse.isLoading && <Loading />}
-                        {timesheetsResponse.isError && (
-                            <ErrorAlert
-                                title={timesheetsResponse.errorMessage}
-                                message={timesheetsResponse.errorMessage}
-                            />
-                        )}
-                        {projectDetailResponse.data.status === "ACTIVE" && (
-                            <>
-                                {timesheetsResponse.isSuccess &&
-                                    employeesResponse.isSuccess && (
-                                        <TimesheetTable
-                                            project={projectDetailResponse.data}
-                                            timesheets={timesheetsResponse.data}
-                                            employees={employeesResponse.data}
-                                        />
-                                    )}
-                                {tasksResponse.isSuccess && (
-                                    <TaskTable
-                                        project={projectDetailResponse.data}
-                                        tasks={tasksResponse.data}
-                                    />
-                                )}
-                            </>
-                        )}
-                    </>
-                ) : (
-                    <Box>Not found</Box>
-                )}
-            </Box>
-        </FormPage>
+            <TimesheetTable
+                response={timesheetResponse}
+                actionButton={timesheetActionButton}
+                onOpenDetail={setSelectedTimesheet}
+            />
+            <Heading as="h2" size="md">
+                Tasks
+            </Heading>
+            {taskDisclosure.isOpen && projectResponse.isSuccess && (
+                <ItemDrawer {...taskDisclosure}>
+                    <TaskForm
+                        task={{ project: projectResponse.data }}
+                        onSubmit={(task) => postTask(task, () => undefined)}
+                    />
+                </ItemDrawer>
+            )}
+            {selectedTask && (
+                <ItemDrawer
+                    isOpen={Boolean(selectedTask)}
+                    onClose={() => setSelectedTask(undefined)}
+                >
+                    <TaskForm
+                        task={selectedTask}
+                        onSubmit={(task) => putTask(task, () => undefined)}
+                    />
+                </ItemDrawer>
+            )}
+            <TaskTable
+                response={taskResponse}
+                customFilters={[filterTaskByProject]}
+                actionButton={taskActionButton}
+                onOpenDetail={setSelectedTask}
+            />
+        </Box>
     )
 }
 
-const Page: NextPage = () => {
+const ProjectDetail: NextPage = () => {
     const router = useRouter()
     const { id } = router.query
-    return id ? <ProjectDetailPage projectId={Number(id)} /> : null
+    return id ? <DisplayProjectDetail id={Number(id)} /> : <></>
 }
 
-export default Page
+export default ProjectDetail
