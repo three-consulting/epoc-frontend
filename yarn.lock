@@ -6294,10 +6294,10 @@ jsonwebtoken@^9.0.0:
     ms "^2.1.1"
     semver "^7.3.8"
 
-jspdf-autotable@^3.5.28:
-  version "3.5.28"
-  resolved "https://registry.yarnpkg.com/jspdf-autotable/-/jspdf-autotable-3.5.28.tgz#5463acbfa7a5b182453afea8f8aeac48bc96bfdb"
-  integrity sha512-eNYt5mUxCGa1Y0bmOhGXU+Va/P2jNkgOgUPGIpZp2rbZUauU34s0q3S59Jps5zi2u90nQy7DmD/D+sdesJLIEA==
+jspdf-autotable@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/jspdf-autotable/-/jspdf-autotable-3.6.0.tgz#204157fba3dc0cd8a0ad4e28c47145b418102923"
+  integrity sha512-CxO+/WylWNpwEzRLoYXrBoYpv+GeWijZFn2nqGevzMaqqMr2acC5eRgBCaBNtoipzpyfBFbCdG/UsG1eonoLrw==
 
 jspdf@^2.5.1:
   version "2.5.1"
