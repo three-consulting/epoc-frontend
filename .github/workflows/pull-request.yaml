@@ -36,7 +36,7 @@ jobs:
         run: envsubst '$NGINX_SERVER_NAME' < nginx.conf.tmpl > nginx.conf
       
       -  name: Set up Docker Buildx
-         uses: docker/setup-buildx-action@v2
+         uses: docker/setup-buildx-action@v3
 
       - name: Build image to artifact registry
         uses: docker/build-push-action@v4
