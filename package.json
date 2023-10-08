@@ -82,7 +82,7 @@
         "lint-staged": "^13.0.3",
         "openapi-typescript": "^5.1.1",
         "prettier": "^2.7.1",
-        "sinon": "^14.0.0",
+        "sinon": "^16.1.0",
         "typescript": "5.2.2",
         "yarn-audit-fix": "^9.3.5"
     },
