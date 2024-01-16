@@ -17,6 +17,8 @@ FROM nginx:1.23.1-alpine as production
 
 EXPOSE 80
 
+RUN rm -f /usr/share/nginx/html/*
+
 COPY nginx.conf /etc/nginx/nginx.conf
 
 COPY --from=builder /usr/app/out /usr/share/nginx/html
