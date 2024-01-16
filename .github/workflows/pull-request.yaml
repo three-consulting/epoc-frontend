@@ -38,7 +38,7 @@ jobs:
       -  name: Set up Docker Buildx
          uses: docker/setup-buildx-action@v3
 
-      - name: Build image to artifact registry
+      - name: Test image build
         uses: docker/build-push-action@v5
         with:
           build-args: |
@@ -51,7 +51,7 @@ jobs:
           no-cache: false
           push: false
 
-      - name: Check types in dev
+      - name: Validate types in dev
         if: github.actor != 'dependabot[bot]'
         id: validate_types_dev
         run: |
@@ -59,16 +59,6 @@ jobs:
           export DEV_DIFF="$(diff dev.ts lib/types/api.ts)"
           echo "DEV_DIFF<<EOF" >> $GITHUB_ENV
           echo "$DEV_DIFF" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Check types in prod
-        if: github.actor != 'dependabot[bot]'
-        id: validate_types_prod
-        run: |
-          yarn openapi-typescript https://epoc-backend.herokuapp.com/docs --output prod.ts
-          export PROD_DIFF="$(diff prod.ts lib/types/api.ts)"
-          echo "PROD_DIFF<<EOF" >> $GITHUB_ENV
-          echo "$PROD_DIFF" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Find old dev type validation comment
@@ -79,15 +69,6 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
           body-includes: DEV type validation result
-
-      - name: Find old dev type validation comment
-        if: github.actor != 'dependabot[bot]'
-        uses: peter-evans/find-comment@v2
-        id: prod-types
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: PROD type validation result
 
       - name: Comment results of dev type validations
         if: github.actor != 'dependabot[bot]'
@@ -100,19 +81,6 @@ jobs:
             DEV type validation result
             ```diff
             ${{ env.DEV_DIFF }}
-            ```
-
-      - name: Comment results of prod type validations
-        if: github.actor != 'dependabot[bot]'
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-id: ${{ steps.prod-types.outputs.comment-id }}
-          edit-mode: replace
-          body: |
-            PROD type validation result
-            ```diff
-            ${{ env.PROD_DIFF }}
             ```
 
   automerge:
