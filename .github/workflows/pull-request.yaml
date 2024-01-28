@@ -63,7 +63,7 @@ jobs:
 
       - name: Find old dev type validation comment
         if: github.actor != 'dependabot[bot]'
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@v3
         id: dev-types
         with:
           issue-number: ${{ github.event.pull_request.number }}
