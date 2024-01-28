@@ -72,7 +72,7 @@ jobs:
 
       - name: Comment results of dev type validations
         if: github.actor != 'dependabot[bot]'
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-id: ${{ steps.dev-types.outputs.comment-id }}
